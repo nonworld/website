@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  @font-face { font-family: NONHelvetica; src: local('Helvetica Neue'), local('HelveticaNeue'), local('Helvetica Neue Light'), local('Helvetica'), local('Arial'); font-weight: 300 700; }
+  a { color: inherit; text-decoration: none; }
+  a:hover { color: inherit; opacity: .62; }
+  @keyframes marq { from { transform: translateX(0); } to { transform: translateX(-50%); } }
+  @keyframes rise { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: none; } }
+</style>
+</helmet>
+
+<div style="width: 100%; background: #0c0c0c; color: #f2f0ea; font-family: NONHelvetica, 'Helvetica Neue', Helvetica, Arial, sans-serif;">
+  <div style="background: #ffffff; color: #000000; padding: 9px 0; overflow: hidden;">
+    <div style="display: flex; width: max-content; animation: marq 32s linear infinite; font-family: 'DM Mono', monospace; font-size: 10.5px; letter-spacing: .18em; text-transform: uppercase;">
+      <div style="display: flex; gap: 44px; width: max-content; flex: none; padding-left: 44px; white-space: nowrap;"><span>founded melbourne 2019</span><span>chef led</span><span>0.0% abv</span><span>never de-alcoholised</span><span>founded melbourne 2019</span><span>chef led</span><span>0.0% abv</span><span>never de-alcoholised</span></div>
+      <div style="display: flex; gap: 44px; width: max-content; flex: none; padding-left: 44px; white-space: nowrap;"><span>founded melbourne 2019</span><span>chef led</span><span>0.0% abv</span><span>never de-alcoholised</span><span>founded melbourne 2019</span><span>chef led</span><span>0.0% abv</span><span>never de-alcoholised</span></div>
+    </div>
+  </div>
+
+  <div style="display: flex; align-items: center; justify-content: space-between; padding: {{ headerPad }}; border-bottom: 1px solid #1f1f1d; flex-wrap: {{ navWrap }}; gap: 12px;">
+    <a href="index.html" aria-label="NON home"><a href="index.html"><img src="uploads/NON Brand Logotype.png" alt="NON" style="height: 19px; filter: invert(1); display: block;"></a>
+    <div style="display: flex; gap: {{ navGap }}; font-size: {{ navSize }}; font-weight: 500; letter-spacing: .14em; text-transform: uppercase; flex-wrap: {{ navWrap }};">
+      <a href="shop.html">Shop</a><a href="pairing.html">Pairing</a><a href="about.html" style="border-bottom: 1px solid #f2f0ea; padding-bottom: 2px;">About</a><a href="stockists.html">Stockists</a><a href="nonhq.html">NONHQ</a>
+    </div>
+    <div style="font-family: 'DM Mono', monospace; font-size: 11px;">Cart (0)</div>
+  </div>
+
+  <div style="padding: 76px 40px 56px; display: grid; grid-template-columns: {{ oneCol }}; gap: 60px; align-items: end; border-bottom: 1px solid #1f1f1d;">
+    <div>
+      <div style="font-family: 'DM Mono', monospace; font-size: 10.5px; letter-spacing: .18em; text-transform: uppercase; color: #7d7d7a;">About</div>
+      <h1 style="margin: 18px 0 0; font-size: 88px; line-height: .93; font-weight: 600; letter-spacing: -.035em; max-width: 13ch;">We don't mimic wine. We make something else.</h1>
+    </div>
+    <p style="margin: 0 0 10px; font-size: 17px; line-height: 1.6; color: #a3a3a0; text-wrap: pretty;">A chef-led drinks company in Melbourne, building wine alternatives out of real produce &mdash; fruit, tannin, salinity, acidity &mdash; and nothing that was ever fermented.</p>
+  </div>
+
+  <div style="display: grid; grid-template-columns: {{ twoCols }}; border-bottom: 1px solid #1f1f1d;">
+    <div style="padding: 76px 46px; display: flex; flex-direction: column; gap: 26px; border-right: 1px solid #1f1f1d;">
+      <div style="font-family: 'DM Mono', monospace; font-size: 10.5px; letter-spacing: .18em; text-transform: uppercase; color: #7d7d7a;">The origin</div>
+      <div style="font-size: 44px; line-height: 1.1; font-weight: 500; letter-spacing: -.025em; max-width: 20ch; text-wrap: pretty;">A drinks pairing in London that never left the restaurant.</div>
+      <p style="margin: 0; font-size: 17px; line-height: 1.65; color: #a3a3a0; max-width: 46ch; text-wrap: pretty;">In 2017 Aaron Trotman was eating through Michelin-starred rooms in London. He took the alcohol pairing; the non-drinker at the table was handed something the bartenders had built by hand &mdash; considered, complex, matched to the plate &mdash; and it existed nowhere outside that dining room.</p>
+      <p style="margin: 0; font-size: 17px; line-height: 1.65; color: #a3a3a0; max-width: 46ch; text-wrap: pretty;">He had no background in drinks. He came from cosmetics chemistry, which turned out to matter more than a wine list would have. NON launched in 2019 as the thing that should have been in a bottle already.</p>
+      <div style="display: flex; gap: 22px; align-items: flex-start; margin-top: 8px; border-top: 1px solid #1f1f1d; padding-top: 26px;">
+        <img src="uploads/Headshot%20selects/AARON%20HEADSHOTS%20BLACK%20AND%20WHITE_019.jpg" alt="Aaron Trotman" style="width: 132px; height: 168px; object-fit: cover; object-position: 50% 20%; flex: none;">
+        <div>
+          <div style="font-size: 25px; line-height: 1.45; color: #e8e8e6; max-width: 34ch; text-wrap: pretty;">&ldquo;I thought it was a real shame that these drinks lived and died in fancy restaurants.&rdquo;</div>
+          <div style="font-family: 'DM Mono', monospace; font-size: 11px; color: #7d7d7a; margin-top: 14px; letter-spacing: .14em; text-transform: uppercase;">Aaron Trotman, founder</div>
+        </div>
+      </div>
+    </div>
+    <div style="position: relative; min-height: 620px;">
+      <img src="uploads/BroadSheet%20Photos/038A8388.jpg" alt="Dehydrated oranges lowered into the steep tank at NONHQ" style="position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover;">
+    </div>
+  </div>
+
+  <div style="padding: 76px 46px; border-bottom: 1px solid #1f1f1d;">
+    <div style="font-family: 'DM Mono', monospace; font-size: 10.5px; letter-spacing: .18em; text-transform: uppercase; color: #7d7d7a;">What we actually do</div>
+    <div style="font-size: 60px; line-height: 1.06; font-weight: 500; letter-spacing: -.03em; margin-top: 26px; max-width: 24ch; text-wrap: pretty;">Every glass is built from four things.</div>
+    <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; margin-top: 44px;">
+      <div style="border: 1px solid #1f1f1d; padding: 32px 28px; display: flex; flex-direction: column; gap: 16px;">
+        <div style="font-family: 'DM Mono', monospace; font-size: 11px; color: #5f5f5c;">01</div>
+        <div style="font-size: 30px; font-weight: 500; letter-spacing: -.015em;">Fruit</div>
+        <p style="margin: 0; font-size: 14px; line-height: 1.6; color: #8a8a87;">Cold-steeped, dehydrated, roasted or reduced &mdash; whichever method gets the most out of it. Rarely juiced.</p>
+      </div>
+      <div style="border: 1px solid #1f1f1d; padding: 32px 28px; display: flex; flex-direction: column; gap: 16px;">
+        <div style="font-family: 'DM Mono', monospace; font-size: 11px; color: #5f5f5c;">02</div>
+        <div style="font-size: 30px; font-weight: 500; letter-spacing: -.015em;">Tannin</div>
+        <p style="margin: 0; font-size: 14px; line-height: 1.6; color: #8a8a87;">Chamomile, cinnamon, tea, hops, citrus pith. Grip on the finish, so it holds a plate instead of washing through.</p>
+      </div>
+      <div style="border: 1px solid #1f1f1d; padding: 32px 28px; display: flex; flex-direction: column; gap: 16px;">
+        <div style="font-family: 'DM Mono', monospace; font-size: 11px; color: #5f5f5c;">03</div>
+        <div style="font-size: 30px; font-weight: 500; letter-spacing: -.015em;">Salinity</div>
+        <p style="margin: 0; font-size: 14px; line-height: 1.6; color: #8a8a87;">Murray River salt, kombu. Salt makes food taste more like itself &mdash; a lever wine never had.</p>
+      </div>
+      <div style="border: 1px solid #1f1f1d; padding: 32px 28px; display: flex; flex-direction: column; gap: 16px;">
+        <div style="font-family: 'DM Mono', monospace; font-size: 11px; color: #5f5f5c;">04</div>
+        <div style="font-size: 30px; font-weight: 500; letter-spacing: -.015em;">Acidity</div>
+        <p style="margin: 0; font-size: 14px; line-height: 1.6; color: #8a8a87;">Barossa verjus, citrus, vinegar. Resets the palate between bites &mdash; and cools chilli instead of stoking it.</p>
+      </div>
+    </div>
+  </div>
+
+  <div style="display: grid; grid-template-columns: {{ twoCols }}; border-bottom: 1px solid #1f1f1d;">
+    <div style="position: relative; min-height: 560px; order: 1;">
+      <img src="uploads/BroadSheet%20Photos/038A8614.jpg" alt="Spicing cherries by hand in the NON kitchen" style="position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover;">
+    </div>
+    <div style="padding: 76px 46px; display: flex; flex-direction: column; gap: 26px; order: 2; border-left: 1px solid #1f1f1d;">
+      <div style="font-family: 'DM Mono', monospace; font-size: 10.5px; letter-spacing: .18em; text-transform: uppercase; color: #7d7d7a;">The difficult part</div>
+      <div style="font-size: 44px; line-height: 1.1; font-weight: 500; letter-spacing: -.025em; max-width: 20ch; text-wrap: pretty;">Water doesn't carry flavour the way alcohol does.</div>
+      <p style="margin: 0; font-size: 17px; line-height: 1.65; color: #a3a3a0; max-width: 46ch; text-wrap: pretty;">Alcohol is a solvent. It grabs aroma compounds, holds them, and releases them in the glass. Take it away and you lose the vehicle, not just the buzz &mdash; which is why most zero-proof drinks fall back on sugar.</p>
+      <p style="margin: 0; font-size: 17px; line-height: 1.65; color: #a3a3a0; max-width: 46ch; text-wrap: pretty;">So every ingredient is processed on its own before anything is blended: cooked, steeped, sous-vide, roasted, dehydrated. It's slow, and it's the entire product.</p>
+      <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 24px; border-top: 1px solid #1f1f1d; padding-top: 26px; margin-top: 6px;">
+        <div>
+          <div style="font-family: 'DM Mono', monospace; font-size: 10px; letter-spacing: .16em; text-transform: uppercase; color: #7d7d7a;">Who makes it</div>
+          <div style="font-size: 16px; line-height: 1.5; margin-top: 8px;">Chefs, food scientists, bartenders and winemakers &mdash; in-house.</div>
+        </div>
+        <div>
+          <div style="font-family: 'DM Mono', monospace; font-size: 10px; letter-spacing: .16em; text-transform: uppercase; color: #7d7d7a;">Where</div>
+          <div style="font-size: 16px; line-height: 1.5; margin-top: 8px;">A purpose-built kitchen in Cheltenham, Melbourne.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div style="position: relative; border-bottom: 1px solid #1f1f1d;">
+    <img src="uploads/BroadSheet%20Photos/038A8683.jpg" alt="Inside the NON kitchen" style="width: 100%; height: 420px; object-fit: cover; display: block;">
+    <div style="position: absolute; inset: auto 0 0 0; padding: 40px 46px; background: linear-gradient(to top, rgba(12,12,12,.92), transparent);">
+      <div style="font-size: 34px; font-weight: 500; letter-spacing: -.02em; max-width: 30ch; text-wrap: pretty;">Every ingredient is processed on its own before anything is blended.</div>
+    </div>
+  </div>
+
+  <div style="padding: 70px 46px; border-bottom: 1px solid #1f1f1d;">
+    <div style="font-family: 'DM Mono', monospace; font-size: 10.5px; letter-spacing: .18em; text-transform: uppercase; color: #7d7d7a;">What we're not</div>
+    <div style="display: grid; grid-template-columns: {{ threeCols }}; gap: 2px; margin-top: 26px; background: #1f1f1d; border: 1px solid #1f1f1d;">
+      <div style="background: #0c0c0c; padding: 36px 32px;">
+        <div style="font-size: 28px; font-weight: 500; letter-spacing: -.015em;">Not de-alcoholised</div>
+        <p style="margin: 10px 0 0; font-size: 14.5px; line-height: 1.6; color: #8a8a87;">No wine is made and then stripped. Nothing here has ever been fermented.</p>
+      </div>
+      <div style="background: #0c0c0c; padding: 36px 32px;">
+        <div style="font-size: 28px; font-weight: 500; letter-spacing: -.015em;">Not a mocktail</div>
+        <p style="margin: 10px 0 0; font-size: 14.5px; line-height: 1.6; color: #8a8a87;">Mocktails are mixed to order and usually sweet. This is cooked in a facility and bottled dry.</p>
+      </div>
+      <div style="background: #0c0c0c; padding: 36px 32px;">
+        <div style="font-size: 28px; font-weight: 500; letter-spacing: -.015em;">Not an imitation</div>
+        <p style="margin: 10px 0 0; font-size: 14.5px; line-height: 1.6; color: #8a8a87;">It takes the seat wine had at the table. It doesn't try to taste like the thing that sat there.</p>
+      </div>
+    </div>
+  </div>
+
+  <div style="padding: 70px 46px; display: grid; grid-template-columns: 200px 1fr; gap: 48px; border-bottom: 1px solid #1f1f1d;">
+    <div style="font-family: 'DM Mono', monospace; font-size: 10.5px; letter-spacing: .18em; text-transform: uppercase; color: #7d7d7a;">Leave it better</div>
+    <div style="display: flex; flex-direction: column; gap: 22px;">
+      <div style="font-size: 40px; line-height: 1.15; font-weight: 500; letter-spacing: -.02em; max-width: 26ch; text-wrap: pretty;">Made on 100% green energy, shipped carbon neutral.</div>
+      <div style="display: grid; grid-template-columns: {{ threeCols }}; gap: 32px;">
+        <div>
+          <div style="font-size: 46px; font-weight: 500; letter-spacing: -.03em;">75%</div>
+          <p style="margin: 8px 0 0; font-size: 14.5px; line-height: 1.6; color: #8a8a87;">Less water wasted than conventional beverage manufacturing.</p>
+        </div>
+        <div>
+          <div style="font-size: 46px; font-weight: 500; letter-spacing: -.03em;">100%</div>
+          <p style="margin: 8px 0 0; font-size: 14.5px; line-height: 1.6; color: #8a8a87;">Green energy across production, with carbon-neutral shipping.</p>
+        </div>
+        <div>
+          <div style="font-size: 46px; font-weight: 500; letter-spacing: -.03em;">0.0%</div>
+          <p style="margin: 8px 0 0; font-size: 14.5px; line-height: 1.6; color: #8a8a87;">Alcohol, in every bottle, from the first step to the last.</p>
+        </div>
+      </div>
+      <p style="margin: 6px 0 0; font-size: 15px; line-height: 1.65; color: #8a8a87; max-width: 60ch;">Raw ingredients are used as fully as the process allows; what's left goes through Melbourne's green waste program. Cleaning products are reused, not replaced.</p>
+    </div>
+  </div>
+
+  <div style="padding: 30px 0 26px; background: #ffffff; overflow: hidden;">
+    <div style="text-align: center; font-family: 'DM Mono', monospace; font-size: 10.5px; letter-spacing: .2em; text-transform: uppercase; color: #6b6b68;">Poured at</div>
+    <div style="display: flex; width: max-content; margin-top: 18px; animation: marq 40s linear infinite;">
+      <div style="display: flex; align-items: center; justify-content: space-around; gap: 40px; width: max-content; flex: none; padding-left: 40px;">
+        <img src="https://www.non.world/cdn/shop/files/french_laundry_2_-_Copy_4c30ca9f-1794-44ec-9dd7-a3e422c8127a.jpg?v=1754352410&amp;width=300" alt="The French Laundry" style="max-height: 44px; max-width: 150px; width: auto; height: auto; object-fit: contain; mix-blend-mode: multiply; flex: none;">
+        <img src="https://www.non.world/cdn/shop/files/fat_duck_logo.png?v=1754352113&amp;width=300" alt="The Fat Duck" style="max-height: 70px; max-width: 150px; width: auto; height: auto; object-fit: contain; mix-blend-mode: multiply; flex: none;">
+        <img src="https://www.non.world/cdn/shop/files/alinea-logo.jpg?v=1752532858&amp;width=300" alt="Alinea" style="max-height: 70px; max-width: 150px; width: auto; height: auto; object-fit: contain; mix-blend-mode: multiply; flex: none;">
+        <img src="https://www.non.world/cdn/shop/files/logo-atelier-crenn-2022.jpg?v=1752533002&amp;width=300" alt="Atelier Crenn" style="max-height: 44px; max-width: 150px; width: auto; height: auto; object-fit: contain; mix-blend-mode: multiply; flex: none;">
+        <img src="https://www.non.world/cdn/shop/files/vue-de-monde-logo.png?v=1773521183&amp;width=300" alt="Vue de Monde" style="max-height: 44px; max-width: 150px; width: auto; height: auto; object-fit: contain; mix-blend-mode: multiply; flex: none;">
+        <img src="https://www.non.world/cdn/shop/files/Fortnum___Mason_logo.png?v=1754352025&amp;width=300" alt="Fortnum &amp; Mason" style="max-height: 44px; max-width: 150px; width: auto; height: auto; object-fit: contain; mix-blend-mode: multiply; flex: none;">
+      </div>
+      <div style="display: flex; align-items: center; justify-content: space-around; gap: 40px; width: max-content; flex: none; padding-left: 40px;">
+        <img src="https://www.non.world/cdn/shop/files/french_laundry_2_-_Copy_4c30ca9f-1794-44ec-9dd7-a3e422c8127a.jpg?v=1754352410&amp;width=300" alt="" style="max-height: 44px; max-width: 150px; width: auto; height: auto; object-fit: contain; mix-blend-mode: multiply; flex: none;">
+        <img src="https://www.non.world/cdn/shop/files/fat_duck_logo.png?v=1754352113&amp;width=300" alt="" style="max-height: 70px; max-width: 150px; width: auto; height: auto; object-fit: contain; mix-blend-mode: multiply; flex: none;">
+        <img src="https://www.non.world/cdn/shop/files/alinea-logo.jpg?v=1752532858&amp;width=300" alt="" style="max-height: 70px; max-width: 150px; width: auto; height: auto; object-fit: contain; mix-blend-mode: multiply; flex: none;">
+        <img src="https://www.non.world/cdn/shop/files/logo-atelier-crenn-2022.jpg?v=1752533002&amp;width=300" alt="" style="max-height: 44px; max-width: 150px; width: auto; height: auto; object-fit: contain; mix-blend-mode: multiply; flex: none;">
+        <img src="https://www.non.world/cdn/shop/files/vue-de-monde-logo.png?v=1773521183&amp;width=300" alt="" style="max-height: 44px; max-width: 150px; width: auto; height: auto; object-fit: contain; mix-blend-mode: multiply; flex: none;">
+        <img src="https://www.non.world/cdn/shop/files/Fortnum___Mason_logo.png?v=1754352025&amp;width=300" alt="" style="max-height: 44px; max-width: 150px; width: auto; height: auto; object-fit: contain; mix-blend-mode: multiply; flex: none;">
+      </div>
+    </div>
+  </div>
+
+  <div style="display: grid; grid-template-columns: {{ twoCols }}; border-bottom: 1px solid #1f1f1d;">
+    <div style="position: relative; min-height: 340px;">
+      <img src="uploads/BroadSheet%20Photos/038A8469.jpg" alt="NONHQ" style="position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover;">
+      <div style="position: relative; height: 100%; box-sizing: border-box; padding: 44px 40px; display: flex; flex-direction: column; justify-content: flex-end; gap: 12px; background: linear-gradient(to top, rgba(12,12,12,.9), rgba(12,12,12,.2));">
+        <div style="font-size: 30px; font-weight: 600; letter-spacing: .02em; text-transform: uppercase;">Come and see it</div>
+        <p style="margin: 0; font-size: 14.5px; line-height: 1.6; color: #b4b4b1; max-width: 38ch;">NONHQ is the world's first non-alcoholic cellar door. Taste the ingredients separately, then the bottles.</p>
+        <a href="nonhq.html" style="font-family: 'DM Mono', monospace; font-size: 11px; letter-spacing: .14em; text-transform: uppercase; border-bottom: 1px solid #5f5f5c; align-self: flex-start; padding-bottom: 3px;">Book a tasting</a>
+      </div>
+    </div>
+    <div style="position: relative; min-height: 340px; border-left: 1px solid #1f1f1d;">
+      <img src="uploads/BroadSheet%20Photos/038A8736.jpg" alt="A glass of NON" style="position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover;">
+      <div style="position: relative; height: 100%; box-sizing: border-box; padding: 44px 40px; display: flex; flex-direction: column; justify-content: flex-end; gap: 12px; background: linear-gradient(to right, rgba(12,12,12,.9), rgba(12,12,12,.25));">
+      <div style="font-size: 30px; font-weight: 600; letter-spacing: .02em; text-transform: uppercase;">Or start with a glass</div>
+      <p style="margin: 0; font-size: 14.5px; line-height: 1.6; color: #8a8a87; max-width: 38ch;">Tell the somm what you're eating and it will pick the bottle. That's the fastest version of everything on this page.</p>
+      <a href="pairing.html" style="font-family: 'DM Mono', monospace; font-size: 11px; letter-spacing: .14em; text-transform: uppercase; border-bottom: 1px solid #5f5f5c; align-self: flex-start; padding-bottom: 3px;">Find your pairing</a>
+      </div>
+    </div>
+  </div>
+
+  <div style="padding: 32px 40px; display: flex; justify-content: space-between; align-items: center; font-family: 'DM Mono', monospace; font-size: 10.5px; letter-spacing: .12em; text-transform: uppercase; color: #7d7d7a;">
+    <span>&copy; 2026 NON</span>
+    <span style="display: flex; gap: 22px;"><a href="#top">Shipping</a><a href="stockists.html">Stockists</a><a href="https://www.instagram.com/non.world/">Instagram</a><a href="mailto:hello@non.world">hello@non.world</a></span>
+  </div>
+</div>
+
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;:{&quot;width&quot;:1180}}">class Component extends DCLogic {
+  state = { narrow: false };
+
+  measure = () => {
+    const narrow = window.innerWidth < 860;
+    if (narrow !== this.state.narrow) this.setState({ narrow });
+  };
+
+  componentDidMount() {
+    this.measure();
+    window.addEventListener('resize', this.measure);
+  }
+
+  componentWillUnmount() { window.removeEventListener('resize', this.measure); }
+
+  renderVals() {
+    const st = this.state;
+    return {
+      narrow: st.narrow,
+      pagePad: st.narrow ? '22px' : '40px',
+      headerPad: st.narrow ? '16px 22px' : '22px 40px',
+      navGap: st.narrow ? '14px' : '28px',
+      navSize: st.narrow ? '10px' : '11px',
+      navWrap: st.narrow ? 'wrap' : 'nowrap',
+      oneCol: st.narrow ? '1fr' : null,
+      twoCols: st.narrow ? '1fr' : 'repeat(2, 1fr)',
+      threeCols: st.narrow ? '1fr' : 'repeat(3, 1fr)',
+      heroSize: st.narrow ? '40px' : '68px',
+      footerDir: st.narrow ? 'column' : 'row',
+      footerGap: st.narrow ? '14px' : '0'
+    };
+  }
+}
+</script>
+</body>
+</html>

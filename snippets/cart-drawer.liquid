@@ -1,0 +1,43 @@
+<div class="non-drawer" data-non-cart-drawer hidden>
+  <div class="non-drawer__scrim" data-non-cart-close style="position:absolute;inset:0"></div>
+
+  <aside
+    class="non-drawer__panel"
+    role="dialog"
+    aria-modal="true"
+    aria-label="{{ 'cart.general.title' | t }}">
+    <header class="non-drawer__head">
+      <span class="non-mono non-eyebrow">{{ 'cart.general.title' | t }}</span>
+      <button
+        type="button"
+        class="non-header__cart"
+        data-non-cart-close
+        aria-label="{{ 'general.accessibility.close' | t }}">
+        Close
+      </button>
+    </header>
+
+    <div class="non-drawer__items" data-non-cart-items>
+      <p class="non-drawer__empty">{{ 'cart.general.empty' | t }}</p>
+    </div>
+
+    <footer class="non-drawer__foot">
+      <p class="non-mono non-eyebrow" data-non-cart-shipping hidden></p>
+
+      <div style="display:flex;align-items:baseline;justify-content:space-between;margin:8px 0 14px">
+        <span class="non-mono non-eyebrow">{{ 'cart.general.subtotal' | t }}</span>
+        <strong data-non-cart-subtotal style="font-size:17px">{{ 0 | money }}</strong>
+      </div>
+
+      <form action="{{ routes.cart_url }}" method="post">
+        <button type="submit" name="checkout" class="non-atc" style="margin-top:0" data-non-cart-checkout disabled>
+          {{ 'cart.general.checkout' | t }}
+        </button>
+      </form>
+
+      <p class="non-mono non-eyebrow" style="margin-top:12px;letter-spacing:.12em">
+        {{ 'cart.general.taxes_and_shipping' | t }}
+      </p>
+    </footer>
+  </aside>
+</div>

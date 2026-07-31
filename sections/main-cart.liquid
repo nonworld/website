@@ -1,0 +1,63 @@
+<div class="non-section">
+  <div class="non-section__head">
+    <h1 class="non-section__title">{{ 'cart.general.title' | t }}</h1>
+    <span class="non-section__more">
+      {{ 'cart.general.item_count' | t: count: cart.item_count }}
+    </span>
+  </div>
+
+  {%- if cart.item_count > 0 -%}
+    <form action="{{ routes.cart_url }}" method="post" novalidate style="margin-top:28px">
+      {%- for item in cart.items -%}
+        <div class="non-drawer__item">
+          {%- if item.image -%}
+            <img src="{{ item.image | image_url: width: 160 }}" alt="{{ item.title | escape }}" loading="lazy">
+          {%- endif -%}
+
+          <div style="flex:1">
+            <a href="{{ item.url }}" style="font-size:15px">{{ item.product.title }}</a>
+            {%- unless item.variant.title == 'Default Title' -%}
+              <div class="non-mono non-eyebrow" style="margin-top:6px">{{ item.variant.title }}</div>
+            {%- endunless -%}
+
+            <div class="non-drawer__qty">
+              <button type="button" data-non-qty="{{ item.key }}" data-delta="-1" aria-label="Decrease">&minus;</button>
+              <span>{{ item.quantity }}</span>
+              <button type="button" data-non-qty="{{ item.key }}" data-delta="1" aria-label="Increase">+</button>
+              <button
+                type="button"
+                data-non-remove="{{ item.key }}"
+                style="margin-left:16px;background:none;border:0;color:var(--non-fg-mute);font-family:var(--non-mono);font-size:10.5px;cursor:pointer;text-decoration:underline">
+                {{ 'cart.general.remove' | t }}
+              </button>
+            </div>
+          </div>
+
+          <strong style="font-size:14px">{{ item.final_line_price | money }}</strong>
+        </div>
+      {%- endfor -%}
+
+      <div style="display:flex;align-items:baseline;justify-content:space-between;margin:26px 0 16px">
+        <span class="non-mono non-eyebrow">{{ 'cart.general.subtotal' | t }}</span>
+        <strong style="font-size:22px">{{ cart.total_price | money }}</strong>
+      </div>
+
+      <button type="submit" name="checkout" class="non-atc" style="max-width:340px">
+        {{ 'cart.general.checkout' | t }}
+      </button>
+
+      <p class="non-mono non-eyebrow" style="margin-top:14px">
+        {{ 'cart.general.taxes_and_shipping' | t }}
+      </p>
+    </form>
+  {%- else -%}
+    <p class="non-drawer__empty">{{ 'cart.general.empty' | t }}</p>
+    <a href="{{ routes.all_products_collection_url }}" class="non-btn" style="display:inline-block;margin-top:8px">
+      {{ 'cart.general.continue_shopping' | t }}
+    </a>
+  {%- endif -%}
+</div>
+
+{% schema %}
+{ "name": "Cart" }
+{% endschema %}

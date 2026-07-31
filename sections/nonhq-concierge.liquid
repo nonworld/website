@@ -1,13 +1,18 @@
 {%- comment -%}
   NONHQ — cellar door.
 
-  A cellar door takes requests, not covers: the form captures a preferred date
-  and window and NON confirms by email. It posts to Shopify's native contact
-  form (/contact#form), so submissions land in the store's inbox with no app
-  and no external endpoint.
+  A request, not a booking, and that is the whole design: someone tells you
+  when they'd like to come and NON replies. No availability, no calendar, no
+  app.
 
-  If this becomes a real booking system, the honest answer is an app — Liquid
-  can't hold availability. Flagged in the README.
+  It posts through Shopify's native contact form, which emails the store's
+  contact address — hello@non.world — with the customer's address set as
+  reply-to, so replying goes straight back to them. Nothing external is
+  involved and there is no endpoint to keep alive.
+
+  Every answer is prefixed into contact[body] as well as sent as its own
+  field, because Shopify's notification email renders the body reliably and
+  custom fields depend on the notification template.
 {%- endcomment -%}
 
 <div class="non-section">
@@ -94,6 +99,19 @@
         <textarea class="non-field" id="hq-body" name="contact[body]" rows="4"
           placeholder="Dietaries, occasion, whether anyone needs converting."></textarea>
       </div>
+
+      {%- comment -%}
+        Gives the notification a subject that can be filtered on in the
+        hello@ inbox, rather than every request arriving as "New message".
+      {%- endcomment -%}
+      <input
+        type="hidden"
+        name="contact[subject]"
+        value="NONHQ booking request">
+
+      <p class="non-mono non-eyebrow" style="margin-top:16px;letter-spacing:.12em">
+        Goes to {{ shop.email | default: 'hello@non.world' }}
+      </p>
 
       <button type="submit" class="non-btn" style="margin-top:20px">
         {{ section.settings.submit_label }}

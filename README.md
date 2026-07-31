@@ -123,10 +123,11 @@ Verified against the live store (non.world, AUD, Advanced plan) rather than assu
   "The Everyday Set" on the same SKU `NON-SET-EVERYDAY` — `the-everyday-set`
   (0 inventory) and `the-everyday-set-1` (807). Not a theme bug, but the
   collection will show it twice.
-- **NONHQ is a request, not a booking.** The form posts to Shopify's native
-  contact form, so requests land in the store inbox with no app. Liquid cannot
-  hold availability — real booking needs an app or an embedded provider. This
-  one is a genuine platform limit, not a shortcut.
+- **NONHQ is a request, not a booking, by design.** The form emails
+  `hello@non.world` through Shopify's native contact form, with the customer's
+  address as reply-to. No availability, no calendar, no app, nothing external
+  to keep alive. If it ever needs real-time availability that becomes an app —
+  but that is not what it is for.
 - **No customer account templates.** Shopify's defaults render unstyled.
 
 ## Corrected against the live store

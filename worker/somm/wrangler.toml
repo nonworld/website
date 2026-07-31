@@ -1,0 +1,19 @@
+name = "non-somm"
+main = "src/index.js"
+compatibility_date = "2026-07-01"
+
+[vars]
+# Extraction is a narrow, schema-bound task — the small model is enough and
+# it is the call that runs on every keystroke-completed query.
+EXTRACT_MODEL = "claude-haiku-4-5-20251001"
+# The sentence is customer-facing copy, so it gets the better model.
+EXPLAIN_MODEL = "claude-sonnet-5"
+RATE_LIMIT_PER_MINUTE = "20"
+
+# ANTHROPIC_API_KEY is a secret, never a var:
+#   wrangler secret put ANTHROPIC_API_KEY
+
+# Optional. Without it rate limiting is skipped rather than failing closed.
+# [[kv_namespaces]]
+# binding = "SOMM_KV"
+# id = "<namespace id>"

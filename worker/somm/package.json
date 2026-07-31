@@ -1,0 +1,15 @@
+{
+  "name": "non-somm",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "NON Somm pairing API — Cloudflare Worker",
+  "scripts": {
+    "dev": "wrangler dev",
+    "deploy": "wrangler deploy",
+    "test": "node test/pipeline.test.js"
+  },
+  "devDependencies": {
+    "wrangler": "^3.90.0"
+  }
+}

@@ -1,5 +1,3 @@
-<<<<<<< Updated upstream
-=======
 {%- comment -%}
   Resolves a product's NON code — the join key between Shopify and the codes
   the design keys off (NON1 … NON9, SET, STOPPER).
@@ -21,12 +19,11 @@
   Sets are checked before stoppers, because NON-MIX6-STOPPER and
   NON-SET-STOPPER are sets that happen to include one.
 
-  Each test is its own `if`. Liquid has no boolean operators beyond `and`/`or`
-  on whole expressions — `sku contains 'X' and sku contains 'Y' == false` is a
-  syntax error, not a negation, and it takes the whole template down.
+  Each test is its own `if`. Liquid has no boolean negation of a `contains` —
+  `sku contains 'X' and sku contains 'Y' == false` is a syntax error, not a
+  negation, and it takes every template using this snippet down with it.
 {%- endcomment -%}
 
->>>>>>> Stashed changes
 {%- liquid
   assign code = ''
 

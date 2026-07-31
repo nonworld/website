@@ -784,7 +784,7 @@ button { font-family: inherit; }
   align-items: center;
   justify-content: space-between;
   gap: 14px;
-  background: var(--non-paper);
+  background: var(--non-invert-bg);
   color: var(--non-ink);
   padding: 13px 15px;
   margin-bottom: 14px;
@@ -824,4 +824,4 @@ button { font-family: inherit; }
   transition: background .18s ease, color .18s ease;
 }
 .non-cart-prize__apply:hover,
-.non-cart-prize__apply:focus-visible { background: var(--non-ink); color: var(--non-paper); }
+.non-cart-prize__apply:focus-visible { background: var(--non-ink); color: var(--non-invert-bg); }

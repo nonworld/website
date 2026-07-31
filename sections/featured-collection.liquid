@@ -14,7 +14,7 @@
   </div>
 
   {%- if coll.products.size > 0 -%}
-    <div class="non-grid non-grid--{{ section.settings.columns }}">
+    <div class="non-grid non-grid--{{ section.settings.columns }} non-grid--ratio-{{ section.settings.image_ratio | default: 'portrait' }}">
       {%- for product in coll.products limit: limit -%}
         {% render 'product-card', product: product, show_add: section.settings.show_add %}
       {%- endfor -%}
@@ -40,9 +40,24 @@
       "options": [
         { "value": "2", "label": "2" },
         { "value": "3", "label": "3" },
-        { "value": "4", "label": "4" }
+        { "value": "4", "label": "4" },
+        { "value": "5", "label": "5" },
+        { "value": "6", "label": "6" }
       ],
+      "info": "A maximum. Very wide screens fit more rather than stretching each card.",
       "default": "4"
+    },
+    {
+      "type": "select",
+      "id": "image_ratio",
+      "label": "Image shape",
+      "options": [
+        { "value": "portrait", "label": "Portrait (3:4)" },
+        { "value": "tall", "label": "Tall (4:5)" },
+        { "value": "square", "label": "Square (1:1)" },
+        { "value": "landscape", "label": "Landscape (4:3)" }
+      ],
+      "default": "portrait"
     },
     { "type": "checkbox", "id": "show_add", "label": "Show add to cart on cards", "default": false },
     { "type": "text", "id": "link_label", "label": "Link label", "default": "All bottles" },

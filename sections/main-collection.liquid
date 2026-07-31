@@ -39,7 +39,7 @@
 
   {%- if collection.products.size > 0 -%}
     <div
-      class="non-grid non-grid--{{ section.settings.columns }}"
+      class="non-grid non-grid--{{ section.settings.columns }} non-grid--ratio-{{ section.settings.image_ratio | default: 'portrait' }}"
       data-non-shelf
       data-dim="{{ section.settings.dim_level | default: 34 | divided_by: 100.0 }}"
       data-dim-enabled="{{ section.settings.dim_non_matches }}">
@@ -90,6 +90,18 @@
   "name": "Collection",
   "settings": [
     { "type": "checkbox", "id": "show_filters", "label": "Show the somm food filter", "default": true },
+    {
+      "type": "select",
+      "id": "image_ratio",
+      "label": "Image shape",
+      "options": [
+        { "value": "portrait", "label": "Portrait (3:4)" },
+        { "value": "tall", "label": "Tall (4:5)" },
+        { "value": "square", "label": "Square (1:1)" },
+        { "value": "landscape", "label": "Landscape (4:3)" }
+      ],
+      "default": "portrait"
+    },
     { "type": "checkbox", "id": "show_add", "label": "Show add to cart on cards", "default": true },
     {
       "type": "select",
@@ -98,8 +110,11 @@
       "options": [
         { "value": "2", "label": "2" },
         { "value": "3", "label": "3" },
-        { "value": "4", "label": "4" }
+        { "value": "4", "label": "4" },
+        { "value": "5", "label": "5" },
+        { "value": "6", "label": "6" }
       ],
+      "info": "A maximum. Very wide screens fit more rather than stretching each card.",
       "default": "3"
     },
     { "type": "checkbox", "id": "dim_non_matches", "label": "Fade bottles that don't answer", "default": true },

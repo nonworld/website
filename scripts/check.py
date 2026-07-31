@@ -183,6 +183,22 @@ for path in glob("sections/*.liquid") + glob("snippets/*.liquid"):
     for b in schema.get("blocks", []):
         check_urls(b.get("settings"), f"block {b.get('type')}")
 
+# 2bc. A double quote inside an output tag. Liquid renders the tag, but the
+#      quote lands in the middle of the surrounding HTML attribute and closes
+#      it early, so the rest of the class list becomes stray attributes. Liquid
+#      string literals accept single quotes, so there is never a reason for a
+#      double quote inside {{ }}. Caught this in my own edit:
+#        class="… non-grid--ratio-{{ x | default: "portrait" }}"
+DQ_IN_OUTPUT = re.compile(r'\{\{[^}]*"[^}]*\}\}')
+for path in glob("sections/*.liquid") + glob("snippets/*.liquid") + glob("layout/*.liquid"):
+    for n, line in enumerate(open(path), 1):
+        m = DQ_IN_OUTPUT.search(line)
+        if m:
+            issues.append(
+                f"{path}:{n}: double quote inside an output tag — {m.group(0)[:70]}. "
+                f"It will terminate the surrounding HTML attribute. Use single quotes."
+            )
+
 # 2c. A brace inside a quoted string inside an output tag. Liquid's lexer does
 #     not respect quoting when finding the end of a `{{ ... }}` tag, so
 #     {{ x | default: '{}' }} is truncated mid-tag and Shopify rejects the

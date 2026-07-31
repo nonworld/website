@@ -366,17 +366,39 @@ button { font-family: inherit; }
 
 /* --- product grid ------------------------------------------------------- */
 
-.non-grid { display: grid; gap: 20px; margin-top: 24px; grid-template-columns: repeat(2, 1fr); }
-@media (min-width: 860px) {
-  .non-grid--3 { grid-template-columns: repeat(3, 1fr); }
-  .non-grid--4 { grid-template-columns: repeat(4, 1fr); }
+/* The column count is a MAXIMUM, not a fixed number.
+   The shell runs to 1800px, so three fixed columns made each card ~580px wide
+   and, at the 3/4 portrait ratio, ~770px tall — a single bottle filling most
+   of the viewport. Capping the track at --non-card-max means the grid holds
+   the chosen count on a normal screen and simply fits more, at a sane size,
+   on a very wide one, instead of stretching what is there. */
+.non-grid {
+  display: grid;
+  gap: 20px;
+  margin-top: 24px;
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, var(--non-card-max, 300px)), 1fr));
 }
-@media (min-width: 860px) and (max-width: 1179px) {
-  .non-grid--3, .non-grid--4 { grid-template-columns: repeat(2, 1fr); }
+.non-grid--2 { --non-card-max: 460px; }
+.non-grid--3 { --non-card-max: 380px; }
+.non-grid--4 { --non-card-max: 300px; }
+.non-grid--5 { --non-card-max: 250px; }
+.non-grid--6 { --non-card-max: 210px; }
+
+/* Below the tablet break the count is the constraint, not the width — two up
+   is the floor, and auto-fill would otherwise drop to one. */
+@media (max-width: 859px) {
+  .non-grid { grid-template-columns: repeat(2, 1fr); gap: 14px; }
 }
 
 .non-card { display: flex; flex-direction: column; gap: 10px; position: relative; }
-.non-card__media { position: relative; overflow: hidden; background: #1b1815; aspect-ratio: 3/4; }
+/* Ratio is a setting now (Product grid -> Image shape), not a hardcoded 3/4.
+   Portrait is right for a bottle on its own; square is right when the shelf is
+   dense. Falls back to the old 3/4 so nothing shifts unless it is set. */
+.non-card__media { position: relative; overflow: hidden; background: #1b1815; aspect-ratio: var(--non-card-ratio, 3/4); }
+.non-grid--ratio-square { --non-card-ratio: 1/1; }
+.non-grid--ratio-portrait { --non-card-ratio: 3/4; }
+.non-grid--ratio-tall { --non-card-ratio: 4/5; }
+.non-grid--ratio-landscape { --non-card-ratio: 4/3; }
 .non-card__media img { width: 100%; height: 100%; object-fit: cover; display: block; transition: transform .6s var(--non-ease); }
 .non-card:hover .non-card__media img { transform: scale(var(--non-card-zoom, 1.04)); }
 .non-card__code { font-family: var(--non-mono); font-size: 10px; letter-spacing: .14em; color: var(--non-fg-faint); }

@@ -1,0 +1,136 @@
+{%- liquid
+  assign coll = section.settings.pick_collection | default: collections[settings.core_range_collection]
+-%}
+
+<section class="non-hero" data-non-somm-root>
+  <div class="non-hero__copy">
+    {%- if section.settings.eyebrow != blank -%}
+      <div class="non-mono non-eyebrow">{{ section.settings.eyebrow }}</div>
+    {%- endif -%}
+
+    <h1 class="non-hero__title">{{ section.settings.heading }}</h1>
+
+    {%- if section.settings.blurb != blank -%}
+      <p class="non-hero__blurb">{{ section.settings.blurb }}</p>
+    {%- endif -%}
+
+    {%- comment -%}
+      NON Somm. The query goes to an external endpoint (a Cloudflare Worker);
+      the seeds below are the canned answers from the design and are used both
+      as one-tap prompts and as the offline fallback when no endpoint is set.
+    {%- endcomment -%}
+    <form class="non-somm" data-non-somm data-somm-context="home" role="search">
+      <div class="non-somm__bar">
+        <span class="non-somm__caret" aria-hidden="true">&gt;</span>
+        <label class="visually-hidden" for="somm-{{ section.id }}">
+          {{ 'sections.somm.heading' | t }}
+        </label>
+        <input
+          id="somm-{{ section.id }}"
+          class="non-somm__input"
+          type="search"
+          name="query"
+          autocomplete="off"
+          data-non-somm-input
+          placeholder="{{ section.settings.placeholder | escape }}">
+        <button type="submit" class="non-somm__submit">{{ 'sections.somm.ask' | t }}</button>
+      </div>
+
+      {%- if section.blocks.size > 0 -%}
+        <div class="non-somm__seeds">
+          {%- for block in section.blocks -%}
+            <button
+              type="button"
+              class="non-somm__seed"
+              data-non-somm-seed
+              data-answer="{{ block.settings.answer | escape }}"
+              data-picks="{{ block.settings.picks | escape }}"
+              {{ block.shopify_attributes }}>
+              {{ block.settings.label }}
+            </button>
+          {%- endfor -%}
+        </div>
+      {%- endif -%}
+    </form>
+
+    <div class="non-somm__answer" data-non-somm-answer hidden>
+      <div class="non-mono non-eyebrow">{{ 'sections.somm.heading' | t }}</div>
+      <p class="non-somm__stream" data-non-somm-stream></p>
+      <div class="non-somm__picks" data-non-somm-picks hidden></div>
+    </div>
+  </div>
+
+  {%- if section.settings.image != blank -%}
+    <div class="non-hero__media">
+      {{
+        section.settings.image
+        | image_url: width: 1000
+        | image_tag: loading: 'eager', fetchpriority: 'high', widths: '420,640,840,1000', alt: section.settings.image.alt | default: shop.name
+      }}
+      {%- if section.settings.caption != blank -%}
+        <div class="non-hero__caption">{{ section.settings.caption }}</div>
+      {%- endif -%}
+    </div>
+  {%- endif -%}
+</section>
+
+{%- comment -%}
+  Catalogue for the somm's pick cards. The API answers with codes ("NON3");
+  this maps a code to the real Shopify product so the card links, images and
+  prices stay live.
+{%- endcomment -%}
+<script type="application/json" data-non-catalogue>
+  {
+    {%- for product in coll.products -%}
+      {%- capture code %}{% render 'non-code', product: product %}{% endcapture -%}
+      {{ code | json }}: {
+        "title": {{ product.title | json }},
+        "url": {{ product.url | json }},
+        "image": {{ product.featured_image | image_url: width: 200 | json }},
+        "price": {{ product.price | money | json }},
+        "note": {{ product.metafields.custom.tastes | metafield_text | default: '' | json }},
+        "variantId": {{ product.selected_or_first_available_variant.id | json }},
+        "available": {{ product.available | json }}
+      }{%- unless forloop.last -%},{%- endunless -%}
+    {%- endfor -%}
+  }
+</script>
+
+<script src="{{ 'somm.js' | asset_url }}" defer></script>
+
+{% schema %}
+{
+  "name": "Hero + NON Somm",
+  "settings": [
+    { "type": "text", "id": "eyebrow", "label": "Eyebrow", "default": "0.0% alcohol · not a mocktail" },
+    { "type": "text", "id": "heading", "label": "Heading", "default": "Cooked, not de-alcoholised." },
+    {
+      "type": "textarea",
+      "id": "blurb",
+      "label": "Blurb",
+      "default": "Fruit, tannin, salt and acid, built from zero at 0.0%. Tell the somm what's on the table and it will tell you what to pour."
+    },
+    { "type": "text", "id": "placeholder", "label": "Input placeholder", "default": "Tell me what's on the table tonight" },
+    { "type": "image_picker", "id": "image", "label": "Hero image" },
+    { "type": "text", "id": "caption", "label": "Image caption", "default": "Built like a dish. Bottled at 0.0%." },
+    {
+      "type": "collection",
+      "id": "pick_collection",
+      "label": "Collection the somm can recommend from",
+      "info": "Defaults to the core range set in Theme settings."
+    }
+  ],
+  "blocks": [
+    {
+      "type": "seed",
+      "name": "Suggested question",
+      "settings": [
+        { "type": "text", "id": "label", "label": "Question" },
+        { "type": "textarea", "id": "answer", "label": "Canned answer", "info": "Also the offline fallback when the API is unreachable." },
+        { "type": "text", "id": "picks", "label": "Bottle codes", "info": "Comma separated, e.g. NON3,NON1" }
+      ]
+    }
+  ],
+  "presets": [{ "name": "Hero + NON Somm" }]
+}
+{% endschema %}

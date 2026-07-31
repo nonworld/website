@@ -1,25 +1,3 @@
-{%- comment -%}
-  Resolves a product's NON code — the join key between Shopify and the codes
-  the design keys off (NON1 … NON9, SET, STOPPER).
-
-  Order of preference:
-    1. metafield custom.non_code   — explicit override, always wins
-    2. SKU pattern                 — the live store's SKUs already encode it
-    3. handle                      — last resort so nothing renders blank
-
-  Live SKU shapes this has to survive (verified against the store):
-    NON1-750-B, NON1-750-6, NON1-750-12   → NON1
-    NON1-750-B-POS                         → NON1
-    NON1-375-B                             → NON1
-    NON-MIX6, NON-MIX6-STOPPER             → SET
-    NON-SET-EVERYDAY / SPRING / SPICE      → SET
-    NON-SET-STOPPER                        → SET
-    NON-STOPPER, AUSPOS-STOPPER30          → STOPPER
-
-  Naively splitting on "-" and taking the first token returns "NON" for every
-  set, which would collapse them all onto one code — hence the explicit cases.
-{%- endcomment -%}
-
 {%- liquid
   assign code = ''
 
@@ -28,10 +6,20 @@
   else
     assign sku = product.selected_or_first_available_variant.sku | default: product.variants.first.sku | upcase
 
-    if sku contains 'STOPPER' and sku contains 'SET' == false and sku contains 'MIX' == false
-      assign code = 'STOPPER'
-    elsif sku contains 'SET-' or sku contains 'MIX'
+    assign is_set = false
+    if sku contains 'SET' or sku contains 'MIX'
+      assign is_set = true
+    endif
+
+    assign is_stopper = false
+    if sku contains 'STOPPER'
+      assign is_stopper = true
+    endif
+
+    if is_set
       assign code = 'SET'
+    elsif is_stopper
+      assign code = 'STOPPER'
     elsif sku != blank
       assign first = sku | split: '-' | first
       if first == 'NON'

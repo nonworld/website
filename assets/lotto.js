@@ -199,11 +199,29 @@
 
   /* --- open / close ------------------------------------------------------ */
 
+  // The panel animates in (cardIn scales from .98), so a single rAF measures it
+  // mid-animation — or, if layout has not flushed at all, at the canvas's
+  // default 300x150. Either way the foil ends up a different resolution to its
+  // display box, and because scratch coordinates come from getBoundingClientRect
+  // while the arcs are drawn in canvas space, every scratch lands offset.
+  //
+  // A ResizeObserver repaints whenever the panel's box actually settles, which
+  // covers the open animation, orientation changes and window resizes alike.
+  var observer = null;
+  function watchFoil() {
+    if (observer || typeof ResizeObserver === 'undefined' || !canvas.parentElement) return;
+    observer = new ResizeObserver(function () {
+      if (!root.hidden && !revealed) paintFoil();
+    });
+    observer.observe(canvas.parentElement);
+  }
+
   function open() {
     root.hidden = false;
     revealed = false;
     if (claimForm) claimForm.hidden = true;
-    requestAnimationFrame(paintFoil);
+    watchFoil();
+    requestAnimationFrame(function () { requestAnimationFrame(paintFoil); });
 
     draw().catch(function () {
       /* message already rendered */

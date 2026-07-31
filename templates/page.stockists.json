@@ -1,3 +1,12 @@
+/*
+ * ------------------------------------------------------------
+ * IMPORTANT: The contents of this file are auto-generated.
+ *
+ * This file may be updated by the Shopify admin theme editor
+ * or related systems. Please exercise caution as any changes
+ * made to this file may be overwritten.
+ * ------------------------------------------------------------
+ */
 {
   "sections": {
     "main": {
@@ -5,12 +14,7 @@
       "settings": {
         "heading": "Where to find it",
         "intro": "Every venue currently pouring or stocking NON, live from our field map.",
-        "endpoint": "https://find.non.world/api/stockists",
-        "default_region": "all",
-        "list_limit": 30,
-        "search_placeholder": "Suburb, city or venue name",
         "show_map": true,
-        "featured_heading": "Worth the trip",
         "find_url": "https://find.non.world",
         "find_label": "Open the full map at find.non.world"
       }

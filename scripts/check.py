@@ -44,6 +44,18 @@ BLOCK = {
 liquid_files = glob("**/*.liquid", recursive=True)
 
 
+def load_jsonc(path):
+    """
+    Shopify writes JSON templates with a leading /* ... */ banner when the theme
+    editor saves them, and those files are still valid to Shopify. Strip block
+    comments before parsing rather than treating the editor's own output as
+    broken.
+    """
+    raw = open(path).read()
+    stripped = re.sub(r"/\*.*?\*/", "", raw, flags=re.S)
+    return json.loads(stripped)
+
+
 def schema_of(path):
     m = re.search(r"\{%\s*schema\s*%\}(.*?)\{%\s*endschema\s*%\}", open(path).read(), re.S)
     if not m:
@@ -163,7 +175,7 @@ for path in liquid_files:
 # 2d. theme_info URLs must be http(s); Shopify rejects mailto: outright
 if os.path.exists("config/settings_schema.json"):
     try:
-        blocks = json.load(open("config/settings_schema.json"))
+        blocks = load_jsonc("config/settings_schema.json")
         info = blocks[0] if blocks and blocks[0].get("name") == "theme_info" else None
         for key in ("theme_documentation_url", "theme_support_url"):
             v = (info or {}).get(key)
@@ -179,7 +191,7 @@ section_names = {os.path.splitext(os.path.basename(p))[0] for p in glob("section
 
 for path in glob("templates/*.json") + glob("sections/*-group.json"):
     try:
-        data = json.load(open(path))
+        data = load_jsonc(path)
     except Exception as e:
         issues.append(f"{path}: invalid JSON — {e}")
         continue

@@ -47,7 +47,8 @@
         "heading": "Cooked, not de-alcoholised.",
         "blurb": "Fruit, tannin, salt and acid, built from zero at 0.0%. Tell the somm what's on the table and it will tell you what to pour.",
         "placeholder": "Tell me what's on the table tonight",
-        "caption": "Built like a dish. Bottled at 0.0%."
+        "caption": "Built like a dish. Bottled at 0.0%.",
+        "image_url": "https://www.non.world/cdn/shop/t/91/assets/non-home-hero-main-1.webp?v=85646433329311323311783460768"
       }
     },
     "poured-at": {
@@ -57,49 +58,56 @@
           "type": "venue",
           "settings": {
             "name": "The French Laundry",
-            "max_height": 44
+            "max_height": 44,
+            "image_url": "https://www.non.world/cdn/shop/files/french_laundry_2_-_Copy_4c30ca9f-1794-44ec-9dd7-a3e422c8127a.jpg?v=1754352410&width=300"
           }
         },
         "v2": {
           "type": "venue",
           "settings": {
             "name": "The Fat Duck",
-            "max_height": 70
+            "max_height": 70,
+            "image_url": "https://www.non.world/cdn/shop/files/fat_duck_logo.png?v=1754352113&width=300"
           }
         },
         "v3": {
           "type": "venue",
           "settings": {
             "name": "Alinea",
-            "max_height": 70
+            "max_height": 70,
+            "image_url": "https://www.non.world/cdn/shop/files/alinea-logo.jpg?v=1752532858&width=300"
           }
         },
         "v4": {
           "type": "venue",
           "settings": {
             "name": "Aman",
-            "max_height": 44
+            "max_height": 44,
+            "image_url": "https://www.non.world/cdn/shop/files/Aman_Resorts_logo_svg.png?v=1752532955&width=300"
           }
         },
         "v5": {
           "type": "venue",
           "settings": {
             "name": "Atelier Crenn",
-            "max_height": 44
+            "max_height": 44,
+            "image_url": "https://www.non.world/cdn/shop/files/logo-atelier-crenn-2022.jpg?v=1752533002&width=300"
           }
         },
         "v6": {
           "type": "venue",
           "settings": {
             "name": "Vue de Monde",
-            "max_height": 44
+            "max_height": 44,
+            "image_url": "https://www.non.world/cdn/shop/files/vue-de-monde-logo.png?v=1773521183&width=300"
           }
         },
         "v7": {
           "type": "venue",
           "settings": {
             "name": "Fortnum & Mason",
-            "max_height": 44
+            "max_height": 44,
+            "image_url": "https://www.non.world/cdn/shop/files/Fortnum___Mason_logo.png?v=1754352025&width=300"
           }
         }
       },
@@ -135,21 +143,24 @@
           "type": "cell",
           "settings": {
             "title": "Made for starters",
-            "subtitle": "oysters, radicchio, cured fish"
+            "subtitle": "oysters, radicchio, cured fish",
+            "image_url": "https://www.non.world/cdn/shop/files/NON3-5.jpg?v=1750016712&width=900"
           }
         },
         "c2": {
           "type": "cell",
           "settings": {
             "title": "Made for mains",
-            "subtitle": "charred lamb, mushroom, soy"
+            "subtitle": "charred lamb, mushroom, soy",
+            "image_url": "https://www.non.world/cdn/shop/files/NON9-6.jpg?v=1750016874&width=900"
           }
         },
         "c3": {
           "type": "cell",
           "settings": {
             "title": "Made for dessert",
-            "subtitle": "stone fruit, chocolate, cheese"
+            "subtitle": "stone fruit, chocolate, cheese",
+            "image_url": "https://www.non.world/cdn/shop/files/NON7-5.jpg?v=1750016848&width=900"
           }
         }
       },
@@ -194,7 +205,8 @@
             "title": "Visit NONHQ",
             "text": "The world's first non-alcoholic cellar door. Tastings, tours and workshops in Cheltenham, VIC.",
             "link_label": "Book a tasting",
-            "link": "/pages/nonhq"
+            "link": "/pages/visit-us",
+            "image_url": "https://www.non.world/cdn/shop/files/Work_With_Us.jpg?v=1739406834&width=1200"
           }
         },
         "s2": {
@@ -203,7 +215,8 @@
             "title": "Savour the flavour",
             "text": "The NONstopper holds carbonation and freshness seven days, cold.",
             "link_label": "See the stopper",
-            "link": "/products/nonstopper"
+            "link": "/products/nonstopper",
+            "image_url": "https://www.non.world/cdn/shop/files/The-Stopper-Set-3_6c6b42db-6db2-4a64-9a03-f98ec154f113.jpg?v=1749960905&width=1200"
           }
         }
       },
@@ -235,5 +248,3 @@
     "split"
   ]
 }
-
-

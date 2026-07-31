@@ -1,5 +1,16 @@
+{%- comment -%}
+  The somm answers in bottle codes and the theme resolves them here. That means
+  the catalogue has to cover every code the somm can return — the bottles AND
+  the sets, since "SET" is a real answer. Two collections, because the store
+  keeps them separate (the-range / non-sets).
+
+  If this is empty the somm still answers, but the pick cards silently render
+  nothing, which is exactly what happened when neither collection was set.
+{%- endcomment -%}
+
 {%- liquid
-  assign coll = section.settings.pick_collection | default: collections[settings.core_range_collection]
+  assign bottles = section.settings.pick_collection | default: collections[settings.core_range_collection] | default: collections['the-range']
+  assign sets = section.settings.sets_collection | default: collections['non-sets']
 -%}
 
 <section class="non-hero" data-non-somm-root>
@@ -60,13 +71,22 @@
     </div>
   </div>
 
-  {%- if section.settings.image != blank -%}
+  {%- comment -%}
+    The design's imagery already lives on NON's own Shopify CDN, so the section
+    falls back to those URLs rather than rendering an empty column until
+    somebody uploads twelve files. Any upload in the theme editor wins.
+  {%- endcomment -%}
+  {%- if section.settings.image != blank or section.settings.image_url != blank -%}
     <div class="non-hero__media">
-      {{
-        section.settings.image
-        | image_url: width: 1000
-        | image_tag: loading: 'eager', fetchpriority: 'high', widths: '420,640,840,1000', alt: section.settings.image.alt | default: shop.name
-      }}
+      {%- if section.settings.image != blank -%}
+        {{
+          section.settings.image
+          | image_url: width: 1000
+          | image_tag: loading: 'eager', fetchpriority: 'high', widths: '420,640,840,1000', alt: section.settings.image.alt | default: shop.name
+        }}
+      {%- else -%}
+        <img src="{{ section.settings.image_url }}" alt="{{ shop.name | escape }}" loading="eager" fetchpriority="high">
+      {%- endif -%}
       {%- if section.settings.caption != blank -%}
         <div class="non-hero__caption">{{ section.settings.caption }}</div>
       {%- endif -%}
@@ -81,17 +101,43 @@
 {%- endcomment -%}
 <script type="application/json" data-non-catalogue>
   {
-    {%- for product in coll.products -%}
+    {%- assign seen = '' -%}
+    {%- for product in bottles.products -%}
       {%- capture code %}{% render 'non-code', product: product %}{% endcapture -%}
-      {{ code | json }}: {
-        "title": {{ product.title | json }},
-        "url": {{ product.url | json }},
-        "image": {{ product.featured_image | image_url: width: 200 | json }},
-        "price": {{ product.price | money | json }},
-        "note": {{ product.metafields.custom.tastes | metafield_text | default: '' | json }},
-        "variantId": {{ product.selected_or_first_available_variant.id | json }},
-        "available": {{ product.available | json }}
-      }{%- unless forloop.last -%},{%- endunless -%}
+      {%- assign code = code | strip -%}
+      {%- assign marker = '|' | append: code | append: '|' -%}
+      {%- unless seen contains marker -%}
+        {%- assign seen = seen | append: marker -%}
+        {%- unless forloop.first %},{% endunless -%}
+        {{ code | json }}: {
+          "title": {{ product.title | json }},
+          "url": {{ product.url | json }},
+          "image": {{ product.featured_image | image_url: width: 200 | json }},
+          "price": {{ product.price | money | json }},
+          "note": {{ product.metafields.custom.profile | metafield_text | default: product.metafields.custom.tastes | metafield_text | default: '' | truncate: 44 | json }},
+          "variantId": {{ product.selected_or_first_available_variant.id | json }},
+          "available": {{ product.available | json }}
+        }
+      {%- endunless -%}
+    {%- endfor -%}
+
+    {%- comment -%} "SET" comes from whichever set is listed first. {%- endcomment -%}
+    {%- for product in sets.products limit: 6 -%}
+      {%- capture code %}{% render 'non-code', product: product %}{% endcapture -%}
+      {%- assign code = code | strip -%}
+      {%- assign marker = '|' | append: code | append: '|' -%}
+      {%- unless seen contains marker -%}
+        {%- assign seen = seen | append: marker -%}
+        ,{{ code | json }}: {
+          "title": {{ product.title | json }},
+          "url": {{ product.url | json }},
+          "image": {{ product.featured_image | image_url: width: 200 | json }},
+          "price": {{ product.price | money | json }},
+          "note": {{ product.metafields.custom.profile | metafield_text | default: '' | truncate: 44 | json }},
+          "variantId": {{ product.selected_or_first_available_variant.id | json }},
+          "available": {{ product.available | json }}
+        }
+      {%- endunless -%}
     {%- endfor -%}
   }
 </script>
@@ -112,12 +158,25 @@
     },
     { "type": "text", "id": "placeholder", "label": "Input placeholder", "default": "Tell me what's on the table tonight" },
     { "type": "image_picker", "id": "image", "label": "Hero image" },
+    {
+      "type": "text",
+      "id": "image_url",
+      "label": "Hero image URL",
+      "info": "Used only when no image is uploaded. Defaults to the design's hero on NON's CDN.",
+      "default": "https://www.non.world/cdn/shop/t/91/assets/non-home-hero-main-1.webp?v=85646433329311323311783460768"
+    },
     { "type": "text", "id": "caption", "label": "Image caption", "default": "Built like a dish. Bottled at 0.0%." },
     {
       "type": "collection",
       "id": "pick_collection",
-      "label": "Collection the somm can recommend from",
-      "info": "Defaults to the core range set in Theme settings."
+      "label": "Bottles the somm can recommend",
+      "info": "Defaults to Theme settings, then to the-range."
+    },
+    {
+      "type": "collection",
+      "id": "sets_collection",
+      "label": "Sets the somm can recommend",
+      "info": "Needed for the code SET to resolve. Defaults to non-sets."
     }
   ],
   "blocks": [

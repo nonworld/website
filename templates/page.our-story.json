@@ -1,17 +1,72 @@
-/*
- * ------------------------------------------------------------
- * IMPORTANT: The contents of this file are auto-generated.
- *
- * This file may be updated by the Shopify admin theme editor
- * or related systems. Please exercise caution as any changes
- * made to this file may be overwritten.
- * ------------------------------------------------------------
- */
 {
   "sections": {
     "main": {
-      "type": "main-page",
-      "settings": {}
+      "type": "about-story",
+      "blocks": {
+        "p1": {
+          "type": "pillar",
+          "settings": {
+            "title": "Fruit",
+            "body": "Cold-steeped, dehydrated, roasted or reduced — whichever method gets the most out of it. Rarely juiced."
+          }
+        },
+        "p2": {
+          "type": "pillar",
+          "settings": {
+            "title": "Tannin",
+            "body": "Chamomile, cinnamon, tea, hops, citrus pith. Grip on the finish, so it holds a plate instead of washing through."
+          }
+        },
+        "p3": {
+          "type": "pillar",
+          "settings": {
+            "title": "Salinity",
+            "body": "Murray River salt, kombu. Salt makes food taste more like itself — a lever wine never had."
+          }
+        },
+        "p4": {
+          "type": "pillar",
+          "settings": {
+            "title": "Acidity",
+            "body": "Barossa verjus, citrus, vinegar. Resets the palate between bites, and cools chilli instead of stoking it."
+          }
+        },
+        "n1": {
+          "type": "not",
+          "settings": {
+            "title": "Not de-alcoholised",
+            "body": "No wine is made and then stripped. Nothing here has ever been fermented."
+          }
+        },
+        "n2": {
+          "type": "not",
+          "settings": {
+            "title": "Not a mocktail",
+            "body": "Mocktails are mixed to order and usually sweet. This is cooked in a facility and bottled dry."
+          }
+        }
+      },
+      "block_order": [
+        "p1",
+        "p2",
+        "p3",
+        "p4",
+        "n1",
+        "n2"
+      ],
+      "settings": {
+        "eyebrow": "About",
+        "heading": "We don't mimic wine. We make something else.",
+        "lead": "A chef-led drinks company in Melbourne, building wine alternatives out of real produce — fruit, tannin, salinity, acidity — and nothing that has ever been fermented.",
+        "origin_label": "The origin",
+        "origin_heading": "A drinks pairing in London that never left the restaurant.",
+        "origin_body": "<p>In 2017 Aaron Trotman was eating through Michelin-starred rooms in London. He took the alcohol pairing; the non-drinker at the table was handed something sweet and forgettable.</p><p>He had no background in drinks. He came from cosmetics chemistry, which turned out to matter more than a wine list would have. NON launched in 2019.</p>",
+        "quote": "I thought it was a real shame that these drinks lived and died in fancy restaurants.",
+        "quote_cite": "Aaron Trotman, founder",
+        "pillars_label": "What we actually do",
+        "pillars_heading": "Every glass is built from four things",
+        "nots_label": "What we're not"
+      }
     }
   },
   "order": [

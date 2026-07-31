@@ -21,6 +21,7 @@
     "cart_drawer": true,
     "free_shipping_threshold": "75",
     "social_instagram": "https://www.instagram.com/non.world/",
-    "contact_email": "hello@non.world"
+    "contact_email": "hello@non.world",
+    "core_range_collection": "the-range"
   }
 }

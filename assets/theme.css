@@ -116,6 +116,9 @@ button { font-family: inherit; }
 
 .non-shell {
   width: 100%;
+  /* Full-bleed, but not unbounded. Past ~1800px the product shots stop being
+     photographs and start being wallpaper, and line lengths go with them. */
+  max-width: 1800px;
   margin: 0 auto;
   overflow-x: clip;
   background: var(--non-bg);
@@ -410,7 +413,13 @@ button { font-family: inherit; }
 
 .non-gallery { padding: 20px var(--non-pad); }
 @media (min-width: 860px) { .non-gallery { padding: 28px 0 28px 40px; } }
-.non-gallery__main { width: 100%; aspect-ratio: 4/5; object-fit: cover; background: #1b1815; display: block; }
+/* Pack shots are bottles on white — cropping them to fill a very wide column
+   made them enormous and cut the labels. Contained, and capped against the
+   viewport height so the buy box stays on screen beside them. */
+.non-gallery__main {
+  width: 100%; max-height: 74vh; aspect-ratio: 4/5;
+  object-fit: contain; background: #1b1815; display: block; margin: 0 auto;
+}
 .non-gallery__thumbs { display: flex; gap: 8px; margin-top: 12px; flex-wrap: wrap; }
 .non-gallery__thumb {
   width: 52px; height: 64px; object-fit: cover; cursor: pointer;

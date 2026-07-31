@@ -7,6 +7,8 @@
           | image_url: width: 1200
           | image_tag: loading: 'lazy', widths: '600,900,1200', alt: block.settings.title
         }}
+      {%- elsif block.settings.image_url != blank -%}
+        <img src="{{ block.settings.image_url }}" alt="{{ block.settings.title | escape }}" loading="lazy">
       {%- endif -%}
 
       <div class="non-split__body">

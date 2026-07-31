@@ -1,0 +1,159 @@
+{%- comment -%}
+  About.
+
+  The About Us page body is empty on the live store — the old theme carried the
+  copy in its own sections — so a template that only prints page.content shows
+  nothing. This section carries the structure from the design (about.html):
+  lead, origin, founder quote, the four things every glass is built from, and
+  the two "what we're not" statements.
+
+  Everything is editable. The defaults are the design's copy verbatim.
+{%- endcomment -%}
+
+<div class="non-section">
+  <div class="non-section__head">
+    <h1 class="non-section__title">{{ page.title | default: section.settings.eyebrow }}</h1>
+  </div>
+
+  <h2 class="non-hero__title" style="font-size:clamp(30px,3.4vw,58px);margin-top:26px;max-width:22ch">
+    {{ section.settings.heading }}
+  </h2>
+
+  {%- if section.settings.lead != blank -%}
+    <p class="non-hero__blurb" style="max-width:58ch">{{ section.settings.lead }}</p>
+  {%- endif -%}
+
+  {%- if page.content != blank -%}
+    <div class="non-rte" style="margin-top:26px">{{ page.content }}</div>
+  {%- endif -%}
+</div>
+
+{%- comment -%} ── origin ────────────────────────────────────────────────── {%- endcomment -%}
+{%- if section.settings.origin_body != blank -%}
+  <div class="non-section" style="border-top:1px solid var(--non-line)">
+    <div class="non-press">
+      <div class="non-mono non-eyebrow">{{ section.settings.origin_label }}</div>
+      <div>
+        <div class="non-step__t" style="font-size:clamp(20px,1.9vw,30px);max-width:34ch">
+          {{ section.settings.origin_heading }}
+        </div>
+        <div class="non-rte" style="margin-top:18px">{{ section.settings.origin_body }}</div>
+
+        {%- if section.settings.quote != blank -%}
+          <blockquote class="non-press__quote" style="margin:34px 0 0">
+            &ldquo;{{ section.settings.quote }}&rdquo;
+          </blockquote>
+          <div class="non-press__cite">{{ section.settings.quote_cite }}</div>
+        {%- endif -%}
+      </div>
+    </div>
+  </div>
+{%- endif -%}
+
+{%- comment -%} ── the four pillars ──────────────────────────────────────── {%- endcomment -%}
+{%- assign pillars = section.blocks | where: 'type', 'pillar' -%}
+{%- if pillars.size > 0 -%}
+  <div class="non-section" style="border-top:1px solid var(--non-line)">
+    <div class="non-section__head">
+      <h2 class="non-section__title">{{ section.settings.pillars_label }}</h2>
+      <span class="non-section__more">{{ section.settings.pillars_heading }}</span>
+    </div>
+
+    <div class="non-grid non-grid--4" style="margin-top:30px">
+      {%- for block in pillars -%}
+        <div {{ block.shopify_attributes }}>
+          <div class="non-step__n">{{ forloop.index | prepend: '0' | slice: -2, 2 }}</div>
+          <div class="non-step__t">{{ block.settings.title }}</div>
+          <p class="non-step__b">{{ block.settings.body }}</p>
+        </div>
+      {%- endfor -%}
+    </div>
+  </div>
+{%- endif -%}
+
+{%- comment -%} ── what we're not ────────────────────────────────────────── {%- endcomment -%}
+{%- assign nots = section.blocks | where: 'type', 'not' -%}
+{%- if nots.size > 0 -%}
+  <div class="non-section" style="border-top:1px solid var(--non-line)">
+    <div class="non-section__head">
+      <h2 class="non-section__title">{{ section.settings.nots_label }}</h2>
+    </div>
+
+    <div class="non-grid" style="margin-top:26px;grid-template-columns:repeat(auto-fit,minmax(280px,1fr))">
+      {%- for block in nots -%}
+        <div {{ block.shopify_attributes }}>
+          <div class="non-step__t">{{ block.settings.title }}</div>
+          <p class="non-step__b">{{ block.settings.body }}</p>
+        </div>
+      {%- endfor -%}
+    </div>
+  </div>
+{%- endif -%}
+
+{% schema %}
+{
+  "name": "About",
+  "settings": [
+    { "type": "text", "id": "eyebrow", "label": "Eyebrow", "default": "About" },
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Heading",
+      "default": "We don't mimic wine. We make something else."
+    },
+    {
+      "type": "textarea",
+      "id": "lead",
+      "label": "Lead",
+      "default": "A chef-led drinks company in Melbourne, building wine alternatives out of real produce — fruit, tannin, salinity, acidity — and nothing that has ever been fermented."
+    },
+    { "type": "text", "id": "origin_label", "label": "Origin label", "default": "The origin" },
+    {
+      "type": "text",
+      "id": "origin_heading",
+      "label": "Origin heading",
+      "default": "A drinks pairing in London that never left the restaurant."
+    },
+    {
+      "type": "richtext",
+      "id": "origin_body",
+      "label": "Origin body",
+      "default": "<p>In 2017 Aaron Trotman was eating through Michelin-starred rooms in London. He took the alcohol pairing; the non-drinker at the table was handed something sweet and forgettable.</p><p>He had no background in drinks. He came from cosmetics chemistry, which turned out to matter more than a wine list would have. NON launched in 2019.</p>"
+    },
+    {
+      "type": "text",
+      "id": "quote",
+      "label": "Quote",
+      "default": "I thought it was a real shame that these drinks lived and died in fancy restaurants."
+    },
+    { "type": "text", "id": "quote_cite", "label": "Quote attribution", "default": "Aaron Trotman, founder" },
+    { "type": "text", "id": "pillars_label", "label": "Pillars label", "default": "What we actually do" },
+    {
+      "type": "text",
+      "id": "pillars_heading",
+      "label": "Pillars heading",
+      "default": "Every glass is built from four things"
+    },
+    { "type": "text", "id": "nots_label", "label": "Contrast label", "default": "What we're not" }
+  ],
+  "blocks": [
+    {
+      "type": "pillar",
+      "name": "Pillar",
+      "settings": [
+        { "type": "text", "id": "title", "label": "Title" },
+        { "type": "textarea", "id": "body", "label": "Body" }
+      ]
+    },
+    {
+      "type": "not",
+      "name": "What we're not",
+      "settings": [
+        { "type": "text", "id": "title", "label": "Title" },
+        { "type": "textarea", "id": "body", "label": "Body" }
+      ]
+    }
+  ],
+  "presets": [{ "name": "About" }]
+}
+{% endschema %}

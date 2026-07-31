@@ -2,29 +2,21 @@
   "sections": {
     "main": {
       "type": "stockists",
-      "blocks": {
-        "v1": { "type": "venue", "settings": { "name": "Vue de Monde", "address": "Rialto, 525 Collins St, Melbourne", "type": "restaurant", "pours": "NON1, NON3, NON5", "lat": "-37.8183", "lng": "144.9576" } },
-        "v2": { "type": "venue", "settings": { "name": "Attica", "address": "74 Glen Eira Rd, Ripponlea", "type": "restaurant", "pours": "Full range", "lat": "-37.877", "lng": "144.996" } },
-        "v3": { "type": "venue", "settings": { "name": "Bar Liberty", "address": "234 Johnston St, Fitzroy", "type": "bar", "pours": "NON5, NON7", "lat": "-37.7986", "lng": "144.9847" } },
-        "v4": { "type": "venue", "settings": { "name": "NONHQ Cellar Door", "address": "7 Cochranes Rd, Moorabbin", "type": "retail", "pours": "All nine", "lat": "-37.937", "lng": "145.048" } },
-        "v5": { "type": "venue", "settings": { "name": "Milk the Cow", "address": "157 Fitzroy St, St Kilda", "type": "retail", "pours": "NON1, NON3", "lat": "-37.86", "lng": "144.98" } },
-        "v6": { "type": "venue", "settings": { "name": "Quay", "address": "Upper Level, Overseas Passenger Terminal, Sydney", "type": "restaurant", "pours": "NON1, NON3", "lat": "-33.8578", "lng": "151.21" } },
-        "v7": { "type": "venue", "settings": { "name": "Bentley Restaurant + Bar", "address": "27 O'Connell St, Sydney", "type": "restaurant", "pours": "Full range", "lat": "-33.865", "lng": "151.2095" } },
-        "v8": { "type": "venue", "settings": { "name": "P&V Wine + Liquor Merchants", "address": "156 Enmore Rd, Newtown", "type": "retail", "pours": "NON3, NON5", "lat": "-33.8975", "lng": "151.178" } },
-        "v9": { "type": "venue", "settings": { "name": "The French Laundry", "address": "6640 Washington St, Yountville CA", "type": "restaurant", "pours": "Full range", "lat": "38.4045", "lng": "-122.3646" } },
-        "v10": { "type": "venue", "settings": { "name": "Atelier Crenn", "address": "3127 Fillmore St, San Francisco CA", "type": "restaurant", "pours": "NON1, NON5", "lat": "37.7975", "lng": "-122.436" } },
-        "v11": { "type": "venue", "settings": { "name": "The Fat Duck", "address": "High St, Bray, UK", "type": "restaurant", "pours": "NON3, NON7", "lat": "51.5085", "lng": "-0.701" } },
-        "v12": { "type": "venue", "settings": { "name": "Fortnum & Mason", "address": "181 Piccadilly, London", "type": "retail", "pours": "Full range", "lat": "51.508", "lng": "-0.1385" } }
-      },
-      "block_order": ["v1","v2","v3","v4","v5","v6","v7","v8","v9","v10","v11","v12"],
       "settings": {
         "heading": "Where to find it",
-        "intro": "A shortlist of the rooms pouring NON. The full directory, including retail, lives at find.non.world.",
+        "intro": "Every venue currently pouring or stocking NON, live from our field map.",
+        "endpoint": "https://find.non.world/api/stockists",
+        "default_region": "all",
+        "list_limit": 30,
+        "search_placeholder": "Suburb, city or venue name",
         "show_map": true,
+        "featured_heading": "Worth the trip",
         "find_url": "https://find.non.world",
-        "find_label": "Search the full list at find.non.world"
+        "find_label": "Open the full map at find.non.world"
       }
     }
   },
-  "order": ["main"]
+  "order": [
+    "main"
+  ]
 }

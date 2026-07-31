@@ -1,50 +1,102 @@
 {%- comment -%}
-  Stockists.
+  Stockists — sourced from find.non.world.
 
-  The design carried twelve venues as a hardcoded array and drew them on a
-  Leaflet map in an iframe. Here the venues are section blocks so they're
-  editable, and the map is rendered inline rather than cross-document — the
-  postMessage bridge in the design existed only because the map lived in a
-  separate HTML file.
+  The design shipped twelve hand-written venues. The real feed is
+  find.non.world/api/stockists: ~2,200 currently-stocking venues across AU, US
+  and UK, rebuilt off the Monday accounts pipeline.
 
-  find.non.world remains the public source of truth for the full list; this
-  page is the curated shortlist plus a hand-off.
+  That endpoint is already the public, sanitised surface — the middleware in
+  the maps project locks every host except map.non.world down to it, and the
+  payload carries only venue-public fields (name, coords, suburb, region, and a
+  neutral Google category). No churn state, no ROS, no rep, no order dates.
+  CORS is open specifically so it can be embedded on the marketing site, so the
+  theme calls it directly from the browser; nothing proxies and no key is
+  needed.
+
+  Curated blocks still exist and render above the live list as a featured
+  shortlist — use them for the rooms worth naming, not for coverage.
 {%- endcomment -%}
 
-<div class="non-section">
+{%- liquid
+  assign endpoint = section.settings.endpoint | default: 'https://find.non.world/api/stockists'
+-%}
+
+<div
+  class="non-section"
+  data-non-stockists
+  data-endpoint="{{ endpoint }}"
+  data-default-region="{{ section.settings.default_region }}"
+  data-list-limit="{{ section.settings.list_limit }}">
   <div class="non-section__head">
     <h1 class="non-section__title">{{ section.settings.heading }}</h1>
-    <span class="non-section__more" data-non-venue-count>{{ section.blocks.size }} venues</span>
+    <span class="non-section__more" data-non-venue-count>Loading…</span>
   </div>
 
   {%- if section.settings.intro != blank -%}
     <p class="non-hero__blurb" style="margin-top:20px">{{ section.settings.intro }}</p>
   {%- endif -%}
 
-  <div class="non-filters">
+  <form class="non-somm" style="margin-top:26px;max-width:520px" data-non-venue-search>
+    <div class="non-somm__bar">
+      <span class="non-somm__caret" aria-hidden="true">&gt;</span>
+      <label class="visually-hidden" for="venue-q-{{ section.id }}">Search stockists</label>
+      <input
+        id="venue-q-{{ section.id }}"
+        class="non-somm__input"
+        type="search"
+        autocomplete="off"
+        data-non-venue-query
+        placeholder="{{ section.settings.search_placeholder | escape }}">
+      <button type="submit" class="non-somm__submit">Search</button>
+    </div>
+  </form>
+
+  <div class="non-filters" role="group" aria-label="Venue type">
     <button type="button" class="non-filter" data-non-venue-filter="all" aria-pressed="true">Everything</button>
     <button type="button" class="non-filter" data-non-venue-filter="restaurant" aria-pressed="false">Restaurants</button>
-    <button type="button" class="non-filter" data-non-venue-filter="bar" aria-pressed="false">Bars</button>
+    <button type="button" class="non-filter" data-non-venue-filter="bar" aria-pressed="false">Bars &amp; pubs</button>
     <button type="button" class="non-filter" data-non-venue-filter="retail" aria-pressed="false">Retail</button>
   </div>
 
+  <div class="non-filters" style="margin-top:10px" role="group" aria-label="Region">
+    <button type="button" class="non-filter" data-non-venue-region="all" aria-pressed="true">Worldwide</button>
+    <button type="button" class="non-filter" data-non-venue-region="AU" aria-pressed="false">Australia</button>
+    <button type="button" class="non-filter" data-non-venue-region="UK" aria-pressed="false">UK</button>
+    <button type="button" class="non-filter" data-non-venue-region="US" aria-pressed="false">US</button>
+  </div>
+
   <div class="non-stockists" style="margin-top:26px">
-    <div data-non-venues>
-      {%- for block in section.blocks -%}
-        <div
-          class="non-venue"
-          data-non-venue
-          data-type="{{ block.settings.type }}"
-          data-lat="{{ block.settings.lat }}"
-          data-lng="{{ block.settings.lng }}"
-          {{ block.shopify_attributes }}>
-          <div class="non-venue__name">{{ block.settings.name }}</div>
-          <div class="non-venue__addr">{{ block.settings.address }}</div>
-          {%- if block.settings.pours != blank -%}
-            <div class="non-venue__pours">{{ block.settings.pours }}</div>
-          {%- endif -%}
+    <div>
+      {%- if section.blocks.size > 0 -%}
+        <div class="non-mono non-eyebrow">{{ section.settings.featured_heading }}</div>
+        <div style="margin-bottom:26px">
+          {%- for block in section.blocks -%}
+            <div class="non-venue" {{ block.shopify_attributes }}>
+              <div class="non-venue__name">{{ block.settings.name }}</div>
+              <div class="non-venue__addr">{{ block.settings.address }}</div>
+              {%- if block.settings.pours != blank -%}
+                <div class="non-venue__pours">{{ block.settings.pours }}</div>
+              {%- endif -%}
+            </div>
+          {%- endfor -%}
         </div>
-      {%- endfor -%}
+      {%- endif -%}
+
+      <div class="non-mono non-eyebrow" data-non-venue-list-heading>Stockists</div>
+      <div data-non-venues>
+        <p class="non-note" style="padding:20px 0">Loading stockists…</p>
+      </div>
+
+      <button
+        type="button"
+        class="non-btn non-btn--ghost"
+        data-non-venue-more
+        style="margin-top:18px"
+        hidden>
+        Show more
+      </button>
+
+      <p class="non-error" data-non-venue-error hidden></p>
     </div>
 
     {%- if section.settings.show_map -%}
@@ -54,7 +106,6 @@
 
   {%- if section.settings.find_url != blank -%}
     <p class="non-note" style="margin-top:28px">
-      Looking for somewhere not listed?
       <a href="{{ section.settings.find_url }}" style="text-decoration:underline">
         {{ section.settings.find_label }}
       </a>
@@ -73,40 +124,62 @@
     integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo="
     crossorigin=""
     defer></script>
-  <script src="{{ 'stockists.js' | asset_url }}" defer></script>
 {%- endif -%}
+<script src="{{ 'stockists.js' | asset_url }}" defer></script>
 
 {% schema %}
 {
   "name": "Stockists",
   "settings": [
     { "type": "text", "id": "heading", "label": "Heading", "default": "Where to find it" },
-    { "type": "textarea", "id": "intro", "label": "Intro" },
+    {
+      "type": "textarea",
+      "id": "intro",
+      "label": "Intro",
+      "default": "Every venue currently pouring or stocking NON, live from our field map."
+    },
+    {
+      "type": "url",
+      "id": "endpoint",
+      "label": "Stockist feed",
+      "info": "Defaults to https://find.non.world/api/stockists. Public and sanitised — no key required."
+    },
+    {
+      "type": "select",
+      "id": "default_region",
+      "label": "Open on",
+      "options": [
+        { "value": "all", "label": "Worldwide" },
+        { "value": "AU", "label": "Australia" },
+        { "value": "UK", "label": "UK" },
+        { "value": "US", "label": "US" }
+      ],
+      "default": "all"
+    },
+    {
+      "type": "range",
+      "id": "list_limit",
+      "label": "Venues listed per page",
+      "min": 10,
+      "max": 100,
+      "step": 10,
+      "default": 30,
+      "info": "The map always shows every match; this only caps the written list."
+    },
+    { "type": "text", "id": "search_placeholder", "label": "Search placeholder", "default": "Suburb, city or venue name" },
     { "type": "checkbox", "id": "show_map", "label": "Show the map", "default": true },
-    { "type": "url", "id": "find_url", "label": "Full directory URL", "info": "e.g. https://find.non.world" },
-    { "type": "text", "id": "find_label", "label": "Full directory label", "default": "Search the full list at find.non.world" }
+    { "type": "text", "id": "featured_heading", "label": "Featured heading", "default": "Worth the trip" },
+    { "type": "url", "id": "find_url", "label": "Full map URL", "default": "https://find.non.world" },
+    { "type": "text", "id": "find_label", "label": "Full map label", "default": "Open the full map at find.non.world" }
   ],
   "blocks": [
     {
       "type": "venue",
-      "name": "Venue",
+      "name": "Featured venue",
       "settings": [
         { "type": "text", "id": "name", "label": "Name" },
         { "type": "text", "id": "address", "label": "Address" },
-        {
-          "type": "select",
-          "id": "type",
-          "label": "Type",
-          "options": [
-            { "value": "restaurant", "label": "Restaurant" },
-            { "value": "bar", "label": "Bar" },
-            { "value": "retail", "label": "Retail" }
-          ],
-          "default": "restaurant"
-        },
-        { "type": "text", "id": "pours", "label": "What they pour", "default": "Full range" },
-        { "type": "text", "id": "lat", "label": "Latitude" },
-        { "type": "text", "id": "lng", "label": "Longitude" }
+        { "type": "text", "id": "pours", "label": "What they pour" }
       ]
     }
   ],

@@ -36,6 +36,14 @@ if ! git pull --rebase --autostash origin "$BRANCH"; then
   exit 1
 fi
 
+# --autostash can leave conflict markers in a file that still parses. Belt and
+# braces: check.py catches the markers, and this catches the state that
+# produces them.
+if [ -d .git/rebase-merge ] || [ -d .git/rebase-apply ]; then
+  echo "A rebase is still in progress. Resolve it before syncing."
+  exit 1
+fi
+
 echo "→ checking"
 python3 scripts/check.py
 

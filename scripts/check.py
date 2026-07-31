@@ -67,6 +67,25 @@ def schema_of(path):
         return None
 
 
+# 0. merge conflict markers. This is not hypothetical: sync.sh rebases with
+#    --autostash, and a conflict against a theme-editor commit left markers in
+#    a snippet that then sailed through every other check and shipped.
+CONFLICT = re.compile(r"^(<{7} |={7}$|>{7} )", re.M)
+for path in glob("**/*.*", recursive=True):
+    if path.startswith(("design-reference/", ".git/", "worker/somm/node_modules/")):
+        continue
+    if not path.endswith((".liquid", ".json", ".js", ".css", ".md", ".py", ".sh")):
+        continue
+    try:
+        src = open(path, encoding="utf-8").read()
+    except (UnicodeDecodeError, IsADirectoryError):
+        continue
+    m = CONFLICT.search(src)
+    if m:
+        issues.append(
+            f"{path}:{src[:m.start()].count(chr(10)) + 1}: unresolved merge conflict marker"
+        )
+
 # 1. render / include / section inside {% liquid %}
 for path in liquid_files:
     src = open(path).read()

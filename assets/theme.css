@@ -694,6 +694,20 @@ button { font-family: inherit; }
 .non-lotto__ref { font-family: var(--non-mono); font-size: 10.5px; color: var(--non-fg-ghost); }
 .non-lotto__title { font-size: 34px; line-height: 1.02; font-weight: 600; letter-spacing: -.03em; }
 .non-lotto__sub { margin: 10px 0 0; font-size: 14px; line-height: 1.55; color: var(--non-fg-dim); }
+.non-lotto__gate { display: flex; gap: 8px; }
+.non-lotto__gate[hidden] { display: none; }
+
+/* Locked until an address is in. Not decoration — the foil is unscratchable
+   and looks it, so the exchange is obvious before anyone tries. */
+.non-lotto__panel.is-locked { opacity: .4; pointer-events: none; filter: grayscale(1); }
+.non-lotto__panel.is-locked .non-lotto__foil { cursor: not-allowed; }
+
+.non-lotto__sent {
+  font-family: var(--non-mono); font-size: var(--t-mono);
+  letter-spacing: .12em; text-transform: uppercase; color: var(--non-fg-faint); margin: 0;
+}
+.non-lotto__sent[hidden] { display: none; }
+
 .non-lotto__panel {
   position: relative; height: 196px; background: var(--non-invert-bg);
   overflow: hidden; touch-action: none; user-select: none;

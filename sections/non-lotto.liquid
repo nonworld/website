@@ -15,6 +15,7 @@
   class="non-lotto"
   data-non-lotto
   data-endpoint="{{ settings.lotto_endpoint }}"
+  data-reveal-path="{{ section.settings.reveal_path | default: '/lotto/reveal' }}"
   data-auto-open="{{ settings.lotto_auto_open | default: true }}"
   data-delay="{{ settings.lotto_delay | default: 1400 }}"
   data-cooldown-days="{{ settings.lotto_cooldown_days | default: 14 }}"
@@ -31,7 +32,29 @@
       <p class="non-lotto__sub">{{ section.settings.subtext }}</p>
     </div>
 
-    <div class="non-lotto__panel">
+    {%- comment -%}
+      The email gate sits before the foil, not after it. The Worker enforces
+      this too — a client-side gate is a courtesy, not a control — but putting
+      the field here is what makes the exchange legible: one field, then the
+      prize. Asking after the reveal is asking for nothing in return.
+    {%- endcomment -%}
+    <form class="non-lotto__gate" data-non-lotto-gate>
+      <label class="visually-hidden" for="lotto-email">Email</label>
+      <input
+        id="lotto-email"
+        class="non-lotto__email"
+        type="email"
+        required
+        autocomplete="email"
+        inputmode="email"
+        placeholder="{{ 'sections.lotto.email_placeholder' | t }}">
+      <button type="submit" class="non-lotto__send" data-non-lotto-reveal>
+        {{ section.settings.reveal_label }}
+      </button>
+    </form>
+    <p class="non-error" data-non-lotto-error hidden></p>
+
+    <div class="non-lotto__panel is-locked" data-non-lotto-panel>
       <div class="non-lotto__prize">
         <div class="non-lotto__won">{{ 'sections.lotto.won' | t }}</div>
         <div class="non-lotto__win" data-non-lotto-win></div>
@@ -47,18 +70,7 @@
       <canvas class="non-lotto__foil" data-non-lotto-foil aria-label="Scratch to reveal"></canvas>
     </div>
 
-    <form class="non-lotto__claim" data-non-lotto-claim hidden>
-      <label class="visually-hidden" for="lotto-email">Email</label>
-      <input
-        id="lotto-email"
-        class="non-lotto__email"
-        type="email"
-        required
-        placeholder="{{ 'sections.lotto.email_placeholder' | t }}">
-      <button type="submit" class="non-lotto__send" data-non-lotto-send>
-        {{ 'sections.lotto.email_it' | t }}
-      </button>
-    </form>
+    <p class="non-lotto__sent" data-non-lotto-sent hidden></p>
 
     <div class="non-lotto__foot">
       <span class="non-mono non-eyebrow" style="font-size:9.5px">
@@ -78,6 +90,14 @@
   "name": "NON Lotto",
   "settings": [
     { "type": "text", "id": "heading", "label": "Heading", "default": "Scratch & reveal" },
+    { "type": "text", "id": "reveal_label", "label": "Unlock button", "default": "Reveal my pour" },
+    {
+      "type": "text",
+      "id": "reveal_path",
+      "label": "Reveal path",
+      "default": "/lotto/reveal",
+      "info": "Appended to the endpoint in Theme settings."
+    },
     {
       "type": "text",
       "id": "subtext",

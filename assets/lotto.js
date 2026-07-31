@@ -44,7 +44,13 @@
   var copyBtn = root.querySelector('[data-non-lotto-copy]');
   var copyLabel = root.querySelector('[data-non-lotto-copy-label]');
   var termsEl = root.querySelector('[data-non-lotto-terms]');
-  var claimForm = root.querySelector('[data-non-lotto-claim]');
+  var gateForm = root.querySelector('[data-non-lotto-gate]');
+  var panel = root.querySelector('[data-non-lotto-panel]');
+  var errorEl = root.querySelector('[data-non-lotto-error]');
+  var sentEl = root.querySelector('[data-non-lotto-sent]');
+  var REVEAL_PATH = root.getAttribute('data-reveal-path') || '/lotto/reveal';
+  var EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
+  var unlocked = false;
 
   var ctx = null;
   var drawing = false;
@@ -117,7 +123,7 @@
   }
 
   function scratchAt(e, moving) {
-    if (!ctx || revealed) return;
+    if (!ctx || revealed || !unlocked) return;
     var r = canvas.getBoundingClientRect();
     var t = e.touches ? e.touches[0] : e;
     var x = t.clientX - r.left;
@@ -139,7 +145,7 @@
     }
 
     last = [x, y];
-    if (++ticks % 5 === 0 && cleared() > REVEAL_AT) reveal();
+    if (++ticks % 5 === 0 && cleared() > REVEAL_AT) clearFoil();
   }
 
   function cleared() {
@@ -161,39 +167,76 @@
     return total ? gone / total : 0;
   }
 
-  function reveal() {
+  function clearFoil() {
     if (revealed) return;
     revealed = true;
     if (ctx) ctx.clearRect(0, 0, canvas.width, canvas.height);
-    if (claimForm) claimForm.hidden = false;
   }
 
   /* --- draw -------------------------------------------------------------- */
 
-  function draw() {
+  // One session id per browser session, so the Worker can correlate a reveal
+  // with a visit. It is NOT the anti-farming key — that is the email, because
+  // a session id is one private window away from being worthless.
+  function sessionId() {
+    try {
+      var k = 'non-lotto-session';
+      var v = sessionStorage.getItem(k);
+      if (!v) {
+        v = (crypto.randomUUID && crypto.randomUUID()) ||
+            String(Date.now()) + Math.random().toString(16).slice(2);
+        sessionStorage.setItem(k, v);
+      }
+      return v;
+    } catch (e) {
+      return null;
+    }
+  }
+
+  function showError(msg) {
+    if (!errorEl) return;
+    errorEl.hidden = false;
+    errorEl.textContent = msg;
+  }
+
+  // Email in, code back, foil unlocked. Nothing is scratchable before this
+  // resolves, so there is no state where a code exists on screen unclaimed.
+  function reveal(email) {
     if (!ENDPOINT) {
-      // No endpoint: nothing to win. Say so rather than fake a code.
       winEl.textContent = window.NON.strings.lottoUnavailable;
       copyBtn.hidden = true;
       return Promise.reject(new Error('no endpoint'));
     }
 
-    return fetch(ENDPOINT + '/draw', {
+    return fetch(ENDPOINT + REVEAL_PATH, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ page: window.location.pathname })
+      body: JSON.stringify({ email: email, sessionId: sessionId() })
     })
       .then(function (res) {
-        if (!res.ok) throw new Error('draw ' + res.status);
-        return res.json();
+        return res.json().then(function (data) {
+          if (!res.ok) throw new Error(data.error || 'reveal ' + res.status);
+          return data;
+        });
       })
       .then(function (data) {
         current = data;
-        refEl.textContent = data.ref || '';
-        winEl.textContent = (data.prize && data.prize.title) || '';
-        codeEl.textContent = (data.prize && data.prize.code) || '';
-        termsEl.textContent = (data.prize && data.prize.terms) || '';
-        copyBtn.hidden = !(data.prize && data.prize.code);
+        winEl.textContent = data.description || '';
+        codeEl.textContent = data.code || '';
+        termsEl.textContent = data.terms || '';
+        copyBtn.hidden = !data.code;
+
+        if (sentEl) {
+          sentEl.hidden = false;
+          sentEl.textContent = data.emailed
+            ? (data.alreadyRevealed ? 'Already yours. Sent again to ' + email : 'Sent to ' + email)
+            : 'Copy it down, the email did not go through';
+        }
+
+        unlocked = true;
+        if (panel) panel.classList.remove('is-locked');
+        if (gateForm) gateForm.hidden = true;
+        requestAnimationFrame(function () { requestAnimationFrame(paintFoil); });
       });
   }
 
@@ -219,13 +262,21 @@
   function open() {
     root.hidden = false;
     revealed = false;
-    if (claimForm) claimForm.hidden = true;
+    unlocked = false;
+    if (panel) panel.classList.add('is-locked');
+    if (gateForm) gateForm.hidden = false;
+    if (sentEl) sentEl.hidden = true;
+    if (errorEl) errorEl.hidden = true;
     watchFoil();
     requestAnimationFrame(function () { requestAnimationFrame(paintFoil); });
 
-    draw().catch(function () {
-      /* message already rendered */
-    });
+    // No endpoint means no prize. Say so up front rather than take an email
+    // for something that cannot be delivered.
+    if (!ENDPOINT) {
+      winEl.textContent = window.NON.strings.lottoUnavailable;
+      copyBtn.hidden = true;
+      if (gateForm) gateForm.hidden = true;
+    }
   }
 
   function close(remember) {
@@ -255,16 +306,16 @@
 
   canvas.addEventListener('mousedown', function (e) { last = null; drawing = true; scratchAt(e, false); e.preventDefault(); });
   canvas.addEventListener('mousemove', function (e) { if (drawing) scratchAt(e, true); });
-  canvas.addEventListener('mouseup', function () { drawing = false; if (cleared() > REVEAL_AT) reveal(); });
+  canvas.addEventListener('mouseup', function () { drawing = false; if (cleared() > REVEAL_AT) clearFoil(); });
   canvas.addEventListener('mouseleave', function () { drawing = false; });
   canvas.addEventListener('touchstart', function (e) { last = null; drawing = true; scratchAt(e, false); e.preventDefault(); }, { passive: false });
   canvas.addEventListener('touchmove', function (e) { if (drawing) scratchAt(e, true); e.preventDefault(); }, { passive: false });
-  canvas.addEventListener('touchend', function () { drawing = false; if (cleared() > REVEAL_AT) reveal(); });
+  canvas.addEventListener('touchend', function () { drawing = false; if (cleared() > REVEAL_AT) clearFoil(); });
 
   // Keyboard and pointer-less access: scratching is decorative, so let anyone
   // who can't drag simply open the prize.
   canvas.addEventListener('keydown', function (e) {
-    if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); reveal(); }
+    if ((e.key === 'Enter' || e.key === ' ') && unlocked) { e.preventDefault(); clearFoil(); }
   });
   canvas.setAttribute('tabindex', '0');
 
@@ -277,21 +328,36 @@
     } catch (e) {}
   });
 
-  if (claimForm) {
-    claimForm.addEventListener('submit', function (e) {
+  if (gateForm) {
+    gateForm.addEventListener('submit', function (e) {
       e.preventDefault();
-      var email = claimForm.querySelector('input').value;
-      var btn = claimForm.querySelector('[data-non-lotto-send]');
-      if (!ENDPOINT || !current) return;
+      var input = gateForm.querySelector('input');
+      var email = (input.value || '').trim();
+      var btn = gateForm.querySelector('[data-non-lotto-reveal]');
 
+      if (!EMAIL_RE.test(email)) {
+        showError('That does not look like an email address.');
+        input.focus();
+        return;
+      }
+
+      if (errorEl) errorEl.hidden = true;
       btn.disabled = true;
-      fetch(ENDPOINT + '/claim', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ ref: current.ref, email: email })
-      })
-        .then(function () { btn.textContent = 'Saved ✓'; })
-        .catch(function () { btn.textContent = 'Try again'; btn.disabled = false; });
+      var label = btn.textContent;
+      btn.textContent = 'One moment';
+
+      reveal(email)
+        .catch(function (err) {
+          showError(
+            err.message === 'closed'
+              ? window.NON.strings.lottoUnavailable
+              : 'Could not reach the cellar door. Try again in a moment.'
+          );
+        })
+        .finally(function () {
+          btn.disabled = false;
+          btn.textContent = label;
+        });
     });
   }
 

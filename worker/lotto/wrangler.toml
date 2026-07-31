@@ -1,0 +1,30 @@
+name = "non-lotto"
+main = "src/index.js"
+compatibility_date = "2026-07-01"
+
+[vars]
+# The prize pool. Odds are weights, not percentages — they are normalised, so
+# they do not have to sum to 100. Editable here without touching code; move to
+# KV if you want to change them without a deploy.
+LOTTO_POOL = '''[
+  {"code":"NON15","weight":28,"description":"15% off your first case","terms":"Use it at checkout."},
+  {"code":"FREESTOPPER","weight":24,"description":"A free NON stopper","terms":"Add a bottle and the stopper is on us."},
+  {"code":"FREEPOUR","weight":20,"description":"Complimentary shipping","terms":"Use it at checkout."},
+  {"code":"ONEONUS","weight":14,"description":"A bottle of NON, on us","terms":"Add a bottle and the second is on us."},
+  {"code":"NON10","weight":10,"description":"10% off","terms":"Use it at checkout."},
+  {"code":"THEHOUSE","weight":4,"description":"25% off plus free shipping","terms":"Use it at checkout."}
+]'''
+
+SHOPIFY_STORE = "non-world.myshopify.com"
+KLAVIYO_LIST_ID = "WQLa3T"
+KLAVIYO_EVENT = "Scratched NON Lotto"
+RATE_LIMIT_PER_HOUR = "6"
+
+# Secrets — set with `npx wrangler secret put <NAME>`, never here:
+#   SHOPIFY_ADMIN_TOKEN   Admin API token with read_discounts
+#   KLAVIYO_API_KEY       Klaviyo private key
+
+# KV holds the email -> code ledger and the per-IP rate counter.
+# [[kv_namespaces]]
+# binding = "LOTTO_KV"
+# id = "<namespace id>"

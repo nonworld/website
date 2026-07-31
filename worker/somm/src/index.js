@@ -24,7 +24,7 @@
  *     and availability from Liquid
  */
 
-import { PRODUCTS, rankProducts } from './scoring-engine.js';
+import { PRODUCTS, rankProducts, scoreProduct } from './scoring-engine.js';
 
 const MAX_QUERY = 500;
 
@@ -65,6 +65,25 @@ Vocabulary, use these where they fit:
 If the description is about an occasion rather than a dish ("something for a
 picnic", "I've stopped drinking"), infer the most likely food and keep every
 number mid-scale. Never return null; use [] or 0.`;
+
+// Product-page variant. The customer is already looking at one bottle and
+// wants a verdict, not a fresh recommendation — so the sentence has to be
+// willing to say no. A somm that calls everything a good match is worthless,
+// and on a product page the incentive to soften is exactly why it must not.
+const VERDICT_SYSTEM = `You are NON Somm. The customer is looking at one specific
+bottle and has asked whether it suits their dish. You write the verdict.
+
+Hard rules:
+- ONE sentence, 30 words maximum.
+- Use ONLY the facts given to you. Do not invent tasting notes, ingredients,
+  awards, ratings or claims.
+- Never mention price, stock, discounts or shipping. You do not have that data.
+- When the fit is weak, say so plainly. Do not soften it, do not hedge into a
+  yes. You will be told which bottle is actually better; name it.
+- When the fit is strong, state it without qualifying.
+- Australian English. No em dashes. No exclamation marks.
+
+Voice: a sommelier who knows the kitchen. Specific and unfussy.`;
 
 const EXPLAIN_SYSTEM = `You are NON Somm. You write one sentence explaining why a
 specific bottle suits a specific dish.
@@ -225,6 +244,70 @@ async function explain(env, { query, product, reasons, score }) {
   });
 }
 
+
+/* ------------------------------------------------- product-page variant */
+
+// Plain thresholds, deliberately in code. The model phrases the verdict; it
+// does not decide whether the match is good, because that is exactly the
+// judgement it would shade toward yes.
+function fitBucket(score) {
+  if (score >= 65) return 'strong';
+  if (score >= 35) return 'workable';
+  return 'weak';
+}
+
+async function verdict(env, { query, product, reasons, score, fit, instead }) {
+  const lines = [
+    `The customer said: "${query}"`,
+    '',
+    `They are looking at: ${product.name} (${product.id})`,
+    `Positioning: ${product.positioning}`,
+    `Dominant flavours: ${product.dominantFlavours.join(', ')}`,
+    `Structure — acid ${product.acid}/5, tannin ${product.tannin}/5, ` +
+      `sweetness ${product.sweetness}/5, salt ${product.salt}/5, body ${product.body}/5`,
+    '',
+    `Fit: ${fit} (${score}/100)`,
+  ];
+
+  if (reasons.length) {
+    lines.push('', 'What matched:', ...reasons.map((r) => `- ${r}`));
+  } else {
+    lines.push('', 'Nothing about this dish matched this bottle.');
+  }
+
+  if (instead) {
+    lines.push('', `The better bottle for this dish is ${instead.name} (${instead.id}). Name it.`);
+  }
+
+  lines.push('', 'Write the one-sentence verdict.');
+
+  return claude(env, {
+    model: env.EXPLAIN_MODEL || 'claude-sonnet-5',
+    maxTokens: 150,
+    system: VERDICT_SYSTEM,
+    messages: [{ role: 'user', content: lines.join('\n') }],
+  });
+}
+
+// Passive suggestions: no model call, no cost, no latency. Read straight off
+// the product's bestWith data. This is what a product page should show before
+// anyone types anything.
+function suggestionsFor(code) {
+  const p = PRODUCTS.find((x) => x.id === String(code || '').toUpperCase());
+  if (!p) return null;
+
+  const styles = p.bestWith.cookingStyle.filter((s) => s !== 'lightly cooked');
+  const proteins = p.bestWith.proteins;
+  const out = [];
+
+  for (let i = 0; i < 3 && i < proteins.length; i++) {
+    const style = styles[i % styles.length];
+    out.push(style ? `${style} ${proteins[i]}` : proteins[i]);
+  }
+
+  return { productId: p.id, productName: p.name, suggestions: out };
+}
+
 /* ------------------------------------------------------------- fallback */
 
 // Never fail in the customer's face. The Mixed 6 is the honest answer when we
@@ -284,6 +367,13 @@ export default {
     const url = new URL(request.url);
     if (url.pathname === '/health') return json({ ok: true, products: PRODUCTS.length });
 
+    // No model call — safe to serve on GET and cheap enough to cache.
+    if (url.pathname === '/somm/suggestions') {
+      const found = suggestionsFor(url.searchParams.get('product'));
+      if (!found) return json({ error: 'unknown product' }, 404);
+      return json(found, 200, { 'Cache-Control': 'public, max-age=3600' });
+    }
+
     if (request.method !== 'POST') return json({ error: 'method not allowed' }, 405);
     if (url.pathname !== '/somm' && url.pathname !== '/') {
       return json({ error: 'not found' }, 404);
@@ -306,9 +396,10 @@ export default {
       return json({ error: `query must be under ${MAX_QUERY} characters` }, 400);
     }
 
-    // On a product page the theme sends the bottle's own code. Bias toward it
-    // only if it is genuinely competitive — never override a better match.
-    const context = body.code || null;
+    // On a product page the theme sends the bottle being viewed. With it, the
+    // question changes from "which bottle" to "does this one fit", and the
+    // answer has to be allowed to be no.
+    const context = body.productContext || body.code || null;
 
     let dish;
     try {
@@ -317,6 +408,55 @@ export default {
       return json(fallbackResponse('extraction', e, env), 200);
     }
 
+    // ---- product page: score the one bottle, return a verdict -------------
+    if (context) {
+      const product = PRODUCTS.find((p) => p.id === String(context).toUpperCase());
+      if (product) {
+        const scored = scoreProduct(product, dish);
+        const fit = fitBucket(scored.score);
+
+        // The spec said to attach an alternative only when fit is "weak".
+        // Live testing showed why that is too narrow: NON9 against delicate
+        // poached salmon scores 41, which buckets as "workable", yet the
+        // honest verdict is "this will flatten it". The model said exactly
+        // that and then had no bottle to point at, because no alternative had
+        // been computed — the worst of both answers.
+        //
+        // So: attach an alternative whenever the fit is not strong AND another
+        // bottle clearly beats it. Still grounded in a real ranking, and a
+        // "workable" verdict can now name where to go instead.
+        let instead = null;
+        if (fit !== 'strong') {
+          const best = rankProducts(dish).find((r) => r.productId !== product.id);
+          if (best && best.score > scored.score + 15) instead = best.product;
+        }
+
+        let sentence;
+        try {
+          sentence = await verdict(env, {
+            query, product, reasons: scored.reasons, score: scored.score, fit, instead,
+          });
+        } catch (e) {
+          return json(fallbackResponse('verdict', e, env), 200);
+        }
+
+        return json({
+          productId: product.id,
+          productName: product.name,
+          fit,
+          score: scored.score,
+          explanation: sentence,
+          ...(instead
+            ? { suggestedInstead: { productId: instead.id, productName: instead.name } }
+            : {}),
+          answer: sentence,
+          picks: instead ? [instead.id] : [],
+          dish,
+        });
+      }
+    }
+
+    // ---- homepage: rank everything, pick a winner -------------------------
     const ranked = rankProducts(dish);
     const top = ranked[0];
     const runnerUp = ranked[1];

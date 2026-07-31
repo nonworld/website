@@ -7,7 +7,7 @@
  *
  *   node test/pipeline.test.js
  */
-import { rankProducts, PRODUCTS } from '../src/scoring-engine.js';
+import { rankProducts, PRODUCTS, scoreProduct } from '../src/scoring-engine.js';
 
 const CASES = [
   {
@@ -66,5 +66,88 @@ if (winners.size < 4) {
   failed++;
 }
 
-console.log(failed ? `\n${failed} failing` : '\nall passing');
+console.log(failed ? `\n${failed} failing so far` : '\nranking: all passing');
+
+/* ---------------------------------------------------------------------------
+   Product-page variant. Offline half only: fit buckets from real scores, and
+   the suggestions route, which makes no model call at all.
+   --------------------------------------------------------------------------- */
+
+
+function fitBucket(score) {
+  if (score >= 65) return 'strong';
+  if (score >= 35) return 'workable';
+  return 'weak';
+}
+
+const FIT_CASES = [
+  {
+    name: 'NON9 + chargrilled lamb',
+    code: 'NON9',
+    dish: { proteins: ['lamb', 'red meat'], fatLevel: 5, cookingStyle: ['charred', 'grilled'], dishAcid: 1, weight: 5, heat: 0, flavourNotes: ['char'] },
+    expect: 'strong',
+  },
+  {
+    name: 'NON9 + delicate raw white fish',
+    code: 'NON9',
+    dish: { proteins: ['raw fish', 'white fish'], fatLevel: 0, cookingStyle: ['raw'], dishAcid: 4, weight: 1, heat: 0, flavourNotes: ['citrus'] },
+    expect: 'weak',
+  },
+  {
+    name: 'NON1 + oysters',
+    code: 'NON1',
+    dish: { proteins: ['oyster', 'shellfish'], fatLevel: 0, cookingStyle: ['raw'], dishAcid: 4, weight: 1, heat: 0, flavourNotes: ['brine'] },
+    expect: 'strong',
+  },
+];
+
+console.log('\n--- product page: fit verdicts ---\n');
+
+for (const c of FIT_CASES) {
+  const product = PRODUCTS.find((p) => p.id === c.code);
+  const scored = scoreProduct(product, c.dish);
+  const fit = fitBucket(scored.score);
+  const ok = fit === c.expect;
+  if (!ok) failed++;
+
+  let instead = '';
+  if (fit === 'weak') {
+    const best = rankProducts(c.dish).find((r) => r.productId !== c.code);
+    instead = best ? `  -> instead ${best.productId} (${best.score})` : '  -> NO ALTERNATIVE';
+    if (!best) failed++;
+  }
+
+  console.log(`${ok ? 'PASS' : 'FAIL'}  ${c.name}`);
+  console.log(`      ${fit} (${scored.score})${ok ? '' : ` — expected ${c.expect}`}${instead}\n`);
+}
+
+/* suggestions — same logic as the Worker route, no model call */
+function suggestionsFor(code) {
+  const p = PRODUCTS.find((x) => x.id === String(code || '').toUpperCase());
+  if (!p) return null;
+  const styles = p.bestWith.cookingStyle.filter((s) => s !== 'lightly cooked');
+  const proteins = p.bestWith.proteins;
+  const out = [];
+  for (let i = 0; i < 3 && i < proteins.length; i++) {
+    const style = styles[i % styles.length];
+    out.push(style ? `${style} ${proteins[i]}` : proteins[i]);
+  }
+  return { productId: p.id, suggestions: out };
+}
+
+console.log('--- product page: passive suggestions ---\n');
+
+for (const p of PRODUCTS) {
+  const s = suggestionsFor(p.id);
+  const ok = s && s.suggestions.length === 3 && s.suggestions.every((x) => x && x.length > 3);
+  if (!ok) failed++;
+  console.log(`${ok ? 'PASS' : 'FAIL'}  ${p.id}: ${s.suggestions.join(', ')}`);
+}
+
+if (suggestionsFor('NOPE') !== null) {
+  console.log('FAIL  unknown product should return null');
+  failed++;
+}
+
+console.log(failed ? `\n${failed} failing overall` : '\nall passing');
 process.exit(failed ? 1 : 0);

@@ -1,92 +1,16 @@
+/*
+ * ------------------------------------------------------------
+ * IMPORTANT: The contents of this file are auto-generated.
+ *
+ * This file may be updated by the Shopify admin theme editor
+ * or related systems. Please exercise caution as any changes
+ * made to this file may be overwritten.
+ * ------------------------------------------------------------
+ */
 {
   "sections": {
     "main": {
       "type": "main-collection",
-      "blocks": {
-        "raw": {
-          "type": "occasion",
-          "settings": {
-            "key": "raw",
-            "label": "Raw or cured",
-            "somm_line": "Raw and cured wants salinity and acid, not sugar. NON1 first — salt against brine — then NON2 if the plate leans savoury."
-          }
-        },
-        "seafood": {
-          "type": "occasion",
-          "settings": {
-            "key": "seafood",
-            "label": "Seafood",
-            "somm_line": "Fish needs a squeeze of citrus and a little salt. NON1 and NON2 do that from inside the glass."
-          }
-        },
-        "veg": {
-          "type": "occasion",
-          "settings": {
-            "key": "veg",
-            "label": "Vegetables",
-            "somm_line": "Vegetables lack the fat that makes wine easy to match, so salinity and bitterness do the work instead. NON2 and NON3 lead."
-          }
-        },
-        "charred": {
-          "type": "occasion",
-          "settings": {
-            "key": "charred",
-            "label": "Charred or roasted",
-            "somm_line": "Char wants tannin and something caramelised to meet it. NON3 for lighter plates, NON7 and NON9 when it is genuinely heavy."
-          }
-        },
-        "braise": {
-          "type": "occasion",
-          "settings": {
-            "key": "braise",
-            "label": "Braised",
-            "somm_line": "Slow-cooked fat needs cutting. NON5 if you want it sharp and sparkling, NON7 if you want it dark and bitter."
-          }
-        },
-        "spice": {
-          "type": "occasion",
-          "settings": {
-            "key": "spice",
-            "label": "Spice and heat",
-            "somm_line": "Alcohol amplifies capsaicin — this is the one advantage 0.0% has. NON5 is the coldest, saltiest, sharpest thing here."
-          }
-        },
-        "cheese": {
-          "type": "occasion",
-          "settings": {
-            "key": "cheese",
-            "label": "Cheese",
-            "somm_line": "Fat and salt with no cooking. NON3 has the grip; NON1 handles the fresh goat end of the board."
-          }
-        },
-        "sweet": {
-          "type": "occasion",
-          "settings": {
-            "key": "sweet",
-            "label": "Dessert",
-            "somm_line": "Sugar against sugar fails. NON3 and NON7 stay bitter enough to survive dessert."
-          }
-        },
-        "aperitif": {
-          "type": "occasion",
-          "settings": {
-            "key": "aperitif",
-            "label": "No food, just a glass",
-            "somm_line": "Nothing to match, so it only has to be sharp. NON5 is the lowest-sugar bottle on the shelf, NON1 the friendliest."
-          }
-        }
-      },
-      "block_order": [
-        "raw",
-        "seafood",
-        "veg",
-        "charred",
-        "braise",
-        "spice",
-        "cheese",
-        "sweet",
-        "aperitif"
-      ],
       "settings": {
         "show_filters": true,
         "show_add": true,
@@ -96,8 +20,5 @@
       }
     }
   },
-  "order": [
-    "main"
-  ]
+  "order": ["main"]
 }
-

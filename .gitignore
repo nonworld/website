@@ -2,3 +2,9 @@
 node_modules/
 *.log
 .shopify/
+
+# Wrangler local secrets. ANTHROPIC_API_KEY belongs in
+# `wrangler secret put`, never in a tracked file.
+.dev.vars
+.dev.vars.*
+.wrangler/

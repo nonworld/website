@@ -36,9 +36,17 @@ Two rules do most of the safety work:
 ```bash
 cd worker/somm
 npm install
-wrangler secret put ANTHROPIC_API_KEY
+wrangler secret put ANTHROPIC_API_KEY   # prompts; paste the key, never pass it as an argument
 wrangler deploy
 ```
+
+`wrangler secret put` prompts for the value and stores it encrypted in
+Cloudflare. Do not put the key in `wrangler.toml`, in a `[vars]` block, or on
+a command line — `[vars]` is plain text in the repo and a command line lands in
+shell history. `.dev.vars` is gitignored for local `wrangler dev`.
+
+If a key is ever pasted somewhere it shouldn't be, rotate it rather than
+assessing the blast radius: issue a new one, update the secret, revoke the old.
 
 Then paste the Worker URL into the theme: **Theme settings → NON Somm → Somm
 API endpoint**. Until it is set, the theme falls back to the canned seed

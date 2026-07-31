@@ -425,7 +425,26 @@ button { font-family: inherit; }
 .non-trip { display: grid; grid-template-columns: 1fr; gap: 2px; background: var(--non-line); }
 @media (min-width: 860px) { .non-trip { grid-template-columns: repeat(3, 1fr); } }
 .non-trip__cell { position: relative; }
-.non-trip__cell img { width: 100%; aspect-ratio: 4/5; object-fit: cover; display: block; }
+/* The ratio has to be carried by a class on the img, not by a descendant
+   selector alone: image_tag writes its own width/height attributes, and with
+   three photos of different intrinsic shapes the tiles ended up different
+   heights — two of them short, with the caption stranded over black. Every
+   tile is now the same shape, set from the section's Image shape setting. */
+.non-trip__img {
+  width: 100%;
+  aspect-ratio: var(--non-trip-ratio, 4/5);
+  object-fit: cover;
+  object-position: center;
+  display: block;
+}
+.non-trip__img--empty { background: var(--non-panel); }
+.non-trip--ratio-square { --non-trip-ratio: 1/1; }
+.non-trip--ratio-tall { --non-trip-ratio: 4/5; }
+.non-trip--ratio-portrait { --non-trip-ratio: 3/4; }
+.non-trip--ratio-landscape { --non-trip-ratio: 3/2; }
+/* A three-up band across an 1800px shell gives 600px tiles; at 4/5 that is a
+   750px-tall photo of a single plate. Cap it so the band stays a band. */
+.non-trip__img { max-height: 62vh; }
 .non-trip__cap {
   position: absolute; inset: auto 0 0 0; padding: 22px;
   background: linear-gradient(to top, rgba(12,12,12,.85), transparent);
@@ -583,8 +602,23 @@ button { font-family: inherit; }
   padding: 56px var(--non-pad); display: flex; flex-direction: column; gap: 26px;
   border-right: 1px solid var(--non-line);
 }
+/* "Fill the panel" is the original behaviour: the image is absolutely
+   positioned and stretches to whatever height the prose column happens to be.
+   That is what made a long ingredient list produce a very tall photo. The
+   other options give the image its own shape instead, so the panel is sized by
+   the picture rather than by the word count beside it. */
 .non-process__media { position: relative; min-height: 420px; }
-.non-process__media img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+.non-process__img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.non-process__media--fill .non-process__img { position: absolute; inset: 0; }
+.non-process__media--square,
+.non-process__media--tall,
+.non-process__media--portrait { min-height: 0; align-self: start; }
+.non-process__media--square .non-process__img { height: auto; aspect-ratio: 1/1; }
+.non-process__media--tall .non-process__img { height: auto; aspect-ratio: 4/5; }
+.non-process__media--portrait .non-process__img { height: auto; aspect-ratio: 3/4; }
+.non-process__media--square .non-process__img,
+.non-process__media--tall .non-process__img,
+.non-process__media--portrait .non-process__img { max-height: 78vh; }
 
 .non-steps { display: flex; flex-direction: column; gap: 22px; }
 .non-step { display: grid; grid-template-columns: 44px 1fr; gap: 18px; align-items: start; }

@@ -21,13 +21,24 @@
   assign pairings = product.metafields.custom.pairings.value
   assign ingredients = product.metafields.custom.ingredients | metafield_text
 
-  assign process_image = product.metafields.custom.process_image.value
+  {%- comment -%}
+    The section setting wins, so this panel's image can be changed in the
+    editor per template without touching product data. Below it the original
+    chain still applies, which is what keeps all 27 products populated without
+    anyone opening the editor.
+  {%- endcomment -%}
+  assign process_image = section.settings.image
+  if process_image == blank
+    assign process_image = product.metafields.custom.process_image.value
+  endif
   if process_image == blank
     assign process_image = product.media[1]
   endif
   if process_image == blank
     assign process_image = product.featured_media
   endif
+
+  assign media_ratio = section.settings.media_ratio | default: 'portrait'
 -%}
 
 {%- if steps != blank or prose != blank -%}
@@ -84,12 +95,16 @@
       {%- endif -%}
     </div>
 
-    <div class="non-process__media">
+    <div class="non-process__media non-process__media--{{ media_ratio }}">
       {%- if process_image != blank -%}
         {{
           process_image
           | image_url: width: 1200
-          | image_tag: loading: 'lazy', widths: '600,900,1200', alt: product.title
+          | image_tag:
+            loading: 'lazy',
+            widths: '600,900,1200',
+            class: 'non-process__img',
+            alt: product.title
         }}
       {%- endif -%}
     </div>
@@ -121,7 +136,27 @@
       "label": "Process heading",
       "default": "How it's made — not de-alcoholised"
     },
-    { "type": "text", "id": "pairings_heading", "label": "Pairings heading", "default": "Pour it with" }
-  ]
+    { "type": "text", "id": "pairings_heading", "label": "Pairings heading", "default": "Pour it with" },
+    { "type": "header", "content": "Media" },
+    {
+      "type": "image_picker",
+      "id": "image",
+      "label": "Process image",
+      "info": "Overrides the product's process image. Left empty, it falls back to the product's own process metafield, then its second media item, then its featured image."
+    },
+    {
+      "type": "select",
+      "id": "media_ratio",
+      "label": "Image shape",
+      "options": [
+        { "value": "square", "label": "Square (1:1)" },
+        { "value": "tall", "label": "Tall (4:5)" },
+        { "value": "portrait", "label": "Portrait (3:4)" },
+        { "value": "fill", "label": "Fill the panel" }
+      ],
+      "default": "portrait"
+    }
+  ],
+  "presets": [{ "name": "Process & pairings" }]
 }
 {% endschema %}

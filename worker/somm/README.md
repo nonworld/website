@@ -125,10 +125,12 @@ Two corrections against the original draft, both of which changed results:
 
 - **The range is six bottles, not three.** NON5, NON7 and NON9 cover exactly
   the cases the other three handle worst: chilli, braise, and red meat.
-- **NON3 was profiled as body 5, "sits where red sat".** It is the *light* red
-  seat — still, bright, tart. At body 5 it won charred-beef queries that belong
-  to NON9, which is the actual big-red bottle: Shiraz grape skin tannin and
-  real french oak contact.
+- **NON3 was profiled as body 5, "sits where red sat".** It is neither. Per
+  NON it sits where an *aromatic white* sat — still, bright, tart, yuzu and
+  orange pith over cinnamon grip. The original design copy called it a "chilled
+  light red" throughout, and that was wrong at source. At body 5 it also won
+  charred-beef queries belonging to NON9, the actual big-red bottle: Shiraz
+  grape skin tannin and real french oak contact.
 
 There is also a **heat axis** the original shape did not have. Alcohol
 dissolves capsaicin and amplifies burn, while salt and acid cool it — the one

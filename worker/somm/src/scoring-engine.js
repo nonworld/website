@@ -20,10 +20,12 @@
  *   - The range is six bottles, not three. NON5, NON7 and NON9 are missing
  *     from the draft and they cover the cases the other three handle worst
  *     (chilli, braise, and red meat respectively).
- *   - NON3 was profiled as body 5 / "sits where red sat". It is the *light*
- *     red seat — still, bright, tart, 8.4g sugar. Left at body 5 it wins
- *     charred-beef queries that belong to NON9, which is the actual
- *     big-red bottle (Shiraz skin tannin and french oak contact).
+ *   - NON3 was profiled as body 5 / "sits where red sat". It is neither. Per
+ *     NON, it sits where an *aromatic white* sat — still, bright, tart,
+ *     yuzu and orange pith over cinnamon grip. The design copy called it a
+ *     "chilled light red" throughout and that was wrong at source. Left at
+ *     body 5 it also won charred-beef queries that belong to NON9, which is
+ *     the actual big-red bottle (Shiraz skin tannin, french oak contact).
  *
  * If Somm gets a pairing wrong, fix it here first, not in a prompt.
  */
@@ -70,18 +72,18 @@ const PRODUCTS = [
     name: 'Toasted Cinnamon & Yuzu',
     handle: 'toasted-cinnamon-yuzu',
     acid: 3,
-    tannin: 3, // cinnamon and orange pith
+    tannin: 3, // cinnamon and orange pith — grip without being a red
     sweetness: 2,
     salt: 2,
-    body: 3, // corrected from 5 — this is the light red seat
+    body: 2,
     dominantFlavours: ['cinnamon', 'yuzu', 'orange', 'bitter pith', 'spice'],
     bestWith: {
-      proteins: ['poultry', 'mushroom', 'vegetable', 'cured meat', 'hard cheese'],
-      fatLevel: [2, 4],
-      cookingStyle: ['charred', 'grilled', 'roasted', 'cured'],
-      dishAcid: [1, 4],
+      proteins: ['white fish', 'poultry', 'mushroom', 'vegetable', 'cured meat', 'hard cheese'],
+      fatLevel: [1, 4],
+      cookingStyle: ['charred', 'grilled', 'roasted', 'cured', 'steamed'],
+      dishAcid: [1, 5],
     },
-    positioning: 'Sits where a chilled light red sat',
+    positioning: 'Sits where an aromatic white sat',
   },
   {
     id: 'NON5',

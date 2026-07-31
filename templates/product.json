@@ -28,11 +28,16 @@
           "type": "seed",
           "settings": {
             "label": "I'm buying it as a gift",
-            "answer": "Then go six. It arrives as a case, the per-bottle price drops, and a mixed set is the least intimidating way in for someone who hasn't tried the range."
+            "answer": "Then go six. It arrives as a case, the per-bottle price drops against a single, and a mixed set is the least intimidating way in for someone who hasn't tried the range."
           }
         }
       },
-      "block_order": ["seed-1", "seed-2", "seed-3", "seed-4"],
+      "block_order": [
+        "seed-1",
+        "seed-2",
+        "seed-3",
+        "seed-4"
+      ],
       "settings": {
         "show_somm": true,
         "somm_opener": "I've read the whole spec sheet for this bottle. Ask me anything — pairing, process, sugar, or whether it's right for you."
@@ -47,8 +52,15 @@
     },
     "related": {
       "type": "related-products",
-      "settings": { "heading": "Drink it with", "limit": 3 }
+      "settings": {
+        "heading": "Drink it with",
+        "limit": 3
+      }
     }
   },
-  "order": ["main", "process", "related"]
+  "order": [
+    "main",
+    "process",
+    "related"
+  ]
 }

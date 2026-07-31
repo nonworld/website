@@ -1,0 +1,33 @@
+{%- comment -%}
+  Pulls a single figure out of custom.nutritional_panel.
+
+  The live store stores nutrition as a rich_text_field: an alternating run of
+  paragraphs, label then value ("Calories per serve" → "37"). It is not JSON
+  and there is no key to address, so the only way to read one figure is to
+  render the field to text and walk the lines.
+
+  Params:  label (e.g. 'Calories per serve'), product
+  Outputs: the value that follows that label, or nothing.
+{%- endcomment -%}
+
+{%- liquid
+  assign panel = product.metafields.custom.nutritional_panel | metafield_text | strip_html | strip
+  assign lines = panel | newline_to_br | split: '<br />'
+  assign found = false
+  assign out = ''
+
+  for line in lines
+    assign clean = line | strip
+    if clean == blank
+      continue
+    endif
+    if found and out == blank
+      assign out = clean
+    endif
+    if clean == label
+      assign found = true
+    endif
+  endfor
+
+  echo out
+-%}

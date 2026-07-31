@@ -23,7 +23,7 @@
           "type": "seed",
           "settings": {
             "label": "Off wine for a month",
-            "answer": "Then you need the ritual intact: cold bottle, real glass, something to talk about.\n\nStart with the Everyday Set — three bottles, three seats at the table: rosé, white, red. A month is roughly six bottles if you drink on weekends.",
+            "answer": "Then you need the ritual intact: cold bottle, real glass, something to talk about.\n\nStart with the Everyday Set — three bottles, three seats at the table: rosé, white, red. A month is roughly six bottles if you drink on weekends, so the mixed six is the cheaper way in.",
             "picks": "SET,NON1"
           }
         },
@@ -36,7 +36,12 @@
           }
         }
       },
-      "block_order": ["seed-1", "seed-2", "seed-3", "seed-4"],
+      "block_order": [
+        "seed-1",
+        "seed-2",
+        "seed-3",
+        "seed-4"
+      ],
       "settings": {
         "eyebrow": "0.0% alcohol · not a mocktail",
         "heading": "Cooked, not de-alcoholised.",
@@ -48,35 +53,111 @@
     "poured-at": {
       "type": "logo-marquee",
       "blocks": {
-        "v1": { "type": "venue", "settings": { "name": "The French Laundry", "max_height": 44 } },
-        "v2": { "type": "venue", "settings": { "name": "The Fat Duck", "max_height": 70 } },
-        "v3": { "type": "venue", "settings": { "name": "Alinea", "max_height": 70 } },
-        "v4": { "type": "venue", "settings": { "name": "Aman", "max_height": 44 } },
-        "v5": { "type": "venue", "settings": { "name": "Atelier Crenn", "max_height": 44 } },
-        "v6": { "type": "venue", "settings": { "name": "Vue de Monde", "max_height": 44 } },
-        "v7": { "type": "venue", "settings": { "name": "Fortnum & Mason", "max_height": 44 } }
+        "v1": {
+          "type": "venue",
+          "settings": {
+            "name": "The French Laundry",
+            "max_height": 44
+          }
+        },
+        "v2": {
+          "type": "venue",
+          "settings": {
+            "name": "The Fat Duck",
+            "max_height": 70
+          }
+        },
+        "v3": {
+          "type": "venue",
+          "settings": {
+            "name": "Alinea",
+            "max_height": 70
+          }
+        },
+        "v4": {
+          "type": "venue",
+          "settings": {
+            "name": "Aman",
+            "max_height": 44
+          }
+        },
+        "v5": {
+          "type": "venue",
+          "settings": {
+            "name": "Atelier Crenn",
+            "max_height": 44
+          }
+        },
+        "v6": {
+          "type": "venue",
+          "settings": {
+            "name": "Vue de Monde",
+            "max_height": 44
+          }
+        },
+        "v7": {
+          "type": "venue",
+          "settings": {
+            "name": "Fortnum & Mason",
+            "max_height": 44
+          }
+        }
       },
-      "block_order": ["v1", "v2", "v3", "v4", "v5", "v6", "v7"],
-      "settings": { "heading": "Poured at" }
+      "block_order": [
+        "v1",
+        "v2",
+        "v3",
+        "v4",
+        "v5",
+        "v6",
+        "v7"
+      ],
+      "settings": {
+        "heading": "Poured at"
+      }
     },
     "range": {
       "type": "featured-collection",
       "settings": {
         "heading": "Core range",
-        "limit": 4,
-        "columns": "4",
+        "limit": 6,
+        "columns": "3",
         "show_add": false,
-        "link_label": "All bottles"
+        "link_label": "All bottles",
+        "collection": "the-range",
+        "link_url": "/collections/the-range"
       }
     },
     "made-for": {
       "type": "editorial-triptych",
       "blocks": {
-        "c1": { "type": "cell", "settings": { "title": "Made for starters", "subtitle": "oysters, radicchio, cured fish" } },
-        "c2": { "type": "cell", "settings": { "title": "Made for mains", "subtitle": "charred lamb, mushroom, soy" } },
-        "c3": { "type": "cell", "settings": { "title": "Made for dessert", "subtitle": "stone fruit, chocolate, cheese" } }
+        "c1": {
+          "type": "cell",
+          "settings": {
+            "title": "Made for starters",
+            "subtitle": "oysters, radicchio, cured fish"
+          }
+        },
+        "c2": {
+          "type": "cell",
+          "settings": {
+            "title": "Made for mains",
+            "subtitle": "charred lamb, mushroom, soy"
+          }
+        },
+        "c3": {
+          "type": "cell",
+          "settings": {
+            "title": "Made for dessert",
+            "subtitle": "stone fruit, chocolate, cheese"
+          }
+        }
       },
-      "block_order": ["c1", "c2", "c3"]
+      "block_order": [
+        "c1",
+        "c2",
+        "c3"
+      ]
     },
     "press": {
       "type": "press-quotes",
@@ -90,11 +171,19 @@
         },
         "q2": {
           "type": "quote",
-          "settings": { "quote": "NON isn't just a drink; it's an experience.", "source": "Forbes" }
+          "settings": {
+            "quote": "NON isn't just a drink; it's an experience.",
+            "source": "Forbes"
+          }
         }
       },
-      "block_order": ["q1", "q2"],
-      "settings": { "heading": "Press" }
+      "block_order": [
+        "q1",
+        "q2"
+      ],
+      "settings": {
+        "heading": "Press"
+      }
     },
     "split": {
       "type": "split-feature",
@@ -114,12 +203,35 @@
             "title": "Savour the flavour",
             "text": "The NONstopper holds carbonation and freshness seven days, cold.",
             "link_label": "See the stopper",
-            "link": "/collections/all"
+            "link": "/products/nonstopper"
           }
         }
       },
-      "block_order": ["s1", "s2"]
+      "block_order": [
+        "s1",
+        "s2"
+      ]
+    },
+    "sets": {
+      "type": "featured-collection",
+      "settings": {
+        "heading": "Sets",
+        "collection": "non-sets",
+        "limit": 4,
+        "columns": "4",
+        "show_add": false,
+        "link_label": "All sets",
+        "link_url": "/collections/non-sets"
+      }
     }
   },
-  "order": ["hero", "poured-at", "range", "made-for", "press", "split"]
+  "order": [
+    "hero",
+    "poured-at",
+    "range",
+    "sets",
+    "made-for",
+    "press",
+    "split"
+  ]
 }

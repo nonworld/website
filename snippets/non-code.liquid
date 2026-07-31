@@ -1,24 +1,48 @@
 {%- comment -%}
-  Resolves a product's NON code (NON1, NON2, … / SET / STOPPER).
+  Resolves a product's NON code — the join key between Shopify and the codes
+  the design keys off (NON1 … NON9, SET, STOPPER).
 
-  The design keyed everything off a hardcoded code. In the theme the code comes
-  from, in order of preference:
-    1. metafield custom.non_code   — set this, it is the intended source
-    2. the first variant's SKU     — works if SKUs are already "NON1-750" etc.
-    3. the handle, uppercased      — last resort so nothing renders blank
+  Order of preference:
+    1. metafield custom.non_code   — explicit override, always wins
+    2. SKU pattern                 — the live store's SKUs already encode it
+    3. handle                      — last resort so nothing renders blank
 
-  Usage:  {% render 'non-code', product: product %}  →  outputs e.g. NON1
+  Live SKU shapes this has to survive (verified against the store):
+    NON1-750-B, NON1-750-6, NON1-750-12   → NON1
+    NON1-750-B-POS                         → NON1
+    NON1-375-B                             → NON1
+    NON-MIX6, NON-MIX6-STOPPER             → SET
+    NON-SET-EVERYDAY / SPRING / SPICE      → SET
+    NON-SET-STOPPER                        → SET
+    NON-STOPPER, AUSPOS-STOPPER30          → STOPPER
+
+  Naively splitting on "-" and taking the first token returns "NON" for every
+  set, which would collapse them all onto one code — hence the explicit cases.
 {%- endcomment -%}
+
 {%- liquid
   assign code = ''
+
   if product.metafields.custom.non_code != blank
     assign code = product.metafields.custom.non_code | metafield_text | strip | upcase
-  elsif product.first_available_variant.sku != blank
-    assign code = product.first_available_variant.sku | split: '-' | first | strip | upcase
-  elsif product.variants.first.sku != blank
-    assign code = product.variants.first.sku | split: '-' | first | strip | upcase
   else
-    assign code = product.handle | replace: '-', '' | upcase
+    assign sku = product.selected_or_first_available_variant.sku | default: product.variants.first.sku | upcase
+
+    if sku contains 'STOPPER' and sku contains 'SET' == false and sku contains 'MIX' == false
+      assign code = 'STOPPER'
+    elsif sku contains 'SET-' or sku contains 'MIX'
+      assign code = 'SET'
+    elsif sku != blank
+      assign first = sku | split: '-' | first
+      if first == 'NON'
+        assign code = 'SET'
+      else
+        assign code = first
+      endif
+    else
+      assign code = product.handle | replace: '-', '' | upcase
+    endif
   endif
+
   echo code
 -%}

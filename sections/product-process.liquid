@@ -8,12 +8,24 @@
   Section blocks act as a manual override when a product has no metafield yet.
 {%- endcomment -%}
 
+{%- comment -%}
+  Two shapes are supported, because the live store already uses the second.
+
+  1. custom.process_steps — JSON list of { n, title, body }. Richest, and what
+     the design's numbered steps were.
+  2. custom.process — the multi-line prose the store actually holds today. It
+     is written as "HEADING - body" blocks separated by blank lines
+     ("TANNIN - Chamomile is used for tannin…"), which splits cleanly into the
+     same numbered layout without anyone re-entering the copy.
+{%- endcomment -%}
+
 {%- liquid
   assign steps = product.metafields.custom.process_steps.value
+  assign prose = product.metafields.custom.process | metafield_text | strip
   assign pairings = product.metafields.custom.pairings.value
 -%}
 
-{%- if steps != blank or section.blocks.size > 0 -%}
+{%- if steps != blank or prose != blank or section.blocks.size > 0 -%}
   <div class="non-section">
     <div class="non-section__head">
       <h2 class="non-section__title">{{ section.settings.steps_heading }}</h2>
@@ -27,6 +39,30 @@
             <div class="non-step__t">{{ step.title }}</div>
             <p class="non-step__b">{{ step.body }}</p>
           </div>
+        {%- endfor -%}
+      {%- elsif prose != blank -%}
+        {%- assign chunks = prose | split: '
+
+' -%}
+        {%- for chunk in chunks -%}
+          {%- liquid
+            assign clean = chunk | strip
+            assign bits = clean | split: ' - '
+            assign title = bits | first | strip
+            assign body = clean | remove_first: title | remove_first: ' - ' | strip
+            assign n = forloop.index | prepend: '0' | slice: -2, 2
+          -%}
+          {%- if clean != blank -%}
+            <div>
+              <div class="non-step__n">{{ n }}</div>
+              {%- if body != blank and title.size < 40 -%}
+                <div class="non-step__t">{{ title | capitalize }}</div>
+                <p class="non-step__b">{{ body }}</p>
+              {%- else -%}
+                <p class="non-step__b">{{ clean }}</p>
+              {%- endif -%}
+            </div>
+          {%- endif -%}
         {%- endfor -%}
       {%- else -%}
         {%- for block in section.blocks -%}

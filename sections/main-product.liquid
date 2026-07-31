@@ -1,16 +1,37 @@
+{%- comment -%}
+  Reads the metafields the store already populates rather than a parallel set:
+    custom.profile           tasting profile  (was: invented custom.tastes)
+    custom.process           how it's made    (was: invented process_steps)
+    custom.ingredients       ingredients      (already matched)
+    custom.nutritional_panel rich text panel  (was: invented custom.nutrition)
+  Only custom.sits and custom.food_tags/food_why are genuinely new — the rest
+  of the port now sits on data that is already there.
+{%- endcomment -%}
+
 {%- liquid
   assign m = product.metafields.custom
   capture code
     render 'non-code', product: product
   endcapture
 
-  assign tastes = m.tastes | metafield_text
+  assign tastes = m.profile | metafield_text | default: m.tastes | metafield_text
   assign sits = m.sits | metafield_text
-  assign nutrition = m.nutrition | metafield_text
-  assign serve = m.serve | metafield_text
+  assign serve = m.serve | metafield_text | default: 'Chilled, wine glass'
   assign ingredients = m.ingredients | metafield_text
 
-  assign spec_count = 0
+  capture calories
+    render 'non-nutrition', product: product, label: 'Calories per serve'
+  endcapture
+  capture sugars
+    render 'non-nutrition', product: product, label: 'Sugars - Total'
+  endcapture
+
+  assign nutrition = ''
+  if calories != blank and sugars != blank
+    assign nutrition = calories | append: ' calories, ' | append: sugars | append: ' sugar'
+  endif
+
+  assign spec_count = 1
   if tastes != blank
     assign spec_count = spec_count | plus: 1
   endif
@@ -18,9 +39,6 @@
     assign spec_count = spec_count | plus: 1
   endif
   if nutrition != blank
-    assign spec_count = spec_count | plus: 1
-  endif
-  if serve != blank
     assign spec_count = spec_count | plus: 1
   endif
 -%}
@@ -74,6 +92,8 @@
 
     {%- if m.blurb != blank -%}
       <p class="non-buy__blurb">{{ m.blurb | metafield_text }}</p>
+    {%- elsif m.profile != blank -%}
+      <p class="non-buy__blurb">{{ m.profile | metafield_text }}</p>
     {%- elsif product.description != blank -%}
       <div class="non-buy__blurb">{{ product.description | strip_html | truncatewords: 60 }}</div>
     {%- endif -%}
@@ -95,8 +115,17 @@
       {%- if product.variants.size > 1 -%}
         <div class="non-variants" role="radiogroup" aria-label="Pack size">
           {%- for variant in product.variants -%}
+            {%- comment -%}
+              The live store already titles bottle variants "1" / "6" / "12",
+              so the unit count is derivable and nobody has to maintain a
+              metafield. custom.units stays as an override for products whose
+              titles aren't numeric (the sets).
+            {%- endcomment -%}
             {%- liquid
               assign units = variant.metafields.custom.units | metafield_text | plus: 0
+              if units == 0
+                assign units = variant.title | plus: 0
+              endif
               if units == 0
                 assign units = 1
               endif
@@ -111,7 +140,25 @@
               data-price="{{ variant.price }}"
               aria-checked="{% if variant.id == product.selected_or_first_available_variant.id %}true{% else %}false{% endif %}"
               {% unless variant.available %}disabled{% endunless %}>
-              <span>{{ variant.title }}</span>
+              {%- comment -%}
+                Store variants are titled bare numbers. The design labelled
+                them "1 bottle" / "6 pack" / "12 case"; rebuild that here so
+                the merchandising data stays clean and the storefront reads
+                like the design.
+              {%- endcomment -%}
+              <span>
+                {%- if variant.title == '1' -%}
+                  1 bottle
+                {%- elsif variant.title == '6' -%}
+                  6 pack
+                {%- elsif variant.title == '12' -%}
+                  12 case
+                {%- elsif variant.title == 'Default Title' -%}
+                  {{ product.title }}
+                {%- else -%}
+                  {{ variant.title }}
+                {%- endif -%}
+              </span>
               <span class="non-variant__per">
                 {%- if variant.available -%}
                   {{ each | money }} each

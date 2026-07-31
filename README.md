@@ -108,35 +108,43 @@ design's approach doesn't survive contact with a real store:
 
 ## Known gaps
 
-Carried over from the design, or introduced by the port. None of these block
-launch, but none of them are done.
+Verified against the live store (non.world, AUD, Advanced plan) rather than assumed.
 
-- **Helvetica Neue is `local()` only.** The system font on macOS/iOS is
-  licensed to the OS and can't be converted and served from the theme, so Mac
-  and iOS visitors get the real face and everyone else falls through to
-  Arial. To fix it properly, license a webfont (Helvetica Now, Neue Haas
-  Grotesk) and add a `url()` source in `theme.css`.
-- **Product prices in the design disagree with each other.** The Mixed 6 is
-  $180 on the homepage, $135 on the shop page and "$150 as a case" in the
-  somm's copy. Shopify is now the single source of price, but the somm's
-  canned answers still contain the old figures as text — worth a pass.
-- **The design shows nine bottles; the brief named four.** The theme handles
-  whatever is in the collection, but NON4, NON6 and NON8 were already noted as
-  missing pack shots, and NON7, NON9 and the Everyday Set need cut-outs on
-  white rather than food photography.
-- **Imagery still points at the live `non.world` CDN** in the old export. The
-  theme uses Shopify-hosted product media instead, so images need to be on
-  the products; section images (hero, triptych, venue logos) need uploading
-  in the theme editor.
-- **NONHQ bookings are a request, not a booking.** The form posts to
-  Shopify's native contact form. Real availability needs an app — Liquid
-  can't hold a calendar.
-- **The pairing page's reverse flow is not built.** The design also went
-  bottle → recipe, with three recipes per bottle across fast / Sunday /
-  show-off. That's a lot of copy and it belongs in metaobjects, not a section
-  schema. Food → bottle is built; recipes are not.
-- **No customer account templates.** Shopify's defaults will render unstyled.
-- **Untested against a real store.** Everything here is validated
-  structurally — JSON, section schemas, tag balance, asset references — but
-  Liquid only truly runs on Shopify. Push to `staging` and check the preview
-  before merging anything to `main`.
+- **Helvetica Neue is `local()` only.** The macOS system font is licensed to
+  the OS and cannot be converted and served from the theme, so Mac and iOS get
+  the real face and everyone else falls through to Arial. Fix is a licensed
+  webfont (Helvetica Now, Neue Haas Grotesk) with a `url()` source in
+  `theme.css`.
+- **No recipe images.** All thirty `non_recipe` entries have an empty `image`
+  field, so the recipe panel renders text-only. See `docs/recipes.md`.
+- **Section imagery needs uploading.** Product media comes from Shopify, but
+  the hero, triptych and venue logos are theme-editor images and are empty.
+- **Duplicate product in the store.** Two active products are both called
+  "The Everyday Set" on the same SKU `NON-SET-EVERYDAY` — `the-everyday-set`
+  (0 inventory) and `the-everyday-set-1` (807). Not a theme bug, but the
+  collection will show it twice.
+- **NONHQ is a request, not a booking.** The form posts to Shopify's native
+  contact form, so requests land in the store inbox with no app. Liquid cannot
+  hold availability — real booking needs an app or an embedded provider. This
+  one is a genuine platform limit, not a shortcut.
+- **No customer account templates.** Shopify's defaults render unstyled.
+
+## Corrected against the live store
+
+Things the design got wrong, now sourced from Shopify instead:
+
+- **Pack pricing.** The design had a 6-pack at $135 ($22.50/bottle) and a
+  12-case at $258. The store sells 6 at $150 and 12 at $300 — $25 a bottle
+  either way. All price figures are stripped from the somm's canned copy;
+  prices render from Liquid only.
+- **The Mixed 6.** The design showed $180 on the homepage and $135 on the
+  shop page. Both were wrong, and they were conflating two products: the
+  Mixed 6 Pack is $150, the Mixed 6 **Stopper** Pack is $180.
+- **The NONstopper** is $60 retail, not the $25 in the design.
+- **The range is six bottles** — NON1, NON2, NON3, NON5, NON7, NON9 — plus
+  eight sets and the accessories. The homepage now reads the real `the-range`
+  and `non-sets` collections.
+- **Metafields already existed.** The port originally invented `custom.tastes`,
+  `custom.nutrition` and `custom.process_steps`. The store already holds
+  `custom.profile`, `custom.nutritional_panel` and `custom.process`, so the
+  theme reads those. Only `sits`, `food_tags` and `food_why` are genuinely new.

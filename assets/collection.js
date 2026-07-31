@@ -36,6 +36,31 @@
 
   var pours = items.filter(function (i) { return i.isPour; });
 
+  // "1 sets" was shipping. Everything here is a plain count, so the plural has
+  // to come off the number rather than be baked into the string.
+  function plural(n, word) {
+    return n + ' ' + word + (n === 1 ? '' : 's');
+  }
+
+  // The design counts three things, not two: bottles, sets, and the stopper.
+  // Folding the stopper into "sets" both miscounted the sets and lost the only
+  // non-drinkable item in the shelf. Empty categories are dropped rather than
+  // printed as "0 stoppers".
+  function tally() {
+    var sets = 0;
+    var stoppers = 0;
+    items.forEach(function (i) {
+      if (i.isPour) return;
+      if ((i.code || '').toUpperCase() === 'STOPPER') stoppers++;
+      else sets++;
+    });
+
+    var parts = [plural(pours.length, 'bottle')];
+    if (sets) parts.push(plural(sets, 'set'));
+    if (stoppers) parts.push(plural(stoppers, 'stopper'));
+    return parts.join(' · ');
+  }
+
   function apply(key) {
     var filtered = key !== 'all';
 
@@ -99,10 +124,10 @@
     if (countEl) {
       if (filtered) {
         var working = pours.filter(function (i) { return (i.tags[key] || 0) > 0; }).length;
-        countEl.textContent = working + ' of ' + pours.length + ' bottles work here';
+        countEl.textContent =
+          working + ' of ' + plural(pours.length, 'bottle') + ' work here';
       } else {
-        var sets = items.length - pours.length;
-        countEl.textContent = pours.length + ' bottles · ' + sets + ' sets';
+        countEl.textContent = tally();
       }
     }
 

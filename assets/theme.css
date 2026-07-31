@@ -22,8 +22,17 @@
   --non-invert-fg: #000000;
   --non-ink: #231f20;
 
-  --non-sans: NONHelvetica, 'Helvetica Neue', Helvetica, Arial, sans-serif;
-  --non-mono: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, monospace;
+  /* Two faces, and no named alternates. Arial, Menlo, SFMono and ui-monospace
+     were in these stacks as fallbacks; none of them is a NON font, and a
+     fallback that renders is still a font on the page. They are gone.
+
+     The trailing generic (sans-serif / monospace) is not a third face — it is
+     the browser's category default, and there is no way to have no fallback at
+     all. Keeping it explicit means that if a webfont ever fails to arrive the
+     text lands on something of the right shape rather than on the browser's
+     default serif. */
+  --non-sans: NONHelvetica, 'Helvetica Neue', Helvetica, sans-serif;
+  --non-mono: 'JetBrains Mono', monospace;
 
   /* The design export was authored on a 1180px canvas and carried that as a
      hard max-width on the root element. That was the tool's artboard, not a

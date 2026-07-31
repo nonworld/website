@@ -36,6 +36,7 @@
   var DELAY = Number(root.getAttribute('data-delay')) || 1400;
   var AUTO = root.getAttribute('data-auto-open') === 'true';
   var KEY = 'non-lotto-seen';
+  var PRIZE_KEY = 'non-lotto-prize';
 
   var canvas = root.querySelector('[data-non-lotto-foil]');
   var refEl = root.querySelector('[data-non-lotto-ref]');
@@ -231,6 +232,25 @@
           sentEl.textContent = data.emailed
             ? (data.alreadyRevealed ? 'Already yours. Sent again to ' + email : 'Sent to ' + email)
             : 'Copy it down, the email did not go through';
+        }
+
+        // Remember the prize so the cart can show it. A code that only ever
+        // existed in a dismissed modal is a code nobody uses — the moment it
+        // matters is checkout, which is exactly when the card is long gone.
+        if (data.code) {
+          try {
+            localStorage.setItem(PRIZE_KEY, JSON.stringify({
+              code: data.code,
+              description: data.description || '',
+              terms: data.terms || '',
+              at: Date.now()
+            }));
+            document.dispatchEvent(new CustomEvent('non:lotto:won', { detail: data }));
+          } catch (e) {
+            // Private browsing, or storage full. The code is on screen and in
+            // the customer's inbox either way; losing the cart reminder is not
+            // worth failing the reveal over.
+          }
         }
 
         unlocked = true;

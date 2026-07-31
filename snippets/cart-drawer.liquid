@@ -22,6 +22,28 @@
     </div>
 
     <footer class="non-drawer__foot">
+      {%- comment -%}
+        A won NON Lotto prize, carried through to where it gets used. The code
+        is issued in a modal that is dismissed long before checkout, so without
+        this the customer has to remember it or go digging through their inbox.
+
+        Applying it is a link to /discount/CODE, which is Shopify's own
+        mechanism: it puts the code on the session and redirects back, so the
+        discount is real and validated by Shopify rather than displayed by us.
+        Populated by cart.js from localStorage — deliberately not Liquid, since
+        the prize belongs to the browser that won it, not the page cache.
+      {%- endcomment -%}
+      <div class="non-cart-prize" data-non-cart-prize hidden>
+        <div class="non-cart-prize__body">
+          <span class="non-mono non-eyebrow">{{ 'cart.prize.won' | t }}</span>
+          <strong class="non-cart-prize__desc" data-non-cart-prize-desc></strong>
+          <span class="non-cart-prize__code" data-non-cart-prize-code></span>
+        </div>
+        <a class="non-cart-prize__apply" data-non-cart-prize-apply href="#">
+          {{ 'cart.prize.apply' | t }}
+        </a>
+      </div>
+
       <p class="non-mono non-eyebrow" data-non-cart-shipping hidden></p>
 
       <div style="display:flex;align-items:baseline;justify-content:space-between;margin:8px 0 14px">

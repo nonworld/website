@@ -257,10 +257,73 @@
       });
   });
 
+  /* --- NON Lotto prize ---------------------------------------------------- */
+
+  // The prize is won in a modal and used at checkout, and those are two very
+  // different moments. Between them the card is dismissed, so a code that lives
+  // only there is a code that quietly goes unredeemed. This carries it forward
+  // to the one screen where it is actually worth something.
+  //
+  // Applying goes through /discount/<code>, which is Shopify's own mechanism:
+  // it attaches the code to the session and redirects back. The discount is
+  // therefore validated and applied by Shopify. Nothing here decides that a
+  // discount is valid — it only remembers which one was won.
+  var PRIZE_KEY = 'non-lotto-prize';
+  var PRIZE_TTL = 1000 * 60 * 60 * 24 * 400; // ~13 months, matching the Worker ledger
+
+  function readPrize() {
+    try {
+      var raw = localStorage.getItem(PRIZE_KEY);
+      if (!raw) return null;
+      var prize = JSON.parse(raw);
+      if (!prize || !prize.code) return null;
+      // A prize older than the Worker would still honour is stale; drop it
+      // rather than showing a code that has since been retired.
+      if (prize.at && Date.now() - prize.at > PRIZE_TTL) {
+        localStorage.removeItem(PRIZE_KEY);
+        return null;
+      }
+      return prize;
+    } catch (e) {
+      return null; // private browsing, or somebody hand-edited storage
+    }
+  }
+
+  function renderPrize() {
+    var box = document.querySelector('[data-non-cart-prize]');
+    if (!box) return;
+
+    var prize = readPrize();
+    if (!prize) { box.hidden = true; return; }
+
+    var desc = box.querySelector('[data-non-cart-prize-desc]');
+    var code = box.querySelector('[data-non-cart-prize-code]');
+    var apply = box.querySelector('[data-non-cart-prize-apply]');
+
+    if (desc) desc.textContent = prize.description || 'A gift from NON';
+    if (code) code.textContent = prize.code;
+    if (apply) {
+      // encodeURIComponent on the code: it comes from storage, and storage is
+      // writable by anything running on this origin. Shopify would reject a
+      // malformed code anyway, but this keeps it from shaping the URL.
+      apply.setAttribute(
+        'href',
+        '/discount/' + encodeURIComponent(prize.code) + '?redirect=' + encodeURIComponent('/cart')
+      );
+    }
+
+    box.hidden = false;
+  }
+
+  // Won while the cart drawer is already on the page — repaint immediately
+  // rather than waiting for a reload that may never come.
+  document.addEventListener('non:lotto:won', renderPrize);
+
   /* --- boot -------------------------------------------------------------- */
 
   document.addEventListener('DOMContentLoaded', function () {
     getCart().then(render).catch(function () {});
+    renderPrize();
   });
 
   window.NON.cart = { add: add, change: change, open: open, close: close, get: getCart, format: formatMoney };

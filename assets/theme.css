@@ -775,3 +775,53 @@ button { font-family: inherit; }
 .non-rte h3 { color: var(--non-fg); font-size: 18px; margin: 30px 0 10px; }
 .non-rte a { text-decoration: underline; }
 .non-rte img { display: block; margin: 26px 0; }
+
+/* --- NON Lotto prize, carried into the cart ------------------------------- */
+/* Reads as a prize rather than another line of cart chrome: paper on ink, the
+   inversion the rest of the drawer never uses, so the eye lands on it once. */
+.non-cart-prize {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  background: var(--non-paper);
+  color: var(--non-ink);
+  padding: 13px 15px;
+  margin-bottom: 14px;
+}
+.non-cart-prize__body { display: flex; flex-direction: column; gap: 3px; min-width: 0; }
+.non-cart-prize .non-eyebrow { color: rgba(35,31,32,.5); }
+.non-cart-prize__desc {
+  font-size: var(--t-small);
+  font-weight: 600;
+  letter-spacing: -.01em;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.non-cart-prize__code {
+  font-family: var(--non-mono);
+  font-size: var(--t-mono);
+  letter-spacing: .1em;
+  color: rgba(35,31,32,.62);
+}
+/* 44px minimum, and a visible border at rest — on touch there is no hover to
+   reveal that this is the actionable half of the panel. */
+.non-cart-prize__apply {
+  flex: none;
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  padding: 0 16px;
+  border: 1px solid var(--non-ink);
+  font-family: var(--non-mono);
+  font-size: var(--t-mono);
+  letter-spacing: .12em;
+  text-transform: uppercase;
+  text-decoration: none;
+  color: var(--non-ink);
+  background: transparent;
+  transition: background .18s ease, color .18s ease;
+}
+.non-cart-prize__apply:hover,
+.non-cart-prize__apply:focus-visible { background: var(--non-ink); color: var(--non-paper); }

@@ -1,0 +1,42 @@
+<div class="non-section">
+  <div class="non-section__head">
+    <h1 class="non-section__title">{{ 'general.search.heading' | t }}</h1>
+    {%- if search.performed -%}
+      <span class="non-section__more">
+        {{ 'general.search.results_with_count' | t: count: search.results_count }}
+      </span>
+    {%- endif -%}
+  </div>
+
+  <form action="{{ routes.search_url }}" method="get" role="search" style="margin-top:24px;display:flex;gap:8px;max-width:520px">
+    <label class="visually-hidden" for="q">{{ 'general.search.placeholder' | t }}</label>
+    <input class="non-field" type="search" id="q" name="q" value="{{ search.terms | escape }}"
+      placeholder="{{ 'general.search.placeholder' | t }}">
+    <button type="submit" class="non-btn">{{ 'general.search.submit' | t }}</button>
+  </form>
+
+  {%- if search.performed -%}
+    {%- if search.results_count > 0 -%}
+      <div class="non-grid non-grid--3" style="margin-top:30px">
+        {%- for item in search.results -%}
+          {%- if item.object_type == 'product' -%}
+            {% render 'product-card', product: item %}
+          {%- else -%}
+            <div>
+              <a href="{{ item.url }}" class="non-card__name">{{ item.title }}</a>
+              <p class="non-card__note">{{ item.content | strip_html | truncatewords: 24 }}</p>
+            </div>
+          {%- endif -%}
+        {%- endfor -%}
+      </div>
+    {%- else -%}
+      <p class="non-note" style="margin-top:26px">
+        {{ 'general.search.no_results' | t: terms: search.terms }}
+      </p>
+    {%- endif -%}
+  {%- endif -%}
+</div>
+
+{% schema %}
+{ "name": "Search" }
+{% endschema %}

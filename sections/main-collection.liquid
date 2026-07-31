@@ -1,0 +1,114 @@
+{%- comment -%}
+  Shop — "the somm is the filter".
+
+  The design scored every bottle against nine food occasions with a hardcoded
+  tag table. Here the scores live on each product as metafield custom.food_tags
+  (JSON: { "raw": 3, "seafood": 3, … }) and the per-occasion reasoning lives on
+  custom.food_why (JSON: { "raw": "Salinity meets brine…" }).
+
+  Filtering happens client-side over the rendered grid: the collection is nine
+  or ten products, so there is no pagination to fight and no reason to round-
+  trip. If the range grows past ~40 SKUs, move this to Search & Discovery
+  filters instead.
+{%- endcomment -%}
+
+<div class="non-section">
+  <div class="non-section__head">
+    <h1 class="non-section__title">{{ collection.title | default: 'Shop' }}</h1>
+    <span class="non-section__more" data-non-count></span>
+  </div>
+
+  {%- if section.settings.show_filters -%}
+    <div class="non-filters" role="group" aria-label="What's on the table">
+      <button type="button" class="non-filter" data-non-filter="all" aria-pressed="true">Everything</button>
+      {%- for block in section.blocks -%}
+        <button
+          type="button"
+          class="non-filter"
+          data-non-filter="{{ block.settings.key }}"
+          data-somm-line="{{ block.settings.somm_line | escape }}"
+          aria-pressed="false"
+          {{ block.shopify_attributes }}>
+          {{ block.settings.label }}
+        </button>
+      {%- endfor -%}
+    </div>
+
+    <p class="non-somm-line" data-non-somm-line hidden></p>
+  {%- endif -%}
+
+  {%- if collection.products.size > 0 -%}
+    <div
+      class="non-grid non-grid--{{ section.settings.columns }}"
+      data-non-shelf
+      data-dim="{{ section.settings.dim_level }}"
+      data-dim-enabled="{{ section.settings.dim_non_matches }}">
+      {%- for product in collection.products -%}
+        {%- liquid
+          capture code
+            render 'non-code', product: product
+          endcapture
+          assign tags_json = product.metafields.custom.food_tags | metafield_text
+          assign why_json = product.metafields.custom.food_why | metafield_text
+          assign is_pour = false
+          if code contains 'NON'
+            assign is_pour = true
+          endif
+        -%}
+        <div
+          data-non-item
+          data-code="{{ code | escape }}"
+          data-is-pour="{{ is_pour }}"
+          data-tags="{{ tags_json | default: '{}' | escape }}"
+          data-why="{{ why_json | default: '{}' | escape }}">
+          {% render 'product-card', product: product, show_add: section.settings.show_add %}
+        </div>
+      {%- endfor -%}
+    </div>
+  {%- else -%}
+    <p class="non-note" style="margin-top:24px">Nothing in this collection yet.</p>
+  {%- endif -%}
+
+  {%- if paginate.pages > 1 -%}
+    <nav class="non-mono non-eyebrow" style="margin-top:32px;display:flex;gap:14px" aria-label="Pagination">
+      {%- if paginate.previous -%}<a href="{{ paginate.previous.url }}">&larr; Previous</a>{%- endif -%}
+      {%- if paginate.next -%}<a href="{{ paginate.next.url }}">Next &rarr;</a>{%- endif -%}
+    </nav>
+  {%- endif -%}
+</div>
+
+<script src="{{ 'collection.js' | asset_url }}" defer></script>
+
+{% schema %}
+{
+  "name": "Collection",
+  "settings": [
+    { "type": "checkbox", "id": "show_filters", "label": "Show the somm food filter", "default": true },
+    { "type": "checkbox", "id": "show_add", "label": "Show add to cart on cards", "default": true },
+    {
+      "type": "select",
+      "id": "columns",
+      "label": "Columns",
+      "options": [
+        { "value": "2", "label": "2" },
+        { "value": "3", "label": "3" },
+        { "value": "4", "label": "4" }
+      ],
+      "default": "3"
+    },
+    { "type": "checkbox", "id": "dim_non_matches", "label": "Fade bottles that don't answer", "default": true },
+    { "type": "range", "id": "dim_level", "label": "Fade level", "min": 0.1, "max": 1, "step": 0.02, "default": 0.34 }
+  ],
+  "blocks": [
+    {
+      "type": "occasion",
+      "name": "Food occasion",
+      "settings": [
+        { "type": "text", "id": "key", "label": "Key", "info": "Must match a key in the product's custom.food_tags metafield." },
+        { "type": "text", "id": "label", "label": "Label" },
+        { "type": "textarea", "id": "somm_line", "label": "Somm line", "info": "The prose shown when this filter is active." }
+      ]
+    }
+  ]
+}
+{% endschema %}

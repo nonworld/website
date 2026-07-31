@@ -1,0 +1,23 @@
+<div class="non-section">
+  <div class="non-section__head">
+    <h1 class="non-section__title">Collections</h1>
+  </div>
+
+  <div class="non-grid non-grid--3">
+    {%- for collection in collections -%}
+      <a href="{{ collection.url }}" class="non-card">
+        <span class="non-card__media">
+          {%- if collection.featured_image -%}
+            {{ collection.featured_image | image_url: width: 800 | image_tag: loading: 'lazy', alt: collection.title }}
+          {%- endif -%}
+        </span>
+        <span class="non-card__name">{{ collection.title }}</span>
+        <span class="non-card__note">{{ collection.products_count }} products</span>
+      </a>
+    {%- endfor -%}
+  </div>
+</div>
+
+{% schema %}
+{ "name": "Collections list" }
+{% endschema %}

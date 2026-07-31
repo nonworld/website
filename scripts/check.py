@@ -115,6 +115,18 @@ for path in glob("sections/*.liquid"):
     for b in schema.get("blocks", []):
         check_ranges(b.get("settings"), f"block {b.get('type')}")
 
+# 2b. a section schema may define `default` or `presets`, never both. Shopify
+#     rejects the file outright — and because the GitHub integration reports
+#     rejections only in the connection panel, the file simply never appears in
+#     the theme and every template referencing it is rejected too.
+for path in glob("sections/*.liquid"):
+    schema = schema_of(path)
+    if schema and "default" in schema and "presets" in schema:
+        issues.append(
+            f"{path}: schema defines both 'default' and 'presets' — Shopify "
+            f"rejects the file, and every template using this section with it"
+        )
+
 # 4 + 5. templates reference real sections, settings, blocks and in-range values
 section_names = {os.path.splitext(os.path.basename(p))[0] for p in glob("sections/*.liquid")}
 

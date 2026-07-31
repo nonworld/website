@@ -17,34 +17,36 @@
 {
   "name": "Press",
   "settings": [
-    { "type": "text", "id": "heading", "label": "Heading", "default": "Press" }
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Heading",
+      "default": "Press"
+    }
   ],
   "blocks": [
     {
       "type": "quote",
       "name": "Quote",
       "settings": [
-        { "type": "textarea", "id": "quote", "label": "Quote" },
-        { "type": "text", "id": "source", "label": "Publication" }
+        {
+          "type": "textarea",
+          "id": "quote",
+          "label": "Quote"
+        },
+        {
+          "type": "text",
+          "id": "source",
+          "label": "Publication"
+        }
       ]
     }
   ],
-  "default": {
-    "blocks": [
-      {
-        "type": "quote",
-        "settings": {
-          "quote": "NON isn't trying to be an imitation of wine, but rather its own, distinct flavor.",
-          "source": "Rolling Stone"
-        }
-      },
-      {
-        "type": "quote",
-        "settings": { "quote": "NON isn't just a drink; it's an experience.", "source": "Forbes" }
-      }
-    ]
-  },
-  "presets": [{ "name": "Press" }]
+  "presets": [
+    {
+      "name": "Press"
+    }
+  ]
 }
 {% endschema %}
 

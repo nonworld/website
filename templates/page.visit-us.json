@@ -1,0 +1,18 @@
+{
+  "sections": {
+    "main": {
+      "type": "nonhq-concierge",
+      "settings": {
+        "heading": "Visit NONHQ",
+        "intro": "The world's first non-alcoholic cellar door. Tastings, tours and workshops in Cheltenham, VIC.",
+        "form_heading": "Request a time",
+        "submit_label": "Send the request",
+        "form_note": "We confirm by email, usually same day.",
+        "success_message": "Got it. We'll confirm by email, usually the same day."
+      }
+    }
+  },
+  "order": [
+    "main"
+  ]
+}

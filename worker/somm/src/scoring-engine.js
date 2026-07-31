@@ -57,6 +57,23 @@ const PRODUCTS = [
       cookingStyle: ['raw', 'cured', 'lightly cooked'],
       dishAcid: [2, 5],
     },
+    // Verified against the store's own custom.nutritional_panel and
+    // custom.ingredients metafields. Per 150ml serve.
+    facts: {
+      style: 'sparkling',
+      serve: '6°C, wine glass',
+      calories: 37,
+      sugarG: 7.1,
+      addedSugarG: 2.0,
+      sodiumMg: 122,
+      carbsG: 8.3,
+      abv: '0.0%',
+      glutenG: 0.0,
+      vegan: true,       // stated on every product page in the store
+      glutenFree: true,  // gluten measured at 0.0g on every panel
+      volume: '750ml',
+      ingredients: 'Water, verjus, raspberries, sugar, chamomile, salt.',
+    },
     positioning: 'Sits where a dry rosé sat',
   },
   {
@@ -81,6 +98,23 @@ const PRODUCTS = [
       cookingStyle: ['roasted', 'braised', 'grilled', 'steamed', 'poached'],
       dishAcid: [0, 3],
     },
+    // Verified against the store's own custom.nutritional_panel and
+    // custom.ingredients metafields. Per 150ml serve.
+    facts: {
+      style: 'sparkling',
+      serve: 'Chilled, wine glass',
+      calories: 27,
+      sugarG: 5.1,
+      addedSugarG: 0.0,
+      sodiumMg: 53,
+      carbsG: 6.0,
+      abv: '0.0%',
+      glutenG: 0.0,
+      vegan: true,       // stated on every product page in the store
+      glutenFree: true,  // gluten measured at 0.0g on every panel
+      volume: '750ml',
+      ingredients: 'Water, pears, verjus, black tea, kelp (kombu), olive brine, vanilla, agave, clove, cardamom, ginger root, star anise, peppercorn.',
+    },
     positioning: 'Sits where a rich white sat',
   },
   {
@@ -103,6 +137,23 @@ const PRODUCTS = [
       cookingStyle: ['grilled', 'steamed', 'poached', 'roasted', 'charred'],
       dishAcid: [1, 5],
     },
+    // Verified against the store's own custom.nutritional_panel and
+    // custom.ingredients metafields. Per 150ml serve.
+    facts: {
+      style: 'still',
+      serve: 'Chilled, wine glass',
+      calories: 40,
+      sugarG: 8.4,
+      addedSugarG: 1.2,
+      sodiumMg: 72,
+      carbsG: 9.9,
+      abv: '0.0%',
+      glutenG: 0.0,
+      vegan: true,       // stated on every product page in the store
+      glutenFree: true,  // gluten measured at 0.0g on every panel
+      volume: '750ml',
+      ingredients: 'Water, verjus, oranges, yuzu, sugar, salt, cinnamon.',
+    },
     positioning: 'Sits where an aromatic white sat',
   },
   {
@@ -121,6 +172,23 @@ const PRODUCTS = [
       fatLevel: [0, 4], // cuts fat, but does not carry the heaviest plates
       cookingStyle: ['raw', 'fried', 'braised', 'steamed', 'lightly cooked'],
       dishAcid: [0, 5],
+    },
+    // Verified against the store's own custom.nutritional_panel and
+    // custom.ingredients metafields. Per 150ml serve.
+    facts: {
+      style: 'sparkling',
+      serve: 'Very cold, wine glass',
+      calories: 18,
+      sugarG: 3.6,
+      addedSugarG: 1.5,
+      sodiumMg: 140,
+      carbsG: 4.4,
+      abv: '0.0%',
+      glutenG: 0.0,
+      vegan: true,       // stated on every product page in the store
+      glutenFree: true,  // gluten measured at 0.0g on every panel
+      volume: '750ml',
+      ingredients: 'Water, verjus, sugar, lemon verbena, lemongrass, hibiscus, lemon myrtle, liquorice root, peppermint, salt, hops.',
     },
     positioning: 'Sits where a dry sparkling sat',
     // The only bottle that actively cools chilli — see heatBonus below.
@@ -147,6 +215,23 @@ const PRODUCTS = [
       cookingStyle: ['charred', 'grilled', 'roasted', 'braised', 'smoked'],
       dishAcid: [0, 3],
     },
+    // Verified against the store's own custom.nutritional_panel and
+    // custom.ingredients metafields. Per 150ml serve.
+    facts: {
+      style: 'sparkling',
+      serve: 'Chilled, wine glass',
+      calories: 30,
+      sugarG: 6.2,
+      addedSugarG: 0.0,
+      sodiumMg: 71,
+      carbsG: 9.5,
+      abv: '0.0%',
+      glutenG: 0.0,
+      vegan: true,       // stated on every product page in the store
+      glutenFree: true,  // gluten measured at 0.0g on every panel
+      volume: '750ml',
+      ingredients: 'Water, verjus, cherries, coffee arabica, salt, pink peppercorn, garam masala, allspice, nutmeg.',
+    },
     positioning: 'Sits where a big red sat',
   },
   {
@@ -171,6 +256,23 @@ const PRODUCTS = [
       fatLevel: [1, 5],
       cookingStyle: ['charred', 'grilled', 'roasted', 'braised', 'smoked', 'poached'],
       dishAcid: [0, 4],
+    },
+    // Verified against the store's own custom.nutritional_panel and
+    // custom.ingredients metafields. Per 150ml serve.
+    facts: {
+      style: 'still',
+      serve: 'Chilled, wine glass',
+      calories: 51,
+      sugarG: 7.5,
+      addedSugarG: 0.0,
+      sodiumMg: 75,
+      carbsG: 12.5,
+      abv: '0.0%',
+      glutenG: 0.0,
+      vegan: true,       // stated on every product page in the store
+      glutenFree: true,  // gluten measured at 0.0g on every panel
+      volume: '750ml',
+      ingredients: 'Water, verjus, Stanley plum, beetroot, Shiraz grape skin, blackberry, fir pine, sugar, tamari, ancho chilli, french oak.',
     },
     positioning: 'Sits where a pinot noir sat',
   },
@@ -303,4 +405,24 @@ function rankProducts(dish, catalogue = PRODUCTS) {
     });
 }
 
-export { PRODUCTS, scoreProduct, rankProducts };
+// A flat, printable facts sheet. This is what the factual branch of the API
+// grounds on — the model is handed these numbers and told to use nothing else,
+// which is why it can answer "which is lowest in sugar" without guessing.
+function factsSheet(catalogue = PRODUCTS) {
+  return catalogue
+    .filter((p) => p.facts)
+    .map(function (p) {
+      var f = p.facts;
+      return [
+        `${p.id} ${p.name} — ${f.style}, ${f.abv} ABV, ${f.volume}`,
+        `  per 150ml serve: ${f.calories} cal, ${f.sugarG}g sugar (${f.addedSugarG}g added), ${f.sodiumMg}mg sodium, ${f.carbsG}g carbs, ${f.glutenG}g gluten`,
+        `  ${f.vegan ? 'vegan' : 'not vegan'}, ${f.glutenFree ? 'gluten free' : 'contains gluten'}`,
+        `  serve: ${f.serve}`,
+        `  ingredients: ${f.ingredients}`,
+        `  ${p.positioning}. ${p.dominantFlavours.join(', ')}.`,
+      ].join('\n');
+    })
+    .join('\n\n');
+}
+
+export { PRODUCTS, scoreProduct, rankProducts, factsSheet };

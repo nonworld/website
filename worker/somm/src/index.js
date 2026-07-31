@@ -24,7 +24,7 @@
  *     and availability from Liquid
  */
 
-import { PRODUCTS, rankProducts, scoreProduct } from './scoring-engine.js';
+import { PRODUCTS, rankProducts, scoreProduct, factsSheet } from './scoring-engine.js';
 
 const MAX_QUERY = 500;
 
@@ -98,6 +98,50 @@ Hard rules:
 
 Voice: a sommelier who knows the kitchen. Specific and unfussy.`;
 
+// Not every question is a pairing. "Are they low calorie?", "what's in it?",
+// "is it vegan?" are factual, and forcing them through the dish extractor
+// produced answers like "I don't have calorie data" while the numbers sat in
+// Shopify the whole time.
+//
+// So route first. One cheap call, one word out.
+const ROUTE_SYSTEM = `Classify the question. Reply with ONE word, nothing else:
+
+pairing  — asks what to drink with food, an occasion, a meal, a gift, a mood,
+           or which bottle suits something
+facts    — asks about the drinks themselves: calories, kilojoules, sugar,
+           carbs, sodium, alcohol, ingredients, allergens, vegan, gluten,
+           caffeine, how it is made, how to serve it, how long it keeps, what
+           it tastes like, how it differs from wine or from de-alcoholised
+
+Examples that are facts, not pairing:
+  "are they low calorie?"        "how many calories?"      "is it sweet?"
+  "which has the least sugar?"   "what's in it?"           "is it vegan?"
+  "how much alcohol?"            "does it have caffeine?"  "how do I serve it?"
+  "how long does it keep?"       "is it gluten free?"
+
+Anything asking how healthy, how sweet, how strong or what is in the bottle is
+facts. Only route to pairing when the question is about what to drink WITH
+something, or which bottle suits an occasion.
+other    — anything else (shipping, orders, stockists, wholesale, careers)
+
+If it asks both, answer pairing.`;
+
+const FACTS_SYSTEM = `You are NON Somm. You answer factual questions about the
+NON range using ONLY the data sheet you are given.
+
+Hard rules:
+- Use ONLY the numbers and ingredients in the sheet. Never estimate, never
+  round to a "roughly", never invent a figure you were not given.
+- If the sheet does not contain the answer, say so plainly in one sentence and
+  say what you can answer instead. Do not guess.
+- Quote real figures when they help, and name the bottle they belong to.
+- Never mention price, stock, discounts or shipping. You do not have that data.
+- The sheet lists every bottle you know about. Never state a count you cannot
+  read off it, and never refer to a bottle that is not on it.
+- Two short paragraphs maximum. Australian English. No em dashes.
+
+Voice: a sommelier who knows the spec sheet. Precise and unfussy.`;
+
 /* ------------------------------------------------------------------ utils */
 
 function json(body, status = 200, extra = {}) {
@@ -138,6 +182,53 @@ async function claude(env, { system, messages, maxTokens, model }) {
 
   const data = await res.json();
   return (data.content || []).map((b) => b.text || '').join('').trim();
+}
+
+/* ------------------------------------------------------ step 0: routing */
+
+async function routeQuery(env, query) {
+  try {
+    const word = await claude(env, {
+      model: env.EXTRACT_MODEL || 'claude-haiku-4-5-20251001',
+      maxTokens: 8,
+      system: ROUTE_SYSTEM,
+      messages: [{ role: 'user', content: query }],
+    });
+    const clean = word.toLowerCase().replace(/[^a-z]/g, '');
+    if (clean === 'facts' || clean === 'other') return clean;
+    return 'pairing';
+  } catch (e) {
+    // Routing is an optimisation, not a gate. If it fails, pair.
+    return 'pairing';
+  }
+}
+
+async function answerFacts(env, query, code) {
+  const scope = code
+    ? PRODUCTS.filter((p) => p.id === String(code).toUpperCase())
+    : PRODUCTS;
+
+  const answer = await claude(env, {
+    model: env.EXPLAIN_MODEL || 'claude-sonnet-5',
+    maxTokens: 400,
+    system: FACTS_SYSTEM,
+    messages: [
+      {
+        role: 'user',
+        content:
+          'Data sheet — this is the complete range, ' +
+          (scope.length ? scope : PRODUCTS).length + ' bottles:\n\n' +
+          factsSheet(scope.length ? scope : PRODUCTS) +
+          '\n\nQuestion: ' + query,
+      },
+    ],
+  });
+
+  // Name-drop any bottle the answer actually cites, so the pick cards match
+  // the words rather than being a second, unrelated recommendation.
+  const picks = PRODUCTS.filter((p) => answer.indexOf(p.id) !== -1).map((p) => p.id).slice(0, 2);
+
+  return { answer, picks };
 }
 
 /* --------------------------------------------------- step 1: extraction */
@@ -400,6 +491,24 @@ export default {
     // question changes from "which bottle" to "does this one fit", and the
     // answer has to be allowed to be no.
     const context = body.productContext || body.code || null;
+
+    // ---- route: factual questions never reach the pairing engine ---------
+    const intent = await routeQuery(env, query);
+
+    if (intent === 'facts' || intent === 'other') {
+      try {
+        const result = await answerFacts(env, query, context);
+        return json({
+          intent: intent,
+          answer: result.answer,
+          explanation: result.answer,
+          picks: result.picks,
+          productId: result.picks[0] || null,
+        });
+      } catch (e) {
+        return json(fallbackResponse('facts', e, env), 200);
+      }
+    }
 
     let dish;
     try {

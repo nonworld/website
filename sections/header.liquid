@@ -1,0 +1,48 @@
+<header class="non-header" role="banner">
+  <a href="{{ routes.root_url }}" aria-label="{{ shop.name }}">
+    {%- if settings.logo != blank -%}
+      <img
+        src="{{ settings.logo | image_url: width: 400 }}"
+        alt="{{ shop.name | escape }}"
+        class="non-header__logo"
+        style="height: {{ settings.logo_height | default: '19px' }}"
+        width="{{ settings.logo.width }}"
+        height="{{ settings.logo.height }}">
+    {%- else -%}
+      {%- comment -%}
+        Falls back to the logotype bundled in assets/ so the header is correct
+        before anyone uploads anything in the theme editor. The file is the
+        brand ink (#231F20); the header inverts it to sit on the dark shell.
+      {%- endcomment -%}
+      <img
+        src="{{ 'non-logotype.svg' | asset_url }}"
+        alt="{{ shop.name | escape }}"
+        class="non-header__logo"
+        style="height: {{ settings.logo_height | default: '19px' }}">
+    {%- endif -%}
+  </a>
+
+  <nav class="non-header__nav" role="navigation" aria-label="Primary">
+    {%- for link in section.settings.menu.links -%}
+      <a href="{{ link.url }}" {% if link.active %}aria-current="page"{% endif %}>{{ link.title }}</a>
+    {%- endfor -%}
+  </nav>
+
+  <button type="button" class="non-header__cart" data-non-cart-open data-non-cart-count>
+    {{ 'sections.header.cart_count' | t: count: cart.item_count }}
+  </button>
+</header>
+
+{% schema %}
+{
+  "name": "Header",
+  "settings": [
+    {
+      "type": "link_list",
+      "id": "menu",
+      "label": "Menu",
+      "default": "main-menu"
+    }
+  ]
+}
+{% endschema %}

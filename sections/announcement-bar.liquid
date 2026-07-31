@@ -1,0 +1,50 @@
+{%- if section.blocks.size > 0 -%}
+  <div class="non-announce">
+    <div class="non-announce__track" aria-hidden="true">
+      {%- comment -%}
+        The track is duplicated so the -50% keyframe loops seamlessly. Screen
+        readers get the plain list below instead.
+      {%- endcomment -%}
+      {%- for i in (1..2) -%}
+        <div class="non-announce__set">
+          {%- for block in section.blocks -%}
+            <span {{ block.shopify_attributes }}>{{ block.settings.text }}</span>
+          {%- endfor -%}
+          {%- for block in section.blocks -%}
+            <span>{{ block.settings.text }}</span>
+          {%- endfor -%}
+        </div>
+      {%- endfor -%}
+    </div>
+
+    <ul class="visually-hidden">
+      {%- for block in section.blocks -%}
+        <li>{{ block.settings.text }}</li>
+      {%- endfor -%}
+    </ul>
+  </div>
+{%- endif -%}
+
+{% schema %}
+{
+  "name": "Announcement bar",
+  "max_blocks": 8,
+  "blocks": [
+    {
+      "type": "message",
+      "name": "Message",
+      "settings": [
+        { "type": "text", "id": "text", "label": "Text", "default": "0.0% ABV" }
+      ]
+    }
+  ],
+  "default": {
+    "blocks": [
+      { "type": "message", "settings": { "text": "0.0% ABV" } },
+      { "type": "message", "settings": { "text": "chef made" } },
+      { "type": "message", "settings": { "text": "free shipping over $75" } },
+      { "type": "message", "settings": { "text": "vegan & gluten free" } }
+    ]
+  }
+}
+{% endschema %}

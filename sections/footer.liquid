@@ -1,0 +1,37 @@
+<footer class="non-footer" role="contentinfo">
+  <span>&copy; {{ 'now' | date: '%Y' }} {{ shop.name }}</span>
+
+  <span class="non-footer__links">
+    {%- for link in section.settings.menu.links -%}
+      <a href="{{ link.url }}">{{ link.title }}</a>
+    {%- endfor -%}
+
+    {%- if settings.social_instagram != blank -%}
+      <a href="{{ settings.social_instagram }}" rel="noopener" target="_blank">Instagram</a>
+    {%- endif -%}
+
+    {%- if section.settings.show_lotto_link -%}
+      <button type="button" class="non-footer__button" data-non-lotto-open>NON Lotto</button>
+    {%- endif -%}
+
+    {%- if settings.contact_email != blank -%}
+      <a href="mailto:{{ settings.contact_email }}">{{ settings.contact_email }}</a>
+    {%- endif -%}
+  </span>
+</footer>
+
+{% schema %}
+{
+  "name": "Footer",
+  "settings": [
+    { "type": "link_list", "id": "menu", "label": "Menu", "default": "footer" },
+    {
+      "type": "checkbox",
+      "id": "show_lotto_link",
+      "label": "Show the NON Lotto link",
+      "default": true,
+      "info": "Lets anyone re-open the scratch card after they've dismissed it."
+    }
+  ]
+}
+{% endschema %}

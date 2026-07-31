@@ -1,17 +1,60 @@
-/*
- * ------------------------------------------------------------
- * IMPORTANT: The contents of this file are auto-generated.
- *
- * This file may be updated by the Shopify admin theme editor
- * or related systems. Please exercise caution as any changes
- * made to this file may be overwritten.
- * ------------------------------------------------------------
- */
 {
   "sections": {
     "main": {
-      "type": "main-page",
-      "settings": {}
+      "type": "contact-form",
+      "blocks": {
+        "t1": {
+          "type": "topic",
+          "settings": {
+            "label": "An order"
+          }
+        },
+        "t2": {
+          "type": "topic",
+          "settings": {
+            "label": "Stocking NON"
+          }
+        },
+        "t3": {
+          "type": "topic",
+          "settings": {
+            "label": "Trade or wholesale"
+          }
+        },
+        "t4": {
+          "type": "topic",
+          "settings": {
+            "label": "Press"
+          }
+        },
+        "t5": {
+          "type": "topic",
+          "settings": {
+            "label": "NONHQ"
+          }
+        },
+        "t6": {
+          "type": "topic",
+          "settings": {
+            "label": "Something else"
+          }
+        }
+      },
+      "block_order": [
+        "t1",
+        "t2",
+        "t3",
+        "t4",
+        "t5",
+        "t6"
+      ],
+      "settings": {
+        "heading": "Contact",
+        "submit_label": "Send",
+        "intro": "Trade enquiries, press, stockist requests or something that has gone wrong. We answer everything.",
+        "success_message": "Got it. We'll come back to you, usually the same day.",
+        "aside_heading": "Also"
+      }
     }
   },
   "order": [

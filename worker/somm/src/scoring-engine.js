@@ -20,6 +20,12 @@
  *   - The range is six bottles, not three. NON5, NON7 and NON9 are missing
  *     from the draft and they cover the cases the other three handle worst
  *     (chilli, braise, and red meat respectively).
+ *   - NON9 was profiled as a big red: body 5, tannin 5, red meat only. Per NON
+ *     it sits where a pinot noir sat, and that changes the answers. A pinot is
+ *     the classic salmon red; the old profile had NON9 "crushing delicate
+ *     poached salmon", which is precisely backwards. Body and tannin come down,
+ *     acid goes up, and the protein list widens to pinot's actual range rather
+ *     than red meat alone.
  *   - NON3 was profiled as body 5 / "sits where red sat". It is neither. Per
  *     NON, it sits where an *aromatic white* sat — still, bright, tart,
  *     yuzu and orange pith over cinnamon grip. The design copy called it a
@@ -33,6 +39,7 @@
 const PRODUCTS = [
   {
     id: 'NON1',
+    core: true, // core range deck
     name: 'Salted Raspberry & Chamomile',
     handle: 'salted-raspberry-chamomile',
     acid: 4,
@@ -42,15 +49,22 @@ const PRODUCTS = [
     body: 1,
     dominantFlavours: ['raspberry', 'chamomile', 'floral', 'red fruit', 'salt'],
     bestWith: {
-      proteins: ['shellfish', 'raw fish', 'white fish', 'oyster', 'goat cheese'],
-      fatLevel: [0, 2],
-      cookingStyle: ['raw', 'cured', 'lightly cooked', 'steamed'],
+      // Antipasti is NON1's plate per the core range deck: the raw and cured
+      // end. Cooked seafood belongs to NON3. Oysters stay here — they are raw,
+      // and salt against brine is the bottle's whole argument.
+      proteins: ['shellfish', 'raw fish', 'oyster', 'cured meat', 'goat cheese', 'hard cheese'],
+      fatLevel: [0, 3],
+      cookingStyle: ['raw', 'cured', 'lightly cooked'],
       dishAcid: [2, 5],
     },
     positioning: 'Sits where a dry rosé sat',
   },
   {
+    // Not in the core range deck (NON1/3/5/7/9). Still an active product, so it
+    // stays scoreable, but it should not out-rank a core bottle on that
+    // bottle's own headline pairing.
     id: 'NON2',
+    core: false, // not in the core range deck
     name: 'Caramelised Pear & Kombu',
     handle: 'caramelised-pear-kombu',
     acid: 2,
@@ -60,15 +74,18 @@ const PRODUCTS = [
     body: 4,
     dominantFlavours: ['pear', 'kombu', 'umami', 'caramel', 'butter'],
     bestWith: {
-      proteins: ['white fish', 'poultry', 'mushroom', 'vegetable', 'hard cheese'],
-      fatLevel: [2, 4],
-      cookingStyle: ['roasted', 'steamed', 'poached', 'braised'],
+      // Roast meats and cheese, per NON. Beef stays with NON9 and duck with
+      // NON7 — NON2 takes the roasting tray and the cheese board around them.
+      proteins: ['red meat', 'lamb', 'poultry', 'mushroom', 'hard cheese'],
+      fatLevel: [2, 5],
+      cookingStyle: ['roasted', 'braised', 'grilled', 'steamed', 'poached'],
       dishAcid: [0, 3],
     },
     positioning: 'Sits where a rich white sat',
   },
   {
     id: 'NON3',
+    core: true, // core range deck
     name: 'Toasted Cinnamon & Yuzu',
     handle: 'toasted-cinnamon-yuzu',
     acid: 3,
@@ -78,15 +95,19 @@ const PRODUCTS = [
     body: 2,
     dominantFlavours: ['cinnamon', 'yuzu', 'orange', 'bitter pith', 'spice'],
     bestWith: {
-      proteins: ['white fish', 'poultry', 'mushroom', 'vegetable', 'cured meat', 'hard cheese'],
+      // Seafood is NON3's headline pairing per the core range deck — yuzu is
+      // the squeeze of citrus, already in the glass. Cooked fish sits here;
+      // raw and cured sits with NON1.
+      proteins: ['white fish', 'shellfish', 'poultry', 'mushroom', 'vegetable', 'hard cheese'],
       fatLevel: [1, 4],
-      cookingStyle: ['charred', 'grilled', 'roasted', 'cured', 'steamed'],
+      cookingStyle: ['grilled', 'steamed', 'poached', 'roasted', 'charred'],
       dishAcid: [1, 5],
     },
     positioning: 'Sits where an aromatic white sat',
   },
   {
     id: 'NON5',
+    core: true, // core range deck
     name: 'Lemon Marmalade & Hibiscus',
     handle: 'lemon-marmalade-hibiscus',
     acid: 5, // hardest acid in the range
@@ -97,7 +118,7 @@ const PRODUCTS = [
     dominantFlavours: ['citrus', 'hibiscus', 'menthol', 'hops', 'lemon myrtle'],
     bestWith: {
       proteins: ['white fish', 'vegetable', 'grain', 'shellfish', 'lamb'],
-      fatLevel: [0, 5], // cuts fat at the top, refreshing at the bottom
+      fatLevel: [0, 4], // cuts fat, but does not carry the heaviest plates
       cookingStyle: ['raw', 'fried', 'braised', 'steamed', 'lightly cooked'],
       dishAcid: [0, 5],
     },
@@ -107,6 +128,7 @@ const PRODUCTS = [
   },
   {
     id: 'NON7',
+    core: true, // core range deck
     name: 'Stewed Cherry & Coffee',
     handle: 'stewed-cherry-coffee',
     acid: 3,
@@ -116,7 +138,11 @@ const PRODUCTS = [
     body: 4,
     dominantFlavours: ['stewed cherry', 'coffee', 'bitter', 'whole spice', 'dark fruit'],
     bestWith: {
-      proteins: ['red meat', 'beef', 'lamb', 'mushroom', 'hard cheese', 'chocolate'],
+      // Duck is NON7's plate: stewed cherry against rich poultry is the
+      // classic match, and the coffee bitterness handles the fat. Beef belongs
+      // to NON9 — 'red meat' stays here so NON7 is not blind to it, but the
+      // specific protein is what decides the winner.
+      proteins: ['red meat', 'lamb', 'poultry', 'game', 'mushroom', 'hard cheese', 'chocolate'],
       fatLevel: [3, 5],
       cookingStyle: ['charred', 'grilled', 'roasted', 'braised', 'smoked'],
       dishAcid: [0, 3],
@@ -125,21 +151,28 @@ const PRODUCTS = [
   },
   {
     id: 'NON9',
+    core: true, // core range deck
     name: 'Oaked Blackberry & Plum',
     handle: 'non9-oaked-blackberry-plum',
-    acid: 3,
-    tannin: 5, // Shiraz grape skin + french oak — the most structural in the range
+    acid: 4, // pinot-like lift, not a flat heavy red
+    tannin: 4, // firm, per the core range deck — Shiraz skin plus french oak
     sweetness: 2,
     salt: 3, // tamari
-    body: 5,
+    body: 4,
     dominantFlavours: ['blackberry', 'plum', 'forest floor', 'oak', 'beetroot', 'ancho'],
     bestWith: {
-      proteins: ['red meat', 'beef', 'lamb', 'game', 'mushroom', 'hard cheese'],
-      fatLevel: [3, 5],
-      cookingStyle: ['charred', 'grilled', 'roasted', 'braised', 'smoked'],
-      dishAcid: [0, 3],
+      // Pinot's range, which is wider than a big red's: salmon and duck at one
+      // end, mushroom and beef at the other. Fat tolerance runs low-to-high
+      // because the acid carries it, not the weight.
+      proteins: [
+        'red meat', 'beef', 'lamb', 'mushroom', 'hard cheese',
+        'white fish', 'raw fish',
+      ],
+      fatLevel: [1, 5],
+      cookingStyle: ['charred', 'grilled', 'roasted', 'braised', 'smoked', 'poached'],
+      dishAcid: [0, 4],
     },
-    positioning: 'Sits where a big red sat',
+    positioning: 'Sits where a pinot noir sat',
   },
 ];
 
@@ -199,11 +232,26 @@ function scoreProduct(product, dish) {
     reasons.push('acid balance appropriate');
   }
 
-  // Weight/body match — closer is better
+  // Weight/body match — closer is better, and a wide gap is actively wrong
+  // rather than merely unrewarded. Without the penalty a light sparkling
+  // scores ~38 against a charred rib eye, purely on wide fat and acid ranges,
+  // which reads as "workable" when the honest answer is no.
   const bodyDelta = Math.abs(product.body - dish.weight);
   const bodyScore = Math.max(0, 1 - bodyDelta / 5);
   score += bodyScore * 15;
   if (bodyScore > 0.6) reasons.push('body weight matches dish weight');
+  // A high-acid bottle carries across a wider weight range than its body
+  // alone suggests — this is what lets a pinot do both salmon and beef. The
+  // mismatch penalty is halved for them rather than waived, so it still bites
+  // on a genuinely absurd pairing.
+  if (bodyDelta >= 3) {
+    score -= product.acid >= 4 ? 7 : 15;
+    reasons.push(
+      product.body < dish.weight
+        ? 'too light for the weight of the dish'
+        : 'too heavy for a delicate dish'
+    );
+  }
 
   // Heat. Alcohol dissolves capsaicin and amplifies burn; salt and acid cool
   // it. Without this axis a hot dish scores on protein alone and the engine
@@ -231,10 +279,28 @@ function scoreProduct(product, dish) {
  * the top result plus an optional runner-up — the point is confidence, not a
  * menu.
  */
+// Ties were previously broken by declaration order, which is arbitrary and
+// produced real wrong answers: "roast duck" extracts as proteins ['poultry'],
+// which NON2 and NON7 both claim, and NON2 won purely for being earlier in the
+// array. Two deliberate tiebreaks instead:
+//
+//   1. body closest to the weight of the dish
+//   2. a core-range bottle over a non-core one
+//
+// The second is the one that settles duck. NON2 is a fine answer, but it is not
+// in the core range, and it should never displace a core bottle on equal merit.
 function rankProducts(dish, catalogue = PRODUCTS) {
   return catalogue
     .map((p) => ({ product: p, ...scoreProduct(p, dish) }))
-    .sort((a, b) => b.score - a.score);
+    .sort((a, b) => {
+      if (b.score !== a.score) return b.score - a.score;
+
+      const aBody = Math.abs(a.product.body - dish.weight);
+      const bBody = Math.abs(b.product.body - dish.weight);
+      if (aBody !== bBody) return aBody - bBody;
+
+      return (b.product.core ? 1 : 0) - (a.product.core ? 1 : 0);
+    });
 }
 
 export { PRODUCTS, scoreProduct, rankProducts };

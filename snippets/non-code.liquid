@@ -1,3 +1,32 @@
+<<<<<<< Updated upstream
+=======
+{%- comment -%}
+  Resolves a product's NON code — the join key between Shopify and the codes
+  the design keys off (NON1 … NON9, SET, STOPPER).
+
+  Order of preference:
+    1. metafield custom.non_code   — explicit override, always wins
+    2. SKU pattern                 — the live store's SKUs already encode it
+    3. handle                      — last resort so nothing renders blank
+
+  Live SKU shapes this has to survive (verified against the store):
+    NON1-750-B, NON1-750-6, NON1-750-12   → NON1
+    NON1-750-B-POS                         → NON1
+    NON1-375-B                             → NON1
+    NON-MIX6, NON-MIX6-STOPPER             → SET
+    NON-SET-EVERYDAY / SPRING / SPICE      → SET
+    NON-SET-STOPPER                        → SET
+    NON-STOPPER, AUSPOS-STOPPER30          → STOPPER
+
+  Sets are checked before stoppers, because NON-MIX6-STOPPER and
+  NON-SET-STOPPER are sets that happen to include one.
+
+  Each test is its own `if`. Liquid has no boolean operators beyond `and`/`or`
+  on whole expressions — `sku contains 'X' and sku contains 'Y' == false` is a
+  syntax error, not a negation, and it takes the whole template down.
+{%- endcomment -%}
+
+>>>>>>> Stashed changes
 {%- liquid
   assign code = ''
 

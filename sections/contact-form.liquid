@@ -1,0 +1,127 @@
+{%- comment -%}
+  Contact.
+
+  The page body is empty on the live store — the old theme carried the form in
+  its own section, so a template that only prints page.content renders nothing.
+  This supplies the form.
+
+  Posts through Shopify's native contact form, which emails the store contact
+  address (hello@non.world) with the customer's address as reply-to. No app, no
+  endpoint, nothing to keep alive.
+{%- endcomment -%}
+
+<div class="non-section">
+  <div class="non-section__head">
+    <h1 class="non-section__title">{{ page.title | default: section.settings.heading }}</h1>
+    {%- if settings.contact_email != blank -%}
+      <a class="non-section__more" href="mailto:{{ settings.contact_email }}">
+        {{ settings.contact_email }}
+      </a>
+    {%- endif -%}
+  </div>
+
+  {%- if page.content != blank -%}
+    <div class="non-rte" style="margin-top:26px">{{ page.content }}</div>
+  {%- elsif section.settings.intro != blank -%}
+    <p class="non-hero__blurb" style="margin-top:22px">{{ section.settings.intro }}</p>
+  {%- endif -%}
+
+  <div class="non-stockists" style="margin-top:34px">
+    <div>
+      {%- form 'contact' -%}
+        {%- if form.posted_successfully? -%}
+          <p class="non-note">{{ section.settings.success_message }}</p>
+        {%- else -%}
+          {%- if form.errors -%}
+            <p class="non-error">{{ form.errors | default_errors }}</p>
+          {%- endif -%}
+
+          <div style="display:grid;grid-template-columns:1fr;gap:18px;max-width:560px">
+            <div>
+              <label class="non-label" for="c-name">Name</label>
+              <input class="non-field" type="text" id="c-name" name="contact[name]" required>
+            </div>
+
+            <div>
+              <label class="non-label" for="c-email">Email</label>
+              <input class="non-field" type="email" id="c-email" name="contact[email]" required>
+            </div>
+
+            <div>
+              <label class="non-label" for="c-topic">What's it about</label>
+              <select class="non-field" id="c-topic" name="contact[topic]">
+                {%- for block in section.blocks -%}
+                  <option value="{{ block.settings.label | escape }}">{{ block.settings.label }}</option>
+                {%- endfor -%}
+              </select>
+            </div>
+
+            <div>
+              <label class="non-label" for="c-body">Message</label>
+              <textarea class="non-field" id="c-body" name="contact[body]" rows="6" required></textarea>
+            </div>
+          </div>
+
+          <button type="submit" class="non-btn" style="margin-top:22px">
+            {{ section.settings.submit_label }}
+          </button>
+
+          <p class="non-mono non-eyebrow" style="margin-top:14px;letter-spacing:.12em">
+            Goes to {{ settings.contact_email | default: 'hello@non.world' }}
+          </p>
+        {%- endif -%}
+      {%- endform -%}
+    </div>
+
+    <aside>
+      {%- if section.settings.image != blank -%}
+        {{
+          section.settings.image
+          | image_url: width: 900
+          | image_tag: loading: 'lazy', widths: '420,640,900', alt: page.title | default: 'NON'
+        }}
+      {%- endif -%}
+
+      {%- if section.settings.aside_heading != blank -%}
+        <div class="non-mono non-eyebrow" style="margin-top:22px">{{ section.settings.aside_heading }}</div>
+        <div class="non-rte" style="margin-top:12px;font-size:var(--t-copy)">
+          {{ section.settings.aside_text }}
+        </div>
+      {%- endif -%}
+    </aside>
+  </div>
+</div>
+
+{% schema %}
+{
+  "name": "Contact form",
+  "settings": [
+    { "type": "text", "id": "heading", "label": "Heading", "default": "Contact" },
+    {
+      "type": "textarea",
+      "id": "intro",
+      "label": "Intro",
+      "info": "Shown only when the page body is empty.",
+      "default": "Trade enquiries, press, stockist requests or something that has gone wrong. We answer everything."
+    },
+    { "type": "text", "id": "submit_label", "label": "Submit label", "default": "Send" },
+    {
+      "type": "textarea",
+      "id": "success_message",
+      "label": "Success message",
+      "default": "Got it. We'll come back to you, usually the same day."
+    },
+    { "type": "image_picker", "id": "image", "label": "Image" },
+    { "type": "text", "id": "aside_heading", "label": "Aside heading", "default": "Also" },
+    { "type": "richtext", "id": "aside_text", "label": "Aside text" }
+  ],
+  "blocks": [
+    {
+      "type": "topic",
+      "name": "Topic",
+      "settings": [{ "type": "text", "id": "label", "label": "Label" }]
+    }
+  ],
+  "presets": [{ "name": "Contact form" }]
+}
+{% endschema %}

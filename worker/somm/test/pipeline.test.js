@@ -9,37 +9,38 @@
  */
 import { rankProducts, PRODUCTS, scoreProduct } from '../src/scoring-engine.js';
 
+// Ground truth is NON's core range deck, which names one headline pairing per
+// bottle. These five are not opinions — if one fails, the profiles are wrong.
+//
+//   NON1 antipasti   NON3 seafood   NON5 spice   NON7 chocolate   NON9 steak
+//
+// The rest are pairings NON confirmed directly: duck to NON7, steak to NON9,
+// roast meats and cheese to NON2, and salmon which must not be rejected by
+// NON9 even though NON3 wins it outright.
 const CASES = [
-  {
-    name: 'a dozen oysters',
-    dish: { proteins: ['oyster', 'shellfish'], fatLevel: 0, cookingStyle: ['raw'], dishAcid: 4, weight: 1, heat: 0, flavourNotes: ['brine', 'lemon'] },
-    expect: 'NON1',
-  },
-  {
-    name: 'chargrilled steak',
-    dish: { proteins: ['beef', 'red meat'], fatLevel: 5, cookingStyle: ['charred', 'grilled'], dishAcid: 1, weight: 5, heat: 0, flavourNotes: ['char', 'iron'] },
-    expect: 'NON9',
-  },
-  {
-    name: 'sichuan mapo tofu',
-    dish: { proteins: ['vegetable'], fatLevel: 3, cookingStyle: ['braised'], dishAcid: 1, weight: 3, heat: 5, flavourNotes: ['chilli', 'numbing'] },
-    expect: 'NON5',
-  },
-  {
-    name: 'mushroom risotto',
-    dish: { proteins: ['mushroom'], fatLevel: 3, cookingStyle: ['braised'], dishAcid: 1, weight: 4, heat: 0, flavourNotes: ['umami', 'parmesan'] },
-    expect: 'NON2',
-  },
-  {
-    name: 'dark chocolate dessert',
-    dish: { proteins: ['chocolate'], fatLevel: 4, cookingStyle: [], dishAcid: 0, weight: 4, heat: 0, flavourNotes: ['cacao', 'bitter'] },
-    expect: 'NON7',
-  },
-  {
-    name: 'miso glazed vegetables',
-    dish: { proteins: ['vegetable'], fatLevel: 2, cookingStyle: ['charred', 'roasted'], dishAcid: 2, weight: 3, heat: 0, flavourNotes: ['miso', 'caramelised'] },
-    expect: 'NON3',
-  },
+  { name: 'antipasti [deck]', expect: 'NON1',
+    dish: { proteins: ['cured meat', 'hard cheese'], fatLevel: 3, cookingStyle: ['cured'], dishAcid: 2, weight: 3, heat: 0, flavourNotes: ['salt', 'olive'] } },
+
+  { name: 'seafood [deck]', expect: 'NON3',
+    dish: { proteins: ['white fish', 'shellfish'], fatLevel: 1, cookingStyle: ['grilled'], dishAcid: 3, weight: 2, heat: 0, flavourNotes: ['citrus'] } },
+
+  { name: 'spice [deck]', expect: 'NON5',
+    dish: { proteins: ['vegetable'], fatLevel: 2, cookingStyle: ['braised'], dishAcid: 2, weight: 3, heat: 5, flavourNotes: ['chilli'] } },
+
+  { name: 'chocolate [deck]', expect: 'NON7',
+    dish: { proteins: ['chocolate'], fatLevel: 4, cookingStyle: [], dishAcid: 0, weight: 4, heat: 0, flavourNotes: ['cacao', 'bitter'] } },
+
+  { name: 'steak [deck]', expect: 'NON9',
+    dish: { proteins: ['beef', 'red meat'], fatLevel: 5, cookingStyle: ['charred', 'grilled'], dishAcid: 1, weight: 5, heat: 0, flavourNotes: ['char', 'iron'] } },
+
+  { name: 'roast duck', expect: 'NON7',
+    dish: { proteins: ['poultry', 'game'], fatLevel: 4, cookingStyle: ['roasted'], dishAcid: 1, weight: 4, heat: 0, flavourNotes: ['rich'] } },
+
+  { name: 'poached salmon', expect: 'NON3',
+    dish: { proteins: ['white fish'], fatLevel: 2, cookingStyle: ['poached'], dishAcid: 2, weight: 2, heat: 0, flavourNotes: ['delicate'] } },
+
+  { name: 'a dozen oysters', expect: 'NON1',
+    dish: { proteins: ['oyster', 'shellfish'], fatLevel: 0, cookingStyle: ['raw'], dishAcid: 4, weight: 1, heat: 0, flavourNotes: ['brine'] } },
 ];
 
 let failed = 0;
@@ -88,9 +89,18 @@ const FIT_CASES = [
     expect: 'strong',
   },
   {
-    name: 'NON9 + delicate raw white fish',
+    // The case that exposed the bad profile. Pinot is the classic salmon red;
+    // the old NON9 (body 5, tannin 5, red meat only) called this a bad match.
+    name: 'NON9 + poached salmon',
     code: 'NON9',
-    dish: { proteins: ['raw fish', 'white fish'], fatLevel: 0, cookingStyle: ['raw'], dishAcid: 4, weight: 1, heat: 0, flavourNotes: ['citrus'] },
+    dish: { proteins: ['white fish'], fatLevel: 2, cookingStyle: ['poached'], dishAcid: 2, weight: 2, heat: 0, flavourNotes: ['delicate'] },
+    expect: 'strong',
+  },
+  {
+    // A genuinely weak pairing, so the honest-no path is still covered.
+    name: 'NON5 + chargrilled rib eye',
+    code: 'NON5',
+    dish: { proteins: ['beef', 'red meat'], fatLevel: 5, cookingStyle: ['charred', 'grilled'], dishAcid: 1, weight: 5, heat: 0, flavourNotes: ['char'] },
     expect: 'weak',
   },
   {

@@ -127,6 +127,53 @@ for path in glob("sections/*.liquid"):
             f"rejects the file, and every template using this section with it"
         )
 
+# 2c. A brace inside a quoted string inside an output tag. Liquid's lexer does
+#     not respect quoting when finding the end of a `{{ ... }}` tag, so
+#     {{ x | default: '{}' }} is truncated mid-tag and Shopify rejects the
+#     entire file with "Variable ... was not properly terminated". Bind the
+#     value in a {% liquid %} block instead, where the terminator is %}.
+def braces_in_output_strings(src):
+    hits = []
+    i = 0
+    while True:
+        i = src.find("{{", i)
+        if i == -1:
+            return hits
+        end_tag = src.find("}}", i)
+        if end_tag == -1:
+            return hits
+        body = src[i + 2 : end_tag + 2]
+        for m in re.finditer(r"'([^']*)'|\"([^\"]*)\"", body):
+            literal = m.group(1) if m.group(1) is not None else m.group(2)
+            if "{" in literal or "}" in literal:
+                hits.append(i)
+                break
+        i = end_tag + 2
+
+for path in liquid_files:
+    src = open(path).read()
+    for pos in braces_in_output_strings(src):
+        line = src[:pos].count("\n") + 1
+        issues.append(
+            f"{path}:{line}: brace inside a quoted string in an output tag — "
+            f"Liquid truncates the tag there and Shopify rejects the whole file. "
+            f"Assign it in a {{% liquid %}} block instead."
+        )
+
+# 2d. theme_info URLs must be http(s); Shopify rejects mailto: outright
+if os.path.exists("config/settings_schema.json"):
+    try:
+        blocks = json.load(open("config/settings_schema.json"))
+        info = blocks[0] if blocks and blocks[0].get("name") == "theme_info" else None
+        for key in ("theme_documentation_url", "theme_support_url"):
+            v = (info or {}).get(key)
+            if v and not str(v).startswith(("http://", "https://")):
+                issues.append(
+                    f"config/settings_schema.json: {key} must be an HTTP or HTTPS URL, got {v!r}"
+                )
+    except Exception as e:
+        issues.append(f"config/settings_schema.json: invalid JSON — {e}")
+
 # 4 + 5. templates reference real sections, settings, blocks and in-range values
 section_names = {os.path.splitext(os.path.basename(p))[0] for p in glob("sections/*.liquid")}
 

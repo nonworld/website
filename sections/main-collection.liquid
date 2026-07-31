@@ -47,6 +47,12 @@
         {%- comment -%} render is standalone-only, never inside {% liquid %} {%- endcomment -%}
         {%- capture code %}{% render 'non-code', product: product %}{% endcapture -%}
         {%- liquid
+          # An empty-JSON literal cannot be written inline inside an output
+          # tag: Liquid's lexer ignores string quoting when finding the end of
+          # the tag, so a brace inside the literal truncates it mid-way and
+          # Shopify rejects the whole file. Bind it here, where the tag
+          # terminator is a percent-brace and braces are safe.
+          assign empty_json = '{}'
           assign code = code | strip
           assign tags_json = product.metafields.custom.food_tags | metafield_text
           assign why_json = product.metafields.custom.food_why | metafield_text
@@ -59,8 +65,8 @@
           data-non-item
           data-code="{{ code | escape }}"
           data-is-pour="{{ is_pour }}"
-          data-tags="{{ tags_json | default: '{}' | escape }}"
-          data-why="{{ why_json | default: '{}' | escape }}">
+          data-tags="{{ tags_json | default: empty_json | escape }}"
+          data-why="{{ why_json | default: empty_json | escape }}">
           {% render 'product-card', product: product, show_add: section.settings.show_add %}
         </div>
       {%- endfor -%}

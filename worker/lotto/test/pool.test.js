@@ -22,9 +22,15 @@ check('every prize has a description', POOL.every((p) => p.description));
 check('weights sum to 100', POOL.reduce((s, p) => s + p.weight, 0) === 100,
   `sum ${POOL.reduce((s, p) => s + p.weight, 0)}`);
 
-const CODES = ['NON15', 'FREESTOPPER', 'FREEPOUR', 'ONEONUS', 'NON10', 'THEHOUSE'];
-check('codes match the ones created in Shopify',
-  CODES.every((c) => POOL.some((p) => p.code === c)));
+/* Codes are read from the pool rather than restated here. A hardcoded list can
+   only ever disagree with wrangler.toml, and when it does it fails the rename
+   rather than the mistake. What actually needs guarding is the shape: codes
+   have to be unique, or the ledger hands two prizes the same key. Whether each
+   code exists in Shopify is checked at runtime by codeIsLive(), which is the
+   only place that can know. */
+const CODES = POOL.map((p) => p.code);
+check('codes are unique', new Set(CODES).size === CODES.length);
+check('codes look like discount codes', CODES.every((c) => /^[A-Z0-9]{3,32}$/.test(c)));
 
 function drawWeighted(pool) {
   const total = pool.reduce((s, p) => s + Number(p.weight), 0);
@@ -44,10 +50,12 @@ for (const p of POOL) {
 }
 
 /* A dead code must be skippable without breaking the remaining odds. */
-const minusOne = POOL.filter((p) => p.code !== 'NON15');
+const dead = POOL[0].code;
+const minusOne = POOL.filter((p) => p.code !== dead);
 const t2 = {};
 for (let i = 0; i < 50000; i++) { const p = drawWeighted(minusOne); t2[p.code] = (t2[p.code] || 0) + 1; }
-check('draw still works with a code removed', Object.keys(t2).length === 5 && !t2.NON15);
+check(`draw still works with ${dead} removed`,
+  Object.keys(t2).length === POOL.length - 1 && !t2[dead]);
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
 console.log('\nemail gate:');

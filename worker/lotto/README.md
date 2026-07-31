@@ -9,7 +9,7 @@ counts, because a client-side gate is a suggestion, not a control.
 ```
 { "sessionId": "…", "email": "you@example.com" }
   →
-{ "code": "NON15", "description": "15% off your first case",
+{ "code": "LOTTO15", "description": "15% off your first case",
   "terms": "Use it at checkout.", "alreadyRevealed": false, "emailed": true }
 ```
 
@@ -71,11 +71,11 @@ have to sum to 100.
 
 | Prize | Code | Weight |
 |---|---|---:|
-| 15% off your first case | `NON15` | 28 |
+| 15% off your first case | `LOTTO15` | 28 |
 | A free NON stopper | `FREESTOPPER` | 24 |
 | Complimentary shipping | `FREEPOUR` | 20 |
 | A bottle of NON, on us | `ONEONUS` | 14 |
-| 10% off | `NON10` | 10 |
+| 10% off | `LOTTO10` | 10 |
 | 25% off plus free shipping | `THEHOUSE` | 4 |
 
 ## Tests

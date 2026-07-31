@@ -811,7 +811,10 @@ button { font-family: inherit; }
   flex: none;
   display: inline-flex;
   align-items: center;
-  min-height: 44px;
+  /* 46, not 44. At 44 it measured 43.5 once line-height and the 1px border
+     resolved, and a target that rounds below the minimum is not at the
+     minimum. The extra 2px costs nothing and removes the argument. */
+  min-height: 46px;
   padding: 0 16px;
   border: 1px solid var(--non-ink);
   font-family: var(--non-mono);

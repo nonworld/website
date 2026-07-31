@@ -814,7 +814,36 @@ button { font-family: inherit; }
 .non-venue__name { font-size: var(--t-body); font-weight: 600; }
 .non-venue__addr { font-size: var(--t-small); color: var(--non-fg-mute); margin-top: 4px; }
 .non-venue__pours { font-family: var(--non-mono); font-size: var(--t-mono); color: var(--non-fg-faint); margin-top: 6px; letter-spacing: .12em; text-transform: uppercase; }
-.non-map { width: 100%; min-height: 520px; border: 1px solid var(--non-line); background: var(--non-panel-alt); }
+/* The list scrolls in its own pane and the map holds still beside it.
+   Previously the list ran the full length of the page, so 2,201 venues pushed
+   the map metres above the fold and reading the list meant scrolling away from
+   the thing the list refers to. Both panes are pinned to one viewport-height
+   band, and only the list moves. */
+@media (min-width: 860px) {
+  .non-stockists { align-items: start; }
+  .non-stockists__list {
+    max-height: min(72vh, 760px);
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    padding-right: 12px;
+  }
+  .non-stockists__list::-webkit-scrollbar { width: 8px; }
+  .non-stockists__list::-webkit-scrollbar-thumb {
+    background: var(--non-line-soft);
+    border-radius: 4px;
+  }
+  .non-stockists__list::-webkit-scrollbar-track { background: transparent; }
+  .non-map { position: sticky; top: 88px; }
+}
+.non-map {
+  width: 100%;
+  height: min(72vh, 760px);
+  min-height: 380px;
+  border: 1px solid var(--non-line);
+  background: var(--non-panel-alt);
+}
+/* Leaflet paints its panes on top of the border otherwise. */
+.non-map .leaflet-container { background: var(--non-panel-alt); }
 
 /* --- forms -------------------------------------------------------------- */
 

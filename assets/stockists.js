@@ -82,6 +82,7 @@
     });
 
     page = 1;
+    refit = true; // the result set changed, so the camera should follow it
     render();
   }
 
@@ -166,8 +167,23 @@
     drawMap();
   }
 
+  // Whether the next draw should move the camera. Refitting on every render
+  // meant "Show more" yanked the map out from under whatever the customer had
+  // just panned to. The camera should follow a change in the RESULT SET, not a
+  // change in how many rows are printed.
+  var refit = true;
+
   function drawMap() {
     if (!map || !layer) return;
+
+    // Leaflet measures its container once, at construction. This one is in a
+    // grid track that is still settling, and the pane it renders in reports
+    // its own size late, so without this the map paints at a stale size —
+    // tiles stop short and leave a bare band, and hit-testing is offset from
+    // what is drawn, which is what made the filters stop responding after a
+    // few clicks. Cheap, idempotent, and safe to call on every draw.
+    map.invalidateSize(false);
+
     layer.clearLayers();
 
     var bounds = [];
@@ -190,9 +206,21 @@
       bounds.push([v.lat, v.lng]);
     });
 
+    if (!refit) return;
+    refit = false;
+
     if (bounds.length === 1) map.setView(bounds[0], 14);
     else if (bounds.length > 1) map.fitBounds(bounds, { padding: [30, 30] });
     else map.setView([-37.84, 144.95], 4); // Melbourne, when a filter empties
+  }
+
+  // Keep the map honest about its own size when the column reflows — the
+  // breakpoint change from a side-by-side to a stacked layout is the case
+  // that used to leave it half-painted.
+  if (mapEl && typeof ResizeObserver !== 'undefined') {
+    new ResizeObserver(function () {
+      if (map) map.invalidateSize(false);
+    }).observe(mapEl);
   }
 
   /* --- events ------------------------------------------------------------ */

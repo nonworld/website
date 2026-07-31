@@ -1,0 +1,3 @@
+# Run with: shopify theme check
+root: .
+extends: :default

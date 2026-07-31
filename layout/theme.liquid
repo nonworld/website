@@ -1,0 +1,86 @@
+<!doctype html>
+<html lang="{{ request.locale.iso_code }}">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+    <meta name="theme-color" content="#0c0c0c">
+    <link rel="canonical" href="{{ canonical_url }}">
+
+    {%- if settings.favicon != blank -%}
+      <link rel="icon" type="image/png" href="{{ settings.favicon | image_url: width: 32, height: 32 }}">
+    {%- endif -%}
+
+    <title>
+      {{ page_title }}
+      {%- if current_tags %} &ndash; {{ 'general.meta.tags' | t: tags: current_tags | join: ', ' }}{% endif -%}
+      {%- if current_page != 1 %} &ndash; {{ 'general.meta.page' | t: page: current_page }}{% endif -%}
+      {%- unless page_title contains shop.name %} &ndash; {{ shop.name }}{% endunless -%}
+    </title>
+
+    {%- if page_description -%}
+      <meta name="description" content="{{ page_description | escape }}">
+    {%- elsif settings.meta_description != blank -%}
+      <meta name="description" content="{{ settings.meta_description | escape }}">
+    {%- endif -%}
+
+    {% render 'meta-tags' %}
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Newsreader:opsz,wght@6..72,300;6..72,400&family=DM+Mono:wght@400;500&display=swap"
+      rel="stylesheet">
+
+    <link rel="stylesheet" href="{{ 'theme.css' | asset_url }}">
+
+    <script>
+      window.NON = {
+        routes: {
+          cart_add: '{{ routes.cart_add_url }}.js',
+          cart_change: '{{ routes.cart_change_url }}.js',
+          cart_update: '{{ routes.cart_update_url }}.js',
+          cart: '{{ routes.cart_url }}.js',
+          cart_page: '{{ routes.cart_url }}',
+          predictive_search: '{{ routes.predictive_search_url }}'
+        },
+        settings: {
+          cartDrawer: {{ settings.cart_drawer | default: true | json }},
+          freeShippingThreshold: {{ settings.free_shipping_threshold | default: 0 | json }},
+          moneyFormat: {{ shop.money_format | json }},
+          sommEndpoint: {{ settings.somm_endpoint | default: '' | json }},
+          sommStream: {{ settings.somm_stream | default: true | json }},
+          sommTypeSpeed: {{ settings.somm_type_speed | default: 12 | json }},
+          lottoEndpoint: {{ settings.lotto_endpoint | default: '' | json }}
+        },
+        strings: {
+          sommError: {{ 'sections.somm.error' | t | json }},
+          lottoUnavailable: {{ 'sections.lotto.unavailable' | t | json }},
+          cartEmpty: {{ 'cart.general.empty' | t | json }},
+          soldOut: {{ 'products.product.sold_out' | t | json }}
+        }
+      };
+    </script>
+
+    <script src="{{ 'cart.js' | asset_url }}" defer></script>
+
+    {{ content_for_header }}
+  </head>
+
+  <body class="template-{{ template.name | handle }}">
+    <a class="skip-link" href="#main">{{ 'general.accessibility.skip_to_content' | t }}</a>
+
+    <div class="non-shell">
+      {% sections 'header-group' %}
+
+      <main id="main" role="main">
+        {{ content_for_layout }}
+      </main>
+
+      {% sections 'footer-group' %}
+    </div>
+
+    {% render 'cart-drawer' %}
+    {% section 'non-lotto' %}
+  </body>
+</html>

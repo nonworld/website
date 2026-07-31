@@ -1,0 +1,24 @@
+{%- comment -%}
+  Resolves a product's NON code (NON1, NON2, … / SET / STOPPER).
+
+  The design keyed everything off a hardcoded code. In the theme the code comes
+  from, in order of preference:
+    1. metafield custom.non_code   — set this, it is the intended source
+    2. the first variant's SKU     — works if SKUs are already "NON1-750" etc.
+    3. the handle, uppercased      — last resort so nothing renders blank
+
+  Usage:  {% render 'non-code', product: product %}  →  outputs e.g. NON1
+{%- endcomment -%}
+{%- liquid
+  assign code = ''
+  if product.metafields.custom.non_code != blank
+    assign code = product.metafields.custom.non_code | metafield_text | strip | upcase
+  elsif product.first_available_variant.sku != blank
+    assign code = product.first_available_variant.sku | split: '-' | first | strip | upcase
+  elsif product.variants.first.sku != blank
+    assign code = product.variants.first.sku | split: '-' | first | strip | upcase
+  else
+    assign code = product.handle | replace: '-', '' | upcase
+  endif
+  echo code
+-%}

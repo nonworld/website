@@ -1,0 +1,148 @@
+[
+  {
+    "name": "theme_info",
+    "theme_name": "NON",
+    "theme_version": "1.0.0",
+    "theme_author": "NON",
+    "theme_documentation_url": "https://github.com/nonworld/non-theme",
+    "theme_support_url": "mailto:hello@non.world"
+  },
+  {
+    "name": "Brand",
+    "settings": [
+      {
+        "type": "image_picker",
+        "id": "logo",
+        "label": "Logotype",
+        "info": "White-on-transparent PNG. The header inverts it, so supply the dark version."
+      },
+      {
+        "type": "text",
+        "id": "logo_height",
+        "label": "Logo height",
+        "default": "19px"
+      },
+      {
+        "type": "image_picker",
+        "id": "favicon",
+        "label": "Favicon"
+      },
+      {
+        "type": "textarea",
+        "id": "meta_description",
+        "label": "Default meta description",
+        "default": "Cooked, not de-alcoholised. Fruit, tannin, salt and acid, built from zero at 0.0%."
+      }
+    ]
+  },
+  {
+    "name": "Product mapping",
+    "settings": [
+      {
+        "type": "paragraph",
+        "content": "The somm, the shop filter and the pairing tool identify bottles by code (NON1, NON2, …). The code is read from the product metafield custom.non_code, falling back to the SKU, then to the handle. Set the metafield on each product and nothing else needs configuring."
+      },
+      {
+        "type": "collection",
+        "id": "core_range_collection",
+        "label": "Core range collection",
+        "info": "Drives the homepage range grid and the somm's pick list."
+      }
+    ]
+  },
+  {
+    "name": "NON Somm",
+    "settings": [
+      {
+        "type": "url",
+        "id": "somm_endpoint",
+        "label": "Somm API endpoint",
+        "info": "Cloudflare Worker URL. Accepts POST {query, context, page} and returns {answer, picks:[code]}. Leave blank to use the built-in canned answers from the design."
+      },
+      {
+        "type": "checkbox",
+        "id": "somm_stream",
+        "label": "Stream the answer",
+        "default": true,
+        "info": "Types the response character by character. Turn off if the endpoint returns SSE and you handle streaming natively."
+      },
+      {
+        "type": "range",
+        "id": "somm_type_speed",
+        "label": "Type speed",
+        "min": 2,
+        "max": 40,
+        "step": 2,
+        "unit": "ms",
+        "default": 12
+      }
+    ]
+  },
+  {
+    "name": "NON Lotto",
+    "settings": [
+      {
+        "type": "paragraph",
+        "content": "Discount codes are issued by the API, never generated in the browser. Without an endpoint the widget runs in demo mode and shows no code."
+      },
+      {
+        "type": "url",
+        "id": "lotto_endpoint",
+        "label": "Lotto API endpoint",
+        "info": "Cloudflare Worker URL. POST /draw returns {ref, prize:{title, code, terms}}; POST /claim takes {ref, email}."
+      },
+      {
+        "type": "checkbox",
+        "id": "lotto_auto_open",
+        "label": "Open automatically on first visit",
+        "default": true
+      },
+      {
+        "type": "range",
+        "id": "lotto_delay",
+        "label": "Delay before opening",
+        "min": 0,
+        "max": 6000,
+        "step": 200,
+        "unit": "ms",
+        "default": 1400
+      },
+      {
+        "type": "range",
+        "id": "lotto_cooldown_days",
+        "label": "Suppress after dismissal",
+        "min": 0,
+        "max": 90,
+        "step": 1,
+        "unit": "d",
+        "default": 14
+      }
+    ]
+  },
+  {
+    "name": "Cart",
+    "settings": [
+      {
+        "type": "checkbox",
+        "id": "cart_drawer",
+        "label": "Open a drawer on add to cart",
+        "default": true,
+        "info": "Uncheck to redirect to /cart instead."
+      },
+      {
+        "type": "text",
+        "id": "free_shipping_threshold",
+        "label": "Free shipping threshold",
+        "default": "75",
+        "info": "In store currency, no symbol. Used for the progress line in the drawer. Set the actual rate in Shopify Shipping — this is display only."
+      }
+    ]
+  },
+  {
+    "name": "Social",
+    "settings": [
+      { "type": "url", "id": "social_instagram", "label": "Instagram" },
+      { "type": "text", "id": "contact_email", "label": "Contact email", "default": "hello@non.world" }
+    ]
+  }
+]

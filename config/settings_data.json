@@ -1,0 +1,17 @@
+{
+  "current": {
+    "logo_height": "19px",
+    "meta_description": "Cooked, not de-alcoholised. Fruit, tannin, salt and acid, built from zero at 0.0%.",
+    "somm_endpoint": "",
+    "somm_stream": true,
+    "somm_type_speed": 12,
+    "lotto_endpoint": "",
+    "lotto_auto_open": true,
+    "lotto_delay": 1400,
+    "lotto_cooldown_days": 14,
+    "cart_drawer": true,
+    "free_shipping_threshold": "75",
+    "social_instagram": "https://www.instagram.com/non.world/",
+    "contact_email": "hello@non.world"
+  }
+}

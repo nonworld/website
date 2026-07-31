@@ -14,7 +14,7 @@
     "somm_endpoint": "https://non-somm.polished-snow-7889.workers.dev/somm",
     "somm_stream": true,
     "somm_type_speed": 12,
-    "lotto_endpoint": "",
+    "lotto_endpoint": "https://non-lotto.polished-snow-7889.workers.dev",
     "lotto_auto_open": true,
     "lotto_delay": 1400,
     "lotto_cooldown_days": 14,

@@ -25,6 +25,6 @@ RATE_LIMIT_PER_HOUR = "6"
 #   KLAVIYO_API_KEY       Klaviyo private key
 
 # KV holds the email -> code ledger and the per-IP rate counter.
-# [[kv_namespaces]]
-# binding = "LOTTO_KV"
-# id = "<namespace id>"
+[[kv_namespaces]]
+binding = "LOTTO_KV"
+id = "66c6668cea084a2ea4e1c5cbb8be57eb"

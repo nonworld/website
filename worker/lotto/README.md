@@ -13,27 +13,49 @@ counts, because a client-side gate is a suggestion, not a control.
   "terms": "Use it at checkout.", "alreadyRevealed": false, "emailed": true }
 ```
 
-## Deploy
+## Status
+
+**Deployed:** `https://non-lotto.polished-snow-7889.workers.dev`
+KV namespace `66c6668cea084a2ea4e1c5cbb8be57eb` is created and bound. The theme
+setting already points here.
+
+**Not yet live.** Two secrets are missing, so every reveal returns `503 closed`
+by design — see the config gate below. Check what's outstanding at any time:
 
 ```bash
-cd worker/lotto
-npm install
-npx wrangler kv namespace create LOTTO_KV
+curl -s https://non-lotto.polished-snow-7889.workers.dev/health
 ```
 
-Put the returned id into `wrangler.toml` under `[[kv_namespaces]]`, then:
+Right now that returns:
+
+```json
+{"ok":false,"prizes":6,"missing":["SHOPIFY_ADMIN_TOKEN","KLAVIYO_API_KEY"]}
+```
+
+## Finishing it
+
+Two commands. The value is pasted at the prompt, not typed on the command line
+— it stays out of your shell history that way.
 
 ```bash
-npx wrangler secret put SHOPIFY_ADMIN_TOKEN
-npx wrangler secret put KLAVIYO_API_KEY
-npx wrangler deploy
+cd worker/lotto && npx wrangler secret put SHOPIFY_ADMIN_TOKEN
 ```
 
-Then paste the Worker URL into **Theme settings → NON Lotto → Lotto API
-endpoint**. Until it's set, the widget opens and says so rather than taking an
-email for something it can't deliver.
+```bash
+cd worker/lotto && npx wrangler secret put KLAVIYO_API_KEY
+```
 
-`SHOPIFY_ADMIN_TOKEN` needs `read_discounts` only. It never writes.
+No redeploy is needed; secrets take effect immediately. Re-run the `/health`
+curl and confirm `"ok":true` with an empty `missing`.
+
+`SHOPIFY_ADMIN_TOKEN` needs `read_discounts` **only** — it never writes.
+
+### The config gate
+
+A deploy without secrets is a broken deploy, not a degraded one. Rather than
+skipping the Shopify check and the email and handing over a code anyway — a 200
+that hides two failures — the Worker refuses to draw and returns `503 closed`,
+which the theme already renders honestly. `/health` names the missing piece.
 
 ## Design decisions worth knowing
 

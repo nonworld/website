@@ -81,7 +81,11 @@ function drawWeighted(pool) {
 // A code is only handed out if Shopify says it is live right now. This is the
 // difference between "we think this works" and "this works".
 async function codeIsLive(env, code) {
-  if (!env.SHOPIFY_ADMIN_TOKEN || !env.SHOPIFY_STORE) return true; // unconfigured: do not block
+  // No "unconfigured, so allow" branch. Missing credentials here would silently
+  // downgrade the one guarantee this function exists to make — that the code
+  // handed over actually works — and it would do it invisibly, on a Worker that
+  // otherwise looks healthy. Absent config is caught by missingConfig() before
+  // any draw happens.
 
   const query = `
     query CheckCode($code: String!) {
@@ -117,7 +121,6 @@ async function codeIsLive(env, code) {
 // subscribe fails we still have the event and can recover the address, but
 // the reverse loses the prize context entirely.
 async function toKlaviyo(env, { email, prize, sessionId, alreadyRevealed }) {
-  if (!env.KLAVIYO_API_KEY) return false;
 
   const headers = {
     'Content-Type': 'application/json',
@@ -187,6 +190,32 @@ async function toKlaviyo(env, { email, prize, sessionId, alreadyRevealed }) {
   return event.ok;
 }
 
+/* ------------------------------------------------------------ config gate */
+
+/**
+ * A deploy without secrets is a broken deploy, not a degraded one.
+ *
+ * The tempting behaviour is to carry on: skip the Shopify check, skip the
+ * email, still hand over a code. That fails in the worst possible way — the
+ * endpoint returns 200, the card reveals a prize, and nobody finds out that the
+ * code was never verified and the email never sent until a customer complains.
+ *
+ * The email is not a nice-to-have here either. It is the entire consideration
+ * for the address; a reveal that does not send one has taken something and
+ * given nothing back.
+ *
+ * So: missing config is a closed shop. The theme already renders that state
+ * honestly, and /health says exactly which piece is absent.
+ */
+function missingConfig(env) {
+  const missing = [];
+  if (!env.SHOPIFY_STORE) missing.push('SHOPIFY_STORE');
+  if (!env.SHOPIFY_ADMIN_TOKEN) missing.push('SHOPIFY_ADMIN_TOKEN');
+  if (!env.KLAVIYO_API_KEY) missing.push('KLAVIYO_API_KEY');
+  if (!env.LOTTO_KV) missing.push('LOTTO_KV');
+  return missing;
+}
+
 /* ------------------------------------------------------------ rate limit */
 
 async function overRateLimit(env, ip) {
@@ -207,7 +236,12 @@ export default {
 
     const url = new URL(request.url);
     if (url.pathname === '/health') {
-      return json({ ok: true, prizes: loadPool(env).length, kv: !!env.LOTTO_KV });
+      const missing = missingConfig(env);
+      return json({
+        ok: missing.length === 0,
+        prizes: loadPool(env).length,
+        missing, // named explicitly, so a half-configured deploy is one curl away
+      });
     }
 
     if (request.method !== 'POST') return json({ error: 'method not allowed' }, 405);
@@ -235,6 +269,12 @@ export default {
 
     const pool = loadPool(env);
     if (!pool.length) return json({ error: 'closed' }, 503);
+
+    const missing = missingConfig(env);
+    if (missing.length) {
+      console.error('[lotto] refusing to draw, missing config:', missing.join(', '));
+      return json({ error: 'closed' }, 503);
+    }
 
     /* ---- already revealed: same code, re-sent ---------------------------- */
     if (env.LOTTO_KV) {

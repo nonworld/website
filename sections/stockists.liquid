@@ -19,6 +19,7 @@
 
 {%- liquid
   assign endpoint = section.settings.endpoint | default: 'https://find.non.world/api/stockists'
+  assign find_url = section.settings.find_url | default: 'https://find.non.world'
 -%}
 
 <div
@@ -104,13 +105,16 @@
     {%- endif -%}
   </div>
 
-  {%- if section.settings.find_url != blank -%}
-    <p class="non-note" style="margin-top:28px">
-      <a href="{{ section.settings.find_url }}" style="text-decoration:underline">
-        {{ section.settings.find_label }}
-      </a>
-    </p>
-  {%- endif -%}
+  {%- comment -%}
+    Defaulted here rather than in the schema: Shopify's `url` setting type
+    rejects a "default" key outright, and rejects the whole file with it.
+  {%- endcomment -%}
+  <p class="non-note" style="margin-top:28px">
+    Looking for somewhere not listed?
+    <a href="{{ find_url }}" style="text-decoration:underline">
+      {{ section.settings.find_label }}
+    </a>
+  </p>
 </div>
 
 {%- if section.settings.show_map -%}
@@ -169,7 +173,7 @@
     { "type": "text", "id": "search_placeholder", "label": "Search placeholder", "default": "Suburb, city or venue name" },
     { "type": "checkbox", "id": "show_map", "label": "Show the map", "default": true },
     { "type": "text", "id": "featured_heading", "label": "Featured heading", "default": "Worth the trip" },
-    { "type": "url", "id": "find_url", "label": "Full map URL", "default": "https://find.non.world" },
+    { "type": "url", "id": "find_url", "label": "Full map URL", "info": "Defaults to https://find.non.world" },
     { "type": "text", "id": "find_label", "label": "Full map label", "default": "Open the full map at find.non.world" }
   ],
   "blocks": [

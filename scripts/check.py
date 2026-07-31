@@ -158,6 +158,31 @@ for path in glob("sections/*.liquid"):
             f"rejects the file, and every template using this section with it"
         )
 
+# 2bb. `url` settings must not carry a "default". Shopify rejects the whole
+#      file, silently, and the theme keeps serving the previous version — so
+#      the section looks like it simply ignored your rewrite. This cost a full
+#      debugging session on sections/stockists.liquid: the live page kept
+#      rendering an older block-based stockists list with "0 venues" and a dead
+#      map, while the repo, the commit and the push were all correct.
+for path in glob("sections/*.liquid") + glob("snippets/*.liquid"):
+    schema = schema_of(path)
+    if not schema:
+        continue
+
+    def check_urls(settings, where):
+        for st in settings or []:
+            if st.get("type") == "url" and "default" in st:
+                issues.append(
+                    f"{path}: {where} setting '{st.get('id')}' is type url and has a "
+                    f"'default'. Shopify rejects url defaults and drops the entire "
+                    f"file — the old version keeps serving. Default it in Liquid "
+                    f"instead: assign x = section.settings.{st.get('id')} | default: '…'"
+                )
+
+    check_urls(schema.get("settings"), "section")
+    for b in schema.get("blocks", []):
+        check_urls(b.get("settings"), f"block {b.get('type')}")
+
 # 2c. A brace inside a quoted string inside an output tag. Liquid's lexer does
 #     not respect quoting when finding the end of a `{{ ... }}` tag, so
 #     {{ x | default: '{}' }} is truncated mid-tag and Shopify rejects the

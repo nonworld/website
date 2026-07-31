@@ -1,0 +1,149 @@
+{%- comment -%}
+  NONHQ — cellar door.
+
+  A cellar door takes requests, not covers: the form captures a preferred date
+  and window and NON confirms by email. It posts to Shopify's native contact
+  form (/contact#form), so submissions land in the store's inbox with no app
+  and no external endpoint.
+
+  If this becomes a real booking system, the honest answer is an app — Liquid
+  can't hold availability. Flagged in the README.
+{%- endcomment -%}
+
+<div class="non-section">
+  <div class="non-section__head">
+    <h1 class="non-section__title">{{ section.settings.heading }}</h1>
+  </div>
+
+  {%- if section.settings.intro != blank -%}
+    <p class="non-hero__blurb" style="margin-top:20px">{{ section.settings.intro }}</p>
+  {%- endif -%}
+
+  <div class="non-grid non-grid--4" style="margin-top:30px">
+    {%- for block in section.blocks -%}
+      {%- if block.type == 'experience' -%}
+        <div {{ block.shopify_attributes }}>
+          <div class="non-step__t">{{ block.settings.title }}</div>
+          <p class="non-step__b">{{ block.settings.body }}</p>
+          <div class="non-mono non-eyebrow" style="margin-top:10px">{{ block.settings.meta }}</div>
+          <div class="non-card__note" style="margin-top:6px">{{ block.settings.price }}</div>
+        </div>
+      {%- endif -%}
+    {%- endfor -%}
+  </div>
+</div>
+
+<div class="non-section" style="border-top:1px solid var(--non-line)">
+  <div class="non-section__head">
+    <h2 class="non-section__title">{{ section.settings.form_heading }}</h2>
+  </div>
+
+  {%- form 'contact', class: 'non-hq-form' -%}
+    {%- if form.posted_successfully? -%}
+      <p class="non-note" style="margin-top:22px">{{ section.settings.success_message }}</p>
+    {%- else -%}
+      {%- if form.errors -%}
+        <p class="non-error">{{ form.errors | default_errors }}</p>
+      {%- endif -%}
+
+      <div class="non-grid non-grid--3" style="margin-top:24px;gap:18px">
+        <div>
+          <label class="non-label" for="hq-name">Name</label>
+          <input class="non-field" type="text" id="hq-name" name="contact[name]" required>
+        </div>
+
+        <div>
+          <label class="non-label" for="hq-email">Email</label>
+          <input class="non-field" type="email" id="hq-email" name="contact[email]" required>
+        </div>
+
+        <div>
+          <label class="non-label" for="hq-size">How many</label>
+          <input class="non-field" type="number" id="hq-size" name="contact[party_size]" min="1" max="40">
+        </div>
+
+        <div>
+          <label class="non-label" for="hq-exp">Experience</label>
+          <select class="non-field" id="hq-exp" name="contact[experience]">
+            {%- for block in section.blocks -%}
+              {%- if block.type == 'experience' -%}
+                <option value="{{ block.settings.title | escape }}">{{ block.settings.title }}</option>
+              {%- endif -%}
+            {%- endfor -%}
+          </select>
+        </div>
+
+        <div>
+          <label class="non-label" for="hq-date">Preferred date</label>
+          <input class="non-field" type="date" id="hq-date" name="contact[preferred_date]">
+        </div>
+
+        <div>
+          <label class="non-label" for="hq-window">Time of day</label>
+          <select class="non-field" id="hq-window" name="contact[preferred_window]">
+            <option value="A morning">A morning</option>
+            <option value="Around lunch">Around lunch</option>
+            <option value="Afternoon">Afternoon</option>
+            <option value="Early evening">Early evening</option>
+          </select>
+        </div>
+      </div>
+
+      <div style="margin-top:18px">
+        <label class="non-label" for="hq-body">Anything we should know</label>
+        <textarea class="non-field" id="hq-body" name="contact[body]" rows="4"
+          placeholder="Dietaries, occasion, whether anyone needs converting."></textarea>
+      </div>
+
+      <button type="submit" class="non-btn" style="margin-top:20px">
+        {{ section.settings.submit_label }}
+      </button>
+
+      <p class="non-mono non-eyebrow" style="margin-top:14px;letter-spacing:.12em">
+        {{ section.settings.form_note }}
+      </p>
+    {%- endif -%}
+  {%- endform -%}
+</div>
+
+{% schema %}
+{
+  "name": "NONHQ concierge",
+  "settings": [
+    { "type": "text", "id": "heading", "label": "Heading", "default": "NONHQ" },
+    {
+      "type": "textarea",
+      "id": "intro",
+      "label": "Intro",
+      "default": "The world's first non-alcoholic cellar door. Tastings, tours and workshops in Cheltenham, VIC."
+    },
+    { "type": "text", "id": "form_heading", "label": "Form heading", "default": "Request a time" },
+    { "type": "text", "id": "submit_label", "label": "Submit label", "default": "Send the request" },
+    {
+      "type": "text",
+      "id": "form_note",
+      "label": "Form note",
+      "default": "We confirm by email, usually same day."
+    },
+    {
+      "type": "textarea",
+      "id": "success_message",
+      "label": "Success message",
+      "default": "Got it. We'll confirm by email, usually the same day."
+    }
+  ],
+  "blocks": [
+    {
+      "type": "experience",
+      "name": "Experience",
+      "settings": [
+        { "type": "text", "id": "title", "label": "Title" },
+        { "type": "textarea", "id": "body", "label": "Body" },
+        { "type": "text", "id": "meta", "label": "Meta", "default": "45 min · 2–8 people" },
+        { "type": "text", "id": "price", "label": "Price", "default": "$35" }
+      ]
+    }
+  ],
+  "presets": [{ "name": "NONHQ concierge" }]
+}
+{% endschema %}

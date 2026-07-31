@@ -1,0 +1,21 @@
+{
+  "sections": {
+    "main": {
+      "type": "pairing-tool",
+      "blocks": {
+        "a1": { "type": "axis", "settings": { "question": "Which course?", "options": "Starters | NON1:2,NON5:1 | Light plates, salinity before weight.\nMains | NON3:2 | The plate has structure, so the glass needs grip.\nDessert & cheese | NON3:1,NON1:1 | Sugar and fat, so bitterness has to survive it.\nJust a glass | NON5:2 | Nothing to match, so it only has to be sharp." } },
+        "a2": { "type": "axis", "settings": { "question": "How is it cooked?", "options": "Raw or cured | NON1:2 | Matching salinity to salinity.\nCharred or roasted | NON3:2 | Caramelised meets caramelised.\nBraised or stewed | NON5:2 | Slow-cooked fat needs cutting.\nFried | NON5:1,NON1:1 | Acid and bead lift the oil." } },
+        "a3": { "type": "axis", "settings": { "question": "How much heat?", "options": "None | NON3:1 | Free to lead with tannin.\nA little | NON1:1 | A touch of fruit takes the edge off.\nSerious chilli | NON5:2,NON1:1 | Alcohol amplifies capsaicin; acid and salt cool it." } },
+        "r1": { "type": "reason", "settings": { "code": "NON1", "reason": "Salt and verjus meet the brine, chamomile tannin stops it sliding off the plate. It is the bottle that behaves like a dry rosé without ever pretending to be one." } },
+        "r2": { "type": "reason", "settings": { "code": "NON3", "reason": "Caramelised orange finds the caramelised edges of the food, and cinnamon tannin gives you grip on the finish. This is the chilled-light-red seat." } },
+        "r3": { "type": "reason", "settings": { "code": "NON5", "reason": "Hard verjus acid, 140mg of salt and a menthol lift from hops and lemon myrtle. Acid cools chilli; alcohol would have made it worse." } }
+      },
+      "block_order": ["a1","a2","a3","r1","r2","r3"],
+      "settings": {
+        "heading": "What's on the table?",
+        "intro": "Three questions. The somm shows its working rather than just naming a bottle."
+      }
+    }
+  },
+  "order": ["main"]
+}

@@ -1,0 +1,115 @@
+{%- comment -%}
+  Stockists.
+
+  The design carried twelve venues as a hardcoded array and drew them on a
+  Leaflet map in an iframe. Here the venues are section blocks so they're
+  editable, and the map is rendered inline rather than cross-document — the
+  postMessage bridge in the design existed only because the map lived in a
+  separate HTML file.
+
+  find.non.world remains the public source of truth for the full list; this
+  page is the curated shortlist plus a hand-off.
+{%- endcomment -%}
+
+<div class="non-section">
+  <div class="non-section__head">
+    <h1 class="non-section__title">{{ section.settings.heading }}</h1>
+    <span class="non-section__more" data-non-venue-count>{{ section.blocks.size }} venues</span>
+  </div>
+
+  {%- if section.settings.intro != blank -%}
+    <p class="non-hero__blurb" style="margin-top:20px">{{ section.settings.intro }}</p>
+  {%- endif -%}
+
+  <div class="non-filters">
+    <button type="button" class="non-filter" data-non-venue-filter="all" aria-pressed="true">Everything</button>
+    <button type="button" class="non-filter" data-non-venue-filter="restaurant" aria-pressed="false">Restaurants</button>
+    <button type="button" class="non-filter" data-non-venue-filter="bar" aria-pressed="false">Bars</button>
+    <button type="button" class="non-filter" data-non-venue-filter="retail" aria-pressed="false">Retail</button>
+  </div>
+
+  <div class="non-stockists" style="margin-top:26px">
+    <div data-non-venues>
+      {%- for block in section.blocks -%}
+        <div
+          class="non-venue"
+          data-non-venue
+          data-type="{{ block.settings.type }}"
+          data-lat="{{ block.settings.lat }}"
+          data-lng="{{ block.settings.lng }}"
+          {{ block.shopify_attributes }}>
+          <div class="non-venue__name">{{ block.settings.name }}</div>
+          <div class="non-venue__addr">{{ block.settings.address }}</div>
+          {%- if block.settings.pours != blank -%}
+            <div class="non-venue__pours">{{ block.settings.pours }}</div>
+          {%- endif -%}
+        </div>
+      {%- endfor -%}
+    </div>
+
+    {%- if section.settings.show_map -%}
+      <div class="non-map" data-non-map></div>
+    {%- endif -%}
+  </div>
+
+  {%- if section.settings.find_url != blank -%}
+    <p class="non-note" style="margin-top:28px">
+      Looking for somewhere not listed?
+      <a href="{{ section.settings.find_url }}" style="text-decoration:underline">
+        {{ section.settings.find_label }}
+      </a>
+    </p>
+  {%- endif -%}
+</div>
+
+{%- if section.settings.show_map -%}
+  <link
+    rel="stylesheet"
+    href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+    integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY="
+    crossorigin="">
+  <script
+    src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+    integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo="
+    crossorigin=""
+    defer></script>
+  <script src="{{ 'stockists.js' | asset_url }}" defer></script>
+{%- endif -%}
+
+{% schema %}
+{
+  "name": "Stockists",
+  "settings": [
+    { "type": "text", "id": "heading", "label": "Heading", "default": "Where to find it" },
+    { "type": "textarea", "id": "intro", "label": "Intro" },
+    { "type": "checkbox", "id": "show_map", "label": "Show the map", "default": true },
+    { "type": "url", "id": "find_url", "label": "Full directory URL", "info": "e.g. https://find.non.world" },
+    { "type": "text", "id": "find_label", "label": "Full directory label", "default": "Search the full list at find.non.world" }
+  ],
+  "blocks": [
+    {
+      "type": "venue",
+      "name": "Venue",
+      "settings": [
+        { "type": "text", "id": "name", "label": "Name" },
+        { "type": "text", "id": "address", "label": "Address" },
+        {
+          "type": "select",
+          "id": "type",
+          "label": "Type",
+          "options": [
+            { "value": "restaurant", "label": "Restaurant" },
+            { "value": "bar", "label": "Bar" },
+            { "value": "retail", "label": "Retail" }
+          ],
+          "default": "restaurant"
+        },
+        { "type": "text", "id": "pours", "label": "What they pour", "default": "Full range" },
+        { "type": "text", "id": "lat", "label": "Latitude" },
+        { "type": "text", "id": "lng", "label": "Longitude" }
+      ]
+    }
+  ],
+  "presets": [{ "name": "Stockists" }]
+}
+{% endschema %}

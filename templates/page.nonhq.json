@@ -1,0 +1,23 @@
+{
+  "sections": {
+    "main": {
+      "type": "nonhq-concierge",
+      "blocks": {
+        "e1": { "type": "experience", "settings": { "title": "The Flight", "body": "Nine bottles poured in order, 45 minutes at the bench with whoever made them.", "meta": "45 min · 2–8 people", "price": "$35" } },
+        "e2": { "type": "experience", "settings": { "title": "The Matched Table", "body": "Five courses from the HQ kitchen, each matched to a bottle and explained.", "meta": "2 hrs · 2–12 people", "price": "$120" } },
+        "e3": { "type": "experience", "settings": { "title": "Flavour Workshop", "body": "Build your own blend from verjus, salt, tannin and fruit. You take the bottle home.", "meta": "90 min · 4–16 people", "price": "$95" } },
+        "e4": { "type": "experience", "settings": { "title": "Trade Session", "body": "By-the-glass economics, pour costs and staff training for venues and buyers.", "meta": "60 min · by request", "price": "Free" } }
+      },
+      "block_order": ["e1","e2","e3","e4"],
+      "settings": {
+        "heading": "NONHQ",
+        "intro": "The world's first non-alcoholic cellar door. Tastings, tours and workshops in Cheltenham, VIC.",
+        "form_heading": "Request a time",
+        "submit_label": "Send the request",
+        "form_note": "We confirm by email, usually same day.",
+        "success_message": "Got it. We'll confirm by email, usually the same day."
+      }
+    }
+  },
+  "order": ["main"]
+}

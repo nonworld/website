@@ -1,0 +1,15 @@
+{
+  "sections": {
+    "main": {
+      "type": "rich-text",
+      "settings": {
+        "eyebrow": "404",
+        "heading": "Nothing poured here.",
+        "text": "<p>The page has moved or never existed.</p>",
+        "link_label": "Back to the shop",
+        "link": "/collections/all"
+      }
+    }
+  },
+  "order": ["main"]
+}

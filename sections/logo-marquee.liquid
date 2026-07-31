@@ -1,0 +1,60 @@
+{%- if section.blocks.size > 0 -%}
+  <div class="non-poured">
+    <div class="non-poured__label">{{ section.settings.heading }}</div>
+    <div class="non-poured__track" aria-hidden="true">
+      {%- for i in (1..2) -%}
+        <div class="non-poured__set">
+          {%- for block in section.blocks -%}
+            {%- if block.settings.image != blank -%}
+              {{
+                block.settings.image
+                | image_url: width: 300
+                | image_tag:
+                  loading: 'lazy',
+                  alt: block.settings.name,
+                  style: 'max-height:' | append: block.settings.max_height | append: 'px'
+              }}
+            {%- endif -%}
+          {%- endfor -%}
+        </div>
+      {%- endfor -%}
+    </div>
+
+    <ul class="visually-hidden">
+      {%- for block in section.blocks -%}
+        <li>{{ block.settings.name }}</li>
+      {%- endfor -%}
+    </ul>
+  </div>
+{%- endif -%}
+
+{% schema %}
+{
+  "name": "Poured at",
+  "settings": [
+    { "type": "text", "id": "heading", "label": "Heading", "default": "Poured at" }
+  ],
+  "blocks": [
+    {
+      "type": "venue",
+      "name": "Venue",
+      "settings": [
+        { "type": "image_picker", "id": "image", "label": "Logo" },
+        { "type": "text", "id": "name", "label": "Venue name" },
+        {
+          "type": "range",
+          "id": "max_height",
+          "label": "Max height",
+          "min": 24,
+          "max": 80,
+          "step": 2,
+          "unit": "px",
+          "default": 44,
+          "info": "Wordmarks and lockups don't share an optical size — trim each one here."
+        }
+      ]
+    }
+  ],
+  "presets": [{ "name": "Poured at" }]
+}
+{% endschema %}

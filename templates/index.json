@@ -1,0 +1,125 @@
+{
+  "sections": {
+    "hero": {
+      "type": "hero-somm",
+      "blocks": {
+        "seed-1": {
+          "type": "seed",
+          "settings": {
+            "label": "Roast chicken, Friday night",
+            "answer": "Roast chicken wants grip and a little sweetness to meet the skin.\n\nNON3 — toasted cinnamon, yuzu, ginger reduced down until it grips like a light red. Serve it cold in a wine glass, not a tumbler.\n\nIf the bird comes with something green and bitter, pour NON1 alongside.",
+            "picks": "NON3,NON1"
+          }
+        },
+        "seed-2": {
+          "type": "seed",
+          "settings": {
+            "label": "Is this just grape juice?",
+            "answer": "No. Nothing here is fermented and nothing is de-alcoholised.\n\nEach bottle is cooked — ingredients toasted, reduced, salted, acidified — then blended for the structure alcohol used to provide. Tannin from tea and skins, salinity from kombu or salt, acid from citrus and vinegar.\n\nIt reads dry, not sweet. That surprises people.",
+            "picks": "NON2,NON3"
+          }
+        },
+        "seed-3": {
+          "type": "seed",
+          "settings": {
+            "label": "Off wine for a month",
+            "answer": "Then you need the ritual intact: cold bottle, real glass, something to talk about.\n\nStart with the Everyday Set — three bottles, three seats at the table: rosé, white, red. A month is roughly six bottles if you drink on weekends.",
+            "picks": "SET,NON1"
+          }
+        },
+        "seed-4": {
+          "type": "seed",
+          "settings": {
+            "label": "Gift for a chef",
+            "answer": "Chefs taste for structure, so lead with NON2 — caramelised pear and kombu, savoury enough to be interesting on its own.\n\nPut it in the Stopper Set so nothing is wasted between services. Seven days of carbonation, kept cold.",
+            "picks": "NON2,SET"
+          }
+        }
+      },
+      "block_order": ["seed-1", "seed-2", "seed-3", "seed-4"],
+      "settings": {
+        "eyebrow": "0.0% alcohol · not a mocktail",
+        "heading": "Cooked, not de-alcoholised.",
+        "blurb": "Fruit, tannin, salt and acid, built from zero at 0.0%. Tell the somm what's on the table and it will tell you what to pour.",
+        "placeholder": "Tell me what's on the table tonight",
+        "caption": "Built like a dish. Bottled at 0.0%."
+      }
+    },
+    "poured-at": {
+      "type": "logo-marquee",
+      "blocks": {
+        "v1": { "type": "venue", "settings": { "name": "The French Laundry", "max_height": 44 } },
+        "v2": { "type": "venue", "settings": { "name": "The Fat Duck", "max_height": 70 } },
+        "v3": { "type": "venue", "settings": { "name": "Alinea", "max_height": 70 } },
+        "v4": { "type": "venue", "settings": { "name": "Aman", "max_height": 44 } },
+        "v5": { "type": "venue", "settings": { "name": "Atelier Crenn", "max_height": 44 } },
+        "v6": { "type": "venue", "settings": { "name": "Vue de Monde", "max_height": 44 } },
+        "v7": { "type": "venue", "settings": { "name": "Fortnum & Mason", "max_height": 44 } }
+      },
+      "block_order": ["v1", "v2", "v3", "v4", "v5", "v6", "v7"],
+      "settings": { "heading": "Poured at" }
+    },
+    "range": {
+      "type": "featured-collection",
+      "settings": {
+        "heading": "Core range",
+        "limit": 4,
+        "columns": "4",
+        "show_add": false,
+        "link_label": "All bottles"
+      }
+    },
+    "made-for": {
+      "type": "editorial-triptych",
+      "blocks": {
+        "c1": { "type": "cell", "settings": { "title": "Made for starters", "subtitle": "oysters, radicchio, cured fish" } },
+        "c2": { "type": "cell", "settings": { "title": "Made for mains", "subtitle": "charred lamb, mushroom, soy" } },
+        "c3": { "type": "cell", "settings": { "title": "Made for dessert", "subtitle": "stone fruit, chocolate, cheese" } }
+      },
+      "block_order": ["c1", "c2", "c3"]
+    },
+    "press": {
+      "type": "press-quotes",
+      "blocks": {
+        "q1": {
+          "type": "quote",
+          "settings": {
+            "quote": "NON isn't trying to be an imitation of wine, but rather its own, distinct flavor.",
+            "source": "Rolling Stone"
+          }
+        },
+        "q2": {
+          "type": "quote",
+          "settings": { "quote": "NON isn't just a drink; it's an experience.", "source": "Forbes" }
+        }
+      },
+      "block_order": ["q1", "q2"],
+      "settings": { "heading": "Press" }
+    },
+    "split": {
+      "type": "split-feature",
+      "blocks": {
+        "s1": {
+          "type": "cell",
+          "settings": {
+            "title": "Visit NONHQ",
+            "text": "The world's first non-alcoholic cellar door. Tastings, tours and workshops in Cheltenham, VIC.",
+            "link_label": "Book a tasting",
+            "link": "/pages/nonhq"
+          }
+        },
+        "s2": {
+          "type": "cell",
+          "settings": {
+            "title": "Savour the flavour",
+            "text": "The NONstopper holds carbonation and freshness seven days, cold.",
+            "link_label": "See the stopper",
+            "link": "/collections/all"
+          }
+        }
+      },
+      "block_order": ["s1", "s2"]
+    }
+  },
+  "order": ["hero", "poured-at", "range", "made-for", "press", "split"]
+}

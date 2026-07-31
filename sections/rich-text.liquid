@@ -1,0 +1,33 @@
+<div class="non-section">
+  {%- if section.settings.eyebrow != blank -%}
+    <div class="non-mono non-eyebrow">{{ section.settings.eyebrow }}</div>
+  {%- endif -%}
+
+  {%- if section.settings.heading != blank -%}
+    <h2 class="non-hero__title" style="font-size:clamp(30px,4vw,46px);margin-top:14px;max-width:20ch">
+      {{ section.settings.heading }}
+    </h2>
+  {%- endif -%}
+
+  <div class="non-rte" style="margin-top:22px">{{ section.settings.text }}</div>
+
+  {%- if section.settings.link_label != blank -%}
+    <a href="{{ section.settings.link }}" class="non-btn" style="display:inline-block;margin-top:24px">
+      {{ section.settings.link_label }}
+    </a>
+  {%- endif -%}
+</div>
+
+{% schema %}
+{
+  "name": "Rich text",
+  "settings": [
+    { "type": "text", "id": "eyebrow", "label": "Eyebrow" },
+    { "type": "text", "id": "heading", "label": "Heading" },
+    { "type": "richtext", "id": "text", "label": "Text" },
+    { "type": "text", "id": "link_label", "label": "Link label" },
+    { "type": "url", "id": "link", "label": "Link" }
+  ],
+  "presets": [{ "name": "Rich text" }]
+}
+{% endschema %}

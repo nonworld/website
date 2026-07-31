@@ -1,0 +1,49 @@
+<div class="non-trip">
+  {%- for block in section.blocks -%}
+    <div class="non-trip__cell" {{ block.shopify_attributes }}>
+      {%- if block.settings.image != blank -%}
+        {{
+          block.settings.image
+          | image_url: width: 900
+          | image_tag: loading: 'lazy', widths: '400,600,900', alt: block.settings.title
+        }}
+      {%- else -%}
+        {{ 'lifestyle-1' | placeholder_svg_tag }}
+      {%- endif -%}
+
+      <div class="non-trip__cap">
+        {%- if block.settings.link != blank -%}<a href="{{ block.settings.link }}">{%- endif -%}
+        <div class="non-trip__title">{{ block.settings.title }}</div>
+        {%- if block.settings.link != blank -%}</a>{%- endif -%}
+        <div class="non-trip__sub">{{ block.settings.subtitle }}</div>
+      </div>
+    </div>
+  {%- endfor -%}
+</div>
+
+{% schema %}
+{
+  "name": "Editorial triptych",
+  "max_blocks": 4,
+  "blocks": [
+    {
+      "type": "cell",
+      "name": "Panel",
+      "settings": [
+        { "type": "image_picker", "id": "image", "label": "Image" },
+        { "type": "text", "id": "title", "label": "Title", "default": "Made for starters" },
+        { "type": "text", "id": "subtitle", "label": "Subtitle", "default": "oysters, radicchio, cured fish" },
+        { "type": "url", "id": "link", "label": "Link" }
+      ]
+    }
+  ],
+  "default": {
+    "blocks": [
+      { "type": "cell", "settings": { "title": "Made for starters", "subtitle": "oysters, radicchio, cured fish" } },
+      { "type": "cell", "settings": { "title": "Made for mains", "subtitle": "charred lamb, mushroom, soy" } },
+      { "type": "cell", "settings": { "title": "Made for dessert", "subtitle": "stone fruit, chocolate, cheese" } }
+    ]
+  },
+  "presets": [{ "name": "Editorial triptych" }]
+}
+{% endschema %}

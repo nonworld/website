@@ -1,0 +1,79 @@
+{%- comment -%}
+  Product card.
+
+  Params:
+    product   (required)
+    score     optional int — somm match strength for the active food filter
+    why       optional string — the somm's one-line reason for this filter
+    is_pick   optional bool — flag this card as "The pick"
+    dim       optional bool — fade cards that don't answer the question
+    show_add  optional bool — render an AJAX add button
+{%- endcomment -%}
+
+{%- liquid
+  assign code = product.metafields.custom.non_code | metafield_text | strip | upcase
+  if code == blank
+    capture code
+      render 'non-code', product: product
+    endcapture
+  endif
+  assign tastes = product.metafields.custom.tastes | metafield_text
+  assign sits = product.metafields.custom.sits | metafield_text
+  assign variant = product.selected_or_first_available_variant
+-%}
+
+<div
+  class="non-card{% if dim %} non-card--dim{% endif %}"
+  data-non-code="{{ code | escape }}"
+  {% if score %}data-score="{{ score }}"{% endif %}>
+  {%- if is_pick -%}
+    <span class="non-card__flag">The pick</span>
+  {%- endif -%}
+
+  <a href="{{ product.url }}" class="non-card__media" aria-label="{{ product.title | escape }}">
+    {%- if product.featured_image -%}
+      {{
+        product.featured_image
+        | image_url: width: 800
+        | image_tag:
+          loading: 'lazy',
+          widths: '300,400,600,800',
+          sizes: '(min-width: 860px) 33vw, 50vw',
+          alt: product.featured_image.alt
+          | default: product.title
+      }}
+    {%- else -%}
+      {{ 'product-1' | placeholder_svg_tag: 'non-card__placeholder' }}
+    {%- endif -%}
+  </a>
+
+  <span class="non-card__code">{{ code }}</span>
+  <a href="{{ product.url }}" class="non-card__name">{{ product.title }}</a>
+
+  <span class="non-card__note">
+    {%- if sits != blank -%}
+      {{ sits }} &middot;
+    {%- elsif tastes != blank -%}
+      {{ tastes }} &middot;
+    {%- endif -%}
+    {{ product.price | money }}
+  </span>
+
+  {%- if why != blank -%}
+    <p class="non-card__why">{{ why }}</p>
+  {%- endif -%}
+
+  {%- if show_add -%}
+    {%- if product.available -%}
+      <button
+        type="button"
+        class="non-card__add"
+        data-non-add
+        data-variant-id="{{ variant.id }}">
+        Add
+      </button>
+    {%- else -%}
+      <button type="button" class="non-card__add" disabled>{{ 'products.product.sold_out' | t }}</button>
+    {%- endif -%}
+  {%- endif -%}
+</div>

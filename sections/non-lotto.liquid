@@ -1,0 +1,99 @@
+{%- comment -%}
+  NON Lotto — scratch and reveal.
+
+  The design picked the prize in the browser from a weighted table and shipped
+  the discount codes in the page source, which means anyone could read every
+  code without scratching. Here the browser only draws the foil: the prize and
+  its code come from the API, one draw per request, and the codes never exist
+  in the document until the API has issued one.
+
+  With no endpoint configured the widget stays closed — a scratch card with no
+  prize behind it is worse than no scratch card.
+{%- endcomment -%}
+
+<div
+  class="non-lotto"
+  data-non-lotto
+  data-endpoint="{{ settings.lotto_endpoint }}"
+  data-auto-open="{{ settings.lotto_auto_open | default: true }}"
+  data-delay="{{ settings.lotto_delay | default: 1400 }}"
+  data-cooldown-days="{{ settings.lotto_cooldown_days | default: 14 }}"
+  data-reveal-at="{{ section.settings.reveal_at | default: 0.55 }}"
+  hidden>
+  <div class="non-lotto__card" role="dialog" aria-modal="true" aria-labelledby="lotto-title">
+    <div class="non-lotto__head">
+      <span class="non-mono non-eyebrow">NON Lotto</span>
+      <span class="non-lotto__ref" data-non-lotto-ref></span>
+    </div>
+
+    <div>
+      <div class="non-lotto__title" id="lotto-title">{{ section.settings.heading }}</div>
+      <p class="non-lotto__sub">{{ section.settings.subtext }}</p>
+    </div>
+
+    <div class="non-lotto__panel">
+      <div class="non-lotto__prize">
+        <div class="non-lotto__won">{{ 'sections.lotto.won' | t }}</div>
+        <div class="non-lotto__win" data-non-lotto-win></div>
+
+        <button type="button" class="non-lotto__copy" data-non-lotto-copy hidden>
+          <span class="non-lotto__copy-k" data-non-lotto-copy-label>{{ 'sections.lotto.code' | t }}</span>
+          <b class="non-lotto__copy-v" data-non-lotto-code></b>
+        </button>
+
+        <div class="non-lotto__fine" data-non-lotto-terms></div>
+      </div>
+
+      <canvas class="non-lotto__foil" data-non-lotto-foil aria-label="Scratch to reveal"></canvas>
+    </div>
+
+    <form class="non-lotto__claim" data-non-lotto-claim hidden>
+      <label class="visually-hidden" for="lotto-email">Email</label>
+      <input
+        id="lotto-email"
+        class="non-lotto__email"
+        type="email"
+        required
+        placeholder="{{ 'sections.lotto.email_placeholder' | t }}">
+      <button type="submit" class="non-lotto__send" data-non-lotto-send>
+        {{ 'sections.lotto.email_it' | t }}
+      </button>
+    </form>
+
+    <div class="non-lotto__foot">
+      <span class="non-mono non-eyebrow" style="font-size:9.5px">
+        {{ 'sections.lotto.while_stocks_last' | t }}
+      </span>
+      <button type="button" class="non-lotto__no" data-non-lotto-close>
+        {{ 'sections.lotto.no_thanks' | t }}
+      </button>
+    </div>
+  </div>
+</div>
+
+<script src="{{ 'lotto.js' | asset_url }}" defer></script>
+
+{% schema %}
+{
+  "name": "NON Lotto",
+  "settings": [
+    { "type": "text", "id": "heading", "label": "Heading", "default": "Scratch & reveal" },
+    {
+      "type": "text",
+      "id": "subtext",
+      "label": "Subtext",
+      "default": "Got to be in it, to win it. One gift per guest."
+    },
+    {
+      "type": "range",
+      "id": "reveal_at",
+      "label": "Reveal threshold",
+      "min": 0.2,
+      "max": 0.9,
+      "step": 0.05,
+      "default": 0.55,
+      "info": "How much foil has to be scratched away before the prize snaps open."
+    }
+  ]
+}
+{% endschema %}

@@ -1,0 +1,37 @@
+{%- comment -%}
+  Related bottles. Prefers the product's own metafield custom.related (a list
+  of product references, matching the design's hand-picked `related` array),
+  and falls back to Shopify's recommendations API when it isn't set.
+{%- endcomment -%}
+
+{%- assign related = product.metafields.custom.related.value -%}
+
+<div class="non-section" data-non-recommendations data-url="{{ routes.product_recommendations_url }}?section_id={{ section.id }}&product_id={{ product.id }}&limit={{ section.settings.limit }}">
+  <div class="non-section__head">
+    <h2 class="non-section__title">{{ section.settings.heading }}</h2>
+  </div>
+
+  {%- if related != blank -%}
+    <div class="non-grid non-grid--3">
+      {%- for item in related limit: section.settings.limit -%}
+        {% render 'product-card', product: item %}
+      {%- endfor -%}
+    </div>
+  {%- elsif recommendations.performed and recommendations.products_count > 0 -%}
+    <div class="non-grid non-grid--3">
+      {%- for item in recommendations.products -%}
+        {% render 'product-card', product: item %}
+      {%- endfor -%}
+    </div>
+  {%- endif -%}
+</div>
+
+{% schema %}
+{
+  "name": "Related bottles",
+  "settings": [
+    { "type": "text", "id": "heading", "label": "Heading", "default": "Drink it with" },
+    { "type": "range", "id": "limit", "label": "Products", "min": 2, "max": 6, "step": 1, "default": 3 }
+  ]
+}
+{% endschema %}

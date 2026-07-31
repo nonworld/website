@@ -1,0 +1,82 @@
+{%- comment -%}
+  "How it's made" steps and the pairing notes.
+
+  Source of truth is the product metafields:
+    custom.process_steps  → JSON list of { n, title, body }
+    custom.pairings       → JSON list of { title, body }
+
+  Section blocks act as a manual override when a product has no metafield yet.
+{%- endcomment -%}
+
+{%- liquid
+  assign steps = product.metafields.custom.process_steps.value
+  assign pairings = product.metafields.custom.pairings.value
+-%}
+
+{%- if steps != blank or section.blocks.size > 0 -%}
+  <div class="non-section">
+    <div class="non-section__head">
+      <h2 class="non-section__title">{{ section.settings.steps_heading }}</h2>
+    </div>
+
+    <div class="non-steps" style="margin-top:30px">
+      {%- if steps != blank -%}
+        {%- for step in steps -%}
+          <div>
+            <div class="non-step__n">{{ step.n }}</div>
+            <div class="non-step__t">{{ step.title }}</div>
+            <p class="non-step__b">{{ step.body }}</p>
+          </div>
+        {%- endfor -%}
+      {%- else -%}
+        {%- for block in section.blocks -%}
+          {%- if block.type == 'step' -%}
+            <div {{ block.shopify_attributes }}>
+              <div class="non-step__n">{{ block.settings.number }}</div>
+              <div class="non-step__t">{{ block.settings.title }}</div>
+              <p class="non-step__b">{{ block.settings.body }}</p>
+            </div>
+          {%- endif -%}
+        {%- endfor -%}
+      {%- endif -%}
+    </div>
+  </div>
+{%- endif -%}
+
+{%- if pairings != blank -%}
+  <div class="non-section">
+    <div class="non-section__head">
+      <h2 class="non-section__title">{{ section.settings.pairings_heading }}</h2>
+    </div>
+
+    <div class="non-grid non-grid--3" style="margin-top:26px">
+      {%- for pair in pairings -%}
+        <div>
+          <div class="non-step__t">{{ pair.title }}</div>
+          <p class="non-step__b">{{ pair.body }}</p>
+        </div>
+      {%- endfor -%}
+    </div>
+  </div>
+{%- endif -%}
+
+{% schema %}
+{
+  "name": "Process & pairings",
+  "settings": [
+    { "type": "text", "id": "steps_heading", "label": "Process heading", "default": "How it's made" },
+    { "type": "text", "id": "pairings_heading", "label": "Pairings heading", "default": "What to put it with" }
+  ],
+  "blocks": [
+    {
+      "type": "step",
+      "name": "Step (fallback)",
+      "settings": [
+        { "type": "text", "id": "number", "label": "Number", "default": "01" },
+        { "type": "text", "id": "title", "label": "Title" },
+        { "type": "textarea", "id": "body", "label": "Body" }
+      ]
+    }
+  ]
+}
+{% endschema %}

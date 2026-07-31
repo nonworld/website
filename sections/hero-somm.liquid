@@ -72,11 +72,73 @@
   </div>
 
   {%- comment -%}
-    The design's imagery already lives on NON's own Shopify CDN, so the section
-    falls back to those URLs rather than rendering an empty column until
-    somebody uploads twelve files. Any upload in the theme editor wins.
+    Hero media. Slide blocks make it a carousel, matching the current site; a
+    single slide just renders as a still. The imagery already lives on NON's
+    own Shopify CDN, so a slide can carry either an upload or a URL, and the
+    upload wins.
+
+    The first slide is eager and high priority — it is the LCP element. Every
+    other slide is lazy, so a five-slide hero costs one image on first paint.
   {%- endcomment -%}
-  {%- if section.settings.image != blank or section.settings.image_url != blank -%}
+
+  {%- assign slides = section.blocks | where: 'type', 'slide' -%}
+
+  {%- if slides.size > 0 -%}
+    <div
+      class="non-hero__media non-carousel"
+      data-non-carousel
+      data-interval="{{ section.settings.slide_interval | times: 1000 }}"
+      {% if slides.size > 1 %}aria-roledescription="carousel"{% endif %}
+      aria-label="NON">
+      {%- for block in slides -%}
+        <div
+          class="non-carousel__slide{% if forloop.first %} is-active{% endif %}"
+          data-non-slide
+          {{ block.shopify_attributes }}>
+          {%- liquid
+            assign loading = 'lazy'
+            if forloop.first
+              assign loading = 'eager'
+            endif
+          -%}
+          {%- if block.settings.image != blank -%}
+            {{
+              block.settings.image
+              | image_url: width: 1400
+              | image_tag:
+                loading: loading,
+                widths: '480,760,1000,1400',
+                alt: block.settings.alt | default: shop.name
+            }}
+          {%- elsif block.settings.image_url != blank -%}
+            <img
+              src="{{ block.settings.image_url }}"
+              alt="{{ block.settings.alt | default: shop.name | escape }}"
+              {% if forloop.first %}loading="eager" fetchpriority="high"{% else %}loading="lazy"{% endif %}>
+          {%- endif -%}
+        </div>
+      {%- endfor -%}
+
+      {%- if slides.size > 1 -%}
+        <div class="non-carousel__dots" data-non-carousel-dots role="tablist" aria-label="Choose a slide">
+          {%- for block in slides -%}
+            <button
+              type="button"
+              class="non-carousel__dot{% if forloop.first %} is-active{% endif %}"
+              data-non-carousel-dot
+              role="tab"
+              aria-selected="{% if forloop.first %}true{% else %}false{% endif %}"
+              aria-label="Slide {{ forloop.index }} of {{ slides.size }}"></button>
+          {%- endfor -%}
+        </div>
+      {%- endif -%}
+
+      {%- if section.settings.caption != blank -%}
+        <div class="non-hero__caption">{{ section.settings.caption }}</div>
+      {%- endif -%}
+    </div>
+
+  {%- elsif section.settings.image != blank or section.settings.image_url != blank -%}
     <div class="non-hero__media">
       {%- if section.settings.image != blank -%}
         {{
@@ -143,6 +205,7 @@
 </script>
 
 <script src="{{ 'somm.js' | asset_url }}" defer></script>
+<script src="{{ 'carousel.js' | asset_url }}" defer></script>
 
 {% schema %}
 {
@@ -167,6 +230,17 @@
     },
     { "type": "text", "id": "caption", "label": "Image caption", "default": "Built like a dish. Bottled at 0.0%." },
     {
+      "type": "range",
+      "id": "slide_interval",
+      "label": "Seconds per slide",
+      "min": 3,
+      "max": 12,
+      "step": 1,
+      "unit": "s",
+      "default": 6,
+      "info": "Only applies with more than one slide. Auto-advance is skipped entirely for anyone who prefers reduced motion."
+    },
+    {
       "type": "collection",
       "id": "pick_collection",
       "label": "Bottles the somm can recommend",
@@ -180,6 +254,15 @@
     }
   ],
   "blocks": [
+    {
+      "type": "slide",
+      "name": "Hero slide",
+      "settings": [
+        { "type": "image_picker", "id": "image", "label": "Image" },
+        { "type": "text", "id": "image_url", "label": "Image URL", "info": "Used only when no image is uploaded." },
+        { "type": "text", "id": "alt", "label": "Alt text" }
+      ]
+    },
     {
       "type": "seed",
       "name": "Suggested question",

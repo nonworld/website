@@ -34,9 +34,49 @@
             "answer": "Chefs taste for structure, so lead with NON2 — caramelised pear and kombu, savoury enough to be interesting on its own.\n\nPut it in the Stopper Set so nothing is wasted between services. Seven days of carbonation, kept cold.",
             "picks": "NON2,SET"
           }
+        },
+        "slide-1": {
+          "type": "slide",
+          "settings": {
+            "image_url": "https://www.non.world/cdn/shop/t/91/assets/non-home-hero-main-1.webp",
+            "alt": "NON bottles on the pass"
+          }
+        },
+        "slide-2": {
+          "type": "slide",
+          "settings": {
+            "image_url": "https://www.non.world/cdn/shop/t/91/assets/non-home-hero-main-2.webp",
+            "alt": "NON poured at the table"
+          }
+        },
+        "slide-3": {
+          "type": "slide",
+          "settings": {
+            "image_url": "https://www.non.world/cdn/shop/t/91/assets/non-home-hero-main-3.webp",
+            "alt": "The NON kitchen"
+          }
+        },
+        "slide-4": {
+          "type": "slide",
+          "settings": {
+            "image_url": "https://www.non.world/cdn/shop/t/91/assets/non-home-hero-main-4.webp",
+            "alt": "NON with food"
+          }
+        },
+        "slide-5": {
+          "type": "slide",
+          "settings": {
+            "image_url": "https://www.non.world/cdn/shop/t/91/assets/non-home-hero-main-5.webp",
+            "alt": "NON in the glass"
+          }
         }
       },
       "block_order": [
+        "slide-1",
+        "slide-2",
+        "slide-3",
+        "slide-4",
+        "slide-5",
         "seed-1",
         "seed-2",
         "seed-3",
@@ -48,7 +88,8 @@
         "blurb": "Fruit, tannin, salt and acid, built from zero at 0.0%. Tell the somm what's on the table and it will tell you what to pour.",
         "placeholder": "Tell me what's on the table tonight",
         "caption": "Built like a dish. Bottled at 0.0%.",
-        "image_url": "https://www.non.world/cdn/shop/t/91/assets/non-home-hero-main-1.webp?v=85646433329311323311783460768"
+        "image_url": "https://www.non.world/cdn/shop/t/91/assets/non-home-hero-main-1.webp?v=85646433329311323311783460768",
+        "slide_interval": 6
       }
     },
     "poured-at": {

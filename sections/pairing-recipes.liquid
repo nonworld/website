@@ -1,0 +1,179 @@
+{%- comment -%}
+  Pairing, reverse flow — bottle → recipe.
+
+  The design carried three recipes per bottle (fast / Sunday / show-off), each
+  with an intro, a method, an ingredient list and a "why this works" note.
+  That is far too much copy for a section schema, so it lives in a metaobject:
+
+    type: non_recipe
+      bottle      product_reference     which bottle it is written around
+      effort      single_line_text      fast | sunday | showoff
+      title       single_line_text
+      meta        single_line_text      "15 minutes · no heat · serves 2"
+      intro       multi_line_text
+      steps       list.single_line_text one line per step
+      ingredients list.single_line_text "Kingfish, sashimi grade — 250g"
+      why         multi_line_text       why the pairing works
+      image       file_reference
+
+  This matches the pattern the store already uses for non_review, so it sits
+  alongside existing data rather than introducing a new convention.
+
+  Setup and the ported copy: docs/recipes.md
+{%- endcomment -%}
+
+{%- liquid
+  assign recipes = section.settings.recipes.value | default: shop.metaobjects.non_recipe.values
+  assign efforts = 'fast,sunday,showoff,aperitivo,sweet' | split: ','
+-%}
+
+<div class="non-section" data-non-recipes>
+  <div class="non-section__head">
+    <h2 class="non-section__title">{{ section.settings.heading }}</h2>
+    <span class="non-section__more">{{ section.settings.subheading }}</span>
+  </div>
+
+  {%- if recipes.size > 0 -%}
+    {%- comment -%} bottle picker {%- endcomment -%}
+    <div class="non-filters" role="group" aria-label="Choose a bottle">
+      {%- assign seen = '' -%}
+      {%- for recipe in recipes -%}
+        {%- liquid
+          assign bottle = recipe.bottle.value
+          assign key = bottle.handle
+        -%}
+        {%- unless seen contains key or key == blank -%}
+          {%- assign seen = seen | append: key | append: ',' -%}
+          <button
+            type="button"
+            class="non-filter"
+            data-non-recipe-bottle="{{ key }}"
+            aria-pressed="{% if forloop.first %}true{% else %}false{% endif %}">
+            {{ bottle.title | split: ' ' | first }}
+          </button>
+        {%- endunless -%}
+      {%- endfor -%}
+    </div>
+
+    {%- comment -%} effort picker {%- endcomment -%}
+    <div class="non-filters" style="margin-top:10px" role="group" aria-label="How much effort">
+      {%- for effort in efforts -%}
+        <button
+          type="button"
+          class="non-filter"
+          data-non-recipe-effort="{{ effort }}"
+          aria-pressed="{% if forloop.first %}true{% else %}false{% endif %}">
+          {%- case effort -%}
+            {%- when 'fast' -%}Weeknight
+            {%- when 'sunday' -%}Sunday
+            {%- when 'showoff' -%}Show off
+            {%- when 'aperitivo' -%}Aperitivo
+            {%- else -%}Cheese &amp; dessert
+          {%- endcase -%}
+        </button>
+      {%- endfor -%}
+    </div>
+
+    {%- for recipe in recipes -%}
+      {%- liquid
+        assign bottle = recipe.bottle.value
+        assign effort = recipe.effort | downcase | strip
+      -%}
+      <article
+        class="non-pair non-recipe"
+        style="margin-top:32px"
+        data-non-recipe
+        data-bottle="{{ bottle.handle }}"
+        data-effort="{{ effort }}"
+        {% unless forloop.first %}hidden{% endunless %}>
+        <div>
+          <div class="non-mono non-eyebrow">{{ recipe.meta }}</div>
+          <h3 class="non-buy__name" style="font-size:30px">{{ recipe.title }}</h3>
+          <p class="non-buy__blurb">{{ recipe.intro }}</p>
+
+          {%- if recipe.steps.value.size > 0 -%}
+            <ol class="non-steps" style="margin-top:26px;padding:0;list-style:none;counter-reset:step">
+              {%- for step in recipe.steps.value -%}
+                <li>
+                  <div class="non-step__n">{{ forloop.index | prepend: '0' | slice: -2, 2 }}</div>
+                  <p class="non-step__b">{{ step }}</p>
+                </li>
+              {%- endfor -%}
+            </ol>
+          {%- endif -%}
+
+          {%- if recipe.why != blank -%}
+            <div style="margin-top:26px;border-top:1px solid var(--non-line);padding-top:18px">
+              <div class="non-spec__k">Why it works</div>
+              <p class="non-note" style="margin-top:8px;max-width:52ch">{{ recipe.why }}</p>
+            </div>
+          {%- endif -%}
+        </div>
+
+        <aside>
+          {%- if recipe.image -%}
+            {{
+              recipe.image.value
+              | image_url: width: 900
+              | image_tag: loading: 'lazy', widths: '420,640,900', alt: recipe.title
+            }}
+          {%- endif -%}
+
+          {%- if recipe.ingredients.value.size > 0 -%}
+            <div class="non-mono non-eyebrow" style="margin-top:20px">You need</div>
+            <div style="margin-top:12px">
+              {%- for line in recipe.ingredients.value -%}
+                {%- assign parts = line | split: ' — ' -%}
+                <div class="non-venue" style="padding:9px 0;display:flex;justify-content:space-between;gap:14px">
+                  <span style="font-size:13.5px">{{ parts | first }}</span>
+                  {%- if parts.size > 1 -%}
+                    <span class="non-card__note">{{ parts | last }}</span>
+                  {%- endif -%}
+                </div>
+              {%- endfor -%}
+            </div>
+          {%- endif -%}
+
+          {%- if bottle != blank -%}
+            <div style="margin-top:22px">
+              {% render 'product-card', product: bottle, show_add: true %}
+            </div>
+          {%- endif -%}
+        </aside>
+      </article>
+    {%- endfor -%}
+
+    <p class="non-note" data-non-recipe-empty hidden style="margin-top:28px">
+      No recipe written for that combination yet.
+    </p>
+  {%- else -%}
+    <p class="non-note" style="margin-top:24px">
+      No recipes yet. Create <code>non_recipe</code> metaobject entries — see docs/recipes.md.
+    </p>
+  {%- endif -%}
+</div>
+
+<script src="{{ 'recipes.js' | asset_url }}" defer></script>
+
+{% schema %}
+{
+  "name": "Pairing recipes",
+  "settings": [
+    { "type": "text", "id": "heading", "label": "Heading", "default": "Or start with the bottle" },
+    {
+      "type": "text",
+      "id": "subheading",
+      "label": "Subheading",
+      "default": "A dish written around what's already in the glass"
+    },
+    {
+      "type": "metaobject_list",
+      "id": "recipes",
+      "label": "Recipes",
+      "metaobject_type": "non_recipe",
+      "info": "Leave empty to show every non_recipe entry."
+    }
+  ],
+  "presets": [{ "name": "Pairing recipes" }]
+}
+{% endschema %}

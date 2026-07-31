@@ -1,0 +1,126 @@
+{%- comment -%}
+  "The whole table, at a glance" — course × bottle.
+
+  The design's reference grid: three courses down the side, three bottles
+  across, and one cell per course marked as the pick. It is the page's summary
+  and the thing a reader screenshots, and the port did not have it at all.
+
+  Rows and columns are blocks so the range can change without a code edit. A
+  cell is marked as the pick by ending its text with "— the pick", which is how
+  the design wrote it; the section strips that and renders the flag.
+{%- endcomment -%}
+
+{%- assign columns = section.blocks | where: 'type', 'bottle' -%}
+{%- assign rows = section.blocks | where: 'type', 'course' -%}
+
+{%- if columns.size > 0 and rows.size > 0 -%}
+  <div class="non-section" style="border-top:1px solid var(--non-line)">
+    <div class="non-section__head">
+      <h2 class="non-section__title">{{ section.settings.heading }}</h2>
+      <span class="non-section__more">{{ section.settings.subheading }}</span>
+    </div>
+
+    <div class="non-matrix" style="--matrix-cols: {{ columns.size }}">
+      <div class="non-matrix__row non-matrix__row--head">
+        <div class="non-matrix__cell non-matrix__cell--corner">
+          <span class="non-spec__k">Course</span>
+        </div>
+        {%- for col in columns -%}
+          <div class="non-matrix__cell non-matrix__cell--head" {{ col.shopify_attributes }}>
+            <span class="non-matrix__code">{{ col.settings.code }}</span>
+            <span class="non-matrix__name">{{ col.settings.name }}</span>
+          </div>
+        {%- endfor -%}
+      </div>
+
+      {%- for row in rows -%}
+        {%- assign cells = row.settings.cells | newline_to_br | split: '<br />' -%}
+        <div class="non-matrix__row" {{ row.shopify_attributes }}>
+          <div class="non-matrix__cell non-matrix__cell--course">{{ row.settings.course }}</div>
+          {%- for cell in cells -%}
+            {%- liquid
+              assign text = cell | strip
+              assign is_pick = false
+              if text contains '— the pick'
+                assign is_pick = true
+                assign text = text | remove: '— the pick' | strip
+              endif
+            -%}
+            {%- if text != blank -%}
+              <div class="non-matrix__cell{% if is_pick %} is-pick{% endif %}">
+                {{ text }}
+                {%- if is_pick -%}<span class="non-matrix__pick">the pick</span>{%- endif -%}
+              </div>
+            {%- endif -%}
+          {%- endfor -%}
+        </div>
+      {%- endfor -%}
+    </div>
+  </div>
+{%- endif -%}
+
+{%- assign notes = section.blocks | where: 'type', 'note' -%}
+{%- if notes.size > 0 -%}
+  <div class="non-section" style="border-top:1px solid var(--non-line)">
+    <div class="non-section__head">
+      <h2 class="non-section__title">{{ section.settings.why_heading }}</h2>
+    </div>
+
+    <div class="non-grid non-grid--3" style="margin-top:28px">
+      {%- for note in notes -%}
+        <div {{ note.shopify_attributes }}>
+          <div class="non-step__t">{{ note.settings.title }}</div>
+          <p class="non-step__b">{{ note.settings.body }}</p>
+        </div>
+      {%- endfor -%}
+    </div>
+  </div>
+{%- endif -%}
+
+{% schema %}
+{
+  "name": "Pairing matrix",
+  "settings": [
+    { "type": "text", "id": "heading", "label": "Heading", "default": "The whole table, at a glance" },
+    { "type": "text", "id": "subheading", "label": "Subheading", "default": "Course × bottle" },
+    {
+      "type": "text",
+      "id": "why_heading",
+      "label": "Why heading",
+      "default": "Why any of this works without alcohol"
+    }
+  ],
+  "blocks": [
+    {
+      "type": "bottle",
+      "name": "Column (bottle)",
+      "settings": [
+        { "type": "text", "id": "code", "label": "Code", "default": "NON1" },
+        { "type": "text", "id": "name", "label": "Name" }
+      ]
+    },
+    {
+      "type": "course",
+      "name": "Row (course)",
+      "settings": [
+        { "type": "text", "id": "course", "label": "Course" },
+        {
+          "type": "textarea",
+          "id": "cells",
+          "label": "Cells",
+          "info": "One per line, in column order. End a line with \"— the pick\" to flag it."
+        }
+      ]
+    },
+    {
+      "type": "note",
+      "name": "Why it works",
+      "settings": [
+        { "type": "text", "id": "title", "label": "Title" },
+        { "type": "textarea", "id": "body", "label": "Body" }
+      ]
+    }
+  ],
+  "presets": [{ "name": "Pairing matrix" }]
+}
+{% endschema %}

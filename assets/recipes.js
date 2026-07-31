@@ -17,6 +17,14 @@
   var bottle = recipes[0].getAttribute('data-bottle');
   var effort = recipes[0].getAttribute('data-effort') || 'fast';
 
+  // Every effort that exists for the current bottle, so "write me another"
+  // rolls within the bottle rather than jumping to a different one.
+  function effortsFor(b) {
+    return recipes
+      .filter(function (r) { return r.getAttribute('data-bottle') === b; })
+      .map(function (r) { return r.getAttribute('data-effort'); });
+  }
+
   function apply() {
     var shown = 0;
 
@@ -54,9 +62,20 @@
     var f = e.target.closest('[data-non-recipe-effort]');
     if (f) {
       effort = f.getAttribute('data-non-recipe-effort');
-      apply();
+      return apply();
+    }
+
+    if (e.target.closest('[data-non-recipe-another]')) {
+      // Roll within the current bottle. Jumping to a different bottle would
+      // answer a question the customer did not ask.
+      var options = effortsFor(bottle).filter(function (x) { return x !== effort; });
+      if (options.length) {
+        effort = options[Math.floor(Math.random() * options.length)];
+        apply();
+      }
     }
   });
 
+  // Nothing is pressed in the markup, so the first apply() sets both pickers.
   apply();
 })();

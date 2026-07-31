@@ -74,10 +74,95 @@
         "heading": "Or start with the bottle",
         "subheading": "A dish written around what is already in the glass"
       }
+    },
+    "matrix": {
+      "type": "pairing-matrix",
+      "blocks": {
+        "b1": {
+          "type": "bottle",
+          "settings": {
+            "code": "NON1",
+            "name": "Salted Raspberry"
+          }
+        },
+        "b2": {
+          "type": "bottle",
+          "settings": {
+            "code": "NON3",
+            "name": "Cinnamon & Yuzu"
+          }
+        },
+        "b3": {
+          "type": "bottle",
+          "settings": {
+            "code": "NON5",
+            "name": "Lemon & Hibiscus"
+          }
+        },
+        "r1": {
+          "type": "course",
+          "settings": {
+            "course": "Starters",
+            "cells": "Oysters, cured fish — the pick\nAntipasti, charcuterie\nGrain salads, crudités"
+          }
+        },
+        "r2": {
+          "type": "course",
+          "settings": {
+            "course": "Mains",
+            "cells": "Chilli, chicken, tomato\nCharred, miso, mushroom — the pick\nCurry, braises, chickpeas"
+          }
+        },
+        "r3": {
+          "type": "course",
+          "settings": {
+            "course": "Dessert & cheese",
+            "cells": "Berries, goat cheese\nStone fruit, chocolate — the pick\nCitrus tart, sorbet"
+          }
+        },
+        "n1": {
+          "type": "note",
+          "settings": {
+            "title": "Tannin",
+            "body": "Chamomile, cinnamon, tea, hops and citrus pith give grip on the finish, so the glass holds a plate instead of washing through it."
+          }
+        },
+        "n2": {
+          "type": "note",
+          "settings": {
+            "title": "Salinity",
+            "body": "Murray River salt and kombu make food taste more like itself. It is a lever wine never had."
+          }
+        },
+        "n3": {
+          "type": "note",
+          "settings": {
+            "title": "Acid",
+            "body": "Barossa verjus, citrus and vinegar reset the palate between bites, and cool chilli rather than stoking it."
+          }
+        }
+      },
+      "block_order": [
+        "b1",
+        "b2",
+        "b3",
+        "r1",
+        "r2",
+        "r3",
+        "n1",
+        "n2",
+        "n3"
+      ],
+      "settings": {
+        "heading": "The whole table, at a glance",
+        "subheading": "Course × bottle",
+        "why_heading": "Why any of this works without alcohol"
+      }
     }
   },
   "order": [
     "main",
-    "recipes"
+    "recipes",
+    "matrix"
   ]
 }

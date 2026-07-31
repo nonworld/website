@@ -599,6 +599,45 @@ button { font-family: inherit; }
 .non-pair__dot--now { background: #8d8578; }
 .non-pair__trace { font-family: var(--non-mono); font-size: 11px; line-height: 1.7; color: var(--non-fg-faint); }
 
+.non-matrix { margin-top: 28px; border-top: 1px solid var(--non-line); overflow-x: auto; }
+.non-matrix__row {
+  display: grid;
+  grid-template-columns: minmax(120px, 1fr) repeat(var(--matrix-cols, 3), minmax(150px, 1.4fr));
+  border-bottom: 1px solid var(--non-line);
+  min-width: 640px;
+}
+.non-matrix__cell {
+  padding: 18px 20px; border-right: 1px solid var(--non-line);
+  font-size: var(--t-small); line-height: 1.5; color: var(--non-fg-dim);
+}
+.non-matrix__cell:last-child { border-right: 0; }
+.non-matrix__cell--corner { background: transparent; }
+.non-matrix__cell--head { display: flex; flex-direction: column; gap: 5px; }
+.non-matrix__code { font-family: var(--non-mono); font-size: var(--t-mono); letter-spacing: .14em; color: var(--non-fg-faint); }
+.non-matrix__name { font-size: var(--t-body); color: var(--non-fg); }
+.non-matrix__cell--course { font-size: var(--t-body); color: var(--non-fg); font-weight: 600; }
+.non-matrix__cell.is-pick { color: var(--non-fg); background: var(--non-panel); }
+.non-matrix__pick {
+  display: block; margin-top: 7px; font-family: var(--non-mono);
+  font-size: var(--t-mono); letter-spacing: .14em; text-transform: uppercase;
+  color: var(--non-fg-faint);
+}
+
+.non-recipe__slot { margin-top: 30px; }
+
+.non-recipe { display: grid; grid-template-columns: 1fr; gap: 30px; }
+@media (min-width: 860px) { .non-recipe { grid-template-columns: minmax(0, 1fr) minmax(0, 380px); } }
+.non-recipe[hidden] { display: none; }
+
+.non-recipe__title {
+  margin: 10px 0 0; font-size: clamp(24px, 2.2vw, 36px);
+  line-height: 1.08; font-weight: 600; letter-spacing: -.025em; max-width: 20ch;
+}
+.non-recipe__ing {
+  display: flex; justify-content: space-between; gap: 14px;
+  padding: 9px 0; border-bottom: 1px solid var(--non-line); font-size: var(--t-small);
+}
+
 /* --- filters (shop) ----------------------------------------------------- */
 
 .non-filters { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 18px; }

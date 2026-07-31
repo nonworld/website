@@ -28,8 +28,17 @@
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    {%- comment -%}
+      Two faces only: Helvetica Neue (self-hosted, see theme.css) and JetBrains
+      Mono for everything that is not Helvetica.
+
+      Newsreader used to be loaded here. It is a serif, which the brand does not
+      use, and it was referenced by exactly nothing in the theme — a
+      render-blocking request for a font that could not have rendered. It came
+      across with the design export.
+    {%- endcomment -%}
     <link
-      href="https://fonts.googleapis.com/css2?family=Newsreader:opsz,wght@6..72,300;6..72,400&family=DM+Mono:wght@400;500&display=swap"
+      href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&display=swap"
       rel="stylesheet">
 
     <link rel="stylesheet" href="{{ 'theme.css' | asset_url }}">

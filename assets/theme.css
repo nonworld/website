@@ -23,7 +23,7 @@
   --non-ink: #231f20;
 
   --non-sans: NONHelvetica, 'Helvetica Neue', Helvetica, Arial, sans-serif;
-  --non-mono: 'DM Mono', ui-monospace, SFMono-Regular, Menlo, monospace;
+  --non-mono: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, monospace;
 
   /* The design export was authored on a 1180px canvas and carried that as a
      hard max-width on the root element. That was the tool's artboard, not a

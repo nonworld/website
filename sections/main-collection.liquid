@@ -41,7 +41,7 @@
     <div
       class="non-grid non-grid--{{ section.settings.columns }}"
       data-non-shelf
-      data-dim="{{ section.settings.dim_level }}"
+      data-dim="{{ section.settings.dim_level | default: 34 | divided_by: 100.0 }}"
       data-dim-enabled="{{ section.settings.dim_non_matches }}">
       {%- for product in collection.products -%}
         {%- liquid
@@ -97,7 +97,17 @@
       "default": "3"
     },
     { "type": "checkbox", "id": "dim_non_matches", "label": "Fade bottles that don't answer", "default": true },
-    { "type": "range", "id": "dim_level", "label": "Fade level", "min": 0.1, "max": 1, "step": 0.02, "default": 0.34 }
+    {
+      "type": "range",
+      "id": "dim_level",
+      "label": "Fade level",
+      "min": 10,
+      "max": 100,
+      "step": 2,
+      "unit": "%",
+      "default": 34,
+      "info": "Whole percentages only — Shopify rejects decimal-step ranges on a floating-point divisibility check, which invalidates the section."
+    }
   ],
   "blocks": [
     {

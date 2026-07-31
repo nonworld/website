@@ -76,15 +76,27 @@
           }
         }
       },
-      "block_order": ["raw", "seafood", "veg", "charred", "braise", "spice", "cheese", "sweet", "aperitif"],
+      "block_order": [
+        "raw",
+        "seafood",
+        "veg",
+        "charred",
+        "braise",
+        "spice",
+        "cheese",
+        "sweet",
+        "aperitif"
+      ],
       "settings": {
         "show_filters": true,
         "show_add": true,
         "columns": "3",
         "dim_non_matches": true,
-        "dim_level": 0.34
+        "dim_level": 34
       }
     }
   },
-  "order": ["main"]
+  "order": [
+    "main"
+  ]
 }

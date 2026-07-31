@@ -18,7 +18,7 @@
   data-auto-open="{{ settings.lotto_auto_open | default: true }}"
   data-delay="{{ settings.lotto_delay | default: 1400 }}"
   data-cooldown-days="{{ settings.lotto_cooldown_days | default: 14 }}"
-  data-reveal-at="{{ section.settings.reveal_at | default: 0.55 }}"
+  data-reveal-at="{{ section.settings.reveal_at | default: 55 | divided_by: 100.0 }}"
   hidden>
   <div class="non-lotto__card" role="dialog" aria-modal="true" aria-labelledby="lotto-title">
     <div class="non-lotto__head">
@@ -88,11 +88,12 @@
       "type": "range",
       "id": "reveal_at",
       "label": "Reveal threshold",
-      "min": 0.2,
-      "max": 0.9,
-      "step": 0.05,
-      "default": 0.55,
-      "info": "How much foil has to be scratched away before the prize snaps open."
+      "min": 20,
+      "max": 90,
+      "step": 5,
+      "unit": "%",
+      "default": 55,
+      "info": "How much foil has to be scratched away before the prize snaps open. Whole percentages only — Shopify validates ranges with (max - min) / step and decimal steps fail that check on floating point, which silently invalidates the whole section."
     }
   ]
 }

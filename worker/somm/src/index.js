@@ -164,14 +164,21 @@ function parseJSONish(text) {
 }
 
 async function extractDish(env, query) {
+  let lastError = null;
+
   const attempt = async (extraInstruction) => {
-    const text = await claude(env, {
-      model: env.EXTRACT_MODEL || 'claude-haiku-4-5-20251001',
-      maxTokens: 400,
-      system: EXTRACT_SYSTEM + (extraInstruction || ''),
-      messages: [{ role: 'user', content: query }],
-    });
-    return validateDish(parseJSONish(text));
+    try {
+      const text = await claude(env, {
+        model: env.EXTRACT_MODEL || 'claude-haiku-4-5-20251001',
+        maxTokens: 400,
+        system: EXTRACT_SYSTEM + (extraInstruction || ''),
+        messages: [{ role: 'user', content: query }],
+      });
+      return validateDish(parseJSONish(text));
+    } catch (e) {
+      lastError = e;
+      return null;
+    }
   };
 
   const first = await attempt();
@@ -183,7 +190,10 @@ async function extractDish(env, query) {
   );
   if (second) return second;
 
-  throw new Error('extraction failed twice');
+  // If the API itself errored, that message is far more useful than
+  // "failed twice" — surface it rather than replacing it.
+  if (lastError) throw lastError;
+  throw new Error('extraction returned unparseable JSON twice');
 }
 
 /* -------------------------------------------------- step 3: explanation */
@@ -219,8 +229,14 @@ async function explain(env, { query, product, reasons, score }) {
 
 // Never fail in the customer's face. The Mixed 6 is the honest answer when we
 // cannot compute one: it covers every course.
-function fallbackResponse(reason) {
-  return {
+//
+// `detail` carries the upstream failure (status code and error type) so a
+// failing deploy can be diagnosed from one curl instead of a tail session.
+// Anthropic's error bodies do not echo the key, and this is truncated, but it
+// is still internal detail — set DEBUG=0 in wrangler.toml to suppress it once
+// the Worker is known good.
+function fallbackResponse(reason, err, env) {
+  const body = {
     productId: 'SET',
     productName: 'Mixed 6 Pack',
     score: 0,
@@ -232,6 +248,16 @@ function fallbackResponse(reason) {
     fallback: true,
     reason,
   };
+
+  if (err) {
+    // Always visible in `wrangler tail`, regardless of the DEBUG setting.
+    console.error(`[somm] ${reason}:`, err && err.message ? err.message : err);
+    if (!env || env.DEBUG !== '0') {
+      body.detail = String((err && err.message) || err).slice(0, 300);
+    }
+  }
+
+  return body;
 }
 
 /* ----------------------------------------------------------- rate limit */
@@ -288,7 +314,7 @@ export default {
     try {
       dish = await extractDish(env, query);
     } catch (e) {
-      return json(fallbackResponse('extraction'), 200);
+      return json(fallbackResponse('extraction', e, env), 200);
     }
 
     const ranked = rankProducts(dish);
@@ -304,7 +330,7 @@ export default {
         score: top.score,
       });
     } catch (e) {
-      return json(fallbackResponse('explanation'), 200);
+      return json(fallbackResponse('explanation', e, env), 200);
     }
 
     const includeAlternative = runnerUp && top.score - runnerUp.score <= 15;

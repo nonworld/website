@@ -28,6 +28,21 @@
   {%- endif -%}
 </div>
 
+{%- comment -%}
+  The design's About page carried no photography at all — it was type only. So
+  these slots are an addition rather than a restoration, and each falls back to
+  an image already on NON's CDN.
+{%- endcomment -%}
+{%- if section.settings.lead_image != blank or section.settings.lead_image_url != blank -%}
+  <div class="non-split__cell" style="min-height:0">
+    {%- if section.settings.lead_image != blank -%}
+      {{ section.settings.lead_image | image_url: width: 1800 | image_tag: loading: 'lazy', widths: '800,1200,1800', class: 'non-about__band', alt: section.settings.heading }}
+    {%- else -%}
+      <img class="non-about__band" src="{{ section.settings.lead_image_url }}" alt="{{ section.settings.heading | escape }}" loading="lazy">
+    {%- endif -%}
+  </div>
+{%- endif -%}
+
 {%- comment -%} ── origin ────────────────────────────────────────────────── {%- endcomment -%}
 {%- if section.settings.origin_body != blank -%}
   <div class="non-section" style="border-top:1px solid var(--non-line)">
@@ -38,6 +53,16 @@
           {{ section.settings.origin_heading }}
         </div>
         <div class="non-rte" style="margin-top:18px">{{ section.settings.origin_body }}</div>
+
+        {%- if section.settings.origin_image != blank or section.settings.origin_image_url != blank -%}
+          <div style="margin-top:26px">
+            {%- if section.settings.origin_image != blank -%}
+              {{ section.settings.origin_image | image_url: width: 1200 | image_tag: loading: 'lazy', widths: '600,900,1200', alt: section.settings.origin_heading }}
+            {%- else -%}
+              <img src="{{ section.settings.origin_image_url }}" alt="{{ section.settings.origin_heading | escape }}" loading="lazy">
+            {%- endif -%}
+          </div>
+        {%- endif -%}
 
         {%- if section.settings.quote != blank -%}
           <blockquote class="non-press__quote" style="margin:34px 0 0">
@@ -106,6 +131,21 @@
       "id": "lead",
       "label": "Lead",
       "default": "A chef-led drinks company in Melbourne, building wine alternatives out of real produce — fruit, tannin, salinity, acidity — and nothing that has ever been fermented."
+    },
+    { "type": "image_picker", "id": "lead_image", "label": "Lead image" },
+    {
+      "type": "text",
+      "id": "lead_image_url",
+      "label": "Lead image URL",
+      "info": "Used only when no image is uploaded.",
+      "default": "https://www.non.world/cdn/shop/files/Work_With_Us.jpg?v=1739406834&width=1800"
+    },
+    { "type": "image_picker", "id": "origin_image", "label": "Origin image" },
+    {
+      "type": "text",
+      "id": "origin_image_url",
+      "label": "Origin image URL",
+      "info": "A portrait of the founder works here. Used only when no image is uploaded."
     },
     { "type": "text", "id": "origin_label", "label": "Origin label", "default": "The origin" },
     {

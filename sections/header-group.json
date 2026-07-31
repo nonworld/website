@@ -5,17 +5,47 @@
     "announcement-bar": {
       "type": "announcement-bar",
       "blocks": {
-        "m1": { "type": "message", "settings": { "text": "0.0% ABV" } },
-        "m2": { "type": "message", "settings": { "text": "chef made" } },
-        "m3": { "type": "message", "settings": { "text": "free shipping over $75" } },
-        "m4": { "type": "message", "settings": { "text": "vegan & gluten free" } }
+        "m1": {
+          "type": "message",
+          "settings": {
+            "text": "0.0% ABV"
+          }
+        },
+        "m2": {
+          "type": "message",
+          "settings": {
+            "text": "chef made"
+          }
+        },
+        "m3": {
+          "type": "message",
+          "settings": {
+            "text": "free shipping over $75"
+          }
+        },
+        "m4": {
+          "type": "message",
+          "settings": {
+            "text": "vegan & gluten free"
+          }
+        }
       },
-      "block_order": ["m1", "m2", "m3", "m4"]
+      "block_order": [
+        "m1",
+        "m2",
+        "m3",
+        "m4"
+      ]
     },
     "header": {
       "type": "header",
-      "settings": { "menu": "main-menu" }
+      "settings": {
+        "menu": "non-theme-main"
+      }
     }
   },
-  "order": ["announcement-bar", "header"]
+  "order": [
+    "announcement-bar",
+    "header"
+  ]
 }

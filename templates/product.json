@@ -65,10 +65,17 @@
         "heading": "Drink it with",
         "limit": 3
       }
+    },
+    "perfect-for": {
+      "type": "product-perfect-for",
+      "settings": {
+        "heading": "Made for"
+      }
     }
   },
   "order": [
     "main",
+    "perfect-for",
     "process",
     "related"
   ]

@@ -1,0 +1,54 @@
+{%- comment -%}
+  "Made for" — the food photography already attached to every bottle.
+
+  The store carries these as two parallel metafields:
+    custom.perfect_for_images   list.file_reference  (3 images)
+    custom.perfect_for_captions list.single_line_text ("Made For Starters", …)
+
+  They are positional: image[i] belongs to caption[i]. Nothing links them
+  beyond order, so a mismatched count silently pairs the wrong caption to the
+  wrong plate — hence the guard below.
+{%- endcomment -%}
+
+{%- liquid
+  assign images = product.metafields.custom.perfect_for_images.value
+  assign captions = product.metafields.custom.perfect_for_captions.value
+-%}
+
+{%- if images.size > 0 -%}
+  <div class="non-section">
+    <div class="non-section__head">
+      <h2 class="non-section__title">{{ section.settings.heading }}</h2>
+      {%- if images.size != captions.size -%}
+        <span class="non-section__more">{{ images.size }} images, {{ captions.size }} captions</span>
+      {%- endif -%}
+    </div>
+  </div>
+
+  <div class="non-trip">
+    {%- for image in images -%}
+      <div class="non-trip__cell">
+        {{
+          image
+          | image_url: width: 900
+          | image_tag: loading: 'lazy', widths: '400,600,900', alt: captions[forloop.index0] | default: product.title
+        }}
+        {%- assign caption = captions[forloop.index0] -%}
+        {%- if caption != blank -%}
+          <div class="non-trip__cap">
+            <div class="non-trip__title">{{ caption }}</div>
+          </div>
+        {%- endif -%}
+      </div>
+    {%- endfor -%}
+  </div>
+{%- endif -%}
+
+{% schema %}
+{
+  "name": "Made for",
+  "settings": [
+    { "type": "text", "id": "heading", "label": "Heading", "default": "Made for" }
+  ]
+}
+{% endschema %}

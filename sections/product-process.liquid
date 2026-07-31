@@ -1,95 +1,110 @@
 {%- comment -%}
-  "How it's made" steps and the pairing notes.
+  "How it's made" and "Pour it with", rebuilt against the design.
 
-  Source of truth is the product metafields:
-    custom.process_steps  → JSON list of { n, title, body }
-    custom.pairings       → JSON list of { title, body }
+  The design runs the numbered steps down the left in a 44px/1fr grid with the
+  ingredient list ruled off beneath them, and a full-bleed process photograph
+  filling the right half. The port had the steps but neither the number column
+  nor the image.
 
-  Section blocks act as a manual override when a product has no metafield yet.
-{%- endcomment -%}
+  Steps come from custom.process_steps (JSON) if present, otherwise from
+  custom.process, which the live store holds as prose in "HEADING - body"
+  blocks separated by blank lines.
 
-{%- comment -%}
-  Two shapes are supported, because the live store already uses the second.
-
-  1. custom.process_steps — JSON list of { n, title, body }. Richest, and what
-     the design's numbered steps were.
-  2. custom.process — the multi-line prose the store actually holds today. It
-     is written as "HEADING - body" blocks separated by blank lines
-     ("TANNIN - Chamomile is used for tannin…"), which splits cleanly into the
-     same numbered layout without anyone re-entering the copy.
+  The process image falls back through: custom.process_image, then the
+  product's second media item, then its featured image — so the panel is never
+  empty on a product with photography.
 {%- endcomment -%}
 
 {%- liquid
   assign steps = product.metafields.custom.process_steps.value
   assign prose = product.metafields.custom.process | metafield_text | strip
   assign pairings = product.metafields.custom.pairings.value
+  assign ingredients = product.metafields.custom.ingredients | metafield_text
+
+  assign process_image = product.metafields.custom.process_image.value
+  if process_image == blank
+    assign process_image = product.media[1]
+  endif
+  if process_image == blank
+    assign process_image = product.featured_media
+  endif
 -%}
 
-{%- if steps != blank or prose != blank or section.blocks.size > 0 -%}
-  <div class="non-section">
-    <div class="non-section__head">
-      <h2 class="non-section__title">{{ section.settings.steps_heading }}</h2>
-    </div>
+{%- if steps != blank or prose != blank -%}
+  <div class="non-process">
+    <div class="non-process__copy">
+      <div class="non-mono non-eyebrow">{{ section.settings.steps_heading }}</div>
 
-    <div class="non-steps" style="margin-top:30px">
-      {%- if steps != blank -%}
-        {%- for step in steps -%}
-          <div>
-            <div class="non-step__n">{{ step.n }}</div>
-            <div class="non-step__t">{{ step.title }}</div>
-            <p class="non-step__b">{{ step.body }}</p>
-          </div>
-        {%- endfor -%}
-      {%- elsif prose != blank -%}
-        {%- assign chunks = prose | split: '
+      <div class="non-steps">
+        {%- if steps != blank -%}
+          {%- for step in steps -%}
+            <div class="non-step">
+              <div class="non-step__n">{{ step.n }}</div>
+              <div>
+                <div class="non-step__t">{{ step.title }}</div>
+                <p class="non-step__b">{{ step.body }}</p>
+              </div>
+            </div>
+          {%- endfor -%}
+
+        {%- else -%}
+          {%- assign chunks = prose | split: '
 
 ' -%}
-        {%- for chunk in chunks -%}
-          {%- liquid
-            assign clean = chunk | strip
-            assign bits = clean | split: ' - '
-            assign title = bits | first | strip
-            assign body = clean | remove_first: title | remove_first: ' - ' | strip
-            assign n = forloop.index | prepend: '0' | slice: -2, 2
-          -%}
-          {%- if clean != blank -%}
-            <div>
-              <div class="non-step__n">{{ n }}</div>
-              {%- if body != blank and title.size < 40 -%}
-                <div class="non-step__t">{{ title | capitalize }}</div>
-                <p class="non-step__b">{{ body }}</p>
-              {%- else -%}
-                <p class="non-step__b">{{ clean }}</p>
-              {%- endif -%}
-            </div>
-          {%- endif -%}
-        {%- endfor -%}
-      {%- else -%}
-        {%- for block in section.blocks -%}
-          {%- if block.type == 'step' -%}
-            <div {{ block.shopify_attributes }}>
-              <div class="non-step__n">{{ block.settings.number }}</div>
-              <div class="non-step__t">{{ block.settings.title }}</div>
-              <p class="non-step__b">{{ block.settings.body }}</p>
-            </div>
-          {%- endif -%}
-        {%- endfor -%}
+          {%- for chunk in chunks -%}
+            {%- liquid
+              assign clean = chunk | strip
+              assign bits = clean | split: ' - '
+              assign title = bits | first | strip
+              assign body = clean | remove_first: title | remove_first: ' - ' | strip
+              assign n = forloop.index | prepend: '0' | slice: -2, 2
+            -%}
+            {%- if clean != blank -%}
+              <div class="non-step">
+                <div class="non-step__n">{{ n }}</div>
+                <div>
+                  {%- if body != blank and title.size < 40 -%}
+                    <div class="non-step__t">{{ title | capitalize }}</div>
+                    <p class="non-step__b">{{ body }}</p>
+                  {%- else -%}
+                    <p class="non-step__b">{{ clean }}</p>
+                  {%- endif -%}
+                </div>
+              </div>
+            {%- endif -%}
+          {%- endfor -%}
+        {%- endif -%}
+      </div>
+
+      {%- if ingredients != blank -%}
+        <div style="border-top:1px solid var(--non-line);padding-top:18px">
+          <div class="non-spec__k">Ingredients</div>
+          <div class="non-step__b" style="margin-top:8px;max-width:46ch">{{ ingredients }}</div>
+        </div>
+      {%- endif -%}
+    </div>
+
+    <div class="non-process__media">
+      {%- if process_image != blank -%}
+        {{
+          process_image
+          | image_url: width: 1200
+          | image_tag: loading: 'lazy', widths: '600,900,1200', alt: product.title
+        }}
       {%- endif -%}
     </div>
   </div>
 {%- endif -%}
 
 {%- if pairings != blank -%}
-  <div class="non-section">
-    <div class="non-section__head">
-      <h2 class="non-section__title">{{ section.settings.pairings_heading }}</h2>
-    </div>
+  <div class="non-section" style="border-top:1px solid var(--non-line)">
+    <div class="non-mono non-eyebrow">{{ section.settings.pairings_heading }}</div>
 
-    <div class="non-grid non-grid--3" style="margin-top:26px">
+    <div class="non-pairs">
       {%- for pair in pairings -%}
-        <div>
-          <div class="non-step__t">{{ pair.title }}</div>
-          <p class="non-step__b">{{ pair.body }}</p>
+        <div class="non-pair-card">
+          <div class="non-pair-card__t">{{ pair.title }}</div>
+          <p class="non-pair-card__b">{{ pair.body }}</p>
         </div>
       {%- endfor -%}
     </div>
@@ -100,19 +115,13 @@
 {
   "name": "Process & pairings",
   "settings": [
-    { "type": "text", "id": "steps_heading", "label": "Process heading", "default": "How it's made" },
-    { "type": "text", "id": "pairings_heading", "label": "Pairings heading", "default": "What to put it with" }
-  ],
-  "blocks": [
     {
-      "type": "step",
-      "name": "Step (fallback)",
-      "settings": [
-        { "type": "text", "id": "number", "label": "Number", "default": "01" },
-        { "type": "text", "id": "title", "label": "Title" },
-        { "type": "textarea", "id": "body", "label": "Body" }
-      ]
-    }
+      "type": "text",
+      "id": "steps_heading",
+      "label": "Process heading",
+      "default": "How it's made — not de-alcoholised"
+    },
+    { "type": "text", "id": "pairings_heading", "label": "Pairings heading", "default": "Pour it with" }
   ]
 }
 {% endschema %}

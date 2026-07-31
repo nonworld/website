@@ -1,16 +1,15 @@
 {%- comment -%}
-  Reads the metafields the store already populates rather than a parallel set:
-    custom.profile           tasting profile  (was: invented custom.tastes)
-    custom.process           how it's made    (was: invented process_steps)
-    custom.ingredients       ingredients      (already matched)
-    custom.nutritional_panel rich text panel  (was: invented custom.nutrition)
-  Only custom.sits and custom.food_tags/food_why are genuinely new — the rest
-  of the port now sits on data that is already there.
-{%- endcomment -%}
+  Product page, rebuilt against the design (design-reference/product.html).
 
-{%- comment -%}
-  `render` is a standalone tag and cannot appear inside {% liquid %}. Every
-  capture that wraps a render has to sit outside the liquid block.
+  Structure, in order:
+    1. 50/50 gallery + buy box            (the design's `twoCols`, not a sidebar)
+    2. spec strip — 4 cells, ruled top and bottom, divided
+    3. process — numbered steps + ingredients | full-bleed process image
+    4. pour it with — 3 bordered pairing cards
+    5. goes well in a case with — horizontal related cards
+
+  `render` is a standalone tag and cannot appear inside {% liquid %}, so every
+  capture that wraps one sits outside the liquid block.
 {%- endcomment -%}
 
 {%- capture code %}{% render 'non-code', product: product %}{% endcapture -%}
@@ -27,20 +26,18 @@
   assign sits = m.sits | metafield_text
   assign serve = m.serve | metafield_text | default: 'Chilled, wine glass'
   assign ingredients = m.ingredients | metafield_text
+  assign style = m.style | metafield_text
 
   assign nutrition = ''
   if calories != blank and sugars != blank
     assign nutrition = calories | append: ' calories, ' | append: sugars | append: ' sugar'
   endif
 
-  assign spec_count = 1
-  if tastes != blank
-    assign spec_count = spec_count | plus: 1
+  assign spec_count = 2
+  if nutrition != blank
+    assign spec_count = 3
   endif
   if sits != blank
-    assign spec_count = spec_count | plus: 1
-  endif
-  if nutrition != blank
     assign spec_count = spec_count | plus: 1
   endif
 -%}
@@ -64,15 +61,15 @@
 
       {%- if product.media.size > 1 -%}
         <div class="non-gallery__thumbs">
-          {%- for media in product.media -%}
+          {%- for media in product.media limit: 8 -%}
             <button
               type="button"
               class="non-gallery__thumb"
               data-non-gallery-thumb
               data-full="{{ media | image_url: width: 1400 }}"
               aria-current="{% if forloop.first %}true{% else %}false{% endif %}"
-              aria-label="View image {{ forloop.index }}"
-              style="background-image:url({{ media | image_url: width: 160 }});background-size:cover">
+              aria-label="View image {{ forloop.index }}">
+              <img src="{{ media | image_url: width: 200 }}" alt="" loading="lazy">
             </button>
           {%- endfor -%}
         </div>
@@ -84,45 +81,30 @@
 
   {%- comment -%} ── buy box ───────────────────────────────────────────── {%- endcomment -%}
   <div class="non-buy">
-    <div class="non-mono non-eyebrow">
-      {{ code }}
-      {%- if m.style != blank %} &middot; {{ m.style | metafield_text }}{% endif -%}
-      &middot; 0.0% ABV
+    <div>
+      <div class="non-mono non-eyebrow">
+        {{ code }}
+        {%- if style != blank %} &middot; {{ style }}{% endif -%}
+        &middot; 0.0% ABV &middot; 750ml
+      </div>
+
+      <h1 class="non-buy__name">{{ product.title | remove: code | strip }}</h1>
+
+      {%- if m.blurb != blank -%}
+        <p class="non-buy__blurb">{{ m.blurb | metafield_text }}</p>
+      {%- elsif m.profile != blank -%}
+        <p class="non-buy__blurb">{{ m.profile | metafield_text }}</p>
+      {%- endif -%}
     </div>
 
-    <h1 class="non-buy__name">{{ product.title }}</h1>
-
-    {%- if m.blurb != blank -%}
-      <p class="non-buy__blurb">{{ m.blurb | metafield_text }}</p>
-    {%- elsif m.profile != blank -%}
-      <p class="non-buy__blurb">{{ m.profile | metafield_text }}</p>
-    {%- elsif product.description != blank -%}
-      <div class="non-buy__blurb">{{ product.description | strip_html | truncatewords: 60 }}</div>
-    {%- endif -%}
-
-    {%- comment -%}
-      Variants come from Shopify. The design hardcoded 1 / 6 / 12 with fixed
-      prices; those become real variants (or a quantity-break app) in the store,
-      and the per-unit line is computed rather than typed.
-    {%- endcomment -%}
     <form method="post" action="{{ routes.cart_add_url }}" data-non-product-form>
       <input type="hidden" name="form_type" value="product">
       <input type="hidden" name="utf8" value="✓">
-      <input
-        type="hidden"
-        name="id"
-        value="{{ product.selected_or_first_available_variant.id }}"
-        data-non-variant-input>
+      <input type="hidden" name="id" value="{{ product.selected_or_first_available_variant.id }}" data-non-variant-input>
 
       {%- if product.variants.size > 1 -%}
         <div class="non-variants" role="radiogroup" aria-label="Pack size">
           {%- for variant in product.variants -%}
-            {%- comment -%}
-              The live store already titles bottle variants "1" / "6" / "12",
-              so the unit count is derivable and nobody has to maintain a
-              metafield. custom.units stays as an override for products whose
-              titles aren't numeric (the sets).
-            {%- endcomment -%}
             {%- liquid
               assign units = variant.metafields.custom.units | metafield_text | plus: 0
               if units == 0
@@ -142,36 +124,29 @@
               data-price="{{ variant.price }}"
               aria-checked="{% if variant.id == product.selected_or_first_available_variant.id %}true{% else %}false{% endif %}"
               {% unless variant.available %}disabled{% endunless %}>
-              {%- comment -%}
-                Store variants are titled bare numbers. The design labelled
-                them "1 bottle" / "6 pack" / "12 case"; rebuild that here so
-                the merchandising data stays clean and the storefront reads
-                like the design.
-              {%- endcomment -%}
-              <span>
-                {%- if variant.title == '1' -%}
-                  1 bottle
-                {%- elsif variant.title == '6' -%}
-                  6 pack
-                {%- elsif variant.title == '12' -%}
-                  12 case
-                {%- elsif variant.title == 'Default Title' -%}
-                  {{ product.title }}
-                {%- else -%}
-                  {{ variant.title }}
-                {%- endif -%}
-              </span>
-              <span class="non-variant__per">
-                {%- if variant.available -%}
-                  {{ each | money }} each
-                  {%- if variant.compare_at_price > variant.price -%}
-                    {%- assign save = variant.compare_at_price | minus: variant.price | times: 100 | divided_by: variant.compare_at_price -%}
-                    &middot; save {{ save }}%
+              <span class="non-variant__lines">
+                <span class="non-variant__label">
+                  {%- case variant.title -%}
+                    {%- when '1' -%}1 bottle
+                    {%- when '6' -%}6 pack
+                    {%- when '12' -%}12 case
+                    {%- when 'Default Title' -%}{{ product.title }}
+                    {%- else -%}{{ variant.title }}
+                  {%- endcase -%}
+                </span>
+                <span class="non-variant__per">
+                  {%- if variant.available -%}
+                    {{ each | money }} each
+                    {%- if variant.compare_at_price > variant.price -%}
+                      {%- assign save = variant.compare_at_price | minus: variant.price | times: 100 | divided_by: variant.compare_at_price -%}
+                      &middot; save {{ save }}%
+                    {%- endif -%}
+                  {%- else -%}
+                    {{ 'products.product.sold_out' | t }}
                   {%- endif -%}
-                {%- else -%}
-                  {{ 'products.product.sold_out' | t }}
-                {%- endif -%}
+                </span>
               </span>
+              <span class="non-variant__price">{{ variant.price | money }}</span>
             </button>
           {%- endfor -%}
         </div>
@@ -187,84 +162,67 @@
         {%- endif -%}
       </button>
 
+      {%- comment -%} The reassurance row from the design, under the button. {%- endcomment -%}
+      <div class="non-buy__trust">
+        {%- for block in section.blocks -%}
+          {%- if block.type == 'trust' -%}
+            <span {{ block.shopify_attributes }}>{{ block.settings.text }}</span>
+          {%- endif -%}
+        {%- endfor -%}
+      </div>
+
       <p class="non-error" data-non-form-error></p>
     </form>
 
-    {%- if spec_count > 0 -%}
-      <div class="non-specs non-specs--{{ spec_count }}">
-        {%- if tastes != blank -%}
-          <div><div class="non-spec__k">Tastes</div><div class="non-spec__v">{{ tastes }}</div></div>
-        {%- endif -%}
-        {%- if sits != blank -%}
-          <div><div class="non-spec__k">Sits where</div><div class="non-spec__v">{{ sits }}</div></div>
-        {%- endif -%}
-        {%- if nutrition != blank -%}
-          <div><div class="non-spec__k">Per serve</div><div class="non-spec__v">{{ nutrition }}</div></div>
-        {%- endif -%}
-        {%- if serve != blank -%}
-          <div><div class="non-spec__k">Serve</div><div class="non-spec__v">{{ serve }}</div></div>
-        {%- endif -%}
-      </div>
-    {%- endif -%}
-
-    {%- if ingredients != blank -%}
-      <div style="margin-top:26px">
-        <div class="non-spec__k">Ingredients</div>
-        <p class="non-note" style="margin-top:8px">{{ ingredients }}</p>
-      </div>
-    {%- endif -%}
-
-    {%- comment -%} ── somm, scoped to this bottle ───────────────────────── {%- endcomment -%}
+    {%- comment -%} ── somm, as a panel ────────────────────────────────── {%- endcomment -%}
     {%- if section.settings.show_somm -%}
-      <div style="margin-top:34px;border-top:1px solid var(--non-line);padding-top:24px">
-        <div class="non-mono non-eyebrow">{{ 'products.product.somm_heading' | t }}</div>
+      <div class="non-sommbox">
+        <div class="non-sommbox__head">
+          <span class="non-mono non-eyebrow">{{ 'products.product.somm_heading' | t }}</span>
+          <span class="non-sommbox__live">Somm live</span>
+        </div>
 
-        <div class="non-chat" data-non-somm-transcript style="margin-top:16px">
+        <div class="non-sommbox__body" data-non-somm-transcript>
           <div class="non-chat__msg non-chat__msg--a">
             <span class="non-chat__who">NON Somm</span>
             {{ section.settings.somm_opener }}
           </div>
+          <p class="non-somm__stream" data-non-somm-stream hidden></p>
         </div>
 
         <form
-          class="non-somm"
+          class="non-sommbox__ask"
           data-non-somm
           data-somm-context="product"
-          data-somm-code="{{ code }}"
-          style="margin-top:16px">
-          <div class="non-somm__bar">
-            <span class="non-somm__caret" aria-hidden="true">&gt;</span>
-            <label class="visually-hidden" for="somm-p-{{ section.id }}">Ask the somm</label>
-            <input
-              id="somm-p-{{ section.id }}"
-              class="non-somm__input"
-              type="search"
-              autocomplete="off"
-              data-non-somm-input
-              placeholder="{{ 'products.product.somm_placeholder' | t }}">
-            <button type="submit" class="non-somm__submit">{{ 'products.product.ask' | t }}</button>
-          </div>
-
-          {%- if section.blocks.size > 0 -%}
-            <div class="non-somm__seeds">
-              {%- for block in section.blocks -%}
-                {%- if block.type == 'seed' -%}
-                  <button
-                    type="button"
-                    class="non-somm__seed"
-                    data-non-somm-seed
-                    data-answer="{{ block.settings.answer | escape }}"
-                    {{ block.shopify_attributes }}>
-                    {{ block.settings.label }}
-                  </button>
-                {%- endif -%}
-              {%- endfor -%}
-            </div>
-          {%- endif -%}
+          data-somm-code="{{ code }}">
+          <label class="visually-hidden" for="somm-p-{{ section.id }}">Ask about this bottle</label>
+          <input
+            id="somm-p-{{ section.id }}"
+            class="non-somm__input"
+            type="search"
+            autocomplete="off"
+            data-non-somm-input
+            placeholder="Ask about pairing, sugar, process&hellip;">
+          <button type="submit" class="non-sommbox__submit">{{ 'products.product.ask' | t }}</button>
         </form>
 
+        {%- assign seeds = section.blocks | where: 'type', 'seed' -%}
+        {%- if seeds.size > 0 -%}
+          <div class="non-sommbox__seeds">
+            {%- for block in seeds -%}
+              <button
+                type="button"
+                class="non-somm__seed"
+                data-non-somm-seed
+                data-answer="{{ block.settings.answer | escape }}"
+                {{ block.shopify_attributes }}>
+                {{ block.settings.label }}
+              </button>
+            {%- endfor -%}
+          </div>
+        {%- endif -%}
+
         <div class="non-somm__answer" data-non-somm-answer hidden>
-          <p class="non-somm__stream" data-non-somm-stream></p>
           <div class="non-somm__picks" data-non-somm-picks hidden></div>
         </div>
       </div>
@@ -272,25 +230,53 @@
   </div>
 </div>
 
-{%- comment -%}
-  Per-bottle seeds are stored on the product metafield custom.somm_seeds as a
-  JSON list of {label, answer}, so the copy lives with the product rather than
-  in the template. Section blocks above are the editable override.
-{%- endcomment -%}
+{%- comment -%} ── spec strip ────────────────────────────────────────────── {%- endcomment -%}
+<div class="non-specstrip non-specstrip--{{ spec_count }}">
+  <div class="non-specstrip__cell">
+    <div class="non-spec__k">Tastes like</div>
+    <div class="non-specstrip__v">{{ tastes | default: product.title }}</div>
+  </div>
+
+  {%- if sits != blank -%}
+    <div class="non-specstrip__cell">
+      <div class="non-spec__k">Sits where</div>
+      <div class="non-specstrip__v">{{ sits }}</div>
+    </div>
+  {%- endif -%}
+
+  {%- if nutrition != blank -%}
+    <div class="non-specstrip__cell">
+      <div class="non-spec__k">Per 150ml</div>
+      <div class="non-specstrip__v">{{ nutrition }}</div>
+    </div>
+  {%- endif -%}
+
+  <div class="non-specstrip__cell">
+    <div class="non-spec__k">Serve</div>
+    <div class="non-specstrip__v">{{ serve }}</div>
+  </div>
+</div>
 
 <script type="application/json" data-non-catalogue>
   {
-    {%- for p in collections.all.products limit: 40 -%}
+    {%- assign seen = '' -%}
+    {%- for p in collections['the-range'].products -%}
       {%- capture c %}{% render 'non-code', product: p %}{% endcapture -%}
-      {{ c | json }}: {
-        "title": {{ p.title | json }},
-        "url": {{ p.url | json }},
-        "image": {{ p.featured_image | image_url: width: 200 | json }},
-        "price": {{ p.price | money | json }},
-        "note": {{ p.metafields.custom.tastes | metafield_text | default: '' | json }},
-        "variantId": {{ p.selected_or_first_available_variant.id | json }},
-        "available": {{ p.available | json }}
-      }{%- unless forloop.last -%},{%- endunless -%}
+      {%- assign c = c | strip -%}
+      {%- assign marker = '|' | append: c | append: '|' -%}
+      {%- unless seen contains marker -%}
+        {%- assign seen = seen | append: marker -%}
+        {%- unless forloop.first %},{% endunless -%}
+        {{ c | json }}: {
+          "title": {{ p.title | json }},
+          "url": {{ p.url | json }},
+          "image": {{ p.featured_image | image_url: width: 200 | json }},
+          "price": {{ p.price | money | json }},
+          "note": {{ p.metafields.custom.profile | metafield_text | default: '' | truncate: 44 | json }},
+          "variantId": {{ p.selected_or_first_available_variant.id | json }},
+          "available": {{ p.available | json }}
+        }
+      {%- endunless -%}
     {%- endfor -%}
   }
 </script>
@@ -311,6 +297,11 @@
     }
   ],
   "blocks": [
+    {
+      "type": "trust",
+      "name": "Reassurance",
+      "settings": [{ "type": "text", "id": "text", "label": "Text" }]
+    },
     {
       "type": "seed",
       "name": "Suggested question",

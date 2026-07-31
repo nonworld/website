@@ -39,9 +39,30 @@
             "label": "I'm buying it as a gift",
             "answer": "Then go six. It arrives as a case, the per-bottle price drops against a single, and a mixed set is the least intimidating way in for someone who hasn't tried the range."
           }
+        },
+        "t1": {
+          "type": "trust",
+          "settings": {
+            "text": "Ships in 1–2 days"
+          }
+        },
+        "t2": {
+          "type": "trust",
+          "settings": {
+            "text": "Free over $75"
+          }
+        },
+        "t3": {
+          "type": "trust",
+          "settings": {
+            "text": "Subscribe & save 10%"
+          }
         }
       },
       "block_order": [
+        "t1",
+        "t2",
+        "t3",
         "seed-1",
         "seed-2",
         "seed-3",
@@ -55,14 +76,14 @@
     "process": {
       "type": "product-process",
       "settings": {
-        "steps_heading": "How it's made",
-        "pairings_heading": "What to put it with"
+        "steps_heading": "How it's made — not de-alcoholised",
+        "pairings_heading": "Pour it with"
       }
     },
     "related": {
       "type": "related-products",
       "settings": {
-        "heading": "Drink it with",
+        "heading": "Goes well in a case with",
         "limit": 3
       }
     },

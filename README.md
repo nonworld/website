@@ -34,6 +34,59 @@ Two things to know about the integration:
 
 ---
 
+## Working on it
+
+This repo is the working copy. Clone it once and work here:
+
+```bash
+git clone https://github.com/nonworld/website
+cd website
+git switch staging
+```
+
+Then one command does the whole loop:
+
+```bash
+scripts/sync.sh "what changed"
+```
+
+It pulls, runs the checks, commits and pushes. The order matters — see below.
+
+### Pull before you work, always
+
+Shopify's GitHub integration is **two-way**. Every edit made in the theme
+editor commits straight back to the connected branch, mostly to
+`templates/*.json` and `config/settings_data.json`. If you commit local work
+without pulling first you collide with those, and the collision lands in JSON
+files that are unpleasant to merge by hand. `sync.sh` pulls with
+`--rebase --autostash` first and stops loudly rather than guessing.
+
+Do not put this on a timer or a file watcher. Two writers on one branch — you
+and the theme editor — is exactly the case where an unattended push loses work.
+
+### Checks
+
+```bash
+python3 scripts/check.py
+```
+
+No dependencies, no network, instant. It catches the failures Shopify reports
+badly or not at all:
+
+- `render` inside a `{% liquid %}` tag. It is standalone-only, and using it
+  inside a liquid block takes the whole template down — this is what made every
+  product page 404 while the 404 page rendered fine.
+- Decimal `range` settings. Shopify computes `(max - min) / step` and requires
+  a whole number; decimals fail on floating point and the section silently
+  stops existing, surfacing as "not a valid section type" on an unrelated file.
+- Unbalanced Liquid tags, templates referencing sections/settings/blocks that
+  do not exist, range values outside their schema, and `asset_url` pointing at
+  files that are not in `assets/`.
+
+Both failures above were real, and both were invisible until a page 404'd.
+
+---
+
 ## Layout
 
 ```

@@ -44,10 +44,10 @@
       data-dim="{{ section.settings.dim_level | default: 34 | divided_by: 100.0 }}"
       data-dim-enabled="{{ section.settings.dim_non_matches }}">
       {%- for product in collection.products -%}
+        {%- comment -%} render is standalone-only, never inside {% liquid %} {%- endcomment -%}
+        {%- capture code %}{% render 'non-code', product: product %}{% endcapture -%}
         {%- liquid
-          capture code
-            render 'non-code', product: product
-          endcapture
+          assign code = code | strip
           assign tags_json = product.metafields.custom.food_tags | metafield_text
           assign why_json = product.metafields.custom.food_why | metafield_text
           assign is_pour = false

@@ -8,23 +8,25 @@
   of the port now sits on data that is already there.
 {%- endcomment -%}
 
+{%- comment -%}
+  `render` is a standalone tag and cannot appear inside {% liquid %}. Every
+  capture that wraps a render has to sit outside the liquid block.
+{%- endcomment -%}
+
+{%- capture code %}{% render 'non-code', product: product %}{% endcapture -%}
+{%- capture calories %}{% render 'non-nutrition', product: product, label: 'Calories per serve' %}{% endcapture -%}
+{%- capture sugars %}{% render 'non-nutrition', product: product, label: 'Sugars - Total' %}{% endcapture -%}
+
 {%- liquid
   assign m = product.metafields.custom
-  capture code
-    render 'non-code', product: product
-  endcapture
+  assign code = code | strip
+  assign calories = calories | strip
+  assign sugars = sugars | strip
 
   assign tastes = m.profile | metafield_text | default: m.tastes | metafield_text
   assign sits = m.sits | metafield_text
   assign serve = m.serve | metafield_text | default: 'Chilled, wine glass'
   assign ingredients = m.ingredients | metafield_text
-
-  capture calories
-    render 'non-nutrition', product: product, label: 'Calories per serve'
-  endcapture
-  capture sugars
-    render 'non-nutrition', product: product, label: 'Sugars - Total'
-  endcapture
 
   assign nutrition = ''
   if calories != blank and sugars != blank

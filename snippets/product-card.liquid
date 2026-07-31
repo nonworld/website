@@ -10,14 +10,17 @@
     show_add  optional bool — render an AJAX add button
 {%- endcomment -%}
 
+{%- comment -%}
+  `render` cannot be used inside a {% liquid %} tag — it is a standalone tag
+  only. Doing so breaks the whole template, which is why every product-bearing
+  page 404'd while the 404 and page templates rendered fine.
+{%- endcomment -%}
+
+{%- capture code %}{% render 'non-code', product: product %}{% endcapture -%}
+
 {%- liquid
-  assign code = product.metafields.custom.non_code | metafield_text | strip | upcase
-  if code == blank
-    capture code
-      render 'non-code', product: product
-    endcapture
-  endif
-  assign tastes = product.metafields.custom.tastes | metafield_text
+  assign code = code | strip
+  assign tastes = product.metafields.custom.profile | metafield_text | default: product.metafields.custom.tastes | metafield_text
   assign sits = product.metafields.custom.sits | metafield_text
   assign variant = product.selected_or_first_available_variant
 -%}

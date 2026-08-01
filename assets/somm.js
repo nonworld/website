@@ -184,8 +184,20 @@
     function type(text, picks) {
       clearInterval(timer);
       show();
-      picksBox.hidden = true;
-      picksBox.innerHTML = '';
+
+      // Every target is optional. Each surface wires up a different subset —
+      // the hero has stream + picks, the product page splits the two across
+      // separate elements, the pairing page had picks and no stream at all —
+      // and an unguarded write to a missing one throws mid-handler. A thrown
+      // click is indistinguishable from a dead button, which is exactly how the
+      // pairing chips presented: correct markup, correct styling, nothing
+      // happening. Falling back to plain text is the right failure: the answer
+      // still arrives, it just does not animate.
+      if (picksBox) {
+        picksBox.hidden = true;
+        picksBox.innerHTML = '';
+      }
+      if (!stream) return renderPicks(picks);
 
       if (!settings.sommStream) {
         stream.textContent = text;
@@ -212,7 +224,7 @@
     }
 
     function renderPicks(picks) {
-      if (!picks || !picks.length) return;
+      if (!picksBox || !picks || !picks.length) return;
       var html = picks.map(pickCard).filter(Boolean).join('');
       if (!html) return;
       picksBox.innerHTML = html;
@@ -242,9 +254,9 @@
 
       if (!ENDPOINT) return fallback(query);
 
-      submit.disabled = true;
+      if (submit) submit.disabled = true;
       show();
-      stream.textContent = '';
+      if (stream) stream.textContent = '';
       thinking(true);
 
       fetch(ENDPOINT, {
@@ -323,7 +335,7 @@
             // Streaming hands over on the first token, but not before the
             // minimum — otherwise a fast first token defeats the whole point.
             if (text && thinkingSince && Date.now() - thinkingSince >= MIN_THINK) thinking(false);
-            if (!thinkingSince) stream.textContent = text;
+            if (!thinkingSince && stream) stream.textContent = text;
           });
 
           return pump();

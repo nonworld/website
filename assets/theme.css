@@ -925,6 +925,34 @@ button { font-family: inherit; }
   gap: 28px; align-items: flex-end;
 }
 .non-recipes__group { display: flex; flex-direction: column; gap: 12px; }
+
+/* The pickers, per design-reference: a WHITE chip with dark text, going solid
+   black when chosen. .non-filter is written for the near-black page — it is
+   transparent with a hardcoded `color: #e8e8e6` — so on this light band the
+   unchosen options were light grey on light grey and effectively invisible.
+   The one selected chip looked like the only button that existed.
+
+   Sans, not mono: the design sets these in NONHelvetica at 13.5px. Mono here
+   reads as a data label rather than something you press. */
+.non-recipes .non-filter {
+  background: #ffffff;
+  color: #141412;
+  border: 1px solid #c6c2b8;
+  font-family: var(--non-sans);
+  font-size: 13.5px;
+  letter-spacing: 0;
+  text-transform: none;
+  padding: 11px 16px;
+  min-height: 44px;
+  transition: border-color var(--duration-hover) var(--ease-hover),
+              background var(--duration-hover) var(--ease-hover);
+}
+.non-recipes .non-filter:hover { border-color: #141412; }
+.non-recipes .non-filter[aria-pressed="true"] {
+  background: #0c0c0c;
+  color: #ffffff;
+  border-color: #0c0c0c;
+}
 /* .non-filters carries its own top margin for the shop page; the column gap
    above is what spaces it here. */
 .non-recipes__group .non-filters { margin-top: 0; gap: 9px; }

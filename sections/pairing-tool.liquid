@@ -130,6 +130,22 @@
               </div>
             {%- endif -%}
           </form>
+
+          {%- comment -%}
+            Somewhere for the answer to land. This page had [data-non-somm-picks]
+            in the verdict column but no [data-non-somm-stream] anywhere, so
+            somm.js resolved `stream` to null — and pressing a dish chip ran
+            straight into `stream.innerHTML = ''` in type(). It threw, and a
+            thrown click looks exactly like a dead button.
+
+            Outside .non-somm deliberately: the answer belongs on the page, not
+            inside the grey panel, and the stream colour is scoped to the panel
+            so text out here keeps the page's own ink.
+          {%- endcomment -%}
+          <div class="non-somm__answer" data-non-somm-answer hidden>
+            <div class="non-mono non-eyebrow">{{ section.settings.freetext_answer_label }}</div>
+            <p class="non-somm__stream" data-non-somm-stream></p>
+          </div>
         </div>
       {%- endif -%}
 
@@ -301,6 +317,12 @@
       "id": "freetext_cta",
       "label": "Button",
       "default": "Pair it"
+    },
+    {
+      "type": "text",
+      "id": "freetext_answer_label",
+      "label": "Answer label",
+      "default": "The somm says"
     },
     {
       "type": "header",

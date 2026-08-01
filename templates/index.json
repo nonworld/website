@@ -184,8 +184,8 @@
         "collection": "the-range",
         "link_url": "/collections/the-range",
         "rows": 2,
-        "card_max": 640,
-        "layout": "grid"
+        "card_max": 380,
+        "layout": "row"
       }
     },
     "made-for": {

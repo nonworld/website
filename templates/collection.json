@@ -14,7 +14,7 @@
       "settings": {
         "show_filters": true,
         "show_add": true,
-        "columns": "3",
+        "columns": "5",
         "dim_non_matches": true,
         "dim_level": 34,
         "eyebrow": "The range",
@@ -24,7 +24,8 @@
         "promo_product": "mixed-6-pack",
         "promo_eyebrow": "Cheapest way in",
         "promo_cta": "Add the mixed six",
-        "promo_show_price": true
+        "promo_show_price": true,
+        "card_max": 380
       },
       "blocks": {
         "chip-raw": {

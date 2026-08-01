@@ -97,7 +97,7 @@
             "body": "NONHQ is the world's first non-alcoholic cellar door. Taste the ingredients separately, then the bottles.",
             "label": "Book a tasting",
             "url": "/pages/visit-us",
-            "image_url": ""
+            "image_url": "https://cdn.shopify.com/s/files/1/0371/5874/8205/files/non-story-038A8469.jpg?v=1785541727&width=1400"
           }
         },
         "cta-somm": {
@@ -107,7 +107,7 @@
             "body": "Tell the somm what you're eating and it will pick the bottle. That's the fastest version of everything on this page.",
             "label": "Find your pairing",
             "url": "/pages/pairing",
-            "image_url": ""
+            "image_url": "https://cdn.shopify.com/s/files/1/0371/5874/8205/files/non-story-038A8736.jpg?v=1785541727&width=1400"
           }
         },
         "n3": {
@@ -151,9 +151,9 @@
         "origin_feature_image_url": "https://cdn.shopify.com/s/files/1/0371/5874/8205/files/non-story-038A8388.jpg?v=1785541727&width=1600",
         "origin_feature_alt": "Dehydrated oranges lowered into the steep tank at NONHQ",
         "portrait_image_url": "https://cdn.shopify.com/s/files/1/0371/5874/8205/files/non-aaron-headshots-colour_019.jpg?v=1785541727&width=396",
-        "hard_image_url": "",
+        "hard_image_url": "https://cdn.shopify.com/s/files/1/0371/5874/8205/files/non-story-038A8614.jpg?v=1785541727&width=1600",
         "hard_image_alt": "Spicing cherries by hand in the NON kitchen",
-        "kitchen_image_url": "",
+        "kitchen_image_url": "https://cdn.shopify.com/s/files/1/0371/5874/8205/files/non-story-038A8683.jpg?v=1785541727&width=2000",
         "kitchen_caption": "Every ingredient is processed on its own before anything is blended."
       }
     },

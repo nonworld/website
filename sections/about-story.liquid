@@ -60,10 +60,14 @@
   the marquee. Everything below restores placements that were always in the
   design, rather than inventing slots.
 
-  Photography lives in design-reference/uploads/BroadSheet Photos/. Only
-  038A8388 is confirmed on NON's CDN; the rest need uploading before they
-  render. Each slot takes either a Shopify image picker or a CDN URL, and a
-  slot with neither renders nothing rather than a broken frame.
+  All six photographs are already on NON's CDN as non-story-038A8*.jpg — an
+  earlier note here claimed only 038A8388 was, which came from a blocked curl
+  rather than a file listing. The only asset genuinely missing is the black and
+  white grade of the founder portrait; the CDN carries colour 016/019/021/022
+  only, so the quote runs on colour 019 until a mono grade is uploaded.
+
+  Each slot takes either a Shopify image picker or a CDN URL, and a slot with
+  neither renders nothing rather than a broken frame.
 {%- endcomment -%}
 
 {%- comment -%} ── origin ────────────────────────────────────────────────── {%- endcomment -%}
@@ -331,7 +335,7 @@
     },
     {
       "type": "paragraph",
-      "content": "Six photographs from design-reference/uploads/BroadSheet Photos/. Only the origin feature image is confirmed on the CDN; the rest need uploading before they render. Any slot left empty renders nothing rather than a broken frame."
+      "content": "Six photographs, all already on the CDN as non-story-038A8*.jpg. Any slot left empty renders nothing rather than a broken frame. The founder portrait is the one exception: only colour grades exist on the CDN, so it runs on colour 019 until the design's black and white grade is uploaded."
     },
     {
       "type": "image_picker",

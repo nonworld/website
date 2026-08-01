@@ -168,16 +168,21 @@ button { font-family: inherit; }
 
 .non-shell {
   width: 100%;
-  /* Full-bleed, but not unbounded. Past ~1800px the product shots stop being
-     photographs and start being wallpaper, and line lengths go with them.
+  /* FULL BLEED. No max-width, no centring, no gutters.
 
-     1520, not 1800. The reasoning above was right and the number was wrong:
-     design-reference is authored around 1440, so at 1800 every band renders
-     ~25% larger than it was ever drawn. On the PDP that put the gallery column
-     near 900px, and a 4/5 shot is then 1125px tall — a single bottle taller
-     than the viewport. The ratio matched the design exactly; the canvas did
-     not. */
-  max-width: 1520px;
+     This carried a cap — 1800, then briefly 1520 — on the theory that bands
+     rendered too large on a wide monitor. The theory was half right and the
+     remedy was wrong: capping the shell letterboxes the entire site, which is
+     immediately visible as dead strips down both sides, and it does not even
+     fix what it was aimed at (measured: at 1920 the 1520 cap still left an
+     812px-wide bottle on the PDP).
+
+     Oversized MEDIA is a media problem, so it is solved on the media —
+     .non-gallery__main carries its own max-width, which holds at every
+     viewport including 2560. Bands, colour fields and the header are meant to
+     run edge to edge; design-reference caps its wrapper at 1180 only because
+     that is the canvas the export was drawn on, not because the storefront
+     should sit in a box. */
   margin: 0 auto;
   overflow-x: clip;
   background: var(--non-bg);

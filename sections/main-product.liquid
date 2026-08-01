@@ -86,7 +86,7 @@
       <div class="non-mono non-eyebrow">
         {{ code }}
         {%- if style != blank %} &middot; {{ style }}{% endif -%}
-        &middot; 0.0% ABV &middot; 750ml
+        {%- if section.settings.eyebrow_suffix != blank %} &middot; {{ section.settings.eyebrow_suffix }}{% endif -%}
       </div>
 
       <h1 class="non-buy__name">{{ product.title | remove: code | strip }}</h1>
@@ -127,20 +127,36 @@
               {% unless variant.available %}disabled{% endunless %}>
               <span class="non-variant__lines">
                 <span class="non-variant__label">
-                  {%- case variant.title -%}
-                    {%- when '1' -%}1 bottle
-                    {%- when '6' -%}6 pack
-                    {%- when '12' -%}12 case
-                    {%- when 'Default Title' -%}{{ product.title }}
-                    {%- else -%}{{ variant.title }}
-                  {%- endcase -%}
+                  {%- comment -%}
+                    Pack names come from Pack label blocks, matched on the
+                    variant title, so "6" can read "6 pack" without anyone
+                    renaming variants in the product admin — variant titles are
+                    shared with reporting and checkout and should stay plain.
+                    Falls back to the variant's own title when no block matches.
+                  {%- endcomment -%}
+                  {%- liquid
+                    assign pack_label = ''
+                    for b in section.blocks
+                      if b.type == 'pack' and b.settings.variant_title == variant.title
+                        assign pack_label = b.settings.label
+                        break
+                      endif
+                    endfor
+                    if pack_label == blank and variant.title == 'Default Title'
+                      assign pack_label = product.title
+                    endif
+                    if pack_label == blank
+                      assign pack_label = variant.title
+                    endif
+                    echo pack_label
+                  -%}
                 </span>
                 <span class="non-variant__per">
                   {%- if variant.available -%}
-                    {{ each | money }} each
+                    {{ each | money }} {{ section.settings.each_word }}
                     {%- if variant.compare_at_price > variant.price -%}
                       {%- assign save = variant.compare_at_price | minus: variant.price | times: 100 | divided_by: variant.compare_at_price -%}
-                      &middot; save {{ save }}%
+                      &middot; {{ section.settings.save_word }} {{ save }}%
                     {%- endif -%}
                   {%- else -%}
                     {{ 'products.product.sold_out' | t }}
@@ -157,7 +173,7 @@
 
       <button type="submit" class="non-atc" {% unless product.available %}disabled{% endunless %}>
         {%- if product.available -%}
-          Add &mdash; <span data-non-price>{{ product.selected_or_first_available_variant.price | money }}</span>
+          {{ section.settings.add_label }} &mdash; <span data-non-price>{{ product.selected_or_first_available_variant.price | money }}</span>
         {%- else -%}
           {{ 'products.product.sold_out' | t }}
         {%- endif -%}
@@ -180,12 +196,12 @@
       <div class="non-sommbox">
         <div class="non-sommbox__head">
           <span class="non-mono non-eyebrow">{{ 'products.product.somm_heading' | t }}</span>
-          <span class="non-sommbox__live">Somm live</span>
+          <span class="non-sommbox__live">{{ section.settings.somm_status }}</span>
         </div>
 
         <div class="non-sommbox__body" data-non-somm-transcript>
           <div class="non-chat__msg non-chat__msg--a">
-            <span class="non-chat__who">NON Somm</span>
+            <span class="non-chat__who">{{ section.settings.somm_title }}</span>
             {{ section.settings.somm_opener }}
           </div>
           <p class="non-somm__stream" data-non-somm-stream hidden></p>
@@ -196,7 +212,7 @@
           data-non-somm
           data-somm-context="product"
           data-somm-code="{{ code }}">
-          <label class="visually-hidden" for="somm-p-{{ section.id }}">Ask about this bottle</label>
+          <label class="visually-hidden" for="somm-p-{{ section.id }}">{{ section.settings.somm_placeholder }}</label>
           <input
             id="somm-p-{{ section.id }}"
             class="non-somm__input"
@@ -234,26 +250,26 @@
 {%- comment -%} ── spec strip ────────────────────────────────────────────── {%- endcomment -%}
 <div class="non-specstrip non-specstrip--{{ spec_count }}">
   <div class="non-specstrip__cell">
-    <div class="non-spec__k">Tastes like</div>
+    <div class="non-spec__k">{{ section.settings.spec_tastes }}</div>
     <div class="non-specstrip__v">{{ tastes | default: product.title }}</div>
   </div>
 
   {%- if sits != blank -%}
     <div class="non-specstrip__cell">
-      <div class="non-spec__k">Sits where</div>
+      <div class="non-spec__k">{{ section.settings.spec_sits }}</div>
       <div class="non-specstrip__v">{{ sits }}</div>
     </div>
   {%- endif -%}
 
   {%- if nutrition != blank -%}
     <div class="non-specstrip__cell">
-      <div class="non-spec__k">Per 150ml</div>
+      <div class="non-spec__k">{{ section.settings.spec_nutrition }}</div>
       <div class="non-specstrip__v">{{ nutrition }}</div>
     </div>
   {%- endif -%}
 
   <div class="non-specstrip__cell">
-    <div class="non-spec__k">Serve</div>
+    <div class="non-spec__k">{{ section.settings.spec_serve }}</div>
     <div class="non-specstrip__v">{{ serve }}</div>
   </div>
 </div>
@@ -300,6 +316,81 @@
       "id": "somm_opener",
       "label": "Somm opening line",
       "default": "I've read the whole spec sheet for this bottle. Ask me anything — pairing, process, sugar, or whether it's right for you."
+    },
+    {
+      "type": "text",
+      "id": "somm_title",
+      "label": "Somm panel title",
+      "default": "NON Somm"
+    },
+    {
+      "type": "text",
+      "id": "somm_status",
+      "label": "Somm status label",
+      "default": "Somm live"
+    },
+    {
+      "type": "text",
+      "id": "somm_placeholder",
+      "label": "Somm input placeholder",
+      "default": "Ask about this bottle"
+    },
+    {
+      "type": "header",
+      "content": "Buy box"
+    },
+    {
+      "type": "text",
+      "id": "eyebrow_suffix",
+      "label": "Eyebrow suffix",
+      "default": "0.0% ABV · 750ml",
+      "info": "Follows the bottle code and style."
+    },
+    {
+      "type": "text",
+      "id": "add_label",
+      "label": "Add to cart label",
+      "default": "Add"
+    },
+    {
+      "type": "text",
+      "id": "each_word",
+      "label": "Per-unit word",
+      "default": "each"
+    },
+    {
+      "type": "text",
+      "id": "save_word",
+      "label": "Saving word",
+      "default": "save"
+    },
+    {
+      "type": "header",
+      "content": "Spec strip"
+    },
+    {
+      "type": "text",
+      "id": "spec_tastes",
+      "label": "Tastes label",
+      "default": "Tastes like"
+    },
+    {
+      "type": "text",
+      "id": "spec_sits",
+      "label": "Sits label",
+      "default": "Sits where"
+    },
+    {
+      "type": "text",
+      "id": "spec_nutrition",
+      "label": "Nutrition label",
+      "default": "Per 150ml"
+    },
+    {
+      "type": "text",
+      "id": "spec_serve",
+      "label": "Serve label",
+      "default": "Serve"
     },
     {
       "type": "header",
@@ -383,6 +474,24 @@
           "type": "textarea",
           "id": "answer",
           "label": "Answer"
+        }
+      ]
+    },
+    {
+      "type": "pack",
+      "name": "Pack label",
+      "settings": [
+        {
+          "type": "text",
+          "id": "variant_title",
+          "label": "Variant title",
+          "info": "Exactly as it appears on the product, e.g. 6"
+        },
+        {
+          "type": "text",
+          "id": "label",
+          "label": "Shown as",
+          "default": "6 pack"
         }
       ]
     }

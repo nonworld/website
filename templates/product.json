@@ -57,9 +57,33 @@
           "settings": {
             "text": "Subscribe & save 10%"
           }
+        },
+        "pack-1": {
+          "type": "pack",
+          "settings": {
+            "variant_title": "1",
+            "label": "1 bottle"
+          }
+        },
+        "pack-6": {
+          "type": "pack",
+          "settings": {
+            "variant_title": "6",
+            "label": "6 pack"
+          }
+        },
+        "pack-12": {
+          "type": "pack",
+          "settings": {
+            "variant_title": "12",
+            "label": "12 case"
+          }
         }
       },
       "block_order": [
+        "pack-12",
+        "pack-6",
+        "pack-1",
         "t1",
         "t2",
         "t3",

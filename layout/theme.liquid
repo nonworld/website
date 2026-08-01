@@ -7,8 +7,20 @@
     <meta name="theme-color" content="#0c0c0c">
     <link rel="canonical" href="{{ canonical_url }}">
 
+    {%- comment -%}
+      Favicon. Still unset — the only NON mark on the CDN is the 3000x1072
+      wordmark, and a 2.8:1 logotype squeezed into 32x32 is an illegible smear,
+      so nothing is picked here by default. Drop a SQUARE mark into
+      Theme settings → Favicon and all four lines below start emitting.
+
+      Sizes rather than one 32px PNG: 32 is the tab, 180 is the iOS home screen,
+      and Safari asks for the apple-touch-icon by name whether or not you supply
+      one — without it, iOS crops a screenshot of the page instead.
+    {%- endcomment -%}
     {%- if settings.favicon != blank -%}
-      <link rel="icon" type="image/png" href="{{ settings.favicon | image_url: width: 32, height: 32 }}">
+      <link rel="icon" type="image/png" sizes="32x32" href="{{ settings.favicon | image_url: width: 32, height: 32 }}">
+      <link rel="icon" type="image/png" sizes="192x192" href="{{ settings.favicon | image_url: width: 192, height: 192 }}">
+      <link rel="apple-touch-icon" sizes="180x180" href="{{ settings.favicon | image_url: width: 180, height: 180 }}">
     {%- endif -%}
 
     <title>

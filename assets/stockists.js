@@ -116,12 +116,23 @@
   function render() {
     listEl.innerHTML = '';
 
+    // The empty state is markup in the section, not a string built here. The
+    // design gives it a heading, a paragraph and two ways out — search the full
+    // directory, or have a bottle shipped. A one-line textContent could carry
+    // none of that, and none of it would have been editable.
+    var emptyEl = root.querySelector('[data-non-venue-empty]');
+    var sortEl = root.querySelector('[data-non-venue-sort]');
+    if (emptyEl) emptyEl.hidden = shown.length > 0;
+    if (sortEl) sortEl.hidden = !shown.length;
+
     if (!shown.length) {
-      var none = document.createElement('p');
-      none.className = 'non-note';
-      none.style.padding = '20px 0';
-      none.textContent = 'Nothing stocking there yet. Try a nearby suburb, or the full map.';
-      listEl.appendChild(none);
+      if (!emptyEl) {
+        var none = document.createElement('p');
+        none.className = 'non-note';
+        none.style.padding = '20px 0';
+        none.textContent = 'Nothing stocking there yet. Try a nearby suburb, or the full map.';
+        listEl.appendChild(none);
+      }
     } else {
       shown.slice(0, page * PAGE).forEach(function (v) {
         listEl.appendChild(venueNode(v));

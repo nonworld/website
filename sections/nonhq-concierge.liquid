@@ -22,6 +22,20 @@
   press and two closing offers. The booking form was the only part that
   existed.
 {%- endcomment -%}
+{%- assign creds = section.blocks | where: 'type', 'credential' -%}
+{%- if creds.size > 0 -%}
+  {%- comment -%}
+    The design's credential strip, same component as About's. Blocks rather than
+    a fixed string so each page carries its own facts — Stockists leads with the
+    venue count, NONHQ with opening hours.
+  {%- endcomment -%}
+  <div class="non-creds">
+    {%- for b in creds -%}
+      <span class="non-creds__item" {{ b.shopify_attributes }}>{{ b.settings.text }}</span>
+    {%- endfor -%}
+  </div>
+{%- endif -%}
+
 <div class="non-hq-hero">
   <div>
     <div class="non-mono non-eyebrow">{{ section.settings.hero_eyebrow }}</div>
@@ -488,12 +502,25 @@
           "label": "Link"
         }
       ]
+    },
+    {
+      "type": "credential",
+      "name": "Credential",
+      "settings": [
+        {
+          "type": "text",
+          "id": "text",
+          "label": "Text",
+          "default": "0.0% abv"
+        }
+      ]
     }
   ],
   "presets": [
     {
       "name": "NONHQ concierge"
     }
-  ]
+  ],
+  "max_blocks": 30
 }
 {% endschema %}

@@ -29,6 +29,20 @@
   tool and nothing around it — the page answered "where" and never "what if
   the answer is nowhere near me".
 {%- endcomment -%}
+{%- assign creds = section.blocks | where: 'type', 'credential' -%}
+{%- if creds.size > 0 -%}
+  {%- comment -%}
+    The design's credential strip, same component as About's. Blocks rather than
+    a fixed string so each page carries its own facts — Stockists leads with the
+    venue count, NONHQ with opening hours.
+  {%- endcomment -%}
+  <div class="non-creds">
+    {%- for b in creds -%}
+      <span class="non-creds__item" {{ b.shopify_attributes }}>{{ b.settings.text }}</span>
+    {%- endfor -%}
+  </div>
+{%- endif -%}
+
 <div class="non-stock-hero">
   <div>
     <div class="non-mono non-eyebrow" data-non-hero-count>{{ section.settings.eyebrow }}</div>
@@ -89,10 +103,16 @@
 
   <div class="non-stockists" style="margin-top:26px">
     <div class="non-stockists__list">
-      {%- if section.blocks.size > 0 -%}
+      {%- comment -%}
+        Filtered by type, not `section.blocks`. The credential strip above uses
+        blocks too, and an unfiltered loop rendered them here as venues with no
+        address — the exact failure the `where` filter exists to prevent.
+      {%- endcomment -%}
+      {%- assign venues = section.blocks | where: 'type', 'venue' -%}
+      {%- if venues.size > 0 -%}
         <div class="non-mono non-eyebrow">{{ section.settings.featured_heading }}</div>
         <div style="margin-bottom:26px">
-          {%- for block in section.blocks -%}
+          {%- for block in venues -%}
             <div class="non-venue" {{ block.shopify_attributes }}>
               <div class="non-venue__name">{{ block.settings.name }}</div>
               <div class="non-venue__addr">{{ block.settings.address }}</div>
@@ -104,10 +124,45 @@
         </div>
       {%- endif -%}
 
-      <div class="non-mono non-eyebrow" data-non-venue-list-heading>Stockists</div>
+      <div class="non-stock-listhead">
+        <div class="non-mono non-eyebrow" data-non-venue-list-heading>Stockists</div>
+        {%- if section.settings.sort_note != blank -%}
+          <span class="non-mono non-eyebrow non-stock-sort" data-non-venue-sort hidden>
+            {{ section.settings.sort_note }}
+          </span>
+        {%- endif -%}
+      </div>
+
       <div data-non-venues>
         <p class="non-note" style="padding:20px 0">Loading stockists…</p>
       </div>
+
+      {%- comment -%}
+        The empty state. The design answers "nothing near me" with two routes out
+        rather than a dead end, so both are here and both are editable. Hidden
+        until stockists.js knows the result set is empty — it toggles this rather
+        than writing a single line of text, which is all it used to do.
+      {%- endcomment -%}
+      {%- if section.settings.empty_heading != blank -%}
+        <div class="non-stock-empty" data-non-venue-empty hidden>
+          <div class="non-stock-empty__title">{{ section.settings.empty_heading }}</div>
+          {%- if section.settings.empty_body != blank -%}
+            <p class="non-stock-empty__body">{{ section.settings.empty_body }}</p>
+          {%- endif -%}
+          <div class="non-stock-empty__acts">
+            {%- if section.settings.empty_cta != blank -%}
+              <a class="non-btn non-btn--ghost" href="{{ section.settings.find_url | default: '#' }}">
+                {{ section.settings.empty_cta }}
+              </a>
+            {%- endif -%}
+            {%- if section.settings.ship_cta != blank -%}
+              <a class="non-btn" href="{{ section.settings.ship_url | default: '/collections/all' }}">
+                {{ section.settings.ship_cta }}
+              </a>
+            {%- endif -%}
+          </div>
+        </div>
+      {%- endif -%}
 
       <button
         type="button"
@@ -130,6 +185,28 @@
     Defaulted here rather than in the schema: Shopify's `url` setting type
     rejects a "default" key outright, and rejects the whole file with it.
   {%- endcomment -%}
+  {%- comment -%}
+    "Can't find it nearby?" — the design's answer to a search that came back
+    thin: ask the customer to nominate their local rather than leaving them with
+    nothing to do. Sits between the results and the two offers, as in the design.
+  {%- endcomment -%}
+  {%- if section.settings.nominate_heading != blank -%}
+    <div class="non-stock-nominate">
+      {%- if section.settings.nominate_label != blank -%}
+        <div class="non-mono non-eyebrow">{{ section.settings.nominate_label }}</div>
+      {%- endif -%}
+      <div class="non-stock-nominate__title">{{ section.settings.nominate_heading }}</div>
+      {%- if section.settings.nominate_body != blank -%}
+        <p class="non-stock-nominate__body">{{ section.settings.nominate_body }}</p>
+      {%- endif -%}
+      {%- if section.settings.nominate_cta != blank -%}
+        <a class="non-btn" href="{{ section.settings.nominate_url | default: '/pages/trade' }}">
+          {{ section.settings.nominate_cta }}
+        </a>
+      {%- endif -%}
+    </div>
+  {%- endif -%}
+
   {%- comment -%} Two offers, side by side, for when the map comes up empty. {%- endcomment -%}
   {%- if section.settings.trade_heading != blank or section.settings.direct_heading != blank -%}
     <div class="non-stock-offers">
@@ -352,6 +429,70 @@
       "default": "Open the full map at find.non.world"
     },
     {
+      "type": "text",
+      "id": "sort_note",
+      "label": "Sort note",
+      "default": "Sorted by distance"
+    },
+    {
+      "type": "text",
+      "id": "empty_heading",
+      "label": "Empty heading",
+      "default": "Nothing listed there yet."
+    },
+    {
+      "type": "textarea",
+      "id": "empty_body",
+      "label": "Empty body",
+      "default": "The full directory updates weekly and covers more than this preview does — try it on find.non.world, or have a bottle shipped to you instead."
+    },
+    {
+      "type": "text",
+      "id": "empty_cta",
+      "label": "Empty CTA (directory)",
+      "default": "Search find.non.world"
+    },
+    {
+      "type": "text",
+      "id": "ship_cta",
+      "label": "Empty CTA (ship)",
+      "default": "Ship to me"
+    },
+    {
+      "type": "url",
+      "id": "ship_url",
+      "label": "Ship link"
+    },
+    {
+      "type": "text",
+      "id": "nominate_label",
+      "label": "Nominate label",
+      "default": "Not stocked near you"
+    },
+    {
+      "type": "text",
+      "id": "nominate_heading",
+      "label": "Nominate heading",
+      "default": "Can't find it nearby?"
+    },
+    {
+      "type": "textarea",
+      "id": "nominate_body",
+      "label": "Nominate body",
+      "default": "Tell your local we exist. Send them the trade sheet in two taps — most venues list within a month."
+    },
+    {
+      "type": "text",
+      "id": "nominate_cta",
+      "label": "Nominate CTA",
+      "default": "Send the trade sheet"
+    },
+    {
+      "type": "url",
+      "id": "nominate_url",
+      "label": "Nominate link"
+    },
+    {
       "type": "header",
       "content": "Appearance"
     },
@@ -429,12 +570,25 @@
           "label": "What they pour"
         }
       ]
+    },
+    {
+      "type": "credential",
+      "name": "Credential",
+      "settings": [
+        {
+          "type": "text",
+          "id": "text",
+          "label": "Text",
+          "default": "0.0% abv"
+        }
+      ]
     }
   ],
   "presets": [
     {
       "name": "Stockists"
     }
-  ]
+  ],
+  "max_blocks": 30
 }
 {% endschema %}

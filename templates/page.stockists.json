@@ -16,8 +16,75 @@
         "intro": "Every venue currently pouring or stocking NON, live from our field map.",
         "show_map": true,
         "find_url": "https://find.non.world",
-        "find_label": "Open the full map at find.non.world"
-      }
+        "find_label": "Open the full map at find.non.world",
+        "eyebrow": "Stockists · 1,400+ venues",
+        "hero_heading": "Find it poured near you.",
+        "featured_heading": "On the list at"
+      },
+      "blocks": {
+        "v1": {
+          "type": "venue",
+          "settings": {
+            "name": "The French Laundry",
+            "address": "Yountville, CA"
+          }
+        },
+        "v2": {
+          "type": "venue",
+          "settings": {
+            "name": "Alinea",
+            "address": "Chicago, IL"
+          }
+        },
+        "v3": {
+          "type": "venue",
+          "settings": {
+            "name": "The Fat Duck",
+            "address": "Bray, UK"
+          }
+        },
+        "v4": {
+          "type": "venue",
+          "settings": {
+            "name": "Vue de Monde",
+            "address": "Melbourne, VIC"
+          }
+        },
+        "cred-1": {
+          "type": "credential",
+          "settings": {
+            "text": "1,400+ venues worldwide"
+          }
+        },
+        "cred-2": {
+          "type": "credential",
+          "settings": {
+            "text": "find.non.world"
+          }
+        },
+        "cred-3": {
+          "type": "credential",
+          "settings": {
+            "text": "0.0% abv"
+          }
+        },
+        "cred-4": {
+          "type": "credential",
+          "settings": {
+            "text": "chef made"
+          }
+        }
+      },
+      "block_order": [
+        "cred-1",
+        "cred-2",
+        "cred-3",
+        "cred-4",
+        "v1",
+        "v2",
+        "v3",
+        "v4"
+      ]
     }
   },
   "order": [

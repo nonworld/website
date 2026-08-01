@@ -17,6 +17,12 @@
   --non-line-strong: #333331;
   --non-line-soft: #262624;
   --non-panel: #131311;
+  /* Every NON Somm surface reads this one token — the chat box on the homepage,
+     the product-page box, the pairing tool and the stockists search all share
+     .non-somm. It used to fall back to --non-panel, so the Somm only looked
+     like the Somm where a section had been told to set somm_bg by hand. */
+  --non-somm-bg: #c9c7c1;
+  --non-somm-fg: #0c0c0c;
   --non-panel-alt: #161614;
   --non-invert-bg: #ffffff;
   --non-invert-fg: #000000;
@@ -1912,3 +1918,68 @@ a, button, .non-card, .non-filter, .non-pair__opt, .non-somm__seed,
 }
 
 @media (prefers-reduced-motion: reduce) { .np-pulse { display: none } }
+
+/* --- Stockists: list head, empty state, nominate --------------------------- */
+.non-stock-listhead { display: flex; align-items: baseline; justify-content: space-between; gap: 16px; }
+.non-stock-sort { color: var(--non-fg-faint); }
+
+.non-stock-empty { padding: 26px 0 8px; border-top: 1px solid var(--non-line); margin-top: 8px; }
+.non-stock-empty__title { font-size: clamp(18px, 1.6vw, 24px); letter-spacing: -.015em; }
+.non-stock-empty__body { margin: 12px 0 0; font-size: var(--t-copy); line-height: 1.6; color: var(--non-fg-dim); max-width: 52ch; }
+.non-stock-empty__acts { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 18px; }
+
+.non-stock-nominate { padding: 40px var(--non-pad); border-top: 1px solid var(--non-line); }
+.non-stock-nominate__title { font-size: clamp(20px, 1.9vw, 30px); letter-spacing: -.015em; margin-top: 10px; }
+.non-stock-nominate__body { margin: 12px 0 18px; font-size: var(--t-copy); line-height: 1.6; color: var(--non-fg-dim); max-width: 54ch; }
+
+/* --- Pairing: fieldset reset ----------------------------------------------
+   The question groups are <fieldset>/<legend>, which is the correct semantics —
+   it tells a screen reader that four buttons belong to one question. But no
+   reset was ever written, so every browser drew its own default: a light inset
+   border boxing each question, with the legend notched through the top edge.
+   Nothing in the design has that. Keep the markup, drop the chrome. */
+.non-pair fieldset,
+.non-pair-tool fieldset {
+  border: 0;
+  margin: 0;
+  padding: 0;
+  min-width: 0; /* fieldset's default min-content width breaks flex/grid children */
+}
+.non-pair legend,
+.non-pair-tool legend {
+  padding: 0;
+  display: block;
+  width: 100%;
+}
+
+/* --- NON Somm on the light surface ----------------------------------------
+   --non-somm-bg is now the grey for every Somm surface, so the contents have to
+   invert with it: the input, caret, seeds and streamed answer were all written
+   for the near-black panel and would have been light-on-light.
+
+   Scoped to .non-somm / .non-sommbox rather than applied globally — the Somm is
+   a light island on a dark page, and nothing outside it should change. */
+.non-somm,
+.non-sommbox {
+  color: var(--non-somm-fg);
+  --non-fg: var(--non-somm-fg);
+  --non-fg-dim: #3a3a38;
+  --non-fg-mute: #55534e;
+  --non-fg-faint: #6b6862;
+  --non-line: #b3b1ab;
+  --non-line-soft: #bfbdb7;
+  --non-line-strong: #9d9b95;
+}
+.non-somm__input,
+.non-sommbox__ask input { color: var(--non-somm-fg); }
+.non-somm__input::placeholder,
+.non-sommbox__ask input::placeholder { color: #6b6862; }
+.non-somm__seed { color: #3a3a38; }
+.non-somm__stream { color: var(--non-somm-fg); }
+
+/* The submit button keeps its inversion, which on a light surface means it goes
+   dark — still the most prominent thing in the component, which is the point. */
+.non-somm__submit {
+  background: var(--non-somm-fg);
+  color: #f2f0ea;
+}

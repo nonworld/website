@@ -53,6 +53,30 @@
             "code": "NON5",
             "reason": "Hard verjus acid, 140mg of salt and a menthol lift from hops and lemon myrtle. Acid cools chilli; alcohol would have made it worse."
           }
+        },
+        "d1": {
+          "type": "dish",
+          "settings": {
+            "label": "Whole roast chicken"
+          }
+        },
+        "d2": {
+          "type": "dish",
+          "settings": {
+            "label": "Sichuan mapo tofu"
+          }
+        },
+        "d3": {
+          "type": "dish",
+          "settings": {
+            "label": "A dozen oysters"
+          }
+        },
+        "d4": {
+          "type": "dish",
+          "settings": {
+            "label": "Cheese board"
+          }
         }
       },
       "block_order": [
@@ -61,7 +85,11 @@
         "a3",
         "r1",
         "r2",
-        "r3"
+        "r3",
+        "d1",
+        "d2",
+        "d3",
+        "d4"
       ],
       "settings": {
         "heading": "Start with the food.",
@@ -69,7 +97,10 @@
         "eyebrow": "The pairing table",
         "verdict_label": "The verdict",
         "live_label": "Somm live",
-        "verdict_image_url": "https://cdn.shopify.com/s/files/1/0371/5874/8205/files/non-story-038A8683.jpg?v=1785541727"
+        "verdict_image_url": "https://cdn.shopify.com/s/files/1/0371/5874/8205/files/non-story-038A8683.jpg?v=1785541727",
+        "freetext_label": "Or just name the dish",
+        "freetext_placeholder": "Whole snapper, charcoal, lemon",
+        "freetext_cta": "Pair it"
       }
     },
     "recipes": {

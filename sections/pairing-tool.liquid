@@ -28,7 +28,13 @@
   <div class="non-pair" data-non-pair>
     <div>
 
-      {%- for block in section.blocks -%}
+      {%- comment -%}
+        Filtered to axis blocks. This looped section.blocks unfiltered, so the
+        three `reason` blocks rendered as questions 04, 05 and 06 — bare numbers
+        with no question and no options, which is what was on the page.
+      {%- endcomment -%}
+      {%- assign axes = section.blocks | where: 'type', 'axis' -%}
+      {%- for block in axes -%}
         <fieldset
           class="non-pair__axis"
           data-non-pair-axis="{{ forloop.index0 }}"
@@ -56,6 +62,59 @@
           </div>
         </fieldset>
       {%- endfor -%}
+
+      {%- comment -%}
+        "Or just name the dish" — the design's free-text route, which the build
+        never had at all. The three axes are a guided path for someone who wants
+        to be led; this is for someone who already knows what they are cooking
+        and does not want to answer three questions to say so. Losing it meant
+        the page had no way to type a dish, which is the Somm's whole premise.
+
+        Wired to the same somm.js the rest of the site uses: [data-non-somm] is
+        what the script binds, and the seeds use [data-non-somm-seed], so this
+        needs no new JS. Context 'pairing' so the Worker knows where it came
+        from.
+      {%- endcomment -%}
+      {%- assign dishes = section.blocks | where: 'type', 'dish' -%}
+      {%- if section.settings.freetext_label != blank -%}
+        <div class="non-pair__freetext">
+          <div class="non-mono non-eyebrow">{{ section.settings.freetext_label }}</div>
+
+          <form class="non-somm" data-non-somm data-somm-context="pairing">
+            <div class="non-somm__bar">
+              <span class="non-somm__caret" aria-hidden="true">&gt;</span>
+              <label class="visually-hidden" for="pair-q-{{ section.id }}">
+                {{ section.settings.freetext_placeholder }}
+              </label>
+              <input
+                id="pair-q-{{ section.id }}"
+                class="non-somm__input"
+                type="search"
+                autocomplete="off"
+                data-non-somm-input
+                placeholder="{{ section.settings.freetext_placeholder | escape }}">
+              <button type="submit" class="non-somm__submit">
+                {{ section.settings.freetext_cta }}
+              </button>
+            </div>
+          </form>
+
+          {%- if dishes.size > 0 -%}
+            <div class="non-somm__seeds">
+              {%- for block in dishes -%}
+                <button
+                  type="button"
+                  class="non-somm__seed"
+                  data-non-somm-seed
+                  data-answer="{{ block.settings.label | escape }}"
+                  {{ block.shopify_attributes }}>
+                  {{ block.settings.label }}
+                </button>
+              {%- endfor -%}
+            </div>
+          {%- endif -%}
+        </div>
+      {%- endif -%}
 
       <div data-non-pair-result hidden style="animation:rise .4s ease both">
         <div class="non-pair__q" data-non-pair-title></div>
@@ -109,10 +168,15 @@
 {%- comment -%} Reasons keyed by bottle code, shown once a winner emerges. {%- endcomment -%}
 <script type="application/json" data-non-pair-reasons>
   {
-    {%- for block in section.blocks -%}
-      {%- if block.type == 'reason' -%}
-        {{ block.settings.code | upcase | json }}: {{ block.settings.reason | json }}{%- unless forloop.last -%},{%- endunless -%}
-      {%- endif -%}
+    {%- comment -%}
+      Filtered before the loop, not inside it. `unless forloop.last` was being
+      evaluated against ALL blocks, so a trailing comma — and invalid JSON —
+      appeared the moment a non-reason block sorted last. It worked only because
+      r3 happened to be the final block in block_order.
+    {%- endcomment -%}
+    {%- assign reasons = section.blocks | where: 'type', 'reason' -%}
+    {%- for block in reasons -%}
+      {{ block.settings.code | upcase | json }}: {{ block.settings.reason | json }}{%- unless forloop.last -%},{%- endunless -%}
     {%- endfor -%}
   }
 </script>
@@ -202,6 +266,24 @@
       "id": "intro",
       "label": "Intro",
       "default": "Three questions. The somm shows its working rather than just naming a bottle."
+    },
+    {
+      "type": "text",
+      "id": "freetext_label",
+      "label": "Label",
+      "default": "Or just name the dish"
+    },
+    {
+      "type": "text",
+      "id": "freetext_placeholder",
+      "label": "Placeholder",
+      "default": "Whole snapper, charcoal, lemon"
+    },
+    {
+      "type": "text",
+      "id": "freetext_cta",
+      "label": "Button",
+      "default": "Pair it"
     },
     {
       "type": "header",
@@ -294,12 +376,25 @@
           "label": "Why this bottle wins"
         }
       ]
+    },
+    {
+      "type": "dish",
+      "name": "Example dish",
+      "settings": [
+        {
+          "type": "text",
+          "id": "label",
+          "label": "Dish",
+          "default": "Whole roast chicken"
+        }
+      ]
     }
   ],
   "presets": [
     {
       "name": "Pairing tool"
     }
-  ]
+  ],
+  "max_blocks": 30
 }
 {% endschema %}

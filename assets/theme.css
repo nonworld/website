@@ -2138,3 +2138,11 @@ a, button, .non-card, .non-filter, .non-pair__opt, .non-somm__seed,
 .non-somm .non-somm__input { color: #0c0c0c; }
 .non-somm .non-somm__input::placeholder { color: #6b6862; }
 .non-somm .non-somm__caret { color: #6b6862; }
+
+/* --- Pairing: the free-text route ----------------------------------------- */
+.non-pair__freetext {
+  margin-top: 34px;
+  padding-top: 26px;
+  border-top: 1px solid var(--non-line);
+}
+.non-pair__freetext .non-somm { margin-top: 14px; }

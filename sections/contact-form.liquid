@@ -75,6 +75,28 @@
     </div>
 
     <aside>
+      {%- comment -%}
+        The dash field. Sits above the aside's own image and copy rather than
+        replacing them — the column was empty on the live page, which is what
+        made it look like a layout bug rather than an empty setting.
+
+        Canvas rather than an iframe or an SVG: the field reacts to the pointer,
+        which is the whole idea. Colour is passed in rather than read from CSS,
+        so the script does no style parsing at runtime.
+      {%- endcomment -%}
+      {%- if section.settings.show_field -%}
+        <div
+          class="non-contact-field"
+          data-non-contact-field
+          data-density="{{ section.settings.field_density }}"
+          data-ink="{{ section.settings.field_ink | default: '242,240,234' }}"
+          style="--non-field-h: {{ section.settings.field_height }}px"
+          aria-hidden="true">
+          <canvas></canvas>
+        </div>
+        <script src="{{ 'contact-field.js' | asset_url }}" defer></script>
+      {%- endif -%}
+
       {%- if section.settings.image != blank -%}
         {{
           section.settings.image
@@ -137,6 +159,40 @@
       "type": "richtext",
       "id": "aside_text",
       "label": "Aside text"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_field",
+      "label": "Show the dash field",
+      "default": true
+    },
+    {
+      "type": "range",
+      "id": "field_density",
+      "label": "Dash spacing",
+      "min": 10,
+      "max": 40,
+      "step": 2,
+      "default": 20,
+      "unit": "px",
+      "info": "Lower is denser and costs more to draw. 20 matches the supplied design."
+    },
+    {
+      "type": "range",
+      "id": "field_height",
+      "label": "Field height",
+      "min": 220,
+      "max": 640,
+      "step": 20,
+      "default": 420,
+      "unit": "px"
+    },
+    {
+      "type": "text",
+      "id": "field_ink",
+      "label": "Ink (R,G,B)",
+      "default": "242,240,234",
+      "info": "Comma-separated RGB, no rgb() wrapper. Defaults to the theme's ink."
     },
     {
       "type": "header",

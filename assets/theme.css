@@ -2462,3 +2462,17 @@ select {
 /* Firefox keeps a focus ring inside the field; remove it so the theme's own
    focus treatment is the only one. */
 select:-moz-focusring { color: transparent; text-shadow: 0 0 0 var(--non-fg); }
+
+/* --- Contact: the dash field ----------------------------------------------
+   Height is a setting rather than the export's 100vh — in the aside column a
+   viewport-tall canvas would push the form's own copy off the screen. The
+   canvas fills the box and the box is what gets sized. */
+.non-contact-field {
+  position: relative;
+  width: 100%;
+  height: var(--non-field-h, 420px);
+  background: var(--non-bg);
+  border: 1px solid var(--non-line);
+  overflow: hidden;
+}
+.non-contact-field canvas { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }

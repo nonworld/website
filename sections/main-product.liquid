@@ -193,10 +193,13 @@
 
     {%- comment -%} ── somm, as a panel ────────────────────────────────── {%- endcomment -%}
     {%- if section.settings.show_somm -%}
-      <div class="non-sommbox">
+      <div class="non-sommbox"{% if section.settings.somm_dot_colour != blank %} style="--non-somm-dot: {{ section.settings.somm_dot_colour }}"{% endif %}>
         <div class="non-sommbox__head">
           <span class="non-mono non-eyebrow">{{ 'products.product.somm_heading' | t }}</span>
-          <span class="non-sommbox__live">{{ section.settings.somm_status }}</span>
+          <span class="non-sommbox__live">
+            <span class="non-sommbox__dot" aria-hidden="true"></span>
+            {{ section.settings.somm_status }}
+          </span>
         </div>
 
         <div class="non-sommbox__body" data-non-somm-transcript>
@@ -328,6 +331,13 @@
       "id": "somm_status",
       "label": "Somm status label",
       "default": "Somm live"
+    },
+    {
+      "type": "color",
+      "id": "somm_dot_colour",
+      "label": "Live dot colour",
+      "default": "#4ade80",
+      "info": "The one deliberate colour on an otherwise monochrome site. Set it to white to remove the exception."
     },
     {
       "type": "text",

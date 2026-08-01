@@ -613,7 +613,47 @@ button { font-family: inherit; }
   padding: 13px 16px; border-bottom: 1px solid var(--non-line-soft);
   display: flex; align-items: center; justify-content: space-between;
 }
-.non-sommbox__live { font-family: var(--non-mono); font-size: var(--t-mono); color: #fff; }
+.non-sommbox__live {
+  font-family: var(--non-mono); font-size: var(--t-mono); color: #fff;
+  display: inline-flex; align-items: center; gap: 7px;
+}
+/* The live dot. Green is a deliberate exception to a monochrome palette — it
+   is the one thing on the page reporting a system state rather than saying
+   something, and every convention a customer already knows says green means
+   ready. It is a setting, so the exception can be withdrawn.
+
+   The halo pulses, not the dot. A dot that changes size nudges the text beside
+   it; a box-shadow expanding behind it does not touch layout at all. */
+.non-sommbox__dot {
+  width: 7px; height: 7px; border-radius: 50%;
+  background: var(--non-somm-dot, #4ade80);
+  flex: none;
+  animation: sommPulse 2.4s ease-out infinite;
+}
+@keyframes sommPulse {
+  0%   { box-shadow: 0 0 0 0 var(--non-somm-dot-glow, rgba(74,222,128,.55)); }
+  70%  { box-shadow: 0 0 0 7px rgba(74,222,128,0); }
+  100% { box-shadow: 0 0 0 0 rgba(74,222,128,0); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .non-sommbox__dot { animation: none; }
+}
+
+/* Tightening the box: the head was 13px of padding against a 16px body, the
+   ask row another 12, so nothing lined up down the left edge and the panel
+   read as three stacked strips rather than one object. One gutter throughout. */
+.non-sommbox { border-radius: 2px; }
+.non-sommbox__head { padding: 12px 16px; }
+.non-sommbox__body { padding: 16px; gap: 14px; }
+.non-sommbox__ask { padding: 12px 16px; gap: 12px; }
+.non-sommbox__seeds { padding: 0 16px 14px; gap: 8px; }
+/* The submit was a filled grey block the same weight as the seed chips beside
+   it, so the commit action and the suggestions read identically. */
+.non-sommbox__submit {
+  background: var(--non-invert-bg); color: var(--non-invert-fg);
+  min-height: 38px; padding: 0 16px;
+}
+.non-sommbox__submit:hover { opacity: .85; }
 .non-sommbox__body {
   padding: 16px; display: flex; flex-direction: column; gap: 12px;
   max-height: 320px; overflow: auto;

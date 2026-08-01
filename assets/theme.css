@@ -1656,3 +1656,76 @@ a, button, .non-card, .non-filter, .non-pair__opt, .non-somm__seed,
   .non-card:hover { transform: none; }
   * { transition-duration: 1ms !important; }
 }
+
+/* --- the somm reads as a chat box ----------------------------------------
+   It was a hairline rectangle with a caret in it — indistinguishable from a
+   search field, and nothing about it said "ask me something". Three changes,
+   all affordance rather than decoration:
+
+   a filled well, so the input sits IN something rather than being outlined by
+   a 1px line; a rounded shape, because every chat input a customer has ever
+   used is rounded and a square one reads as a form field; and a focus state
+   that lifts the whole box rather than just the border, so typing feels like
+   you are addressing it. */
+.non-somm,
+.non-sommbox {
+  border-radius: 14px;
+  overflow: hidden;
+}
+.non-somm { background: var(--non-somm-bg, var(--non-panel)); }
+
+.non-somm__bar {
+  border-radius: 14px;
+  background: var(--non-somm-bg, var(--non-panel));
+}
+/* The well the input actually sits in. */
+.non-somm__bar,
+.non-sommbox__ask {
+  transition: box-shadow var(--duration-hover) var(--ease-hover),
+              background var(--duration-hover) var(--ease-hover);
+}
+.non-somm:focus-within,
+.non-sommbox:focus-within {
+  box-shadow: 0 0 0 1px var(--non-fg-mute);
+}
+.non-somm__input,
+.non-sommbox__ask input {
+  border-radius: 10px;
+}
+/* The caret is the invitation. Brighter, and it blinks — the one thing on the
+   page that says a cursor belongs here. */
+.non-somm__caret {
+  color: var(--non-fg-dim);
+  animation: blink 1.4s steps(1) infinite;
+}
+.non-somm:focus-within .non-somm__caret { color: var(--non-fg); }
+
+/* Placeholder should read as a prompt, not as filler. */
+.non-somm__input::placeholder,
+.non-sommbox__ask input::placeholder { color: var(--non-fg-mute); opacity: 1; }
+
+/* Suggested questions look pressable rather than printed. */
+.non-somm__seed,
+.non-sommbox__seeds button {
+  border-radius: 999px;
+  min-height: 34px;
+  padding: 0 14px;
+  border: 1px solid var(--non-line-strong);
+  background: var(--non-panel-alt);
+}
+.non-somm__seed:hover,
+.non-sommbox__seeds button:hover {
+  background: var(--non-invert-bg);
+  color: var(--non-invert-fg);
+  border-color: var(--non-invert-bg);
+}
+
+/* The working mark, sitting in the answer area. Larger than the first pass —
+   34px in a full-width panel was easy to miss, which is the whole failure it
+   was built to fix. */
+.non-think { min-height: 44px; padding: 4px 0; }
+.non-think__tile { --tile: 44px; }
+
+@media (prefers-reduced-motion: reduce) {
+  .non-somm__caret { animation: none; }
+}

@@ -117,6 +117,18 @@
        It is built here rather than in Liquid so the hero and the product page
        get the same mark without either template knowing about it. */
     var thinkingEl = null;
+    var thinkingSince = 0;
+
+    // A response can land in 150ms. Showing the mark and pulling it straight
+    // back reads as a glitch, not as thought — so once it is up it stays up
+    // for a beat, and the answer waits for it rather than the other way round.
+    var MIN_THINK = 550;
+
+    function endThinking(then) {
+      var elapsed = Date.now() - thinkingSince;
+      var wait = Math.max(0, MIN_THINK - elapsed);
+      setTimeout(function () { thinking(false); if (then) then(); }, wait);
+    }
 
     function thinking(on, failed) {
       if (!stream) return;
@@ -125,6 +137,9 @@
         if (thinkingEl) { thinkingEl.remove(); thinkingEl = null; }
         return;
       }
+
+      if (on && !thinkingSince) thinkingSince = Date.now();
+      if (!on) thinkingSince = 0;
 
       if (!thinkingEl) {
         thinkingEl = document.createElement('div');
@@ -184,12 +199,18 @@
 
     function fallback(query) {
       var hit = matchSeed(seeds, query);
-      if (hit) return type(hit.answer, hit.picks);
       var first = seeds[0];
-      type(
-        first ? first.answer : NON.strings.sommError,
-        first ? first.picks : []
-      );
+      var answer = hit ? hit.answer : (first ? first.answer : NON.strings.sommError);
+      var picks = hit ? hit.picks : (first ? first.picks : []);
+
+      // Even a canned answer gets the beat. An answer that appears the instant
+      // you ask reads as a lookup; the same answer after a moment reads as a
+      // somm thinking about it. The wait is honest either way — it is not
+      // pretending to compute, it is pacing a conversation.
+      show();
+      if (stream) stream.textContent = '';
+      thinking(true);
+      endThinking(function () { type(answer, picks); });
     }
 
     function ask(query) {
@@ -222,9 +243,10 @@
           if (type_.indexOf('text/event-stream') !== -1) return readStream(res);
 
           return res.json().then(function (data) {
-            thinking(false);
-            type(data.answer || '', data.picks || []);
-            history.push({ role: 'assistant', text: data.answer || '' });
+            endThinking(function () {
+              type(data.answer || '', data.picks || []);
+              history.push({ role: 'assistant', text: data.answer || '' });
+            });
           });
         })
         .catch(function () {
@@ -269,8 +291,10 @@
             // The dots hand over on the FIRST token, not at the end of the
             // stream. Leaving them up while text arrives underneath would say
             // "still thinking" while it is plainly already answering.
-            if (text) thinking(false);
-            stream.textContent = text;
+            // Streaming hands over on the first token, but not before the
+            // minimum — otherwise a fast first token defeats the whole point.
+            if (text && thinkingSince && Date.now() - thinkingSince >= MIN_THINK) thinking(false);
+            if (!thinkingSince) stream.textContent = text;
           });
 
           return pump();
@@ -289,9 +313,16 @@
     root.querySelectorAll('[data-non-somm-seed]').forEach(function (btn) {
       btn.addEventListener('click', function () {
         if (input) input.value = btn.textContent.trim();
-        // Seeds always answer from their own copy — instant, and it is the
-        // vetted wording. Only free text goes to the model.
-        type(btn.getAttribute('data-answer') || '', (btn.getAttribute('data-picks') || '').split(',').map(function (s) { return s.trim(); }).filter(Boolean));
+        // Seeds answer from their own vetted copy rather than the model, but
+        // they go through the same thinking beat — this path was the reason
+        // the working state was never seen, since the chips are what most
+        // people press first.
+        var answer = btn.getAttribute('data-answer') || '';
+        var picks = (btn.getAttribute('data-picks') || '').split(',').map(function (s) { return s.trim(); }).filter(Boolean);
+        show();
+        if (stream) stream.textContent = '';
+        thinking(true);
+        endThinking(function () { type(answer, picks); });
       });
     });
   }

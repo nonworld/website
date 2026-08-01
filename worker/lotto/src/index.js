@@ -42,6 +42,49 @@ const CORS = {
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
 
 const LEDGER_TTL = 60 * 60 * 24 * 400; // ~13 months
+const LOG_TTL = 60 * 60 * 24 * 30;     // 30 days of attempt history
+
+/**
+ * Disposable-mailbox domains. The email ledger is the primary defence, and it
+ * is only as strong as the address being real — a throwaway inbox turns "one
+ * per person" into "one per ten seconds".
+ *
+ * Deliberately a short static list rather than a package or a live lookup:
+ * this runs on every reveal, a network call would put a third party in the
+ * critical path of issuing a prize, and the long tail of these domains is not
+ * worth the dependency. Add to it when a pattern shows up in the logs.
+ */
+const DISPOSABLE = new Set([
+  'mailinator.com', 'guerrillamail.com', 'guerrillamail.net', '10minutemail.com',
+  'tempmail.com', 'temp-mail.org', 'throwawaymail.com', 'yopmail.com',
+  'sharklasers.com', 'trashmail.com', 'getnada.com', 'dispostable.com',
+  'maildrop.cc', 'fakeinbox.com', 'mintemail.com', 'mohmal.com',
+  'spamgourmet.com', 'tempinbox.com', 'emailondeck.com', 'moakt.com',
+  'tempr.email', 'discard.email', 'burnermail.io', 'anonaddy.me',
+]);
+
+/** Never log a raw address. A truncated hash is enough to spot one inbox
+ *  hammering the endpoint without keeping a list of customer emails in KV. */
+async function hashEmail(email) {
+  const bytes = new TextEncoder().encode('non-lotto:' + email);
+  const digest = await crypto.subtle.digest('SHA-256', bytes);
+  return [...new Uint8Array(digest)].slice(0, 8)
+    .map((b) => b.toString(16).padStart(2, '0')).join('');
+}
+
+/**
+ * One key per attempt, 30-day TTL, listable by prefix. Not a metrics pipeline —
+ * the point is being able to SEE a pattern forming rather than discovering it
+ * when the pool is drained. Never awaited on the response path: a logging
+ * failure must not cost a customer their prize.
+ */
+function logAttempt(env, ctx, record) {
+  if (!env.LOTTO_KV) return;
+  const key = `log:${record.at}:${record.emailHash}`;
+  const write = env.LOTTO_KV.put(key, JSON.stringify(record), { expirationTtl: LOG_TTL })
+    .catch((e) => console.error('[lotto] log write failed:', e.message));
+  if (ctx && ctx.waitUntil) ctx.waitUntil(write);
+}
 const RATE_TTL = 60 * 60;
 
 function json(body, status = 200) {
@@ -218,14 +261,81 @@ function missingConfig(env) {
 
 /* ------------------------------------------------------------ rate limit */
 
+/**
+ * Sliding window, not a fixed bucket.
+ *
+ * The counter this replaces reset on a wall-clock hour, so five attempts at
+ * 10:59 and five more at 11:01 passed as ten in two minutes. Keeping the
+ * timestamps and discarding anything older than the window closes that.
+ *
+ * This is a BACKSTOP against scripted farming, not the main gate — office wifi
+ * and carrier NAT put a lot of real customers behind one address, which is why
+ * the cap is generous and the email ledger does the actual enforcing.
+ */
 async function overRateLimit(env, ip) {
   if (!env.LOTTO_KV || !ip) return false;
+
   const key = `rl:${ip}`;
-  const used = Number((await env.LOTTO_KV.get(key)) || 0);
   const cap = Number(env.RATE_LIMIT_PER_HOUR || 6);
-  if (used >= cap) return true;
-  await env.LOTTO_KV.put(key, String(used + 1), { expirationTtl: RATE_TTL });
+  const windowMs = RATE_TTL * 1000;
+  const now = Date.now();
+
+  let hits = [];
+  try {
+    hits = (await env.LOTTO_KV.get(key, 'json')) || [];
+    if (!Array.isArray(hits)) hits = [];
+  } catch (e) {
+    hits = [];
+  }
+
+  hits = hits.filter((t) => now - t < windowMs);
+  if (hits.length >= cap) return true;
+
+  hits.push(now);
+  await env.LOTTO_KV.put(key, JSON.stringify(hits), { expirationTtl: RATE_TTL });
   return false;
+}
+
+/**
+ * Cloudflare Turnstile, verified server-side before any of the logic below
+ * runs. Stopping a script here is cheaper than catching it after it has burned
+ * a KV read and a Shopify call.
+ *
+ * Optional by design: with no TURNSTILE_SECRET set it is skipped entirely, so
+ * it can be switched on later without a redeploy or a frontend change landing
+ * first. Once the secret exists a missing token is a hard fail — a half-enabled
+ * check that lets tokenless requests through is worse than none, because it
+ * reads as protection.
+ */
+async function turnstileOk(env, token, ip) {
+  if (!env.TURNSTILE_SECRET) return true;
+  if (!token) return false;
+
+  try {
+    const body = new FormData();
+    body.append('secret', env.TURNSTILE_SECRET);
+    body.append('response', token);
+    if (ip) body.append('remoteip', ip);
+
+    const res = await fetch('https://challenges.cloudflare.com/turnstile/v0/siteverify', {
+      method: 'POST',
+      body,
+    });
+    const data = await res.json();
+    return !!data.success;
+  } catch (e) {
+    // Turnstile unreachable. Fail OPEN here, deliberately: the email ledger and
+    // the rate limit still stand, and blocking every reveal because a bot check
+    // is down punishes customers for our outage.
+    console.error('[lotto] turnstile check failed:', e.message);
+    return true;
+  }
+}
+
+/** The email ledger is only as strong as the address being real. */
+function isDisposable(email) {
+  const domain = email.split('@')[1] || '';
+  return DISPOSABLE.has(domain.toLowerCase());
 }
 
 /* -------------------------------------------------------------- handler */
@@ -256,14 +366,31 @@ export default {
 
     const email = String(body.email || '').trim().toLowerCase();
     const sessionId = body.sessionId || null;
+    const ip = request.headers.get('CF-Connecting-IP');
 
+    // Checks run cheapest-first: shape, then disposable, then the bot check,
+    // then KV. No point spending a KV read on a malformed address.
     if (!email) return json({ error: 'email is required' }, 400);
     if (email.length > 254 || !EMAIL_RE.test(email)) {
       return json({ error: 'that does not look like an email address' }, 400);
     }
 
-    const ip = request.headers.get('CF-Connecting-IP');
+    const emailHash = await hashEmail(email);
+    const log = (outcome, extra) =>
+      logAttempt(env, ctx, { at: Date.now(), emailHash, ip: ip || null, outcome, ...(extra || {}) });
+
+    if (isDisposable(email)) {
+      log('rejected-disposable');
+      return json({ error: 'please use a permanent email address' }, 400);
+    }
+
+    if (!(await turnstileOk(env, body.turnstileToken, ip))) {
+      log('rejected-bot');
+      return json({ error: 'could not verify that request' }, 403);
+    }
+
     if (await overRateLimit(env, ip)) {
+      log('rate-limited');
       return json({ error: 'too many reveals, try again later' }, 429);
     }
 
@@ -279,7 +406,16 @@ export default {
     /* ---- already revealed: same code, re-sent ---------------------------- */
     if (env.LOTTO_KV) {
       const seen = await env.LOTTO_KV.get(`email:${email}`, 'json');
-      if (seen && seen.code) {
+
+      // Once-ever by default; set REVEAL_COOLDOWN_DAYS to allow repeat entries
+      // after a period. Parameterised rather than chosen for you — the two
+      // behaviours differ only in whether an old entry is treated as spent.
+      const cooldownDays = Number(env.REVEAL_COOLDOWN_DAYS || 0);
+      const expired =
+        cooldownDays > 0 && seen && seen.at &&
+        Date.now() - seen.at > cooldownDays * 86400000;
+
+      if (seen && seen.code && !expired) {
         const prize = pool.find((p) => p.code === seen.code) || {
           code: seen.code,
           description: seen.description || 'Your NON Lotto prize',
@@ -291,6 +427,7 @@ export default {
         } catch (e) {
           console.error('[lotto] klaviyo resend failed:', e.message);
         }
+        log('already-issued', { code: prize.code });
         return json({
           code: prize.code,
           description: prize.description,
@@ -328,7 +465,10 @@ export default {
       remaining = remaining.filter((p) => p.code !== candidate.code);
     }
 
-    if (!prize) return json({ error: 'closed' }, 503);
+    if (!prize) {
+      log('closed-no-live-code');
+      return json({ error: 'closed' }, 503);
+    }
 
     if (env.LOTTO_KV) {
       await env.LOTTO_KV.put(
@@ -347,6 +487,7 @@ export default {
       console.error('[lotto] klaviyo send failed:', e.message);
     }
 
+    log('issued', { code: prize.code, emailed });
     return json({
       code: prize.code,
       description: prize.description,

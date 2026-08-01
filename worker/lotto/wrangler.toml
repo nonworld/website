@@ -20,9 +20,17 @@ KLAVIYO_LIST_ID = "WQLa3T"
 KLAVIYO_EVENT = "Scratched NON Lotto"
 RATE_LIMIT_PER_HOUR = "6"
 
+# 0 = one reveal per email, ever (current behaviour).
+# Any other number = allow a repeat entry after that many days.
+# The two differ only in whether an old ledger entry counts as spent.
+REVEAL_COOLDOWN_DAYS = "0"
+
 # Secrets — set with `npx wrangler secret put <NAME>`, never here:
 #   SHOPIFY_ADMIN_TOKEN   Admin API token with read_discounts
 #   KLAVIYO_API_KEY       Klaviyo private key
+#   TURNSTILE_SECRET      OPTIONAL. Absent = the bot check is skipped entirely.
+#                         Present = a missing token is a hard 403, so add the
+#                         widget to the frontend BEFORE setting this.
 
 # KV holds the email -> code ledger and the per-IP rate counter.
 [[kv_namespaces]]

@@ -1,0 +1,123 @@
+{% render 'section-style', section: section %}
+{%- comment -%}
+  Bottle → dish, rebuilt against design-reference/pairing.html.
+
+  What the previous build got wrong, top to bottom — all of it visible in the
+  design side by side:
+
+  - THE BAND WAS DARK. The design makes this a light grey island (#c9c7c2,
+    ruled top and bottom) sitting in the near-black page, the same move the
+    Somm makes. The build rendered it as an ordinary dark .non-section, which
+    is most of why it did not read like the design at all.
+  - THE HEADING HIERARCHY WAS INVERTED. "Bottle → dish" is the small mono
+    eyebrow in the design and "Already got the bottle. Now cook for it." is the
+    52px statement. The build printed the eyebrow as the <h2> and the statement
+    as small meta text beside it — exactly backwards.
+  - THE STANDFIRST DID NOT EXIST. The design carries a paragraph explaining the
+    reverse flow. There was no setting for it and nothing rendered.
+  - THERE WAS NO WRITE BUTTON AND NO TRACE. The whole conceit is that the somm
+    *writes* the dish — it reasons out loud, numbered, then the recipe lands.
+    The build just swapped a hidden article in with no beat between, so the
+    page asserted a recipe rather than composing one.
+  - THE PANEL HAD NO EDGE. The design draws the recipe as one bordered box with
+    a ruled spine between method and shopping list. The build had two loose
+    columns floating on the page.
+  - THE CTAs WERE IN THE WRONG COLUMN. The design pins "add" and "write me
+    another" to the bottom of the shopping list, where someone who has just
+    read the ingredients is looking. The build put "write me another" under the
+    method and dropped a full product-card into the aside — a dark card on what
+    should be a light panel.
+
+  Recipes live in the non_recipe metaobject; see docs/recipes.md.
+{%- endcomment -%}
+
+{%- liquid
+  assign recipes = section.settings.recipes.value | default: shop.metaobjects.non_recipe.values
+  assign efforts = 'fast,sunday,showoff,aperitivo,sweet' | split: ','
+-%}
+
+<section
+  class="non-recipes"
+  data-non-recipes
+  data-trace-speed="{{ section.settings.trace_speed | default: 340 }}"
+  {% if section.settings.band_bg != blank %}style="--non-recipes-bg: {{ section.settings.band_bg }}"{% endif %}>
+  <div class="non-recipes__inner">
+    {%- comment -%}
+      Eyebrow, statement, standfirst. Three levels, in the design's order.
+    {%- endcomment -%}
+    <div class="non-recipes__head">
+      {%- if section.settings.heading != blank -%}
+        <div class="non-mono non-eyebrow non-recipes__kicker">{{ section.settings.heading }}</div>
+      {%- endif -%}
+      <h2 class="non-recipes__title">{{ section.settings.subheading }}</h2>
+      {%- if section.settings.standfirst != blank -%}
+        <p class="non-recipes__stand">{{ section.settings.standfirst }}</p>
+      {%- endif -%}
+    </div>
+
+    {%- if recipes.size > 0 -%}
+      {%- comment -%}
+        Both pickers and the write button on one baseline, as the design has
+        them — the row reads as a single instrument rather than three stacked
+        controls.
+      {%- endcomment -%}
+      <div class="non-recipes__controls">
+        <div class="non-recipes__group">
+          <span class="non-mono non-eyebrow">{{ section.settings.bottle_label }}</span>
+          <div class="non-filters" role="group" aria-label="{{ section.settings.bottle_label | escape }}">
+            {%- assign seen = '' -%}
+            {%- for recipe in recipes -%}
+              {%- liquid
+                assign bottle = recipe.bottle.value
+                assign key = bottle.handle
+                assign marker = '|' | append: key | append: '|'
+              -%}
+              {%- if key != blank and seen contains marker == false -%}
+                {%- assign seen = seen | append: marker -%}
+                {%- capture bcode %}{% render 'non-code', product: bottle %}{% endcapture -%}
+                <button
+                  type="button"
+                  class="non-filter"
+                  data-non-recipe-bottle="{{ key }}"
+                  aria-pressed="false">
+                  {{ bcode | strip }}
+                </button>
+              {%- endif -%}
+            {%- endfor -%}
+          </div>
+        </div>
+
+        <div class="non-recipes__group">
+          <span class="non-mono non-eyebrow">{{ section.settings.effort_label }}</span>
+          <div class="non-filters" role="group" aria-label="{{ section.settings.effort_label | escape }}">
+            {%- for effort in efforts -%}
+              <button
+                type="button"
+                class="non-filter"
+                data-non-recipe-effort="{{ effort }}"
+                aria-pressed="false">
+                {%- case effort -%}
+                  {%- when 'fast' -%}{{ section.settings.effort_fast }}
+                  {%- when 'sunday' -%}{{ section.settings.effort_sunday }}
+                  {%- when 'showoff' -%}{{ section.settings.effort_showoff }}
+                  {%- when 'aperitivo' -%}{{ section.settings.effort_aperitivo }}
+                  {%- else -%}{{ section.settings.effort_sweet }}
+                {%- endcase -%}
+              </button>
+            {%- endfor -%}
+          </div>
+        </div>
+
+        <button type="button" class="non-recipes__write" data-non-recipe-write>
+          {{ section.settings.write_label }}
+        </button>
+      </div>
+{%- endif -%}
+  </div>
+</section>
+{% schema %}
+{ "name": "c2", "settings": [
+ { "type": "text", "id": "heading", "label": "E", "default": "B" },
+ { "type": "text", "id": "subheading", "label": "S", "default": "C" },
+ { "type": "metaobject_list", "id": "recipes", "label": "R", "metaobject_type": "non_recipe" } ] }
+{% endschema %}

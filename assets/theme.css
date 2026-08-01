@@ -21,6 +21,14 @@
   --non-invert-bg: #ffffff;
   --non-invert-fg: #000000;
   --non-ink: #231f20;
+  /* One scrim, one value. Drawer and lotto had rgba(6,6,6,.86) while captions
+     used rgba(12,12,12,.9) and .85 and .25 — four different blacks doing the
+     same job. */
+  --non-scrim: rgba(12, 12, 12, .88);
+  --non-scrim-soft: rgba(12, 12, 12, .55);
+  /* The fill behind photography. A shade above the page so a dark photo has a
+     legible edge instead of dissolving into the background. */
+  --non-photo-bed: #17171a;
 
   /* Two faces, and no named alternates. Arial, Menlo, SFMono and ui-monospace
      were in these stacks as fallbacks; none of them is a NON font, and a
@@ -245,7 +253,7 @@ button { font-family: inherit; }
 @media (min-width: 860px) { .non-hero__media img { height: auto; } }
 .non-hero__caption {
   position: absolute; left: 0; right: 0; bottom: 0; padding: 16px 20px;
-  background: linear-gradient(to top, rgba(12,12,12,.9), transparent);
+  background: linear-gradient(to top, var(--non-scrim), transparent);
   font-family: var(--non-mono); font-size: 10.5px;
   letter-spacing: .12em; text-transform: uppercase; color: #dcdcda;
 }
@@ -356,7 +364,7 @@ button { font-family: inherit; }
   display: flex; gap: 12px; align-items: center;
 }
 .non-somm__pick:hover { border-color: var(--non-fg); opacity: 1; }
-.non-somm__pick img { width: 60px; height: 76px; object-fit: cover; background: #1b1815; }
+.non-somm__pick img { width: 60px; height: 76px; object-fit: cover; background: var(--non-photo-bed); }
 .non-somm__pick-meta { display: flex; flex-direction: column; gap: 5px; }
 .non-somm__pick-code { font-family: var(--non-mono); font-size: 10px; letter-spacing: .14em; color: var(--non-fg-faint); }
 .non-somm__pick-name { font-size: var(--t-body); font-weight: 500; line-height: 1.25; }
@@ -466,7 +474,7 @@ button { font-family: inherit; }
 /* Ratio is a setting now (Product grid -> Image shape), not a hardcoded 3/4.
    Portrait is right for a bottle on its own; square is right when the shelf is
    dense. Falls back to the old 3/4 so nothing shifts unless it is set. */
-.non-card__media { position: relative; overflow: hidden; background: #1b1815; aspect-ratio: var(--non-card-ratio, 3/4); }
+.non-card__media { position: relative; overflow: hidden; background: var(--non-photo-bed); aspect-ratio: var(--non-card-ratio, 3/4); }
 .non-grid--ratio-square { --non-card-ratio: 1/1; }
 .non-grid--ratio-portrait { --non-card-ratio: 3/4; }
 .non-grid--ratio-tall { --non-card-ratio: 4/5; }
@@ -519,7 +527,7 @@ button { font-family: inherit; }
 .non-trip__img { max-height: 62vh; }
 .non-trip__cap {
   position: absolute; inset: auto 0 0 0; padding: 22px;
-  background: linear-gradient(to top, rgba(12,12,12,.85), transparent);
+  background: linear-gradient(to top, var(--non-scrim), transparent);
 }
 .non-trip__title { font-size: clamp(20px, 1.7vw, 30px); font-weight: 600; }
 .non-trip__sub { font-family: var(--non-mono); font-size: var(--t-mono); color: #adadaa; margin-top: 4px; }
@@ -540,7 +548,7 @@ button { font-family: inherit; }
 .non-split__cell > img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
 .non-split__body {
   position: relative; padding: 40px; height: 100%;
-  background: linear-gradient(to right, rgba(12,12,12,.85), rgba(12,12,12,.25));
+  background: linear-gradient(to right, var(--non-scrim), var(--non-scrim-soft));
   display: flex; flex-direction: column; justify-content: flex-end; gap: 10px;
 }
 .non-split__title { font-size: clamp(22px, 2vw, 34px); font-weight: 600; letter-spacing: .02em; text-transform: uppercase; }
@@ -632,7 +640,7 @@ button { font-family: inherit; }
 /* somm as a bordered panel rather than loose elements */
 .non-sommbox {
   border: 1px solid var(--non-somm-border, var(--non-line-soft));
-  background: var(--non-somm-bg, #0f0f0e);
+  background: var(--non-somm-bg, var(--non-panel));
   display: flex; flex-direction: column;
 }
 .non-sommbox__head {
@@ -784,7 +792,7 @@ button { font-family: inherit; }
 .non-pair__opt:hover, .non-pair__opt[aria-pressed="true"] { border-color: var(--non-fg); background: var(--non-fg); color: var(--non-bg); }
 .non-pair__dots { display: flex; gap: 6px; margin-bottom: 16px; }
 .non-pair__dot { width: 22px; height: 3px; background: #d6d6d4; }
-.non-pair__dot--done { background: #161616; }
+.non-pair__dot--done { background: var(--non-panel-alt); }
 .non-pair__dot--now { background: #8d8578; }
 .non-pair__trace { font-family: var(--non-mono); font-size: 11px; line-height: 1.7; color: var(--non-fg-faint); }
 
@@ -845,7 +853,7 @@ button { font-family: inherit; }
 .non-drawer[hidden] { display: none; }
 .non-drawer {
   position: fixed; inset: 0; z-index: 95; display: flex; justify-content: flex-end;
-  background: rgba(6,6,6,.86); animation: fadeIn .2s ease both;
+  background: var(--non-scrim); animation: fadeIn .2s ease both;
 }
 .non-drawer__panel {
   width: 420px; max-width: 100%; height: 100%; background: var(--non-bg);
@@ -855,7 +863,7 @@ button { font-family: inherit; }
 .non-drawer__head { display: flex; align-items: center; justify-content: space-between; padding: 20px 22px; border-bottom: 1px solid var(--non-line); }
 .non-drawer__items { flex: 1; overflow-y: auto; padding: 8px 22px; }
 .non-drawer__item { display: flex; gap: 14px; padding: 16px 0; border-bottom: 1px solid var(--non-line); }
-.non-drawer__item img { width: 62px; height: 78px; object-fit: cover; background: #1b1815; }
+.non-drawer__item img { width: 62px; height: 78px; object-fit: cover; background: var(--non-photo-bed); }
 .non-drawer__foot { padding: 20px 22px; border-top: 1px solid var(--non-line); }
 .non-drawer__qty { display: flex; align-items: center; gap: 10px; margin-top: 8px; }
 .non-drawer__qty button {
@@ -868,7 +876,7 @@ button { font-family: inherit; }
 
 .non-lotto[hidden] { display: none; }
 .non-lotto {
-  position: fixed; inset: 0; z-index: 100; background: rgba(6,6,6,.86);
+  position: fixed; inset: 0; z-index: 100; background: var(--non-scrim);
   display: flex; align-items: center; justify-content: center; padding: 24px;
   animation: fadeIn .25s ease both;
 }
@@ -919,7 +927,7 @@ button { font-family: inherit; }
 .non-lotto__claim { display: flex; gap: 8px; animation: cardIn .3s ease both; }
 .non-lotto__claim[hidden] { display: none; }
 .non-lotto__email {
-  flex: 1; border: 1px solid var(--non-line-strong); background: #141412; color: var(--non-fg);
+  flex: 1; border: 1px solid var(--non-line-strong); background: var(--non-panel); color: var(--non-fg);
   padding: 12px 13px; font-family: var(--non-sans); font-size: 13.5px; outline: none;
 }
 .non-lotto__send {
@@ -972,7 +980,7 @@ button { font-family: inherit; }
 /* --- forms -------------------------------------------------------------- */
 
 .non-field {
-  width: 100%; border: 1px solid var(--non-line-strong); background: #141412;
+  width: 100%; border: 1px solid var(--non-line-strong); background: var(--non-panel);
   color: var(--non-fg); padding: 12px 13px; font-family: var(--non-sans); font-size: 14px; outline: none;
 }
 .non-field:focus { border-color: var(--non-fg); }
@@ -1184,3 +1192,40 @@ button { font-family: inherit; }
   /* At phone width the bar is already tight; the dot alone still reads. */
   .non-somm__live { font-size: 0; gap: 0; }
 }
+
+
+/* --- photography containment ---------------------------------------------
+   A lot of the lifestyle photography is shadow-heavy, and against a #0c0c0c
+   page the dark corners of a photo and the page behind it are the same colour
+   — the image loses its edge and reads as a murky shape rather than a picture.
+
+   The fix is a bed a shade lighter than the page plus a hairline, so the
+   boundary is legible even where the photo itself goes black at the edge. No
+   drop shadows, no inset borders, no framing — just enough separation to tell
+   the eye where the photograph stops. */
+.non-hero__media,
+.non-trip__cell,
+.non-split__cell,
+.non-card__media,
+.non-process__media,
+.non-about__band,
+.non-upsell__img,
+.non-gallery__main,
+.non-gallery__thumb {
+  background: var(--non-photo-bed);
+}
+
+/* The hairline goes on the containers that sit directly on the page. Cards in
+   a grid already read as separate objects because of the gap between them, so
+   an outline there would just be noise. */
+.non-hero__media,
+.non-split__cell,
+.non-process__media,
+.non-about__band {
+  outline: 1px solid var(--non-line);
+  outline-offset: -1px;
+}
+
+/* The triptych is three photos edge to edge with a 2px gap showing the page
+   through it. That gap IS the separation — a border as well would double it. */
+.non-trip { background: var(--non-line); }

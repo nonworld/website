@@ -57,19 +57,28 @@ local before concluding anything about whether a change landed.
 
 ## Queue, in order
 
-1. `site-speed-audit.md` — LCP/INP still unmeasured (see pane limits below)
-2. `full-qa-sweep.md` — **explicitly last**, Aaron's instruction
-3. Cart CRO fixes, if signed off (see below)
+1. `docs/site-speed-audit.md` — LCP/INP still unmeasured (see pane limits below)
+2. `docs/full-qa-sweep.md` — **explicitly last**, Aaron's instruction
+3. Cart CRO fixes, if signed off — full findings in `docs/cart-cro-audit.md`
 4. Two weak page titles: `/collections/the-range` → "Singles – NON",
    `/pages/pairing` → "Pairing – NON". Shopify SEO fields on the resources,
    not the theme
 5. Brand `llms.txt` — Shopify's agentic-commerce file occupies `/llms.txt`
 
 ### Cart CRO — reported, awaiting sign-off
+Full audit with exact file:line references: **`docs/cart-cro-audit.md`**.
+
 - Lotto "Apply to this order" is **5.6× the area of Checkout** in the drawer
 - Free-shipping line hardcodes **75** across **5 markets**. Real: AU $75 ✓,
   US $75 ✓, **UK £50 ✗**, CA/NZ appear to have no free rate at all
 - Cart add-ons are built but no products selected in Theme settings → Cart
+
+**Since first reported:** the threshold is hardcoded in **two independent
+places**, not one. `assets/cart.js:115` reads the global setting
+(`config/settings_data.json:22`), *and* `sections/announcement-bar.liquid:64`
+plus `sections/header-group.json:23` carry the literal string
+`"free shipping over $75"` — wrong numeral **and** wrong currency symbol for a
+UK visitor. Fixing `cart.js` alone does not fix the announcement bar.
 
 ---
 
@@ -92,6 +101,25 @@ The verification browser pane is **`visibilityState: hidden`**. Consequences:
 **Rule that emerged: measure the wire, not the markup.** Two wrong conclusions
 this session came from inferring behaviour from a URL or a class name instead
 of what was actually transferred or computed.
+
+### If you are in a remote container, not on the Mac
+
+Claude Code on the web runs in an ephemeral Linux container with a fresh clone,
+not on `/Users/aarontrotman/…`. What that changes:
+
+- **`./scripts/sync.sh` cannot run.** No Shopify CLI, no theme credentials.
+  Nothing can be pushed to theme `198370820256` from there.
+- **Staging is unpublished, so it is unreachable** without a preview URL.
+  Auditing `non.world` measures **Ven**, the old live theme — numbers about
+  code we are replacing. Do not run the speed audit that way.
+- **The hidden-pane traps above do not apply.** Chromium and Playwright are
+  installed and driven directly, so `requestAnimationFrame`, `setTimeout` and
+  `innerWidth` behave normally. Different environment, different failure modes.
+- Useful there anyway: anything that reads from source — file:line audits,
+  asset weights, grep-level checks, writing specs.
+
+**Commit anything worth keeping before the context window closes.** The queue
+docs were lost once already because they only ever existed on the Mac.
 
 ---
 

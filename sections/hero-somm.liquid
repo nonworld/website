@@ -50,7 +50,13 @@
 
       {%- if section.blocks.size > 0 -%}
         <div class="non-somm__seeds">
+          {%- comment -%}
+            Seeds only. This loop ran over ALL blocks, and the section also
+            holds the hero carousel's slides — so five slides rendered as five
+            empty chips, each one a button with nothing in it.
+          {%- endcomment -%}
           {%- for block in section.blocks -%}
+            {%- unless block.type == 'seed' -%}{% continue %}{%- endunless -%}
             <button
               type="button"
               class="non-somm__seed"

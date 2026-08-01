@@ -2622,6 +2622,15 @@ a, button, .non-card, .non-filter, .non-pair__opt, .non-somm__seed,
    gutter, keeps its spacing. Everything below is centred on 58px — the middle
    of the new 44–72px gutter — so line, ring and pulse share one axis. */
 .non-steps .non-step { grid-template-columns: 44px 1fr; gap: 28px; }
+
+/* Numerals right-aligned so the line is genuinely centred BETWEEN them and the
+   copy. It already sat at the arithmetic middle of the gutter (58px, between a
+   44px column and text at 72px) — but the digits are only ~20px wide and were
+   left-aligned in that column, leaving ~38px of air on the number side and
+   ~14px on the text side. The line looked pushed against the copy because it
+   was, relative to the only two things a reader can actually see.
+   Right-aligning makes both gaps equal to half the gutter. */
+.non-steps .non-step__n { text-align: right; }
 .non-steps::before {
   content: '';
   position: absolute;

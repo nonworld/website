@@ -135,15 +135,27 @@
 
 ' -%}
           {%- endif -%}
+          {%- comment -%}
+            step_n counts RENDERED steps, not loop iterations.
+
+            The keyword marker is inserted before "FRUIT - ", which sits at the
+            very start of the string, so split() returns an empty first element.
+            It is skipped correctly by the blank test below — but forloop.index
+            had already counted it, so every bottle numbered its five steps
+            02–06. A counter that only advances when something is actually
+            printed cannot drift out of step with what is on the page.
+          {%- endcomment -%}
+          {%- assign step_n = 0 -%}
           {%- for chunk in chunks -%}
             {%- liquid
               assign clean = chunk | strip
               assign bits = clean | split: ' - '
               assign title = bits | first | strip
               assign body = clean | remove_first: title | remove_first: ' - ' | strip
-              assign n = forloop.index | prepend: '0' | slice: -2, 2
             -%}
             {%- if clean != blank -%}
+              {%- assign step_n = step_n | plus: 1 -%}
+              {%- assign n = step_n | prepend: '0' | slice: -2, 2 -%}
               <div class="non-step">
                 <div class="non-step__n">{{ n }}</div>
                 <div>

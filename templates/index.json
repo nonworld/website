@@ -98,8 +98,7 @@
         "placeholder": "Tell me what's on the table tonight",
         "caption": "Built like a dish. Bottled at 0.0%.",
         "image_url": "https://www.non.world/cdn/shop/t/91/assets/non-home-hero-main-1.webp?v=85646433329311323311783460768",
-        "slide_interval": 6,
-        "somm_bg": "#3a1f1f"
+        "slide_interval": 6
       }
     },
     "poured-at": {

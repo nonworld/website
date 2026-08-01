@@ -39,6 +39,11 @@
   var ctx = cv.getContext('2d');
   var step = Math.max(8, Math.min(60, parseInt(wrap.getAttribute('data-density'), 10) || 20));
   var ink = wrap.getAttribute('data-ink') || '242,240,234';
+  // Offset rather than centred: at 0.5 the envelope sits under the form column.
+  var envX = parseFloat(wrap.getAttribute('data-envelope-x'));
+  if (!(envX > 0 && envX < 1)) envX = 0.7;
+  var envScale = parseFloat(wrap.getAttribute('data-envelope-scale'));
+  if (!(envScale > 0)) envScale = 1.4;
 
   var reduced =
     window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -76,9 +81,13 @@
 
     // The envelope, scaled to the panel rather than fixed, so it holds its
     // proportions in the narrow aside column as well as full width.
-    var scale = Math.min(1, Math.min(w / 760, h / 520));
+    var scale = Math.min(1, Math.min(w / 760, h / 520)) * envScale;
     var ew = 250 * scale, eh = 158 * scale;
-    var ex = w / 2, ey = h / 2;
+    var ex = w * envX, ey = h / 2;
+
+    // Keep it inside the canvas whatever the offset and scale say. A half-drawn
+    // envelope hanging off the edge reads as a rendering fault, not a crop.
+    ex = Math.max(ew / 2 + 8, Math.min(w - ew / 2 - 8, ex));
 
     function inEnv(x, y) {
       var dx = Math.abs(x - ex), dy = Math.abs(y - ey);

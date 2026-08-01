@@ -2467,12 +2467,18 @@ select:-moz-focusring { color: transparent; text-shadow: 0 0 0 var(--non-fg); }
    Height is a setting rather than the export's 100vh — in the aside column a
    viewport-tall canvas would push the form's own copy off the screen. The
    canvas fills the box and the box is what gets sized. */
+/* The field is the section's background, not a panel in it. No border and no
+   background of its own: the section's own colour shows through and the dashes
+   are drawn over it, so it reads as the page rather than as a widget on the
+   page. pointer-events none because it is decoration — a click meant for the
+   form must not land here. */
+.non-contact-section { position: relative; }
+.non-contact-section > *:not(.non-contact-field) { position: relative; z-index: 1; }
 .non-contact-field {
-  position: relative;
-  width: 100%;
-  height: var(--non-field-h, 420px);
-  background: var(--non-bg);
-  border: 1px solid var(--non-line);
+  position: absolute;
+  inset: 0;
+  z-index: 0;
   overflow: hidden;
+  pointer-events: none;
 }
 .non-contact-field canvas { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }

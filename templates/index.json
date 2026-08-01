@@ -185,7 +185,8 @@
           "settings": {
             "title": "Made for starters",
             "subtitle": "oysters, radicchio, cured fish",
-            "image_url": "https://www.non.world/cdn/shop/files/NON3-5.jpg?v=1750016712&width=900"
+            "image_url": "https://www.non.world/cdn/shop/files/NON3-5.jpg?v=1750016712&width=900",
+            "image_alt": "Oysters, radicchio and cured fish, plated"
           }
         },
         "c2": {
@@ -193,7 +194,8 @@
           "settings": {
             "title": "Made for mains",
             "subtitle": "charred lamb, mushroom, soy",
-            "image_url": "https://www.non.world/cdn/shop/files/NON9-6.jpg?v=1750016874&width=900"
+            "image_url": "https://www.non.world/cdn/shop/files/NON9-6.jpg?v=1750016874&width=900",
+            "image_alt": "Charred lamb with mushroom and soy"
           }
         },
         "c3": {
@@ -201,7 +203,8 @@
           "settings": {
             "title": "Made for dessert",
             "subtitle": "stone fruit, chocolate, cheese",
-            "image_url": "https://www.non.world/cdn/shop/files/NON7-5.jpg?v=1750016848&width=900"
+            "image_url": "https://www.non.world/cdn/shop/files/NON7-5.jpg?v=1750016848&width=900",
+            "image_alt": "Stone fruit, chocolate and cheese"
           }
         }
       },
@@ -247,7 +250,8 @@
             "text": "The world's first non-alcoholic cellar door. Tastings, tours and workshops in Cheltenham, VIC.",
             "link_label": "Book a tasting",
             "link": "/pages/visit-us",
-            "image_url": "https://www.non.world/cdn/shop/files/Work_With_Us.jpg?v=1739406834&width=1200"
+            "image_url": "https://www.non.world/cdn/shop/files/Work_With_Us.jpg?v=1739406834&width=1200",
+            "image_alt": "The NONHQ cellar door in Cheltenham, Victoria"
           }
         },
         "s2": {
@@ -257,7 +261,8 @@
             "text": "The NONstopper holds carbonation and freshness seven days, cold.",
             "link_label": "See the stopper",
             "link": "/products/nonstopper",
-            "image_url": "https://www.non.world/cdn/shop/files/The-Stopper-Set-3_6c6b42db-6db2-4a64-9a03-f98ec154f113.jpg?v=1749960905&width=1200"
+            "image_url": "https://www.non.world/cdn/shop/files/The-Stopper-Set-3_6c6b42db-6db2-4a64-9a03-f98ec154f113.jpg?v=1749960905&width=1200",
+            "image_alt": "The NON stopper on an open bottle"
           }
         }
       },

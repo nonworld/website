@@ -1,14 +1,15 @@
 <div class="non-split">
   {%- for block in section.blocks -%}
+    {%- assign alt_text = block.settings.image_alt | default: block.settings.title -%}
     <div class="non-split__cell" {{ block.shopify_attributes }}>
       {%- if block.settings.image != blank -%}
         {{
           block.settings.image
           | image_url: width: 1200
-          | image_tag: loading: 'lazy', widths: '600,900,1200', alt: block.settings.title
+          | image_tag: loading: 'lazy', widths: '600,900,1200', alt: alt_text
         }}
       {%- elsif block.settings.image_url != blank -%}
-        <img src="{{ block.settings.image_url }}" alt="{{ block.settings.title | escape }}" loading="lazy">
+        <img src="{{ block.settings.image_url }}" alt="{{ alt_text | escape }}" loading="lazy">
       {%- else -%}
         {%- comment -%}
           A visible placeholder rather than nothing. An empty panel reads as a
@@ -49,6 +50,12 @@
           "id": "image_url",
           "label": "Image URL",
           "info": "Used when no image is picked. Points at an image already on the store's CDN."
+        },
+        {
+          "type": "text",
+          "id": "image_alt",
+          "label": "Image alt text",
+          "info": "Describes the photo for screen readers. Falls back to the title."
         },
         {
           "type": "text",

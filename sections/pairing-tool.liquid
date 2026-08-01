@@ -97,22 +97,39 @@
                 {{ section.settings.freetext_cta }}
               </button>
             </div>
-          </form>
 
-          {%- if dishes.size > 0 -%}
-            <div class="non-somm__seeds">
-              {%- for block in dishes -%}
-                <button
-                  type="button"
-                  class="non-somm__seed"
-                  data-non-somm-seed
-                  data-answer="{{ block.settings.label | escape }}"
-                  {{ block.shopify_attributes }}>
-                  {{ block.settings.label }}
-                </button>
-              {%- endfor -%}
-            </div>
-          {%- endif -%}
+            {%- comment -%}
+              The dish seeds sit INSIDE the form, as they do on the hero. They
+              were outside it, and that one placement broke both things that
+              looked wrong on the page.
+
+              Every light-surface correction for the Somm is scoped
+              `.non-somm .non-somm__seed` — because --non-somm-bg made the panel
+              grey and the chips had to invert with it. A chip outside the form
+              matches none of those rules, so it fell back to the near-black
+              panel defaults: a #161614 pill with #b4b4b1 text, sitting on a
+              near-black page. Unreadable, and not a colour bug — a scope bug.
+
+              The squashing was the same mistake. `.non-somm__seeds` carries
+              `padding: 0 18px 17px`, written to sit inside the panel, and the
+              panel has `overflow: hidden`, so outside it the chips butted
+              straight up under the bar with no gap and no alignment to it.
+            {%- endcomment -%}
+            {%- if dishes.size > 0 -%}
+              <div class="non-somm__seeds">
+                {%- for block in dishes -%}
+                  <button
+                    type="button"
+                    class="non-somm__seed"
+                    data-non-somm-seed
+                    data-answer="{{ block.settings.label | escape }}"
+                    {{ block.shopify_attributes }}>
+                    {{ block.settings.label }}
+                  </button>
+                {%- endfor -%}
+              </div>
+            {%- endif -%}
+          </form>
         </div>
       {%- endif -%}
 

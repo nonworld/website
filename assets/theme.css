@@ -854,19 +854,159 @@ button { font-family: inherit; }
   color: var(--non-fg-faint);
 }
 
+/* --- Bottle → dish -------------------------------------------------------
+   A LIGHT ISLAND. The design (design-reference/pairing.html) makes this band
+   #c9c7c2 with a dark rule above and below — the same move the Somm makes, and
+   the reason the two read as one system. It was built as an ordinary dark
+   section, which is most of why it did not look like the design.
+
+   The light-surface tokens are redeclared inside .non-recipes rather than
+   applied globally, exactly as .non-somm does it further down. Everything in
+   here (.non-filter, .non-step, .non-eyebrow) is written for the near-black
+   page and would otherwise be light-on-light. */
+.non-recipes {
+  --non-recipes-bg: #c9c7c2;
+  background: var(--non-recipes-bg);
+  border-top: 1px solid #1f1f1d;
+  border-bottom: 1px solid #1f1f1d;
+  color: #141412;
+  --non-fg: #141412;
+  --non-fg-dim: #3a3a38;
+  --non-fg-mute: #57554f;
+  --non-fg-faint: #6e6c66;
+  --non-fg-ghost: #9a988f;
+  --non-line: #dedad1;
+  --non-line-soft: #cbc7be;
+  --non-line-strong: #a8a5a0;
+  --non-invert-bg: #0c0c0c;
+  --non-invert-fg: #ffffff;
+}
+.non-recipes__inner { padding: 52px var(--non-pad) 56px; }
+
+.non-recipes__head {
+  display: grid; gap: 10px 48px; align-items: end;
+  grid-template-columns: 1fr;
+}
+@media (min-width: 860px) {
+  .non-recipes__head { grid-template-columns: minmax(0, 1fr) minmax(0, 460px); }
+  .non-recipes__kicker { grid-column: 1 / -1; }
+  .non-recipes__stand { padding-bottom: 6px; }
+}
+.non-recipes__title {
+  margin: 0; font-size: clamp(30px, 3.6vw, 52px); line-height: .98;
+  font-weight: 600; letter-spacing: -.03em; max-width: 18ch;
+}
+.non-recipes__stand {
+  margin: 0; font-size: var(--t-copy); line-height: 1.6;
+  color: var(--non-fg-mute); text-wrap: pretty; max-width: 52ch;
+}
+
+/* Both pickers and the write button share one baseline. */
+.non-recipes__controls {
+  margin-top: 32px; display: flex; flex-wrap: wrap;
+  gap: 28px; align-items: flex-end;
+}
+.non-recipes__group { display: flex; flex-direction: column; gap: 12px; }
+/* .non-filters carries its own top margin for the shop page; the column gap
+   above is what spaces it here. */
+.non-recipes__group .non-filters { margin-top: 0; gap: 9px; }
+.non-recipes__write {
+  border: 0; background: #0c0c0c; color: #ffffff;
+  font-family: var(--non-sans); font-size: var(--t-mono); font-weight: 700;
+  letter-spacing: .14em; text-transform: uppercase; padding: 14px 22px;
+  cursor: pointer; min-height: 44px;
+  transition: opacity var(--duration-hover) var(--ease-hover);
+}
+.non-recipes__write:hover { opacity: .82; }
+.non-recipes__write[disabled] { opacity: .5; cursor: default; }
+
+/* The somm reasoning out loud, before the dish lands. */
+.non-recipes__trace { margin-top: 26px; display: flex; flex-direction: column; gap: 10px; }
+.non-recipes__trace[hidden] { display: none; }
+.non-recipes__traceline {
+  display: flex; gap: 12px; align-items: baseline;
+  font-size: var(--t-copy); line-height: 1.5; color: var(--non-fg-mute);
+  animation: rise .3s var(--ease-standard) both;
+}
+.non-recipes__traceline[hidden] { display: none; }
+.non-recipes__tracen { font-size: var(--t-mono); color: var(--non-fg-ghost); }
+
 .non-recipe__slot { margin-top: 30px; }
 
-.non-recipe { display: grid; grid-template-columns: 1fr; gap: 30px; }
-@media (min-width: 860px) { .non-recipe { grid-template-columns: minmax(0, 1fr) minmax(0, 380px); } }
+/* One bordered box with a ruled spine, not two loose columns. */
+.non-recipe {
+  display: grid; grid-template-columns: 1fr;
+  border: 1px solid var(--non-line-strong);
+  animation: rise .4s var(--ease-standard) both;
+}
+@media (min-width: 860px) {
+  .non-recipe { grid-template-columns: minmax(0, 1fr) minmax(0, 420px); }
+  .non-recipe__main { border-right: 1px solid var(--non-line); }
+}
 .non-recipe[hidden] { display: none; }
 
-.non-recipe__title {
-  margin: 10px 0 0; font-size: clamp(24px, 2.2vw, 36px);
-  line-height: 1.08; font-weight: 600; letter-spacing: -.025em; max-width: 20ch;
+.non-recipe__main {
+  padding: 36px 38px; display: flex; flex-direction: column; gap: 26px;
 }
+.non-recipe__title {
+  margin: 12px 0 0; font-size: clamp(24px, 2.6vw, 38px);
+  line-height: 1.05; font-weight: 500; letter-spacing: -.025em; max-width: 24ch;
+}
+.non-recipe__intro {
+  margin: 14px 0 0; font-size: var(--t-copy); line-height: 1.6;
+  color: var(--non-fg-mute); max-width: 52ch; text-wrap: pretty;
+}
+.non-recipe__part { display: flex; flex-direction: column; gap: 14px; }
+.non-recipe__steps { margin: 0; padding: 0; list-style: none; gap: 16px; }
+.non-recipe__why { border-top: 1px solid var(--non-line); padding-top: 20px; }
+.non-recipe__whyb {
+  margin: 10px 0 0; font-size: var(--t-copy); line-height: 1.6;
+  max-width: 56ch; text-wrap: pretty;
+}
+
+.non-recipe__aside { display: flex; flex-direction: column; }
+/* Flush to the top of the column. The bed shows through when an entry has no
+   image, which today is all thirty of them — see docs/recipes.md. */
+.non-recipe__media { aspect-ratio: 4 / 3; background: #dedcd7; overflow: hidden; }
+.non-recipe__img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.non-recipe__panel {
+  padding: 28px 30px 30px; display: flex; flex-direction: column;
+  gap: 18px; flex: 1;
+}
+.non-recipe__listhead { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; }
+.non-recipe__serves { font-size: var(--t-mono); color: var(--non-fg-ghost); }
+.non-recipe__list { display: flex; flex-direction: column; gap: 9px; }
 .non-recipe__ing {
   display: flex; justify-content: space-between; gap: 14px;
-  padding: 9px 0; border-bottom: 1px solid var(--non-line); font-size: var(--t-small);
+  padding-bottom: 8px; border-bottom: 1px solid #1a1a18; font-size: var(--t-small);
+}
+.non-recipe__qty { font-size: var(--t-mono); color: var(--non-fg-mute); white-space: nowrap; }
+
+/* Pinned to the bottom of the list, where someone who has just read the
+   ingredients is already looking. */
+.non-recipe__ctas {
+  margin-top: auto; padding-top: 16px;
+  display: flex; flex-direction: column; gap: 10px;
+}
+.non-recipe__add {
+  background: #0c0c0c; color: #ffffff; text-align: center;
+  font-size: var(--t-mono); font-weight: 700; letter-spacing: .14em;
+  text-transform: uppercase; padding: 15px; text-decoration: none;
+}
+.non-recipe__again {
+  border: 1px solid var(--non-line-strong); background: #ffffff; color: #141412;
+  font-family: var(--non-mono); font-size: var(--t-mono); letter-spacing: .1em;
+  text-transform: uppercase; padding: 13px; cursor: pointer; min-height: 44px;
+}
+.non-recipe__again:hover { border-color: #141412; }
+
+.non-recipes__empty { margin-top: 24px; font-size: var(--t-copy); color: var(--non-fg-mute); }
+.non-recipes__empty[hidden] { display: none; }
+
+@media (max-width: 859px) {
+  .non-recipes__inner { padding: 40px var(--non-pad) 44px; }
+  .non-recipe__main { padding: 28px 22px; }
+  .non-recipe__panel { padding: 22px 22px 24px; }
 }
 
 /* --- filters (shop) ----------------------------------------------------- */

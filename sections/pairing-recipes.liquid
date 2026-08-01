@@ -1,16 +1,32 @@
 {% render 'section-style', section: section %}
 {%- comment -%}
-  Bottle → dish, rebuilt against the design.
+  Bottle → dish, rebuilt against design-reference/pairing.html.
 
-  "Already got the bottle. Now cook for it." Two selectors — bottle, then
-  effort — and ONE recipe panel: method down the left, shopping list ruled off
-  to the right, why it works beneath, and a "write me another" that rolls to a
-  different effort for the same bottle.
+  What the previous build got wrong, top to bottom — all of it visible in the
+  design side by side:
 
-  The first version rendered all thirty recipes into the page and hid
-  twenty-nine with JS. Functionally the same, but it read as a wall of chunks
-  rather than one dish — and with JS off it was thirty recipes stacked. Now the
-  panel is a single slot the selectors fill.
+  - THE BAND WAS DARK. The design makes this a light grey island (#c9c7c2,
+    ruled top and bottom) sitting in the near-black page, the same move the
+    Somm makes. The build rendered it as an ordinary dark .non-section, which
+    is most of why it did not read like the design at all.
+  - THE HEADING HIERARCHY WAS INVERTED. "Bottle → dish" is the small mono
+    eyebrow in the design and "Already got the bottle. Now cook for it." is the
+    52px statement. The build printed the eyebrow as the <h2> and the statement
+    as small meta text beside it — exactly backwards.
+  - THE STANDFIRST DID NOT EXIST. The design carries a paragraph explaining the
+    reverse flow. There was no setting for it and nothing rendered.
+  - THERE WAS NO WRITE BUTTON AND NO TRACE. The whole conceit is that the somm
+    *writes* the dish — it reasons out loud, numbered, then the recipe lands.
+    The build just swapped a hidden article in with no beat between, so the
+    page asserted a recipe rather than composing one.
+  - THE PANEL HAD NO EDGE. The design draws the recipe as one bordered box with
+    a ruled spine between method and shopping list. The build had two loose
+    columns floating on the page.
+  - THE CTAs WERE IN THE WRONG COLUMN. The design pins "add" and "write me
+    another" to the bottom of the shopping list, where someone who has just
+    read the ingredients is looking. The build put "write me another" under the
+    method and dropped a full product-card into the aside — a dark card on what
+    should be a light panel.
 
   Recipes live in the non_recipe metaobject; see docs/recipes.md.
 {%- endcomment -%}
@@ -20,140 +36,223 @@
   assign efforts = 'fast,sunday,showoff,aperitivo,sweet' | split: ','
 -%}
 
-<div class="non-section" data-non-recipes style="border-top:1px solid var(--non-line)">
-  <div class="non-section__head">
-    <h2 class="non-section__title">{{ section.settings.heading }}</h2>
-    <span class="non-section__more">{{ section.settings.subheading }}</span>
-  </div>
-
-  {%- if recipes.size > 0 -%}
-    {%- comment -%} bottle picker {%- endcomment -%}
-    <div class="non-mono non-eyebrow" style="margin-top:26px">The bottle</div>
-    <div class="non-filters" role="group" aria-label="Choose a bottle">
-      {%- assign seen = '' -%}
-      {%- for recipe in recipes -%}
-        {%- liquid
-          assign bottle = recipe.bottle.value
-          assign key = bottle.handle
-          assign marker = '|' | append: key | append: '|'
-        -%}
-        {%- if key != blank and seen contains marker == false -%}
-          {%- assign seen = seen | append: marker -%}
-          {%- capture bcode %}{% render 'non-code', product: bottle %}{% endcapture -%}
-          <button
-            type="button"
-            class="non-filter"
-            data-non-recipe-bottle="{{ key }}"
-            aria-pressed="false">
-            {{ bcode | strip }}
-          </button>
-        {%- endif -%}
-      {%- endfor -%}
-    </div>
-
-    {%- comment -%} effort picker {%- endcomment -%}
-    <div class="non-mono non-eyebrow" style="margin-top:20px">Effort</div>
-    <div class="non-filters" role="group" aria-label="How much effort">
-      {%- for effort in efforts -%}
-        <button
-          type="button"
-          class="non-filter"
-          data-non-recipe-effort="{{ effort }}"
-          aria-pressed="false">
-          {%- case effort -%}
-            {%- when 'fast' -%}Weeknight
-            {%- when 'sunday' -%}Sunday
-            {%- when 'showoff' -%}Show off
-            {%- when 'aperitivo' -%}Aperitivo
-            {%- else -%}Cheese &amp; dessert
-          {%- endcase -%}
-        </button>
-      {%- endfor -%}
-    </div>
-
+<section
+  class="non-recipes"
+  data-non-recipes
+  data-trace-speed="{{ section.settings.trace_speed | default: 340 }}"
+  {% if section.settings.band_bg != blank %}style="--non-recipes-bg: {{ section.settings.band_bg }}"{% endif %}>
+  <div class="non-recipes__inner">
     {%- comment -%}
-      Every recipe is rendered, but only one is ever visible. They are marked
-      hidden in Liquid rather than by JS so the page never flashes all thirty.
+      Eyebrow, statement, standfirst. Three levels, in the design's order.
     {%- endcomment -%}
-    <div class="non-recipe__slot">
-      {%- for recipe in recipes -%}
-        {%- assign bottle = recipe.bottle.value -%}
-        <article
-          class="non-recipe"
-          data-non-recipe
-          data-bottle="{{ bottle.handle }}"
-          data-effort="{{ recipe.effort | downcase | strip }}"
-          hidden>
-          <div class="non-recipe__main">
-            <div class="non-mono non-eyebrow">{{ recipe.meta }}</div>
-            <h3 class="non-recipe__title">{{ recipe.title }}</h3>
-            <p class="non-buy__blurb">{{ recipe.intro }}</p>
-
-            {%- if recipe.steps.value.size > 0 -%}
-              <div class="non-mono non-eyebrow" style="margin-top:28px">Method</div>
-              <ol class="non-steps" style="margin-top:16px;padding:0;list-style:none">
-                {%- for step in recipe.steps.value -%}
-                  <li class="non-step">
-                    <div class="non-step__n">{{ forloop.index | prepend: '0' | slice: -2, 2 }}</div>
-                    <p class="non-step__b" style="margin:0">{{ step }}</p>
-                  </li>
-                {%- endfor -%}
-              </ol>
-            {%- endif -%}
-
-            {%- if recipe.why != blank -%}
-              <div style="margin-top:28px;border-top:1px solid var(--non-line);padding-top:18px">
-                <div class="non-spec__k">Why it works</div>
-                <p class="non-step__b" style="max-width:52ch">{{ recipe.why }}</p>
-              </div>
-            {%- endif -%}
-
-            <button type="button" class="non-btn non-btn--ghost" data-non-recipe-another style="margin-top:22px">
-              Write me another
-            </button>
-          </div>
-
-          <aside class="non-recipe__aside">
-            {%- if recipe.image -%}
-              {{
-                recipe.image.value
-                | image_url: width: 900, format: 'webp'
-                | image_tag: loading: 'lazy', widths: '420,640,900', alt: recipe.title
-              }}
-            {%- endif -%}
-
-            {%- if recipe.ingredients.value.size > 0 -%}
-              <div class="non-mono non-eyebrow" style="margin-top:20px">Shopping list</div>
-              <div style="margin-top:12px">
-                {%- for line in recipe.ingredients.value -%}
-                  {%- assign parts = line | split: ' — ' -%}
-                  <div class="non-recipe__ing">
-                    <span>{{ parts | first }}</span>
-                    {%- if parts.size > 1 -%}<span class="non-card__note">{{ parts | last }}</span>{%- endif -%}
-                  </div>
-                {%- endfor -%}
-              </div>
-            {%- endif -%}
-
-            {%- if bottle != blank -%}
-              <div style="margin-top:22px">
-                {% render 'product-card', product: bottle, show_add: true %}
-              </div>
-            {%- endif -%}
-          </aside>
-        </article>
-      {%- endfor -%}
-
-      <p class="non-note" data-non-recipe-empty hidden>
-        No recipe written for that combination yet. Try another effort.
-      </p>
+    <div class="non-recipes__head">
+      {%- if section.settings.heading != blank -%}
+        <div class="non-mono non-eyebrow non-recipes__kicker">{{ section.settings.heading }}</div>
+      {%- endif -%}
+      <h2 class="non-recipes__title">{{ section.settings.subheading }}</h2>
+      {%- if section.settings.standfirst != blank -%}
+        <p class="non-recipes__stand">{{ section.settings.standfirst }}</p>
+      {%- endif -%}
     </div>
-  {%- else -%}
-    <p class="non-note" style="margin-top:24px">
-      No recipes yet. Create <code>non_recipe</code> metaobject entries — see docs/recipes.md.
-    </p>
-  {%- endif -%}
-</div>
+
+    {%- if recipes.size > 0 -%}
+      {%- comment -%}
+        Both pickers and the write button on one baseline, as the design has
+        them — the row reads as a single instrument rather than three stacked
+        controls.
+      {%- endcomment -%}
+      <div class="non-recipes__controls">
+        <div class="non-recipes__group">
+          <span class="non-mono non-eyebrow">{{ section.settings.bottle_label }}</span>
+          <div class="non-filters" role="group" aria-label="{{ section.settings.bottle_label | escape }}">
+            {%- assign seen = '' -%}
+            {%- for recipe in recipes -%}
+              {%- liquid
+                assign bottle = recipe.bottle.value
+                assign key = bottle.handle
+                assign marker = '|' | append: key | append: '|'
+              -%}
+              {%- if key != blank and seen contains marker == false -%}
+                {%- assign seen = seen | append: marker -%}
+                {%- capture bcode %}{% render 'non-code', product: bottle %}{% endcapture -%}
+                <button
+                  type="button"
+                  class="non-filter"
+                  data-non-recipe-bottle="{{ key }}"
+                  aria-pressed="false">
+                  {{ bcode | strip }}
+                </button>
+              {%- endif -%}
+            {%- endfor -%}
+          </div>
+        </div>
+
+        <div class="non-recipes__group">
+          <span class="non-mono non-eyebrow">{{ section.settings.effort_label }}</span>
+          <div class="non-filters" role="group" aria-label="{{ section.settings.effort_label | escape }}">
+            {%- for effort in efforts -%}
+              <button
+                type="button"
+                class="non-filter"
+                data-non-recipe-effort="{{ effort }}"
+                aria-pressed="false">
+                {%- case effort -%}
+                  {%- when 'fast' -%}{{ section.settings.effort_fast }}
+                  {%- when 'sunday' -%}{{ section.settings.effort_sunday }}
+                  {%- when 'showoff' -%}{{ section.settings.effort_showoff }}
+                  {%- when 'aperitivo' -%}{{ section.settings.effort_aperitivo }}
+                  {%- else -%}{{ section.settings.effort_sweet }}
+                {%- endcase -%}
+              </button>
+            {%- endfor -%}
+          </div>
+        </div>
+
+        <button type="button" class="non-recipes__write" data-non-recipe-write>
+          {{ section.settings.write_label }}
+        </button>
+      </div>
+
+      {%- comment -%}
+        The trace. Filled by recipes.js from the lines below, one at a time,
+        while the panel is held back. Server-rendered rather than built in JS so
+        the copy is editable and so it exists with JS off — recipes.js only
+        reveals it.
+      {%- endcomment -%}
+      {%- if section.settings.trace != blank -%}
+        <div class="non-recipes__trace" data-non-recipe-trace hidden aria-live="polite">
+          {%- assign lines = section.settings.trace | newline_to_br | split: '<br />' -%}
+          {%- for line in lines -%}
+            {%- assign clean = line | strip -%}
+            {%- if clean != blank -%}
+              <div class="non-recipes__traceline" data-non-recipe-traceline hidden>
+                <span class="non-mono non-recipes__tracen">{{ forloop.index | prepend: '0' | slice: -2, 2 }}</span>
+                <span>{{ clean }}</span>
+              </div>
+            {%- endif -%}
+          {%- endfor -%}
+        </div>
+      {%- endif -%}
+
+      {%- comment -%}
+        Every recipe is rendered, but only one is ever visible. They are marked
+        hidden in Liquid rather than by JS so the page never flashes all thirty.
+      {%- endcomment -%}
+      <div class="non-recipe__slot">
+        {%- for recipe in recipes -%}
+          {%- assign bottle = recipe.bottle.value -%}
+          {%- capture code %}{% render 'non-code', product: bottle %}{% endcapture -%}
+          <article
+            class="non-recipe"
+            data-non-recipe
+            data-bottle="{{ bottle.handle }}"
+            data-effort="{{ recipe.effort | downcase | strip }}"
+            hidden>
+            <div class="non-recipe__main">
+              <div>
+                {%- if recipe.meta != blank -%}
+                  <div class="non-mono non-eyebrow">{{ recipe.meta }}</div>
+                {%- endif -%}
+                <h3 class="non-recipe__title">{{ recipe.title }}</h3>
+                {%- if recipe.intro != blank -%}
+                  <p class="non-recipe__intro">{{ recipe.intro }}</p>
+                {%- endif -%}
+              </div>
+
+              {%- if recipe.steps.value.size > 0 -%}
+                <div class="non-recipe__part">
+                  <div class="non-mono non-eyebrow">{{ section.settings.method_label }}</div>
+                  <ol class="non-steps non-recipe__steps">
+                    {%- for step in recipe.steps.value -%}
+                      <li class="non-step">
+                        <div class="non-step__n">{{ forloop.index | prepend: '0' | slice: -2, 2 }}</div>
+                        <p class="non-step__b" style="margin:0">{{ step }}</p>
+                      </li>
+                    {%- endfor -%}
+                  </ol>
+                </div>
+              {%- endif -%}
+
+              {%- if recipe.why != blank -%}
+                <div class="non-recipe__why">
+                  <div class="non-mono non-eyebrow">
+                    {{ section.settings.why_label }}{% if code != blank %} {{ code | strip }}{% endif %}
+                  </div>
+                  <p class="non-recipe__whyb">{{ recipe.why }}</p>
+                </div>
+              {%- endif -%}
+            </div>
+
+            <aside class="non-recipe__aside">
+              {%- comment -%}
+                Flush to the top of the column and 4/3, as the design has it.
+                No entry carries an image yet (docs/recipes.md), so the bed
+                shows rather than a collapsed column.
+              {%- endcomment -%}
+              <div class="non-recipe__media">
+                {%- if recipe.image != blank -%}
+                  {{
+                    recipe.image.value
+                    | image_url: width: 900
+                    | image_tag: loading: 'lazy', widths: '420,640,900',
+                      class: 'non-recipe__img', alt: recipe.title
+                  }}
+                {%- endif -%}
+              </div>
+
+              <div class="non-recipe__panel">
+                <div class="non-recipe__listhead">
+                  <span class="non-mono non-eyebrow">{{ section.settings.list_label }}</span>
+                  {%- comment -%}
+                    There is no `serves` field on the metaobject today, so this
+                    renders nothing rather than inventing a number. Add the
+                    field and it appears — no template change needed.
+                  {%- endcomment -%}
+                  {%- if recipe.serves != blank -%}
+                    <span class="non-mono non-recipe__serves">{{ recipe.serves }}</span>
+                  {%- endif -%}
+                </div>
+
+                {%- if recipe.ingredients.value.size > 0 -%}
+                  <div class="non-recipe__list">
+                    {%- for line in recipe.ingredients.value -%}
+                      {%- assign parts = line | split: ' — ' -%}
+                      <div class="non-recipe__ing">
+                        <span>{{ parts | first }}</span>
+                        {%- if parts.size > 1 -%}
+                          <span class="non-mono non-recipe__qty">{{ parts | last }}</span>
+                        {%- endif -%}
+                      </div>
+                    {%- endfor -%}
+                  </div>
+                {%- endif -%}
+
+                <div class="non-recipe__ctas">
+                  {%- if bottle != blank -%}
+                    <a class="non-recipe__add" href="{{ bottle.url }}">
+                      {{ section.settings.add_label }}{% if code != blank %} {{ code | strip }}{% endif %}
+                    </a>
+                  {%- endif -%}
+                  <button type="button" class="non-recipe__again" data-non-recipe-another>
+                    {{ section.settings.another_label }}
+                  </button>
+                </div>
+              </div>
+            </aside>
+          </article>
+        {%- endfor -%}
+
+        <p class="non-recipes__empty" data-non-recipe-empty hidden>
+          {{ section.settings.empty_text }}
+        </p>
+      </div>
+    {%- else -%}
+      <p class="non-recipes__empty">
+        No recipes yet. Create <code>non_recipe</code> metaobject entries — see docs/recipes.md.
+      </p>
+    {%- endif -%}
+  </div>
+</section>
 
 <script src="{{ 'recipes.js' | asset_url }}" defer></script>
 
@@ -164,14 +263,21 @@
     {
       "type": "text",
       "id": "heading",
-      "label": "Heading",
-      "default": "Bottle → dish"
+      "label": "Eyebrow",
+      "default": "Bottle → dish",
+      "info": "The small mono line above the statement."
     },
     {
       "type": "text",
       "id": "subheading",
-      "label": "Subheading",
+      "label": "Statement",
       "default": "Already got the bottle. Now cook for it."
+    },
+    {
+      "type": "textarea",
+      "id": "standfirst",
+      "label": "Standfirst",
+      "default": "Pick what's in the fridge and how much effort you have. The somm writes a dish built around that bottle's tannin, salt and acid — not a recipe it found lying around."
     },
     {
       "type": "metaobject_list",
@@ -182,7 +288,129 @@
     },
     {
       "type": "header",
+      "content": "Labels"
+    },
+    {
+      "type": "text",
+      "id": "bottle_label",
+      "label": "Bottle picker",
+      "default": "The bottle"
+    },
+    {
+      "type": "text",
+      "id": "effort_label",
+      "label": "Effort picker",
+      "default": "Effort"
+    },
+    {
+      "type": "text",
+      "id": "write_label",
+      "label": "Write button",
+      "default": "Write the dish"
+    },
+    {
+      "type": "text",
+      "id": "method_label",
+      "label": "Method",
+      "default": "Method"
+    },
+    {
+      "type": "text",
+      "id": "why_label",
+      "label": "Why it works",
+      "default": "Why it works with",
+      "info": "The bottle code is appended automatically."
+    },
+    {
+      "type": "text",
+      "id": "list_label",
+      "label": "Shopping list",
+      "default": "Shopping list"
+    },
+    {
+      "type": "text",
+      "id": "add_label",
+      "label": "Add button",
+      "default": "Add"
+    },
+    {
+      "type": "text",
+      "id": "another_label",
+      "label": "Write another",
+      "default": "Write me another"
+    },
+    {
+      "type": "text",
+      "id": "empty_text",
+      "label": "Nothing written yet",
+      "default": "No recipe written for that combination yet. Try another effort."
+    },
+    {
+      "type": "header",
+      "content": "Effort names"
+    },
+    {
+      "type": "text",
+      "id": "effort_fast",
+      "label": "fast",
+      "default": "Weeknight"
+    },
+    {
+      "type": "text",
+      "id": "effort_sunday",
+      "label": "sunday",
+      "default": "Sunday"
+    },
+    {
+      "type": "text",
+      "id": "effort_showoff",
+      "label": "showoff",
+      "default": "Show off"
+    },
+    {
+      "type": "text",
+      "id": "effort_aperitivo",
+      "label": "aperitivo",
+      "default": "Aperitivo"
+    },
+    {
+      "type": "text",
+      "id": "effort_sweet",
+      "label": "sweet",
+      "default": "Cheese & dessert"
+    },
+    {
+      "type": "header",
+      "content": "The somm writing"
+    },
+    {
+      "type": "textarea",
+      "id": "trace",
+      "label": "Thinking lines",
+      "default": "Reading the bottle's structure — tannin, salt, acid.\nMatching it to what the effort allows.\nWriting the dish around it.",
+      "info": "One per line, shown in order while the dish is written. Leave empty to skip the pause."
+    },
+    {
+      "type": "range",
+      "id": "trace_speed",
+      "label": "Writing pace",
+      "min": 120,
+      "max": 700,
+      "step": 20,
+      "default": 340,
+      "unit": "ms",
+      "info": "Per line. Reduced motion skips this entirely."
+    },
+    {
+      "type": "header",
       "content": "Appearance"
+    },
+    {
+      "type": "color",
+      "id": "band_bg",
+      "label": "Band background",
+      "default": "#c9c7c2",
+      "info": "The design makes this a light island in the dark page."
     },
     {
       "type": "color",

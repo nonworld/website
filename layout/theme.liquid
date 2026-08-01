@@ -42,6 +42,12 @@
       rel="stylesheet">
 
     <link rel="stylesheet" href="{{ 'theme.css' | asset_url }}">
+    {%- comment -%}
+      Motion. Loaded once for the whole document rather than per section,
+      because a single IntersectionObserver watching every band is cheaper
+      than one per section and the stagger has to reason across siblings.
+    {%- endcomment -%}
+    <script src="{{ 'reveal.js' | asset_url }}" defer></script>
 
     <script>
       window.NON = {

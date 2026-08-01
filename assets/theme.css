@@ -55,7 +55,25 @@
   --non-nav-size: clamp(10px, 0.62vw, 12.5px);
   --non-press-size: 21px;
 
-  --non-ease: cubic-bezier(.2, .7, .2, 1);
+  /* --- motion system ---------------------------------------------------
+     One place. Every transition and reveal on the site pulls from these four
+     values, so "make it slower" is a one-line change rather than a hunt.
+
+     No bounce, no elastic, no overshoot anywhere: those read playful, and the
+     brand is not. --ease-standard is a long ease-out that decelerates hard at
+     the end, which is what makes a reveal feel considered rather than
+     mechanical. --ease-hover is shorter and more symmetric, because a hover
+     that eases like a reveal feels broken. */
+  --ease-standard: cubic-bezier(.16, 1, .3, 1);
+  --ease-hover: cubic-bezier(.4, 0, .2, 1);
+  --duration-reveal: 620ms;
+  --duration-hover: 180ms;
+  --reveal-offset: 16px;
+  --reveal-stagger: 90ms;
+
+  /* Kept as an alias so the rules written before this system still resolve to
+     the same curve rather than being missed in a rename. */
+  --non-ease: var(--ease-standard);
 
   /* Type scale. The export hard-coded px for a 1180px artboard, so every label
      and paragraph read small once the shell went full-bleed. These grow with
@@ -181,7 +199,7 @@ button { font-family: inherit; }
 @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
 @keyframes cardIn { from { opacity: 0; transform: translateY(14px) scale(.98); } to { opacity: 1; transform: none; } }
 
-.non-rise { animation: rise .4s ease both; }
+.non-rise { animation: rise var(--duration-reveal) var(--ease-standard) both; }
 
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after {
@@ -264,7 +282,7 @@ button { font-family: inherit; }
 
 .non-carousel__slide {
   position: absolute; inset: 0;
-  opacity: 0; transition: opacity .9s ease;
+  opacity: 0; transition: opacity var(--duration-reveal) var(--ease-standard);
   pointer-events: none;
 }
 /* The active slide is the one in flow, so the column keeps its height even
@@ -303,7 +321,7 @@ button { font-family: inherit; }
 }
 .non-carousel__dot {
   width: 26px; height: 2px; padding: 0; border: 0; cursor: pointer;
-  background: rgba(242, 240, 234, .35); transition: background .3s ease;
+  background: rgba(242, 240, 234, .35); transition: background var(--duration-reveal) var(--ease-standard);
 }
 .non-carousel__dot.is-active { background: var(--non-fg); }
 .non-carousel__dot:hover { background: rgba(242, 240, 234, .7); }
@@ -356,7 +374,7 @@ button { font-family: inherit; }
 }
 .non-somm__picks {
   display: flex; flex-direction: column; gap: 14px; margin-top: 24px;
-  animation: rise .4s ease both;
+  animation: rise var(--duration-reveal) var(--ease-standard) both;
 }
 @media (min-width: 860px) { .non-somm__picks { flex-direction: row; } }
 .non-somm__pick {
@@ -463,7 +481,7 @@ button { font-family: inherit; }
   border: 0; cursor: pointer;
   font-size: 16px; line-height: 1;
   opacity: 0; pointer-events: none;
-  transition: opacity .2s ease;
+  transition: opacity var(--duration-hover) var(--ease-hover);
   z-index: 2;
 }
 .non-row-arrow.is-on { opacity: 1; pointer-events: auto; }
@@ -479,7 +497,7 @@ button { font-family: inherit; }
 .non-grid--ratio-portrait { --non-card-ratio: 3/4; }
 .non-grid--ratio-tall { --non-card-ratio: 4/5; }
 .non-grid--ratio-landscape { --non-card-ratio: 4/3; }
-.non-card__media img { width: 100%; height: 100%; object-fit: cover; display: block; transition: transform .6s var(--non-ease); }
+.non-card__media img { width: 100%; height: 100%; object-fit: cover; display: block; transition: transform var(--duration-reveal) var(--ease-standard); }
 .non-card:hover .non-card__media img { transform: scale(var(--non-card-zoom, 1.04)); }
 .non-card__code { font-family: var(--non-mono); font-size: 10px; letter-spacing: .14em; color: var(--non-fg-faint); }
 .non-card__name { font-size: var(--t-body); line-height: 1.3; }
@@ -589,7 +607,7 @@ button { font-family: inherit; }
 .non-gallery__thumb {
   width: 52px; height: 64px; padding: 0; cursor: pointer;
   border: 1px solid transparent; background: var(--non-panel-alt);
-  opacity: .55; transition: opacity .25s ease, border-color .25s ease;
+  opacity: .55; transition: opacity var(--duration-hover) var(--ease-hover), border-color var(--duration-hover) var(--ease-hover);
 }
 @media (min-width: 860px) { .non-gallery__thumb { width: 68px; height: 84px; } }
 .non-gallery__thumb img { width: 100%; height: 100%; object-fit: cover; display: block; }
@@ -662,7 +680,7 @@ button { font-family: inherit; }
   width: 7px; height: 7px; border-radius: 50%;
   background: var(--non-somm-dot, #4ade80);
   flex: none;
-  animation: sommPulse 2.4s ease-out infinite;
+  animation: sommPulse 2var(--duration-reveal) var(--ease-standard)-out infinite;
 }
 @keyframes sommPulse {
   0%   { box-shadow: 0 0 0 0 var(--non-somm-dot-glow, rgba(74,222,128,.55)); }
@@ -853,7 +871,7 @@ button { font-family: inherit; }
 .non-drawer[hidden] { display: none; }
 .non-drawer {
   position: fixed; inset: 0; z-index: 95; display: flex; justify-content: flex-end;
-  background: var(--non-scrim); animation: fadeIn .2s ease both;
+  background: var(--non-scrim); animation: fadeIn var(--duration-hover) var(--ease-hover) both;
 }
 .non-drawer__panel {
   width: 420px; max-width: 100%; height: 100%; background: var(--non-bg);
@@ -878,7 +896,7 @@ button { font-family: inherit; }
 .non-lotto {
   position: fixed; inset: 0; z-index: 100; background: var(--non-scrim);
   display: flex; align-items: center; justify-content: center; padding: 24px;
-  animation: fadeIn .25s ease both;
+  animation: fadeIn var(--duration-hover) var(--ease-hover) both;
 }
 .non-lotto__card {
   width: 400px; max-width: 100%; background: var(--non-bg);
@@ -924,7 +942,7 @@ button { font-family: inherit; }
 .non-lotto__copy-v { font-family: var(--non-mono); font-size: 13px; color: var(--non-ink); }
 .non-lotto__fine { font-size: 11.5px; color: rgba(35,31,32,.68); }
 .non-lotto__foil { position: absolute; inset: 0; width: 100%; height: 100%; display: block; cursor: pointer; }
-.non-lotto__claim { display: flex; gap: 8px; animation: cardIn .3s ease both; }
+.non-lotto__claim { display: flex; gap: 8px; animation: cardIn var(--duration-reveal) var(--ease-standard) both; }
 .non-lotto__claim[hidden] { display: none; }
 .non-lotto__email {
   flex: 1; border: 1px solid var(--non-line-strong); background: var(--non-panel); color: var(--non-fg);
@@ -1047,7 +1065,7 @@ button { font-family: inherit; }
   text-decoration: none;
   color: var(--non-ink);
   background: transparent;
-  transition: background .18s ease, color .18s ease;
+  transition: background var(--duration-hover) var(--ease-hover), color var(--duration-hover) var(--ease-hover);
 }
 .non-cart-prize__apply:hover,
 .non-cart-prize__apply:focus-visible { background: var(--non-ink); color: var(--non-invert-bg); }
@@ -1143,7 +1161,7 @@ button { font-family: inherit; }
   background: transparent; color: var(--non-fg);
   font-family: var(--non-mono); font-size: var(--t-mono);
   letter-spacing: .12em; text-transform: uppercase; cursor: pointer;
-  transition: background .18s ease, color .18s ease;
+  transition: background var(--duration-hover) var(--ease-hover), color var(--duration-hover) var(--ease-hover);
 }
 .non-upsell__add:hover,
 .non-upsell__add:focus-visible { background: var(--non-invert-bg); color: var(--non-invert-fg); }
@@ -1170,7 +1188,7 @@ button { font-family: inherit; }
   0%, 100% { opacity: .5; }
   30%      { opacity: 1; }
 }
-.non-cart-prize.is-popping .non-eyebrow { animation: nonWonFlash .9s ease 2; }
+.non-cart-prize.is-popping .non-eyebrow { animation: nonWonFlash var(--duration-reveal) var(--ease-standard) 2; }
 
 /* A modal mid-fade still hit-tests. The lotto fades in over 250ms at opacity 0
    and z-index 100; for that quarter second it is an invisible sheet across the
@@ -1258,7 +1276,7 @@ button { font-family: inherit; }
   border-radius: 50%;
   background: var(--non-fg);
   opacity: .25;
-  animation: sommThink 1.25s ease-in-out infinite;
+  animation: sommThink 1var(--duration-hover) var(--ease-hover)-in-out infinite;
 }
 .non-think__dot:nth-child(2) { left: calc(var(--dot) * 2.15); animation-delay: .16s; }
 .non-think__dot:nth-child(3) { left: calc(var(--dot) * 3.4);  animation-delay: .32s; }
@@ -1339,7 +1357,7 @@ button { font-family: inherit; }
   background: var(--non-invert-bg); color: var(--non-invert-fg);
   font-family: var(--non-sans); font-weight: 700;
   font-size: var(--t-mono); letter-spacing: .14em; text-transform: uppercase;
-  transition: opacity .18s ease;
+  transition: opacity var(--duration-hover) var(--ease-hover);
 }
 .non-promo__cta:hover { opacity: .85; }
 
@@ -1418,7 +1436,7 @@ button { font-family: inherit; }
   border: 1px solid var(--non-line-strong);
   background: transparent; color: var(--non-fg);
   font-size: var(--t-small); cursor: pointer;
-  transition: background .16s ease, color .16s ease, border-color .16s ease;
+  transition: background var(--duration-hover) var(--ease-hover), color var(--duration-hover) var(--ease-hover), border-color var(--duration-hover) var(--ease-hover);
 }
 .non-pair__opt:hover { border-color: var(--non-fg-mute); }
 .non-pair__opt[aria-pressed="true"] {
@@ -1488,7 +1506,7 @@ button { font-family: inherit; }
   border: 1px solid var(--non-fg);
   font-family: var(--non-mono); font-size: var(--t-mono);
   letter-spacing: .12em; text-transform: uppercase; text-decoration: none;
-  transition: background .18s ease, color .18s ease;
+  transition: background var(--duration-hover) var(--ease-hover), color var(--duration-hover) var(--ease-hover);
 }
 .non-stock-offer__cta:hover { background: var(--non-fg); color: var(--non-bg); opacity: 1; }
 .non-stock-offer--solid .non-stock-offer__cta {
@@ -1533,7 +1551,7 @@ button { font-family: inherit; }
   margin-top: 18px; padding: 0 20px; border: 1px solid var(--non-fg);
   font-family: var(--non-mono); font-size: var(--t-mono);
   letter-spacing: .12em; text-transform: uppercase; text-decoration: none;
-  transition: background .18s ease, color .18s ease;
+  transition: background var(--duration-hover) var(--ease-hover), color var(--duration-hover) var(--ease-hover);
 }
 .non-about-cta__link:hover { background: var(--non-fg); color: var(--non-bg); opacity: 1; }
 .non-about-cta--solid .non-about-cta__link {
@@ -1587,3 +1605,46 @@ button { font-family: inherit; }
 .non-hq-step__n { font-family: var(--non-mono); font-size: var(--t-mono); color: var(--non-fg-faint); letter-spacing: .1em; }
 .non-hq-step__t { font-size: var(--t-lead); font-weight: 600; letter-spacing: -.015em; }
 .non-hq-step__b { margin: 8px 0 0; font-size: var(--t-small); line-height: 1.55; color: var(--non-fg-dim); }
+
+
+/* --- scroll reveal --------------------------------------------------------
+   Elements start slightly down and faded, and settle once they are ~12% into
+   the viewport. Once only — re-animating on every scroll-back is the thing
+   that makes a site feel like a demo.
+
+   The initial state is applied by JS (html.non-motion), never in plain CSS.
+   If the script fails or is blocked, nothing is ever hidden — content that
+   depends on JS to become visible is a blank page waiting to happen. */
+.non-motion [data-reveal] {
+  opacity: 0;
+  transform: translateY(var(--reveal-offset));
+  transition:
+    opacity var(--duration-reveal) var(--ease-standard),
+    transform var(--duration-reveal) var(--ease-standard);
+  transition-delay: var(--reveal-delay, 0ms);
+  will-change: opacity, transform;
+}
+.non-motion [data-reveal].is-in {
+  opacity: 1;
+  transform: none;
+}
+
+/* --- one hover language --------------------------------------------------- */
+a, button, .non-card, .non-filter, .non-pair__opt, .non-somm__seed,
+.non-related__card, .non-venue, .non-upsell__add, .non-promo__cta {
+  transition-timing-function: var(--ease-hover);
+  transition-duration: var(--duration-hover);
+}
+.non-card { transition-property: transform, opacity; }
+.non-card:hover { transform: translateY(-2px); }
+
+@media (prefers-reduced-motion: reduce) {
+  /* Content is simply present. Not faded-in faster — present. */
+  .non-motion [data-reveal] {
+    opacity: 1 !important;
+    transform: none !important;
+    transition: none !important;
+  }
+  .non-card:hover { transform: none; }
+  * { transition-duration: 1ms !important; }
+}

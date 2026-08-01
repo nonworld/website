@@ -400,8 +400,32 @@
 
   /* --- auto-open --------------------------------------------------------- */
 
+  // Never over the cart. The lotto is a full-viewport overlay at z-index 100
+  // and the cart drawer sits at 95, so a timer that fires while someone is
+  // checking out drops an invisible sheet over the Checkout button — the modal
+  // is mid-fade and reads as nothing at all, so the page simply stops
+  // responding. Buying always outranks a scratch card.
+  function cartIsOpen() {
+    var d = document.querySelector('[data-non-cart-drawer]');
+    return !!d && !d.hidden;
+  }
+
+  function autoOpen() {
+    if (suppressed()) return;
+    if (cartIsOpen()) {
+      // Wait for the drawer rather than dropping the offer entirely — try
+      // again once, after it closes.
+      document.addEventListener('non:cart:closed', function once() {
+        document.removeEventListener('non:cart:closed', once);
+        if (!suppressed()) setTimeout(open, 600);
+      });
+      return;
+    }
+    open();
+  }
+
   if (AUTO && ENDPOINT && !suppressed()) {
-    setTimeout(open, DELAY);
+    setTimeout(autoOpen, DELAY);
   }
 
   window.NON.lotto = { open: open, close: close };

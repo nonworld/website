@@ -143,6 +143,10 @@
     drawer.hidden = true;
     document.body.style.overflow = '';
     if (lastFocus) lastFocus.focus();
+    // The lotto waits on this before auto-opening — it is a full-viewport
+    // overlay that outranks the drawer, so it holds off while someone is
+    // actually checking out.
+    document.dispatchEvent(new CustomEvent('non:cart:closed'));
   }
 
   /* --- actions ---------------------------------------------------------- */

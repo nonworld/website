@@ -107,6 +107,13 @@
             "label": "Find your pairing",
             "url": "/pages/pairing"
           }
+        },
+        "n3": {
+          "type": "not",
+          "settings": {
+            "title": "Not an imitation",
+            "body": "It takes the seat wine had at the table. It doesn't try to taste like the thing that sat there."
+          }
         }
       },
       "block_order": [
@@ -116,6 +123,7 @@
         "p4",
         "n1",
         "n2",
+        "n3",
         "cred-1",
         "cred-2",
         "cred-3",

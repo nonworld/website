@@ -301,6 +301,7 @@
     <div class="non-stats">
       {%- for b in stats -%}
         <div class="non-stat" {{ b.shopify_attributes }}>
+          {% render 'stat-icon', icon: b.settings.icon %}
           <div class="non-stat__v">{{ b.settings.value }}</div>
           <p class="non-stat__b">{{ b.settings.body }}</p>
         </div>
@@ -676,6 +677,21 @@
       "type": "stat",
       "name": "Stat",
       "settings": [
+        {
+          "type": "select",
+          "id": "icon",
+          "label": "Icon",
+          "options": [
+            { "value": "none", "label": "None" },
+            { "value": "water", "label": "Water — droplet" },
+            { "value": "energy", "label": "Energy — bolt" },
+            { "value": "zero", "label": "Zero alcohol — struck glass" },
+            { "value": "leaf", "label": "Growing — leaf" },
+            { "value": "ship", "label": "Shipping — carton" },
+            { "value": "bottle", "label": "The liquid — bottle" }
+          ],
+          "default": "none"
+        },
         {
           "type": "text",
           "id": "value",

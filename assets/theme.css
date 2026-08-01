@@ -1777,6 +1777,23 @@ button { font-family: inherit; }
 }
 .non-stat__b { margin: 10px 0 0; font-size: var(--t-small); line-height: 1.5; color: var(--non-fg-dim); max-width: 30ch; }
 
+/* Stat icons. Sized here rather than in the SVG so every icon shares one
+   optical weight regardless of what its path does. Dimmed to sit under the
+   figure — the number is the statement, the icon is the label for it, and an
+   icon at full ink competes with a 58px numeral it is only introducing. */
+.non-stat__icon {
+  display: block;
+  width: 26px;
+  height: 26px;
+  margin-bottom: 14px;
+  color: var(--non-fg-mute);
+  /* vector-effect keeps the 1px stroke at 1px after the viewBox is scaled up;
+     without it a 24-unit box drawn at 26px thickens the line by ~8%, which is
+     visible when three icons sit in a row. */
+  overflow: visible;
+}
+.non-stat__icon path { vector-effect: non-scaling-stroke; }
+
 .non-about-ctas { display: grid; grid-template-columns: 1fr; gap: 2px; background: var(--non-line); border-top: 1px solid var(--non-line); }
 @media (min-width: 720px) { .non-about-ctas { grid-template-columns: 1fr 1fr; } }
 .non-about-cta { background: var(--non-bg); padding: 34px var(--non-pad); }

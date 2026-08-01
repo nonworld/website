@@ -1,0 +1,79 @@
+{%- comment -%}
+  Stat icons.
+
+  Drawn rather than sourced: an icon set pulled off a CDN brings its own
+  drawing conventions — rounded caps, 2px strokes, 24px grids — and NON has
+  none of those. These follow the brand instead:
+
+    · 1px strokes, never filled. The page is type and photography; a solid
+      glyph would be the heaviest thing in the band and outweigh the number
+      it belongs to.
+    · Butt caps and mitre joins. No rounded corners anywhere — the same rule
+      the favicon note records for the NON mark.
+    · currentColor, so an icon inherits whatever ink the section is using and
+      cannot go black-on-black the way the About caption did.
+    · A 24-unit square viewBox, sized in CSS, so one icon is never a different
+      optical weight to the next.
+
+  usage: {% render 'stat-icon', icon: b.settings.icon %}
+  Anything unrecognised — including the default 'none' — renders nothing at
+  all, so a stat without an icon is a stat without an icon, not a broken box.
+{%- endcomment -%}
+
+{%- case icon -%}
+
+  {%- when 'water' -%}
+    {%- comment -%} A droplet, for water saved. {%- endcomment -%}
+    <svg class="non-stat__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+         stroke-width="1" stroke-linecap="butt" stroke-linejoin="miter" aria-hidden="true" focusable="false">
+      <path d="M12 3 L18 12.2 A6 6 0 1 1 6 12.2 Z"/>
+      <path d="M9 13.4 a3 3 0 0 0 3 3"/>
+    </svg>
+
+  {%- when 'energy' -%}
+    {%- comment -%} A bolt, for green energy. {%- endcomment -%}
+    <svg class="non-stat__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+         stroke-width="1" stroke-linecap="butt" stroke-linejoin="miter" aria-hidden="true" focusable="false">
+      <path d="M13.5 2.5 L6 13.5 h5 l-.5 8 L18 10.5 h-5 z"/>
+    </svg>
+
+  {%- when 'zero' -%}
+    {%- comment -%}
+      A glass with the level struck through — 0.0%. A plain "no entry" circle
+      would read as a prohibition, which is the opposite of the point: the
+      bottle is full, the alcohol is what is absent.
+    {%- endcomment -%}
+    <svg class="non-stat__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+         stroke-width="1" stroke-linecap="butt" stroke-linejoin="miter" aria-hidden="true" focusable="false">
+      <path d="M6.5 3 h11 l-1.2 8.2 a4.4 4.4 0 0 1-8.6 0 z"/>
+      <path d="M12 15.6 V21"/>
+      <path d="M8.5 21 h7"/>
+      <path d="M4 6.6 L20 17.4"/>
+    </svg>
+
+  {%- when 'leaf' -%}
+    {%- comment -%} A leaf, for anything about growing or sourcing. {%- endcomment -%}
+    <svg class="non-stat__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+         stroke-width="1" stroke-linecap="butt" stroke-linejoin="miter" aria-hidden="true" focusable="false">
+      <path d="M20 4 C10 4 4 9 4 15 a5 5 0 0 0 5 5 c6 0 11-6 11-16 z"/>
+      <path d="M20 4 L7.5 17"/>
+    </svg>
+
+  {%- when 'ship' -%}
+    {%- comment -%} A carton, for shipping and packaging claims. {%- endcomment -%}
+    <svg class="non-stat__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+         stroke-width="1" stroke-linecap="butt" stroke-linejoin="miter" aria-hidden="true" focusable="false">
+      <path d="M3 7.6 L12 3 l9 4.6 v8.8 L12 21 L3 16.4 z"/>
+      <path d="M3 7.6 L12 12.2 L21 7.6"/>
+      <path d="M12 12.2 V21"/>
+    </svg>
+
+  {%- when 'bottle' -%}
+    {%- comment -%} The bottle itself, for anything about the liquid. {%- endcomment -%}
+    <svg class="non-stat__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+         stroke-width="1" stroke-linecap="butt" stroke-linejoin="miter" aria-hidden="true" focusable="false">
+      <path d="M10 2.5 h4 v4 l2.4 3.2 V21 h-8.8 V9.7 L10 6.5 z"/>
+      <path d="M7.6 13.5 h8.8"/>
+    </svg>
+
+{%- endcase -%}

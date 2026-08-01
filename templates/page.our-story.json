@@ -73,21 +73,24 @@
           "type": "stat",
           "settings": {
             "value": "75%",
-            "body": "Less water wasted than conventional beverage manufacturing."
+            "body": "Less water wasted than conventional beverage manufacturing.",
+            "icon": "water"
           }
         },
         "stat-green": {
           "type": "stat",
           "settings": {
             "value": "100%",
-            "body": "Green energy across production, with carbon-neutral shipping."
+            "body": "Green energy across production, with carbon-neutral shipping.",
+            "icon": "energy"
           }
         },
         "stat-abv": {
           "type": "stat",
           "settings": {
             "value": "0.0%",
-            "body": "Alcohol, in every bottle, from the first step to the last."
+            "body": "Alcohol, in every bottle, from the first step to the last.",
+            "icon": "zero"
           }
         },
         "cta-hq": {

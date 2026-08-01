@@ -41,7 +41,16 @@ const CORS = {
 // the only authority on whether an address works is whether the email lands.
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
 
-const LEDGER_TTL = 60 * 60 * 24 * 400; // ~13 months
+// Sized to the cooldown, not to forever. REVEAL_COOLDOWN_DAYS is 1, so the
+// ledger only has to survive long enough to enforce a one-day rule and to
+// re-serve the same code if the customer reloads. Seven days gives six days of
+// margin for a clock skew or a support query, and nothing beyond that is doing
+// any work — a 24-hour feature has no business holding an email for 13 months.
+//
+// If REVEAL_COOLDOWN_DAYS is ever raised, raise this with it: a cooldown longer
+// than the ledger silently stops being enforced, because the key it checks has
+// already expired.
+const LEDGER_TTL = 60 * 60 * 24 * 7; // 7 days
 const LOG_TTL = 60 * 60 * 24 * 30;     // 30 days of attempt history
 
 /**

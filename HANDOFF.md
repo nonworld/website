@@ -92,9 +92,12 @@ so does the PDP process band — whose CSS sets `grid-template-columns: repeat(2
 
 4. **Favicon** — asset never supplied.
 
-5. **Redirect inventory** — the highest-risk SEO item on a rebuild, and
-   uncloseable without the previous theme's URL list (old sitemap, Search
-   Console export, or the existing redirect list).
+5. **Redirect inventory** — **reconciled 2026-08-01, see
+   `docs/redirect-reconciliation.md`.** The rebuild created NO redirect debt:
+   every rebuilt page kept its handle, so no URL changed. What remains is
+   pre-existing — two redirects that land on ARCHIVED products and 404 the
+   customer, and four two-hop chains. Report only; nothing created or deleted,
+   all of it needs sign-off.
 
 ---
 

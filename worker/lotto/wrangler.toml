@@ -20,10 +20,15 @@ KLAVIYO_LIST_ID = "WQLa3T"
 KLAVIYO_EVENT = "Scratched NON Lotto"
 RATE_LIMIT_PER_HOUR = "6"
 
-# 0 = one reveal per email, ever (current behaviour).
-# Any other number = allow a repeat entry after that many days.
+# Days before the same email may draw again. 0 = one reveal per email, ever.
+# Any other number = a repeat entry is allowed after that many days.
 # The two differ only in whether an old ledger entry counts as spent.
-REVEAL_COOLDOWN_DAYS = "0"
+#
+# Set to 1: a one-day cooldown, not once-ever. LEDGER_TTL in src/index.js is
+# sized to match — the ledger only has to outlive the cooldown, and holding
+# addresses for 400 days to enforce a 24-hour rule is retention without a
+# purpose.
+REVEAL_COOLDOWN_DAYS = "1"
 
 # Secrets — set with `npx wrangler secret put <NAME>`, never here:
 #   SHOPIFY_ADMIN_TOKEN   Admin API token with read_discounts

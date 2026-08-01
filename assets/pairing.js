@@ -117,25 +117,69 @@
     showStep(axes.length);
   }
 
+  // What each axis currently contributes, so re-answering REPLACES rather than
+  // stacks. With one question on screen at a time you could only ever answer
+  // each axis once; now that all six are visible, clicking a second option in
+  // the same axis used to add its scores on top of the first — two answers to
+  // one question, silently double-counted.
+  var chosen = {};
+
+  function applyAxis(axisIndex, opt) {
+    var prev = chosen[axisIndex];
+    if (prev) {
+      Object.keys(prev.delta).forEach(function (code) {
+        scores[code] = (scores[code] || 0) - prev.delta[code];
+      });
+      var at = trace.indexOf(prev.line);
+      if (prev.line && at !== -1) trace.splice(at, 1);
+    }
+
+    var delta = parseScores(opt.getAttribute('data-scores') || '');
+    Object.keys(delta).forEach(function (code) {
+      scores[code] = (scores[code] || 0) + delta[code];
+    });
+
+    var line = opt.getAttribute('data-trace');
+    if (line) trace.push(line);
+
+    chosen[axisIndex] = { delta: delta, line: line };
+  }
+
   root.addEventListener('click', function (e) {
     var opt = e.target.closest('[data-non-pair-opt]');
     if (opt) {
-      var delta = parseScores(opt.getAttribute('data-scores') || '');
-      Object.keys(delta).forEach(function (code) {
-        scores[code] = (scores[code] || 0) + delta[code];
-      });
+      var axis = opt.closest('[data-non-pair-axis]');
+      var axisIndex = axis ? Number(axis.getAttribute('data-non-pair-axis')) : 0;
 
-      var line = opt.getAttribute('data-trace');
-      if (line) trace.push(line);
+      // Radio behaviour within the axis. Nothing set aria-pressed before, which
+      // is why a chosen option looked exactly like an unchosen one.
+      if (axis) {
+        axis.querySelectorAll('[data-non-pair-opt]').forEach(function (o) {
+          o.setAttribute('aria-pressed', o === opt ? 'true' : 'false');
+        });
+      }
+
+      var isFirstAnswer = !chosen[axisIndex];
+      applyAxis(axisIndex, opt);
       renderTrace();
 
-      step += 1;
-      if (step >= axes.length) finish();
-      else showStep(step);
+      // Only advance on a NEW answer. Changing your mind should not skip you
+      // forward past a question you have not reached.
+      if (isFirstAnswer) {
+        step += 1;
+        if (step >= axes.length) finish();
+        else showStep(step);
+      } else if (Object.keys(chosen).length >= axes.length) {
+        finish();
+      }
       return;
     }
 
     if (e.target.closest('[data-non-pair-reset]')) {
+      chosen = {};
+      root.querySelectorAll('[data-non-pair-opt]').forEach(function (o) {
+        o.setAttribute('aria-pressed', 'false');
+      });
       step = 0;
       scores = {};
       trace = [];

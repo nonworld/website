@@ -5,8 +5,9 @@
   The About Us page body is empty on the live store — the old theme carried the
   copy in its own sections — so a template that only prints page.content shows
   nothing. This section carries the structure from the design (about.html):
-  lead, origin, founder quote, the four things every glass is built from, and
-  the two "what we're not" statements.
+  lead, origin, founder quote, the four things every glass is built from, the
+  difficult part, the kitchen band, and the three "what we're not" statements.
+  ("Two" was wrong here as well — the third card landed in 3e0d7d0.)
 
   Everything is editable. The defaults are the design's copy verbatim.
 {%- endcomment -%}
@@ -52,56 +53,80 @@
 </div>
 
 {%- comment -%}
-  The design's About page carried no photography at all — it was type only. So
-  these slots are an addition rather than a restoration, and each falls back to
-  an image already on NON's CDN.
+  CORRECTION. This block previously read "the design's About page carried no
+  photography at all — it was type only", and the page was built on that. It is
+  false: design-reference/about.html carries 19 <img> tags — six photographs,
+  the founder portrait, the logotype, and six restaurant logos duplicated for
+  the marquee. Everything below restores placements that were always in the
+  design, rather than inventing slots.
+
+  Photography lives in design-reference/uploads/BroadSheet Photos/. Only
+  038A8388 is confirmed on NON's CDN; the rest need uploading before they
+  render. Each slot takes either a Shopify image picker or a CDN URL, and a
+  slot with neither renders nothing rather than a broken frame.
 {%- endcomment -%}
-{%- if section.settings.lead_image != blank or section.settings.lead_image_url != blank -%}
-  <div class="non-split__cell" style="min-height:0">
-    {%- if section.settings.lead_image != blank -%}
-      {{ section.settings.lead_image | image_url: width: 1800, format: 'webp' | image_tag: loading: 'lazy', widths: '800,1200,1800', class: 'non-about__band', alt: section.settings.heading }}
-    {%- else -%}
-      {% render 'cdn-image',
-         url: section.settings.lead_image_url,
-         alt: section.settings.heading,
-         class: 'non-about__band',
-         sizes: '100vw' %}
-    {%- endif -%}
-  </div>
-{%- endif -%}
 
 {%- comment -%} ── origin ────────────────────────────────────────────────── {%- endcomment -%}
+{%- comment -%}
+  Two columns, per the design: the story on the left, one tall image on the
+  right running the full height of the band. It was a single column with the
+  image dropped between the body and the quote — neither the design's layout
+  nor a deliberate variation on it.
+
+  The portrait sits BESIDE the quote at 132px wide, not above it: the design
+  pairs the face with the words it belongs to. The design's asset is the black
+  and white headshot; the build was pointing at the colour variant.
+{%- endcomment -%}
 {%- if section.settings.origin_body != blank -%}
-  <div class="non-section" style="border-top:1px solid var(--non-line)">
-    <div class="non-press">
+  {%- assign has_origin_feature = false -%}
+  {%- if section.settings.origin_feature_image != blank or section.settings.origin_feature_image_url != blank -%}
+    {%- assign has_origin_feature = true -%}
+  {%- endif -%}
+
+  <div class="non-about-origin{% unless has_origin_feature %} non-about-origin--solo{% endunless %}">
+    <div class="non-about-origin__copy">
       <div class="non-mono non-eyebrow">{{ section.settings.origin_label }}</div>
-      <div>
-        <div class="non-step__t" style="font-size:clamp(20px,1.9vw,30px);max-width:34ch">
-          {{ section.settings.origin_heading }}
-        </div>
-        <div class="non-rte" style="margin-top:18px">{{ section.settings.origin_body }}</div>
+      <div class="non-step__t" style="font-size:clamp(20px,1.9vw,30px);max-width:34ch;margin-top:14px">
+        {{ section.settings.origin_heading }}
+      </div>
+      <div class="non-rte" style="margin-top:18px">{{ section.settings.origin_body }}</div>
 
-        {%- if section.settings.origin_image != blank or section.settings.origin_image_url != blank -%}
-          <div style="margin-top:26px">
-            {%- if section.settings.origin_image != blank -%}
-              {{ section.settings.origin_image | image_url: width: 1200, format: 'webp' | image_tag: loading: 'lazy', widths: '600,900,1200', alt: section.settings.origin_heading }}
-            {%- else -%}
-              {% render 'cdn-image',
-                 url: section.settings.origin_image_url,
-                 alt: section.settings.origin_heading,
-                 sizes: '(min-width: 860px) 50vw, 100vw' %}
-            {%- endif -%}
+      {%- if section.settings.quote != blank -%}
+        <figure class="non-about-quote">
+          {%- if section.settings.portrait_image != blank or section.settings.portrait_image_url != blank -%}
+            <div class="non-about-quote__portrait">
+              {%- if section.settings.portrait_image != blank -%}
+                {{ section.settings.portrait_image | image_url: width: 396, format: 'webp' | image_tag: loading: 'lazy', widths: '132,264,396', alt: section.settings.quote_cite }}
+              {%- else -%}
+                {% render 'cdn-image',
+                   url: section.settings.portrait_image_url,
+                   alt: section.settings.quote_cite,
+                   sizes: '132px' %}
+              {%- endif -%}
+            </div>
+          {%- endif -%}
+          <div>
+            <blockquote class="non-press__quote" style="margin:0">
+              &ldquo;{{ section.settings.quote }}&rdquo;
+            </blockquote>
+            <figcaption class="non-press__cite">{{ section.settings.quote_cite }}</figcaption>
           </div>
-        {%- endif -%}
+        </figure>
+      {%- endif -%}
+    </div>
 
-        {%- if section.settings.quote != blank -%}
-          <blockquote class="non-press__quote" style="margin:34px 0 0">
-            &ldquo;{{ section.settings.quote }}&rdquo;
-          </blockquote>
-          <div class="non-press__cite">{{ section.settings.quote_cite }}</div>
+    {%- if has_origin_feature -%}
+      <div class="non-about-origin__media">
+        {%- if section.settings.origin_feature_image != blank -%}
+          {{ section.settings.origin_feature_image | image_url: width: 1600, format: 'webp' | image_tag: loading: 'lazy', widths: '600,900,1200,1600', alt: section.settings.origin_feature_alt }}
+        {%- else -%}
+          {% render 'cdn-image',
+             url: section.settings.origin_feature_image_url,
+             alt: section.settings.origin_feature_alt,
+             sizes: '(min-width: 860px) 50vw, 100vw' %}
         {%- endif -%}
       </div>
-    </div>
+    {%- endif -%}
   </div>
 {%- endif -%}
 
@@ -126,7 +151,30 @@
   </div>
 {%- endif -%}
 
-{%- comment -%} ── what we're not ────────────────────────────────────────── {%- endcomment -%}
+{%- comment -%} ── the difficult part ────────────────────────────────────── {%- endcomment -%}
+{%- comment -%}
+  This band was labelled "what we're not". It is not — that section is further
+  down and renders the `not` blocks. This one is the design's "THE DIFFICULT
+  PART": why water cannot carry flavour the way alcohol does, with the who and
+  where facts beneath it. Mislabelled since the port; renaming the comment only,
+  no markup moved.
+
+  The design pairs it with a photograph on the left (038A8614, spicing cherries
+  by hand). The slot renders nothing until an asset is set.
+{%- endcomment -%}
+{%- if section.settings.hard_image != blank or section.settings.hard_image_url != blank -%}
+  <div class="non-about-hard-media">
+    {%- if section.settings.hard_image != blank -%}
+      {{ section.settings.hard_image | image_url: width: 1600, format: 'webp' | image_tag: loading: 'lazy', widths: '600,900,1200,1600', alt: section.settings.hard_image_alt }}
+    {%- else -%}
+      {% render 'cdn-image',
+         url: section.settings.hard_image_url,
+         alt: section.settings.hard_image_alt,
+         sizes: '(min-width: 860px) 50vw, 100vw' %}
+    {%- endif -%}
+  </div>
+{%- endif -%}
+
 {%- if section.settings.hard_heading != blank -%}
   <div class="non-section non-hard">
     <div>
@@ -152,6 +200,31 @@
   </div>
 {%- endif -%}
 
+{%- comment -%} ── the kitchen band ──────────────────────────────────────── {%- endcomment -%}
+{%- comment -%}
+  Full-bleed image with the caption sitting over it — the design's one moment of
+  type on photography, at 420px tall. The caption is the page's own sentence
+  ("Every ingredient is processed on its own before anything is blended"), so it
+  is a setting rather than hardcoded, and the band renders only when there is an
+  image to carry it. Caption over an empty frame would be worse than neither.
+{%- endcomment -%}
+{%- if section.settings.kitchen_image != blank or section.settings.kitchen_image_url != blank -%}
+  <figure class="non-about-kitchen">
+    {%- if section.settings.kitchen_image != blank -%}
+      {{ section.settings.kitchen_image | image_url: width: 2000, format: 'webp' | image_tag: loading: 'lazy', widths: '800,1200,1600,2000', alt: section.settings.kitchen_caption }}
+    {%- else -%}
+      {% render 'cdn-image',
+         url: section.settings.kitchen_image_url,
+         alt: section.settings.kitchen_caption,
+         sizes: '100vw' %}
+    {%- endif -%}
+    {%- if section.settings.kitchen_caption != blank -%}
+      <figcaption class="non-about-kitchen__caption">{{ section.settings.kitchen_caption }}</figcaption>
+    {%- endif -%}
+  </figure>
+{%- endif -%}
+
+{%- comment -%} ── what we're not ────────────────────────────────────────── {%- endcomment -%}
 {%- assign nots = section.blocks | where: 'type', 'not' -%}
 {%- if nots.size > 0 -%}
   <div class="non-section" style="border-top:1px solid var(--non-line)">
@@ -188,16 +261,43 @@
   </div>
 {%- endif -%}
 
+{%- comment -%}
+  Both CTA cards sit on photography in the design — NONHQ (038A8469) and a glass
+  of NON (038A8736). The image is a block setting so each card carries its own.
+  Without one the card keeps its flat panel background, which is what shipped
+  until now, so an unset image degrades to the current look rather than to a
+  hole. The scrim only exists when there is an image under it to darken.
+{%- endcomment -%}
 {%- assign ctas = section.blocks | where: 'type', 'cta' -%}
 {%- if ctas.size > 0 -%}
   <div class="non-about-ctas">
     {%- for b in ctas -%}
-      <div class="non-about-cta{% if forloop.first %} non-about-cta--solid{% endif %}" {{ b.shopify_attributes }}>
-        <div class="non-about-cta__title">{{ b.settings.title }}</div>
-        <p class="non-about-cta__body">{{ b.settings.body }}</p>
-        {%- if b.settings.label != blank -%}
-          <a class="non-about-cta__link" href="{{ b.settings.url | default: '/' }}">{{ b.settings.label }}</a>
+      {%- assign has_bg = false -%}
+      {%- if b.settings.image != blank or b.settings.image_url != blank -%}
+        {%- assign has_bg = true -%}
+      {%- endif -%}
+
+      <div class="non-about-cta{% if forloop.first and has_bg == false %} non-about-cta--solid{% endif %}{% if has_bg %} non-about-cta--media{% endif %}" {{ b.shopify_attributes }}>
+        {%- if has_bg -%}
+          <div class="non-about-cta__bg" aria-hidden="true">
+            {%- if b.settings.image != blank -%}
+              {{ b.settings.image | image_url: width: 1400, format: 'webp' | image_tag: loading: 'lazy', widths: '600,900,1400', alt: '' }}
+            {%- else -%}
+              {% render 'cdn-image',
+                 url: b.settings.image_url,
+                 alt: '',
+                 sizes: '(min-width: 720px) 50vw, 100vw' %}
+            {%- endif -%}
+          </div>
         {%- endif -%}
+
+        <div class="non-about-cta__inner">
+          <div class="non-about-cta__title">{{ b.settings.title }}</div>
+          <p class="non-about-cta__body">{{ b.settings.body }}</p>
+          {%- if b.settings.label != blank -%}
+            <a class="non-about-cta__link" href="{{ b.settings.url | default: '/' }}">{{ b.settings.label }}</a>
+          {%- endif -%}
+        </div>
       </div>
     {%- endfor -%}
   </div>
@@ -226,27 +326,75 @@
       "default": "A chef-led drinks company in Melbourne, building wine alternatives out of real produce — fruit, tannin, salinity, acidity — and nothing that has ever been fermented."
     },
     {
-      "type": "image_picker",
-      "id": "lead_image",
-      "label": "Lead image"
+      "type": "header",
+      "content": "Photography"
     },
     {
-      "type": "text",
-      "id": "lead_image_url",
-      "label": "Lead image URL",
-      "info": "Used only when no image is uploaded.",
-      "default": "https://www.non.world/cdn/shop/files/Work_With_Us.jpg?v=1739406834&width=1800"
+      "type": "paragraph",
+      "content": "Six photographs from design-reference/uploads/BroadSheet Photos/. Only the origin feature image is confirmed on the CDN; the rest need uploading before they render. Any slot left empty renders nothing rather than a broken frame."
     },
     {
       "type": "image_picker",
-      "id": "origin_image",
-      "label": "Origin image"
+      "id": "origin_feature_image",
+      "label": "Origin — feature image"
     },
     {
       "type": "text",
-      "id": "origin_image_url",
-      "label": "Origin image URL",
-      "info": "A portrait of the founder works here. Used only when no image is uploaded."
+      "id": "origin_feature_image_url",
+      "label": "Origin — feature image URL",
+      "info": "Design: 038A8388. The tall image beside the origin story. Used only when no image is uploaded.",
+      "default": "https://www.non.world/cdn/shop/files/non-story-038A8388.jpg?v=1785541727&width=1600"
+    },
+    {
+      "type": "text",
+      "id": "origin_feature_alt",
+      "label": "Origin — feature image alt",
+      "default": "Dehydrated oranges lowered into the steep tank at NONHQ"
+    },
+    {
+      "type": "image_picker",
+      "id": "portrait_image",
+      "label": "Founder portrait"
+    },
+    {
+      "type": "text",
+      "id": "portrait_image_url",
+      "label": "Founder portrait URL",
+      "info": "Design: AARON HEADSHOTS BLACK AND WHITE_019. Sits beside the quote at 132px. The black and white frame is the design's, not the colour one."
+    },
+    {
+      "type": "image_picker",
+      "id": "hard_image",
+      "label": "The difficult part — image"
+    },
+    {
+      "type": "text",
+      "id": "hard_image_url",
+      "label": "The difficult part — image URL",
+      "info": "Design: 038A8614. Used only when no image is uploaded."
+    },
+    {
+      "type": "text",
+      "id": "hard_image_alt",
+      "label": "The difficult part — image alt",
+      "default": "Spicing cherries by hand in the NON kitchen"
+    },
+    {
+      "type": "image_picker",
+      "id": "kitchen_image",
+      "label": "Kitchen band — image"
+    },
+    {
+      "type": "text",
+      "id": "kitchen_image_url",
+      "label": "Kitchen band — image URL",
+      "info": "Design: 038A8683. Full-bleed, 420px, caption over the image. Used only when no image is uploaded."
+    },
+    {
+      "type": "text",
+      "id": "kitchen_caption",
+      "label": "Kitchen band — caption",
+      "default": "Every ingredient is processed on its own before anything is blended."
     },
     {
       "type": "text",
@@ -492,6 +640,17 @@
           "type": "url",
           "id": "url",
           "label": "Link"
+        },
+        {
+          "type": "image_picker",
+          "id": "image",
+          "label": "Background image"
+        },
+        {
+          "type": "text",
+          "id": "image_url",
+          "label": "Background image URL",
+          "info": "Design: 038A8469 (NONHQ) and 038A8736 (a glass of NON). Used only when no image is uploaded. Leave both empty to keep the flat panel."
         }
       ]
     }

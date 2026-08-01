@@ -1732,3 +1732,83 @@ a, button, .non-card, .non-filter, .non-pair__opt, .non-somm__seed,
 @media (prefers-reduced-motion: reduce) {
   .non-somm__caret { animation: none; }
 }
+
+/* --- About: photography ---------------------------------------------------
+   Restored placements from design-reference/about.html. Each band is driven by
+   whether an asset is set, so the page degrades to type-only — which is what
+   shipped before — rather than to empty frames. */
+
+.non-about-origin {
+  border-top: 1px solid var(--non-line);
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 26px;
+}
+@media (min-width: 860px) {
+  .non-about-origin { grid-template-columns: 1fr 1fr; gap: 0; align-items: stretch; }
+}
+.non-about-origin__copy { padding: 48px var(--non-pad); }
+.non-about-origin--solo .non-about-origin__copy { max-width: 62ch; }
+
+/* The image runs the full height of the copy column rather than sitting at its
+   own intrinsic ratio — the design's band is defined by the text length. */
+.non-about-origin__media { position: relative; min-height: 320px; }
+.non-about-origin__media > img {
+  position: absolute; inset: 0;
+  width: 100%; height: 100%;
+  object-fit: cover; display: block;
+}
+
+/* Portrait beside the quote, not above it. 132px is the design's width. */
+.non-about-quote { margin: 34px 0 0; display: flex; gap: 18px; align-items: flex-start; }
+.non-about-quote__portrait { flex: none; width: 132px; }
+.non-about-quote__portrait > img {
+  width: 132px; height: 168px;
+  object-fit: cover; display: block;
+}
+@media (max-width: 520px) {
+  .non-about-quote { flex-direction: column; gap: 14px; }
+}
+
+.non-about-hard-media { position: relative; min-height: 380px; }
+.non-about-hard-media > img {
+  position: absolute; inset: 0;
+  width: 100%; height: 100%;
+  object-fit: cover; display: block;
+}
+
+/* Full-bleed kitchen band, 420px, caption over the image. The scrim is a
+   gradient rather than a flat overlay so the type stays legible at the bottom
+   without flattening the whole photograph. */
+.non-about-kitchen { position: relative; margin: 0; height: 420px; overflow: hidden; }
+.non-about-kitchen > img {
+  position: absolute; inset: 0;
+  width: 100%; height: 100%;
+  object-fit: cover; display: block;
+}
+.non-about-kitchen__caption {
+  position: absolute; left: 0; right: 0; bottom: 0;
+  padding: 28px var(--non-pad);
+  font-size: clamp(18px, 2vw, 27px);
+  line-height: 1.25;
+  letter-spacing: -.015em;
+  max-width: 40ch;
+  color: var(--non-invert-fg, #fff);
+  background: linear-gradient(to top, rgba(0, 0, 0, .62), rgba(0, 0, 0, 0));
+}
+
+/* CTA cards on photography. Without an image the card keeps the flat panel it
+   already had, so an unset slot is a no-op rather than a regression. */
+.non-about-cta { position: relative; overflow: hidden; }
+.non-about-cta__inner { position: relative; z-index: 1; }
+.non-about-cta__bg { position: absolute; inset: 0; z-index: 0; }
+.non-about-cta__bg > img {
+  width: 100%; height: 100%;
+  object-fit: cover; display: block;
+}
+.non-about-cta--media::after {
+  content: ''; position: absolute; inset: 0; z-index: 0;
+  background: linear-gradient(to top, rgba(0, 0, 0, .74), rgba(0, 0, 0, .28));
+}
+.non-about-cta--media { color: var(--non-invert-fg, #fff); }
+.non-about-cta--media .non-about-cta__body { color: rgba(255, 255, 255, .82); }

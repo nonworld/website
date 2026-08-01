@@ -96,7 +96,8 @@
             "title": "Come and see it",
             "body": "NONHQ is the world's first non-alcoholic cellar door. Taste the ingredients separately, then the bottles.",
             "label": "Book a tasting",
-            "url": "/pages/visit-us"
+            "url": "/pages/visit-us",
+            "image_url": ""
           }
         },
         "cta-somm": {
@@ -105,7 +106,8 @@
             "title": "Or start with a glass",
             "body": "Tell the somm what you're eating and it will pick the bottle. That's the fastest version of everything on this page.",
             "label": "Find your pairing",
-            "url": "/pages/pairing"
+            "url": "/pages/pairing",
+            "image_url": ""
           }
         },
         "n3": {
@@ -146,12 +148,91 @@
         "pillars_label": "What we actually do",
         "pillars_heading": "Every glass is built from four things",
         "nots_label": "What we're not",
-        "lead_image_url": "https://cdn.shopify.com/s/files/1/0371/5874/8205/files/non-story-038A8388.jpg?v=1785541727",
-        "origin_image_url": "https://cdn.shopify.com/s/files/1/0371/5874/8205/files/non-aaron-headshots-colour_019.jpg?v=1785541727"
+        "origin_feature_image_url": "https://cdn.shopify.com/s/files/1/0371/5874/8205/files/non-story-038A8388.jpg?v=1785541727&width=1600",
+        "origin_feature_alt": "Dehydrated oranges lowered into the steep tank at NONHQ",
+        "portrait_image_url": "",
+        "hard_image_url": "",
+        "hard_image_alt": "Spicing cherries by hand in the NON kitchen",
+        "kitchen_image_url": "",
+        "kitchen_caption": "Every ingredient is processed on its own before anything is blended."
+      }
+    },
+    "poured-at": {
+      "type": "logo-marquee",
+      "blocks": {
+        "v1": {
+          "type": "venue",
+          "settings": {
+            "name": "The French Laundry",
+            "max_height": 44,
+            "image_url": "https://www.non.world/cdn/shop/files/french_laundry_2_-_Copy_4c30ca9f-1794-44ec-9dd7-a3e422c8127a.jpg?v=1754352410&width=300"
+          }
+        },
+        "v2": {
+          "type": "venue",
+          "settings": {
+            "name": "The Fat Duck",
+            "max_height": 70,
+            "image_url": "https://www.non.world/cdn/shop/files/fat_duck_logo.png?v=1754352113&width=300"
+          }
+        },
+        "v3": {
+          "type": "venue",
+          "settings": {
+            "name": "Alinea",
+            "max_height": 70,
+            "image_url": "https://www.non.world/cdn/shop/files/alinea-logo.jpg?v=1752532858&width=300"
+          }
+        },
+        "v4": {
+          "type": "venue",
+          "settings": {
+            "name": "Aman",
+            "max_height": 44,
+            "image_url": "https://www.non.world/cdn/shop/files/Aman_Resorts_logo_svg.png?v=1752532955&width=300"
+          }
+        },
+        "v5": {
+          "type": "venue",
+          "settings": {
+            "name": "Atelier Crenn",
+            "max_height": 44,
+            "image_url": "https://www.non.world/cdn/shop/files/logo-atelier-crenn-2022.jpg?v=1752533002&width=300"
+          }
+        },
+        "v6": {
+          "type": "venue",
+          "settings": {
+            "name": "Vue de Monde",
+            "max_height": 44,
+            "image_url": "https://www.non.world/cdn/shop/files/vue-de-monde-logo.png?v=1773521183&width=300"
+          }
+        },
+        "v7": {
+          "type": "venue",
+          "settings": {
+            "name": "Fortnum & Mason",
+            "max_height": 44,
+            "image_url": "https://www.non.world/cdn/shop/files/Fortnum___Mason_logo.png?v=1754352025&width=300"
+          }
+        }
+      },
+      "block_order": [
+        "v1",
+        "v2",
+        "v3",
+        "v4",
+        "v5",
+        "v6",
+        "v7"
+      ],
+      "settings": {
+        "heading": "Poured at"
       }
     }
   },
   "order": [
-    "main"
+    "main",
+    "poured-at"
   ]
 }

@@ -116,10 +116,45 @@
         "card_max": 380,
         "layout": "row"
       }
+    },
+    "closers": {
+      "type": "split-feature",
+      "blocks": {
+        "need": {
+          "type": "cell",
+          "settings": {
+            "image_url": "https://cdn.shopify.com/s/files/1/0371/5874/8205/files/non-story-038A8614.jpg?v=1785541727&width=1400",
+            "image_alt": "A NON bottle poured at a venue",
+            "title": "Need it now?",
+            "text": "Find the nearest venue or retailer pouring NON — restaurants, bars and bottle shops, updated weekly.",
+            "link_label": "Find a stockist",
+            "link": "/pages/store-locator"
+          }
+        },
+        "guests": {
+          "type": "cell",
+          "settings": {
+            "image_url": "https://cdn.shopify.com/s/files/1/0371/5874/8205/files/non-story-038A8683.jpg?v=1785541727&width=1400",
+            "image_alt": "A dish being plated in the NON kitchen",
+            "title": "People coming over?",
+            "text": "Tell the somm what you're cooking and it picks the bottle — or start from the bottle and let it write the dish.",
+            "link_label": "Pair it with dinner",
+            "link": "/pages/pairing"
+          }
+        }
+      },
+      "block_order": [
+        "need",
+        "guests"
+      ],
+      "settings": {
+        "max_height": 0
+      }
     }
   },
   "order": [
     "main",
-    "sets"
+    "sets",
+    "closers"
   ]
 }

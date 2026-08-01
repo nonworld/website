@@ -1152,3 +1152,16 @@ button { font-family: inherit; }
 .non-lotto { pointer-events: none; }
 .non-lotto__card { pointer-events: auto; }
 .non-lotto:not([hidden]) { pointer-events: auto; }
+
+/* The live dot in the hero bar. Same mark as the product page, sitting inline
+   with the input rather than in a header — the hero has no header row, and
+   adding one to hold a dot would cost more than the dot is worth. */
+.non-somm__live {
+  display: inline-flex; align-items: center; gap: 7px;
+  font-family: var(--non-mono); font-size: var(--t-mono);
+  color: var(--non-fg-mute); white-space: nowrap; flex: none;
+}
+@media (max-width: 640px) {
+  /* At phone width the bar is already tight; the dot alone still reads. */
+  .non-somm__live { font-size: 0; gap: 0; }
+}

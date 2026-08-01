@@ -31,7 +31,7 @@
       the seeds below are the canned answers from the design and are used both
       as one-tap prompts and as the offline fallback when no endpoint is set.
     {%- endcomment -%}
-    <form class="non-somm" data-non-somm data-somm-context="home" role="search" style="{% if section.settings.somm_bg != blank %}--non-somm-bg: {{ section.settings.somm_bg }};{% endif %}{% if section.settings.somm_border != blank %}--non-somm-border: {{ section.settings.somm_border }};{% endif %}">
+    <form class="non-somm" data-non-somm data-somm-context="home" role="search" style="{% if section.settings.somm_dot_colour != blank %}--non-somm-dot: {{ section.settings.somm_dot_colour }};{% endif %}{% if section.settings.somm_bg != blank %}--non-somm-bg: {{ section.settings.somm_bg }};{% endif %}{% if section.settings.somm_border != blank %}--non-somm-border: {{ section.settings.somm_border }};{% endif %}">
       <div class="non-somm__bar">
         <span class="non-somm__caret" aria-hidden="true">&gt;</span>
         <label class="visually-hidden" for="somm-{{ section.id }}">
@@ -45,6 +45,12 @@
           autocomplete="off"
           data-non-somm-input
           placeholder="{{ section.settings.placeholder | escape }}">
+        {%- if section.settings.show_live -%}
+          <span class="non-somm__live">
+            <span class="non-sommbox__dot" aria-hidden="true"></span>
+            {{ section.settings.live_label }}
+          </span>
+        {%- endif -%}
         <button type="submit" class="non-somm__submit">{{ 'sections.somm.ask' | t }}</button>
       </div>
 
@@ -252,6 +258,25 @@
       "type": "color",
       "id": "somm_border",
       "label": "Somm box border"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_live",
+      "label": "Show the live dot",
+      "default": true
+    },
+    {
+      "type": "text",
+      "id": "live_label",
+      "label": "Live label",
+      "default": "Somm live"
+    },
+    {
+      "type": "color",
+      "id": "somm_dot_colour",
+      "label": "Live dot colour",
+      "default": "#4ade80",
+      "info": "The one deliberate colour on an otherwise monochrome site. Set it to white to remove the exception."
     },
     {
       "type": "image_picker",

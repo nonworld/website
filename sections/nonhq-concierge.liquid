@@ -70,7 +70,10 @@
 
 <div class="non-section">
   <div class="non-section__head">
-    <h1 class="non-section__title">{{ section.settings.heading }}</h1>
+    {%- comment -%}
+      h2. The hero above is the page's h1 — this labels the booking tool.
+    {%- endcomment -%}
+    <h2 class="non-section__title">{{ section.settings.heading }}</h2>
   </div>
 
   {%- if section.settings.intro != blank -%}

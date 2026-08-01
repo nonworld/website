@@ -46,7 +46,11 @@
   data-default-region="{{ section.settings.default_region }}"
   data-list-limit="{{ section.settings.list_limit }}">
   <div class="non-section__head">
-    <h1 class="non-section__title">{{ section.settings.heading }}</h1>
+    {%- comment -%}
+      h2, not h1. The page hero above carries the h1 — this is the tool's own
+      label, and two h1 elements on a page is the exact bug flagged on Pairing.
+    {%- endcomment -%}
+    <h2 class="non-section__title">{{ section.settings.heading }}</h2>
     <span class="non-section__more" data-non-venue-count>Loading…</span>
   </div>
 

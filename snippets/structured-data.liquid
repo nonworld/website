@@ -1,0 +1,111 @@
+{%- comment -%}
+  schema.org, emitted once from the layout.
+
+  There was none on any page. That costs twice over: Google's rich results
+  read it, and AI answer engines parse structured data far more reliably than
+  they parse prose — so this is the single item that scores on both the SEO and
+  the GEO side of the audit.
+
+  Everything below is built from real Shopify objects. Nothing is typed in, so
+  a price change or a sold-out variant moves the markup with it. Markup that
+  disagrees with the page is worse than no markup: Google treats it as
+  spam-adjacent and it is the sort of thing that decays silently.
+{%- endcomment -%}
+
+{%- liquid
+  assign brand = shop.name
+  assign logo = settings.logo | default: nil
+-%}
+
+{%- comment -%} ── Organization, site-wide ─────────────────────────────── {%- endcomment -%}
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "Organization",
+  "name": {{ brand | json }},
+  "url": {{ shop.url | json }},
+  {% if logo %}"logo": {{ logo | image_url: width: 600 | prepend: 'https:' | json }},{% endif %}
+  "description": {{ shop.description | default: page_description | json }},
+  "sameAs": [
+    {%- assign socials = '' -%}
+    {%- if settings.social_instagram != blank -%}{%- assign socials = socials | append: settings.social_instagram | append: ',' -%}{%- endif -%}
+    {%- assign list = socials | split: ',' -%}
+    {%- for s in list -%}{{ s | json }}{%- unless forloop.last -%},{%- endunless -%}{%- endfor -%}
+  ]
+}
+</script>
+
+{%- comment -%}
+  ── Product ────────────────────────────────────────────────────────────────
+  offers uses AggregateOffer when a product has several variants, because a
+  single Offer would have to pick one price and the range is the honest answer
+  for a bottle sold as 1, 6 and 12.
+{%- endcomment -%}
+{%- if template.name == 'product' and product != blank -%}
+  {%- liquid
+    assign v = product.selected_or_first_available_variant
+    assign availability = 'https://schema.org/OutOfStock'
+    if product.available
+      assign availability = 'https://schema.org/InStock'
+    endif
+  -%}
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "Product",
+    "name": {{ product.title | json }},
+    "url": {{ product.url | prepend: shop.url | json }},
+    "sku": {{ v.sku | default: product.id | json }},
+    {% if product.featured_image %}"image": [{{ product.featured_image | image_url: width: 1200 | prepend: 'https:' | json }}],{% endif %}
+    "description": {{ product.description | strip_html | truncate: 400 | json }},
+    "brand": { "@type": "Brand", "name": {{ brand | json }} },
+    {%- if product.variants.size > 1 -%}
+    "offers": {
+      "@type": "AggregateOffer",
+      "priceCurrency": {{ cart.currency.iso_code | json }},
+      "lowPrice": {{ product.price_min | divided_by: 100.0 | json }},
+      "highPrice": {{ product.price_max | divided_by: 100.0 | json }},
+      "offerCount": {{ product.variants.size }},
+      "availability": {{ availability | json }},
+      "url": {{ product.url | prepend: shop.url | json }}
+    }
+    {%- else -%}
+    "offers": {
+      "@type": "Offer",
+      "priceCurrency": {{ cart.currency.iso_code | json }},
+      "price": {{ v.price | divided_by: 100.0 | json }},
+      "availability": {{ availability | json }},
+      "url": {{ product.url | prepend: shop.url | json }}
+    }
+    {%- endif -%}
+  }
+  </script>
+{%- endif -%}
+
+{%- comment -%}
+  ── BreadcrumbList ─────────────────────────────────────────────────────────
+  Emitted for products and collections, where there is a real hierarchy to
+  describe. Not for pages, which sit flat off the root — a two-item breadcrumb
+  saying "Home > this page" tells a crawler nothing it did not already know.
+{%- endcomment -%}
+{%- if template.name == 'product' or template.name == 'collection' -%}
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    "itemListElement": [
+      { "@type": "ListItem", "position": 1, "name": "Home", "item": {{ shop.url | json }} }
+      {%- if template.name == 'collection' and collection != blank -%}
+      , { "@type": "ListItem", "position": 2, "name": {{ collection.title | json }}, "item": {{ collection.url | prepend: shop.url | json }} }
+      {%- elsif template.name == 'product' and product != blank -%}
+        {%- if collection != blank -%}
+      , { "@type": "ListItem", "position": 2, "name": {{ collection.title | json }}, "item": {{ collection.url | prepend: shop.url | json }} }
+      , { "@type": "ListItem", "position": 3, "name": {{ product.title | json }}, "item": {{ product.url | prepend: shop.url | json }} }
+        {%- else -%}
+      , { "@type": "ListItem", "position": 2, "name": {{ product.title | json }}, "item": {{ product.url | prepend: shop.url | json }} }
+        {%- endif -%}
+      {%- endif -%}
+    ]
+  }
+  </script>
+{%- endif -%}

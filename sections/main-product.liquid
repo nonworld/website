@@ -193,7 +193,7 @@
 
     {%- comment -%} ── somm, as a panel ────────────────────────────────── {%- endcomment -%}
     {%- if section.settings.show_somm -%}
-      <div class="non-sommbox"{% if section.settings.somm_dot_colour != blank %} style="--non-somm-dot: {{ section.settings.somm_dot_colour }}"{% endif %}>
+      <div class="non-sommbox" style="{% if section.settings.somm_dot_colour != blank %}--non-somm-dot: {{ section.settings.somm_dot_colour }};{% endif %}{% if section.settings.somm_bg != blank %}--non-somm-bg: {{ section.settings.somm_bg }};{% endif %}{% if section.settings.somm_border != blank %}--non-somm-border: {{ section.settings.somm_border }};{% endif %}">
         <div class="non-sommbox__head">
           <span class="non-mono non-eyebrow">{{ 'products.product.somm_heading' | t }}</span>
           <span class="non-sommbox__live">
@@ -338,6 +338,17 @@
       "label": "Live dot colour",
       "default": "#4ade80",
       "info": "The one deliberate colour on an otherwise monochrome site. Set it to white to remove the exception."
+    },
+    {
+      "type": "color",
+      "id": "somm_bg",
+      "label": "Somm box background",
+      "info": "The panel behind the somm. Leave empty for the theme default."
+    },
+    {
+      "type": "color",
+      "id": "somm_border",
+      "label": "Somm box border"
     },
     {
       "type": "text",

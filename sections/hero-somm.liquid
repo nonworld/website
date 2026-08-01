@@ -31,7 +31,7 @@
       the seeds below are the canned answers from the design and are used both
       as one-tap prompts and as the offline fallback when no endpoint is set.
     {%- endcomment -%}
-    <form class="non-somm" data-non-somm data-somm-context="home" role="search">
+    <form class="non-somm" data-non-somm data-somm-context="home" role="search" style="{% if section.settings.somm_bg != blank %}--non-somm-bg: {{ section.settings.somm_bg }};{% endif %}{% if section.settings.somm_border != blank %}--non-somm-border: {{ section.settings.somm_border }};{% endif %}">
       <div class="non-somm__bar">
         <span class="non-somm__caret" aria-hidden="true">&gt;</span>
         <label class="visually-hidden" for="somm-{{ section.id }}">
@@ -241,6 +241,17 @@
       "id": "placeholder",
       "label": "Input placeholder",
       "default": "Tell me what's on the table tonight"
+    },
+    {
+      "type": "color",
+      "id": "somm_bg",
+      "label": "Somm box background",
+      "info": "The panel behind the somm. Leave empty for the theme default."
+    },
+    {
+      "type": "color",
+      "id": "somm_border",
+      "label": "Somm box border"
     },
     {
       "type": "image_picker",

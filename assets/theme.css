@@ -287,7 +287,13 @@ button { font-family: inherit; }
 
 /* --- somm (shared: hero, product, shop) --------------------------------- */
 
-.non-somm { margin-top: 34px; border: 1px solid var(--non-line-strong); background: var(--non-panel); }
+/* The somm box background is a setting on both surfaces. Falls back to what
+   it has always been, so nothing moves until it is set. */
+.non-somm {
+  margin-top: 34px;
+  border: 1px solid var(--non-somm-border, var(--non-line-strong));
+  background: var(--non-somm-bg, var(--non-panel));
+}
 .non-somm__bar { display: flex; align-items: center; gap: 12px; padding: 15px 18px; }
 .non-somm__caret { font-family: var(--non-mono); font-size: 13px; color: var(--non-fg-faint); }
 .non-somm__input {
@@ -606,7 +612,8 @@ button { font-family: inherit; }
 
 /* somm as a bordered panel rather than loose elements */
 .non-sommbox {
-  border: 1px solid var(--non-line-soft); background: #0f0f0e;
+  border: 1px solid var(--non-somm-border, var(--non-line-soft));
+  background: var(--non-somm-bg, #0f0f0e);
   display: flex; flex-direction: column;
 }
 .non-sommbox__head {

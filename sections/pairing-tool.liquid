@@ -8,31 +8,35 @@
   section, pairing-recipes.
 {%- endcomment -%}
 
-<div class="non-section" data-non-somm-root>
-  <div class="non-section__head">
-    <h1 class="non-section__title">{{ section.settings.heading }}</h1>
-    <span class="non-section__more" data-non-pair-step>question 1 of {{ section.blocks | size }}</span>
+{%- comment -%}
+  The design leads with a statement, and treats each question as a bold
+  numbered heading. The port opened with an 11px eyebrow and replaced the
+  numbered headings with a 'question 1 of 6' counter and progress dashes,
+  which reads like a survey tool rather than a somm.
+{%- endcomment -%}
+<div class="non-pair-hero">
+  <div>
+    <div class="non-mono non-eyebrow">{{ section.settings.eyebrow }}</div>
+    <h1 class="non-pair-hero__title">{{ section.settings.heading }}</h1>
   </div>
-
   {%- if section.settings.intro != blank -%}
-    <p class="non-hero__blurb" style="margin-top:20px">{{ section.settings.intro }}</p>
+    <p class="non-pair-hero__lead">{{ section.settings.intro }}</p>
   {%- endif -%}
+</div>
 
-  <div class="non-pair" style="margin-top:30px" data-non-pair>
+<div class="non-section" data-non-somm-root>
+  <div class="non-pair" data-non-pair>
     <div>
-      <div class="non-pair__dots" data-non-pair-dots>
-        {%- for block in section.blocks -%}
-          <span class="non-pair__dot{% if forloop.first %} non-pair__dot--now{% endif %}"></span>
-        {%- endfor -%}
-      </div>
 
       {%- for block in section.blocks -%}
         <fieldset
           class="non-pair__axis"
           data-non-pair-axis="{{ forloop.index0 }}"
-          style="border:0;padding:0;margin:0{% unless forloop.first %};display:none{% endunless %}"
           {{ block.shopify_attributes }}>
-          <legend class="non-pair__q">{{ block.settings.question }}</legend>
+          <legend class="non-pair__q">
+            <span class="non-pair__n">{{ forloop.index | prepend: '0' | slice: -2, 2 }}</span>
+            <span>{{ block.settings.question }}</span>
+          </legend>
 
           <div class="non-pair__opts">
             {%- assign options = block.settings.options | newline_to_br | split: '<br />' -%}
@@ -62,13 +66,39 @@
       </div>
     </div>
 
-    <aside>
-      <div class="non-mono non-eyebrow">Reasoning</div>
-      <div class="non-pair__trace" data-non-pair-trace style="margin-top:14px">
-        Answer the questions and the somm will show its working.
+    {%- comment -%}
+      The verdict. The design pins a real photograph here with a live badge in
+      the corner — this is the payoff for answering, and the port replaced it
+      with grey placeholder text. The image is a setting so it can be swapped
+      without a deploy, and it stays visible before an answer rather than
+      leaving an empty column.
+    {%- endcomment -%}
+    <aside class="non-verdict"{% if section.settings.somm_dot_colour != blank %} style="--non-somm-dot: {{ section.settings.somm_dot_colour }}"{% endif %}>
+      <div class="non-verdict__head">
+        <span class="non-mono non-eyebrow">{{ section.settings.verdict_label }}</span>
+        {%- if section.settings.show_live -%}
+          <span class="non-verdict__live">
+            <span class="non-sommbox__dot" aria-hidden="true"></span>
+            {{ section.settings.live_label }}
+          </span>
+        {%- endif -%}
       </div>
 
-      <div class="non-somm__picks" data-non-somm-picks hidden style="margin-top:22px"></div>
+      <div class="non-verdict__media">
+        {%- if section.settings.verdict_image != blank -%}
+          {{ section.settings.verdict_image | image_url: width: 1000
+             | image_tag: loading: 'lazy', widths: '400,700,1000', class: 'non-verdict__img',
+               alt: section.settings.verdict_label }}
+        {%- elsif section.settings.verdict_image_url != blank -%}
+          <img class="non-verdict__img" src="{{ section.settings.verdict_image_url }}"
+               alt="{{ section.settings.verdict_label | escape }}" loading="lazy">
+        {%- else -%}
+          {{ 'lifestyle-1' | placeholder_svg_tag }}
+        {%- endif -%}
+      </div>
+
+      <div class="non-pair__trace" data-non-pair-trace>{{ section.settings.verdict_note }}</div>
+      <div class="non-somm__picks" data-non-somm-picks hidden style="margin-top:18px"></div>
     </aside>
   </div>
 </div>
@@ -107,6 +137,57 @@
 {
   "name": "Pairing tool",
   "settings": [
+    {
+      "type": "text",
+      "id": "eyebrow",
+      "label": "Eyebrow",
+      "default": "The pairing table"
+    },
+    {
+      "type": "header",
+      "content": "The verdict"
+    },
+    {
+      "type": "text",
+      "id": "verdict_label",
+      "label": "Verdict label",
+      "default": "The verdict"
+    },
+    {
+      "type": "image_picker",
+      "id": "verdict_image",
+      "label": "Verdict image"
+    },
+    {
+      "type": "text",
+      "id": "verdict_image_url",
+      "label": "Verdict image URL",
+      "info": "Used when no image is picked."
+    },
+    {
+      "type": "textarea",
+      "id": "verdict_note",
+      "label": "Verdict note",
+      "default": "Three answers and I will commit to a bottle, a serving temperature and a reason. No hedging."
+    },
+    {
+      "type": "checkbox",
+      "id": "show_live",
+      "label": "Show the live badge",
+      "default": true
+    },
+    {
+      "type": "text",
+      "id": "live_label",
+      "label": "Live label",
+      "default": "Somm live"
+    },
+    {
+      "type": "color",
+      "id": "somm_dot_colour",
+      "label": "Live dot colour",
+      "default": "#4ade80"
+    },
     {
       "type": "text",
       "id": "heading",

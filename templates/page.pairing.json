@@ -64,8 +64,12 @@
         "r3"
       ],
       "settings": {
-        "heading": "What's on the table?",
-        "intro": "Three questions. The somm shows its working rather than just naming a bottle."
+        "heading": "Start with the food.",
+        "intro": "Pick a course, a cooking method and a heat level. The somm reasons out loud and lands on a bottle — the same way a floor somm would, minus the wine list.",
+        "eyebrow": "The pairing table",
+        "verdict_label": "The verdict",
+        "live_label": "Somm live",
+        "verdict_image_url": "https://cdn.shopify.com/s/files/1/0371/5874/8205/files/non-story-038A8683.jpg?v=1785541727"
       }
     },
     "recipes": {

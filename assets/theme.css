@@ -2176,3 +2176,68 @@ a, button, .non-card, .non-filter, .non-pair__opt, .non-somm__seed,
   width: 100%; height: 100%;
   object-fit: cover; display: block;
 }
+
+/* --- Closing CTA cards on photography -------------------------------------
+   Matching design-reference: a tall image card, the title set in caps, and the
+   action as an underlined text link rather than a bordered button.
+
+   The text was rendering BLACK on the photograph. `--non-invert-fg` is #000000
+   — it is the inverse of the dark theme, meant for light-background surfaces —
+   so `color: var(--non-invert-fg, #fff)` resolved to black and the #fff
+   fallback never fired, because the token exists. Set explicitly here: a card
+   sitting on a photograph is always light-on-dark regardless of what the
+   inverse palette happens to be. */
+.non-about-cta--media {
+  color: #f2f0ea;
+  min-height: 340px;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  padding: 34px var(--non-pad) 38px;
+}
+@media (min-width: 720px) {
+  .non-about-cta--media { min-height: 420px; }
+}
+.non-about-cta--media .non-about-cta__title {
+  text-transform: uppercase;
+  letter-spacing: .01em;
+  font-size: clamp(22px, 2.2vw, 32px);
+  font-weight: 500;
+}
+.non-about-cta--media .non-about-cta__body {
+  color: rgba(242, 240, 234, .86);
+  max-width: 38ch;
+}
+
+/* Underlined text link, per the design — the bordered button reads as a form
+   control and competes with the photograph behind it. */
+.non-about-cta--media .non-about-cta__link {
+  border: 0;
+  padding: 0;
+  min-height: 0;
+  margin-top: 16px;
+  background: none;
+  color: #f2f0ea;
+  border-bottom: 1px solid rgba(242, 240, 234, .55);
+  padding-bottom: 3px;
+  transition: border-color var(--duration-hover) var(--ease-hover);
+}
+.non-about-cta--media .non-about-cta__link:hover {
+  background: none;
+  color: #fff;
+  border-bottom-color: #fff;
+}
+/* --solid must not re-apply its inverted button on a photograph. */
+.non-about-cta--media.non-about-cta--solid .non-about-cta__link {
+  background: none;
+  color: #f2f0ea;
+  border-color: transparent;
+  border-bottom-color: rgba(242, 240, 234, .55);
+}
+
+/* A stronger scrim than the first pass. These photographs are bright at the
+   bottom — the pouring shot and the tray of fruit both are — and .28 at the top
+   was not carrying caps-set type across them. */
+.non-about-cta--media::after {
+  background: linear-gradient(to top, rgba(0, 0, 0, .80) 0%, rgba(0, 0, 0, .55) 45%, rgba(0, 0, 0, .30) 100%);
+}

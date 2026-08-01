@@ -11,7 +11,7 @@ Paste this into a new chat to pick up where we left off.
 | Staging theme | Shopify theme **`198370820256`** (`website/staging`, unpublished) |
 | **Live theme** | **`197808783520`** — still the old **Ven** theme. Nothing built here is live yet |
 | Somm Worker | `https://non-somm.polished-snow-7889.workers.dev` — working |
-| Lotto Worker | `https://non-lotto.polished-snow-7889.workers.dev` — deployed, **blocked** (see below) |
+| Lotto Worker | `https://non-lotto.polished-snow-7889.workers.dev` — deployed. Codes are ACTIVE and the token is fine; the open gap is the Klaviyo flow |
 | Design source | `design-reference/*.html` in the repo. **This is the source of truth for every page** |
 
 ## Workflow — do not deviate
@@ -21,12 +21,46 @@ Paste this into a new chat to pick up where we left off.
 ```
 
 Pull → `check.py` → commit → push. **Never push without it.** `scripts/check.py` encodes
-nine Shopify-rejection rules, every one added because it actually happened.
+ten Shopify-rejection rules, every one added because it actually happened.
 Shopify rejects invalid theme files **silently** and keeps serving the previous
 version — the only symptom is a change that "didn't apply".
 
 Sync takes ~60–75s. After that, verify the deployed file's checksum against
 local before concluding anything about whether a change landed.
+
+### How to actually verify a deploy
+
+`sync.sh` reporting "pushed" means git accepted it. It does **not** mean Shopify
+took the file. Check the deployed byte size against local through the Shopify
+MCP, which works from a sandbox where `curl` does not:
+
+```graphql
+theme(id: "gid://shopify/OnlineStoreTheme/198370820256") {
+  files(filenames: ["sections/whatever.liquid"], first: 5) {
+    edges { node { filename size updatedAt } }
+  }
+}
+```
+
+Sizes are byte-exact. A mismatch, or a stale `updatedAt`, means Shopify rejected
+the file and is still serving the previous version.
+
+**This caught a real one on 2026-08-01:** `sections/product-process.liquid` had
+been frozen on the staging theme since 31 July while two later commits touching
+it pushed cleanly. Cause: a comment TAG nested inside a `{% liquid %}` block.
+Inside a liquid block the enclosing tag ends at the first closing delimiter it
+meets, so the nested tag cut the block short and the rest became stray markup.
+`check.py` rule 1b now catches that class — and note the rule matches from the
+OPENING tag, because once the bug is present a non-greedy match for the closing
+delimiter stops at the nested tag and reports nothing wrong. That is why nine
+earlier rules and every prior sync missed it.
+
+**And the limit of byte-checking:** it proves the file arrived, not that the page
+looks right. The About process rail deployed perfectly every time while rendering
+as an unrecognisable two-column mess, because it used `class="non-process"` and
+so does the PDP process band — whose CSS sets `grid-template-columns: repeat(2,
+1fr)`. Renamed to `.non-prail`. **Before adding a new component class, grep
+`assets/theme.css` for the name.** Nothing automated will catch a collision.
 
 ---
 
@@ -127,8 +161,15 @@ of what was actually transferred or computed.
 Claude Code on the web runs in an ephemeral Linux container with a fresh clone,
 not on `/Users/aarontrotman/…`. What that changes:
 
-- **`./scripts/sync.sh` cannot run.** No Shopify CLI, no theme credentials.
-  Nothing can be pushed to theme `198370820256` from there.
+- **`./scripts/sync.sh` RUNS FINE.** An earlier version of this file said it
+  could not, which was wrong and shaped a whole session's decisions. It is pure
+  git plus `check.py` — no Shopify CLI, no wrangler, no credentials. Deployment
+  happens through Shopify's two-way GitHub integration, so pushing the `staging`
+  branch IS the deploy. It pushed all day on 2026-08-01 from a container.
+- **Shopify and Klaviyo are reachable via MCP**, which does not go through the
+  blocked HTTP path. That is how deploys get verified from a sandbox — see the
+  verification note below. Direct `curl` to `admin.shopify.com`, `non.world`,
+  `cdn.shopify.com` and `*.workers.dev` all still 403 at the proxy gateway.
 - **Staging is unpublished, so it is unreachable** without a preview URL.
   Auditing `non.world` measures **Ven**, the old live theme — numbers about
   code we are replacing. Do not run the speed audit that way.

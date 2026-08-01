@@ -6,7 +6,7 @@ Everything below is paraphrased, not quoted, from those sources.
 Reviewed and approved by Aaron, cleared for Somm to state as fact.
 
 ## Origin story
-- The idea began on a trip to Europe in November 2017, eating through
+- The idea began in London in November 2017, eating through Michelin-starred
   fine-dining tasting menus.
 - At several restaurants, bartenders built alcohol-free pairings that
   were more inventive than the wine pairing being served alongside

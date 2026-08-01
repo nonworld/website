@@ -17,7 +17,7 @@
  */
 export const BRAND_KB = `
 ORIGIN
-- The idea began on a trip to Europe in November 2017, eating through
+- The idea began in London in November 2017, eating through Michelin-starred
   fine-dining tasting menus.
 - At several restaurants, bartenders built alcohol-free pairings that were more
   inventive than the wine pairing served alongside them.

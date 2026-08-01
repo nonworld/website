@@ -377,7 +377,15 @@
     "price": {{ product.selected_or_first_available_variant.price | money | json }},
     "profile": {{ tastes | default: '' | json }},
     "sits": {{ sits | default: '' | json }},
-    "serve": {{ serve | default: '' | json }},
+    {%- comment -%}
+      The RAW metafield, not `serve`. `serve` carries a hardcoded
+      'Chilled, wine glass' fallback for the spec strip, and custom.serve is
+      currently null on every product — so sending `serve` here would hand the
+      Somm a generic house default as though it were this bottle's own serving
+      instruction. Empty means absent, and the Worker's facts prompt already
+      says to admit when the sheet does not cover something.
+    {%- endcomment -%}
+    "serve": {{ m.serve | metafield_text | default: '' | json }},
     "ingredients": {{ ingredients | default: '' | json }},
     "storage": {{ m.storage | metafield_text | default: '' | json }},
     "notes": {{ m.notes | metafield_text | default: '' | json }},

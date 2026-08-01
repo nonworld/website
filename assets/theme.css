@@ -2332,3 +2332,98 @@ a, button, .non-card, .non-filter, .non-pair__opt, .non-somm__seed,
 }
 /* 44px number column, matching the design and the PDP's .non-step. */
 .non-hq-step { grid-template-columns: 44px 1fr; gap: 18px; }
+
+/* --- PDP steps: the About rail's connecting line ---------------------------
+   Same device as the process rail, turned vertical: a line with a dot at each
+   stage and a pulse travelling down it. It runs in the 18px gutter between the
+   number column and the copy, so it connects the stages without striking
+   through the numerals — on the rail the dots have their own track, and this is
+   the nearest equivalent the PDP layout allows.
+
+   Replaces the number-brightening pass: with a real line and dots, brightening
+   the numerals as well was two animations saying the same thing. */
+.non-steps { position: relative; }
+.non-steps::before {
+  content: '';
+  position: absolute;
+  left: 53px;
+  top: 10px;
+  bottom: 10px;
+  width: 1px;
+  background: var(--non-line-strong);
+}
+.non-step { position: relative; }
+.non-step::before {
+  content: '';
+  position: absolute;
+  left: 49px;
+  top: 9px;
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  border: 1px solid var(--non-fg-mute);
+  background: var(--non-bg);
+}
+.non-steps::after {
+  content: '';
+  position: absolute;
+  left: 51px;
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: var(--non-fg);
+  box-shadow: 0 0 10px 2px rgba(242, 240, 234, .35);
+  animation: nonStepsPulse 7s linear infinite;
+}
+@keyframes nonStepsPulse {
+  0%   { top: 0; opacity: 0; }
+  10%  { opacity: 1; }
+  88%  { opacity: 1; }
+  100% { top: 100%; opacity: 0; }
+}
+/* The numerals no longer animate — the line carries the movement now. */
+.non-steps .non-step__n { animation: none; opacity: 1; }
+
+@media (prefers-reduced-motion: reduce) {
+  .non-steps::after { display: none; }
+}
+
+/* --- About rail: type matched to the PDP ----------------------------------
+   The rail set its stage names and body copy in JetBrains Mono, which came
+   from the supplied embed. The PDP's numbered steps — the same content type,
+   one page away — set titles and body in NONHelvetica. Two treatments of one
+   idea. The rail follows the PDP now; only the numerals stay mono, which is
+   true of both. */
+.non-prail { font-family: var(--non-sans); }
+.np-title {
+  font-family: var(--non-sans);
+  text-transform: none;
+  letter-spacing: -.01em;
+  font-size: clamp(17px, 1.3vw, 21px);
+  font-weight: 500;
+}
+.np-body {
+  font-family: var(--non-sans);
+  font-size: var(--t-copy);
+  line-height: 1.6;
+  color: var(--non-fg-mute);
+}
+.np-num { font-family: var(--non-mono); }
+
+/* --- NONHQ hero on a photograph -------------------------------------------
+   The design runs a full-bleed image behind the headline. Without an image the
+   hero keeps exactly the flat treatment it had, so the slot is additive. */
+.non-hq-hero--media { position: relative; overflow: hidden; min-height: 62vh; }
+@media (min-width: 860px) { .non-hq-hero--media { min-height: 70vh; } }
+.non-hq-hero__bg { position: absolute; inset: 0; z-index: 0; }
+.non-hq-hero__bg > img { width: 100%; height: 100%; object-fit: cover; display: block; }
+/* Scrim weighted to the bottom-left, where the eyebrow, headline and blurb sit. */
+.non-hq-hero--media::after {
+  content: ''; position: absolute; inset: 0; z-index: 0;
+  background: linear-gradient(to top, rgba(0,0,0,.82) 0%, rgba(0,0,0,.55) 45%, rgba(0,0,0,.25) 100%);
+}
+.non-hq-hero--media .non-hq-hero__inner {
+  position: relative; z-index: 1;
+  align-self: end;
+}
+.non-hq-hero--media { align-items: end; }

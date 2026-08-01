@@ -36,14 +36,43 @@
   </div>
 {%- endif -%}
 
-<div class="non-hq-hero">
-  <div>
-    <div class="non-mono non-eyebrow">{{ section.settings.hero_eyebrow }}</div>
-    <h1 class="non-hq-hero__title">{{ section.settings.hero_heading }}</h1>
-  </div>
-  {%- if section.settings.hero_blurb != blank -%}
-    <p class="non-hq-hero__lead">{{ section.settings.hero_blurb }}</p>
+{%- comment -%}
+  The hero sits ON a photograph in the design — a full-bleed image with the
+  headline and blurb over it, not a headline on flat charcoal with pictures
+  underneath. There was no image setting at all, which is why it could not be
+  added from the editor.
+
+  Without an image the hero keeps its flat treatment exactly as before, so an
+  unset slot changes nothing rather than leaving a frame.
+{%- endcomment -%}
+{%- assign has_hero_image = false -%}
+{%- if section.settings.hero_image != blank or section.settings.hero_image_url != blank -%}
+  {%- assign has_hero_image = true -%}
+{%- endif -%}
+
+<div class="non-hq-hero{% if has_hero_image %} non-hq-hero--media{% endif %}">
+  {%- if has_hero_image -%}
+    <div class="non-hq-hero__bg" aria-hidden="true">
+      {%- if section.settings.hero_image != blank -%}
+        {{ section.settings.hero_image | image_url: width: 2200, format: 'webp' | image_tag: loading: 'eager', fetchpriority: 'high', widths: '800,1200,1600,2200', alt: '' }}
+      {%- else -%}
+        {% render 'cdn-image',
+           url: section.settings.hero_image_url,
+           alt: '',
+           sizes: '100vw' %}
+      {%- endif -%}
+    </div>
   {%- endif -%}
+
+  <div class="non-hq-hero__inner">
+    <div>
+      <div class="non-mono non-eyebrow">{{ section.settings.hero_eyebrow }}</div>
+      <h1 class="non-hq-hero__title">{{ section.settings.hero_heading }}</h1>
+    </div>
+    {%- if section.settings.hero_blurb != blank -%}
+      <p class="non-hq-hero__lead">{{ section.settings.hero_blurb }}</p>
+    {%- endif -%}
+  </div>
 </div>
 
 {%- assign facts = section.blocks | where: 'type', 'fact' -%}
@@ -350,6 +379,17 @@
       "id": "success_message",
       "label": "Success message",
       "default": "Got it. We'll confirm by email, usually the same day."
+    },
+    {
+      "type": "image_picker",
+      "id": "hero_image",
+      "label": "Hero image"
+    },
+    {
+      "type": "text",
+      "id": "hero_image_url",
+      "label": "Hero image URL",
+      "info": "Full-bleed behind the headline. Used only when no image is uploaded. Leave both empty to keep the flat hero."
     },
     {
       "type": "header",

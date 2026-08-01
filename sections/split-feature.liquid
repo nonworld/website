@@ -1,4 +1,4 @@
-<div class="non-split">
+<div class="non-split"{% if section.settings.max_height > 0 %} style="--non-split-max: {{ section.settings.max_height }}px"{% endif %}>
   {%- for block in section.blocks -%}
     {%- assign alt_text = block.settings.image_alt | default: block.settings.title -%}
     <div class="non-split__cell" {{ block.shopify_attributes }}>
@@ -6,10 +6,10 @@
         {{
           block.settings.image
           | image_url: width: 1200
-          | image_tag: loading: 'lazy', widths: '600,900,1200', alt: alt_text
+          | image_tag: loading: 'lazy', widths: '600,900,1200', class: 'non-split__img', alt: alt_text
         }}
       {%- elsif block.settings.image_url != blank -%}
-        <img src="{{ block.settings.image_url }}" alt="{{ alt_text | escape }}" loading="lazy">
+        <img class="non-split__img" src="{{ block.settings.image_url }}" alt="{{ alt_text | escape }}" loading="lazy">
       {%- else -%}
         {%- comment -%}
           A visible placeholder rather than nothing. An empty panel reads as a
@@ -34,6 +34,19 @@
 {
   "name": "Split feature",
   "max_blocks": 2,
+  "settings": [
+    {
+      "type": "range",
+      "id": "max_height",
+      "label": "Maximum image height",
+      "min": 0,
+      "max": 900,
+      "step": 20,
+      "unit": "px",
+      "default": 0,
+      "info": "Caps how tall the pictures may grow on a wide screen. 0 leaves them sized by the shape above."
+    }
+  ],
   "blocks": [
     {
       "type": "cell",

@@ -981,3 +981,8 @@ button { font-family: inherit; }
 @media (max-width: 1039px) {
   .non-globe { --non-globe-box: 320px; }
 }
+
+/* Optional height caps for the editorial bands. 0 in the editor means "leave
+   it to the shape", so the variable is simply absent and these no-op. */
+.non-trip__img  { max-height: var(--non-trip-max, 62vh); }
+.non-split__img { max-height: var(--non-split-max, none); }

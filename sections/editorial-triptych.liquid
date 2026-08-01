@@ -1,4 +1,5 @@
-<div class="non-trip">
+{%- assign ratio = section.settings.image_ratio | default: 'tall' -%}
+<div class="non-trip non-trip--ratio-{{ ratio }}"{% if section.settings.max_height > 0 %} style="--non-trip-max: {{ section.settings.max_height }}px"{% endif %}>
   {%- for block in section.blocks -%}
     {%- assign alt_text = block.settings.image_alt | default: block.settings.title -%}
     <div class="non-trip__cell" {{ block.shopify_attributes }}>
@@ -6,10 +7,10 @@
         {{
           block.settings.image
           | image_url: width: 900
-          | image_tag: loading: 'lazy', widths: '400,600,900', alt: alt_text
+          | image_tag: loading: 'lazy', widths: '400,600,900', class: 'non-trip__img', alt: alt_text
         }}
       {%- elsif block.settings.image_url != blank -%}
-        <img src="{{ block.settings.image_url }}" alt="{{ alt_text | escape }}" loading="lazy">
+        <img class="non-trip__img" src="{{ block.settings.image_url }}" alt="{{ alt_text | escape }}" loading="lazy">
       {%- else -%}
         {{ 'lifestyle-1' | placeholder_svg_tag }}
       {%- endif -%}
@@ -28,6 +29,31 @@
 {
   "name": "Editorial triptych",
   "max_blocks": 4,
+  "settings": [
+    {
+      "type": "select",
+      "id": "image_ratio",
+      "label": "Image shape",
+      "options": [
+        { "value": "square", "label": "Square (1:1)" },
+        { "value": "tall", "label": "Tall (4:5)" },
+        { "value": "portrait", "label": "Portrait (3:4)" },
+        { "value": "landscape", "label": "Landscape (3:2)" }
+      ],
+      "default": "tall"
+    },
+    {
+      "type": "range",
+      "id": "max_height",
+      "label": "Maximum image height",
+      "min": 0,
+      "max": 900,
+      "step": 20,
+      "unit": "px",
+      "default": 0,
+      "info": "Caps how tall the pictures may grow on a wide screen. 0 leaves them sized by the shape above."
+    }
+  ],
   "blocks": [
     {
       "type": "cell",

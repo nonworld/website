@@ -2085,3 +2085,56 @@ a, button, .non-card, .non-filter, .non-pair__opt, .non-somm__seed,
 .non-sommbox__ask .non-somm__input::-webkit-search-decoration,
 .non-sommbox__ask .non-somm__input::-webkit-search-cancel-button { -webkit-appearance: none; }
 .non-sommbox__ask .non-somm__input { -webkit-appearance: none; appearance: none; }
+
+/* --- Somm chips on the light surface --------------------------------------
+   The chips carried `background: var(--non-panel-alt)` (#161614) from when the
+   Somm sat on a near-black panel. Against the grey surface that left a dark
+   pill, and the light-surface pass then set the label to #3a3a38 — dark text on
+   a near-black chip. Unreadable, which is what it looked like.
+
+   Fixed by giving the chip its own light surface rather than by unsetting the
+   dark one: the chips need to read as raised off the panel either way, and
+   `background: transparent` would have left them as outlines on grey.
+
+   Contrast: #f4f2ec on #0c0c0c is ~17:1, well past AA for the 13px mono these
+   are set in. The border carries the shape at rest; hover still inverts. */
+.non-somm .non-somm__seed,
+.non-sommbox .non-somm__seed,
+.non-sommbox__seeds button {
+  background: #f4f2ec;
+  color: #0c0c0c;
+  /* #6b6862 is the lightest border that clears 3:1 against the #c9c7c1 panel,
+     which WCAG 1.4.11 requires for a control's boundary. The chip's own fill is
+     only 1.51:1 against the panel, so the border is what defines the shape —
+     lighter values looked cleaner and left the pill edge indistinct. */
+  border-color: #6b6862;
+}
+.non-somm .non-somm__seed:hover,
+.non-somm .non-somm__seed:focus-visible,
+.non-sommbox .non-somm__seed:hover,
+.non-sommbox .non-somm__seed:focus-visible,
+.non-sommbox__seeds button:hover,
+.non-sommbox__seeds button:focus-visible {
+  background: #0c0c0c;
+  color: #f4f2ec;
+  border-color: #0c0c0c;
+}
+
+/* The input well sat on --non-bg, a dark field on a light panel. Consistent
+   with the chips now: light field, dark text, dark focus ring. */
+.non-sommbox__ask .non-somm__input {
+  background: #f4f2ec;
+  border-color: #6b6862;
+  color: #0c0c0c;
+}
+.non-sommbox__ask .non-somm__input::placeholder { color: #6b6862; }
+.non-sommbox__ask .non-somm__input:focus {
+  border-color: #0c0c0c;
+  box-shadow: 0 0 0 2px rgba(12, 12, 12, .16);
+}
+
+/* The homepage bar is .non-somm__bar and inherits the panel colour, so the
+   caret and input need the same treatment. */
+.non-somm .non-somm__input { color: #0c0c0c; }
+.non-somm .non-somm__input::placeholder { color: #6b6862; }
+.non-somm .non-somm__caret { color: #6b6862; }

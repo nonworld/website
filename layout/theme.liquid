@@ -8,10 +8,9 @@
     <link rel="canonical" href="{{ canonical_url }}">
 
     {%- comment -%}
-      Favicon. Still unset — the only NON mark on the CDN is the 3000x1072
-      wordmark, and a 2.8:1 logotype squeezed into 32x32 is an illegible smear,
-      so nothing is picked here by default. Drop a SQUARE mark into
-      Theme settings → Favicon and all four lines below start emitting.
+      Favicon. No longer blocked: the NON Somm mark supplies the square icon the
+      brand never had. The wordmark on the CDN is 3000x1072 and a 2.8:1 logotype
+      squeezed into 32x32 is an illegible smear, which is why nothing was set.
 
       Sizes rather than one 32px PNG: 32 is the tab, 180 is the iOS home screen,
       and Safari asks for the apple-touch-icon by name whether or not you supply
@@ -21,6 +20,22 @@
       <link rel="icon" type="image/png" sizes="32x32" href="{{ settings.favicon | image_url: width: 32, height: 32 }}">
       <link rel="icon" type="image/png" sizes="192x192" href="{{ settings.favicon | image_url: width: 192, height: 192 }}">
       <link rel="apple-touch-icon" sizes="180x180" href="{{ settings.favicon | image_url: width: 180, height: 180 }}">
+    {%- else -%}
+      {%- comment -%}
+        The NON Somm mark, shipped as a theme asset rather than waiting on a
+        Files upload. It is the full stop from "NON." held in its typographic
+        position — baseline, left, never centred; the offset is the mark. Sharp
+        corners deliberately: NON has no soft corners anywhere.
+
+        SVG scales to every slot from the 16px tab up, so there is no PNG set to
+        keep in sync. Safari asks for apple-touch-icon by name and will not take
+        an SVG for it, so that one line is intentionally absent rather than
+        pointing at a file that would not render — iOS falls back to a page
+        screenshot, which is the lesser of the two wrong answers.
+
+        Setting a favicon in Theme settings still wins; this is the floor.
+      {%- endcomment -%}
+      <link rel="icon" type="image/svg+xml" href="{{ 'non-somm-favicon.svg' | asset_url }}">
     {%- endif -%}
 
     <title>

@@ -92,6 +92,19 @@
 
   /* --- controller -------------------------------------------------------- */
 
+  // Parsed per request rather than once at load: the theme editor can replace a
+  // section's markup without a page reload, and a stale closure would then be
+  // describing a bottle that is no longer on screen.
+  function readFacts() {
+    var el = document.querySelector('[data-non-somm-facts]');
+    if (!el) return null;
+    try {
+      return JSON.parse(el.textContent);
+    } catch (e) {
+      return null;
+    }
+  }
+
   function Somm(form) {
     var root = form.closest('[data-non-somm-root]') || document;
     var input = form.querySelector('[data-non-somm-input]');
@@ -233,6 +246,13 @@
           context: context,
           page: window.location.pathname,
           code: code,
+          // The bottle's own spec sheet, when the page publishes one. The
+          // request used to carry a code and nothing else, so anything not
+          // derivable from the code — storage, serving, ingredients — had no
+          // source and the Somm could only decline or guess. Sent as facts
+          // rather than prose so the Worker can quote them rather than
+          // paraphrase.
+          facts: readFacts(),
           history: history.slice(-8)
         })
       })

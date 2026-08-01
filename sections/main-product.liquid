@@ -357,6 +357,35 @@
   </div>
 {%- endif -%}
 
+{%- comment -%}
+  The bottle's own spec sheet, for the Somm.
+
+  The panel's opening line promises "I've read the whole spec sheet for this
+  bottle" and until now the request carried only a product CODE — so a question
+  like "how long will it last after I open it?" had nothing behind it to answer
+  from. The fact was already in Shopify on every bottle (custom.storage); it was
+  simply never sent.
+
+  Only fields that already exist and are already shown to a customer somewhere
+  on this page, so this adds no new claim — it hands the Somm the same sheet the
+  page is printing.
+{%- endcomment -%}
+<script type="application/json" data-non-somm-facts>
+  {
+    "code": {{ code | json }},
+    "title": {{ product.title | json }},
+    "price": {{ product.selected_or_first_available_variant.price | money | json }},
+    "profile": {{ tastes | default: '' | json }},
+    "sits": {{ sits | default: '' | json }},
+    "serve": {{ serve | default: '' | json }},
+    "ingredients": {{ ingredients | default: '' | json }},
+    "storage": {{ m.storage | metafield_text | default: '' | json }},
+    "notes": {{ m.notes | metafield_text | default: '' | json }},
+    "nutrition": {{ nutrition | default: '' | json }},
+    "available": {{ product.available | json }}
+  }
+</script>
+
 <script type="application/json" data-non-catalogue>
   {
     {%- assign seen = '' -%}

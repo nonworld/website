@@ -1,6 +1,9 @@
 {%- liquid
   assign coll = section.settings.collection | default: collections[settings.core_range_collection]
-  assign limit = section.settings.limit | default: 4
+  assign cols = section.settings.columns | default: 4 | times: 1
+  assign rows = section.settings.rows | default: 2
+  assign limit = cols | times: rows
+  assign card_max = section.settings.card_max | default: 0
 -%}
 
 <div class="non-section">
@@ -14,7 +17,7 @@
   </div>
 
   {%- if coll.products.size > 0 -%}
-    <div class="non-grid non-grid--{{ section.settings.columns }} non-grid--ratio-{{ section.settings.image_ratio | default: 'portrait' }}">
+    <div class="non-grid non-grid--{{ section.settings.columns }} non-grid--ratio-{{ section.settings.image_ratio | default: 'portrait' }}"{% if card_max > 0 %} style="--non-card-max: {{ card_max }}px"{% endif %}>
       {%- for product in coll.products limit: limit -%}
         {% render 'product-card', product: product, show_add: section.settings.show_add %}
       {%- endfor -%}
@@ -32,7 +35,27 @@
   "settings": [
     { "type": "text", "id": "heading", "label": "Heading", "default": "Core range" },
     { "type": "collection", "id": "collection", "label": "Collection" },
-    { "type": "range", "id": "limit", "label": "Products shown", "min": 2, "max": 12, "step": 1, "default": 4 },
+    {
+      "type": "range",
+      "id": "rows",
+      "label": "Rows",
+      "min": 1,
+      "max": 6,
+      "step": 1,
+      "default": 2,
+      "info": "Products shown = columns x rows."
+    },
+    {
+      "type": "range",
+      "id": "card_max",
+      "label": "Card width cap",
+      "min": 0,
+      "max": 560,
+      "step": 20,
+      "unit": "px",
+      "default": 0,
+      "info": "Caps how wide a single card can get, which is what sets the picture size. 0 sizes them from the column count."
+    },
     {
       "type": "select",
       "id": "columns",

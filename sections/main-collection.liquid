@@ -40,6 +40,7 @@
   {%- if collection.products.size > 0 -%}
     <div
       class="non-grid non-grid--{{ section.settings.columns }} non-grid--ratio-{{ section.settings.image_ratio | default: 'portrait' }}"
+      {% if section.settings.card_max > 0 %}style="--non-card-max: {{ section.settings.card_max }}px"{% endif %}
       data-non-shelf
       data-dim="{{ section.settings.dim_level | default: 34 | divided_by: 100.0 }}"
       data-dim-enabled="{{ section.settings.dim_non_matches }}">
@@ -103,6 +104,17 @@
       "default": "portrait"
     },
     { "type": "checkbox", "id": "show_add", "label": "Show add to cart on cards", "default": true },
+    {
+      "type": "range",
+      "id": "card_max",
+      "label": "Card width cap",
+      "min": 0,
+      "max": 560,
+      "step": 20,
+      "unit": "px",
+      "default": 0,
+      "info": "Caps how wide a single card can get, which is what sets the picture size. 0 sizes them from the column count."
+    },
     {
       "type": "select",
       "id": "columns",

@@ -169,12 +169,13 @@
       "type": "featured-collection",
       "settings": {
         "heading": "Core range",
-        "limit": 6,
         "columns": "3",
         "show_add": false,
         "link_label": "All bottles",
         "collection": "the-range",
-        "link_url": "/collections/the-range"
+        "link_url": "/collections/the-range",
+        "rows": 2,
+        "card_max": 0
       }
     },
     "made-for": {
@@ -276,11 +277,12 @@
       "settings": {
         "heading": "Sets",
         "collection": "non-sets",
-        "limit": 4,
         "columns": "4",
         "show_add": false,
         "link_label": "All sets",
-        "link_url": "/collections/non-sets"
+        "link_url": "/collections/non-sets",
+        "rows": 1,
+        "card_max": 0
       }
     }
   },

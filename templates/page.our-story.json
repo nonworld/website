@@ -44,6 +44,69 @@
             "title": "Not a mocktail",
             "body": "Mocktails are mixed to order and usually sweet. This is cooked in a facility and bottled dry."
           }
+        },
+        "cred-1": {
+          "type": "credential",
+          "settings": {
+            "text": "founded melbourne 2019"
+          }
+        },
+        "cred-2": {
+          "type": "credential",
+          "settings": {
+            "text": "chef led"
+          }
+        },
+        "cred-3": {
+          "type": "credential",
+          "settings": {
+            "text": "0.0% abv"
+          }
+        },
+        "cred-4": {
+          "type": "credential",
+          "settings": {
+            "text": "never de-alcoholised"
+          }
+        },
+        "stat-water": {
+          "type": "stat",
+          "settings": {
+            "value": "75%",
+            "body": "Less water wasted than conventional beverage manufacturing."
+          }
+        },
+        "stat-green": {
+          "type": "stat",
+          "settings": {
+            "value": "100%",
+            "body": "Green energy across production, with carbon-neutral shipping."
+          }
+        },
+        "stat-abv": {
+          "type": "stat",
+          "settings": {
+            "value": "0.0%",
+            "body": "Alcohol, in every bottle, from the first step to the last."
+          }
+        },
+        "cta-hq": {
+          "type": "cta",
+          "settings": {
+            "title": "Come and see it",
+            "body": "NONHQ is the world's first non-alcoholic cellar door. Taste the ingredients separately, then the bottles.",
+            "label": "Book a tasting",
+            "url": "/pages/visit-us"
+          }
+        },
+        "cta-somm": {
+          "type": "cta",
+          "settings": {
+            "title": "Or start with a glass",
+            "body": "Tell the somm what you're eating and it will pick the bottle. That's the fastest version of everything on this page.",
+            "label": "Find your pairing",
+            "url": "/pages/pairing"
+          }
         }
       },
       "block_order": [
@@ -52,7 +115,16 @@
         "p3",
         "p4",
         "n1",
-        "n2"
+        "n2",
+        "cred-1",
+        "cred-2",
+        "cred-3",
+        "cred-4",
+        "stat-water",
+        "stat-green",
+        "stat-abv",
+        "cta-hq",
+        "cta-somm"
       ],
       "settings": {
         "eyebrow": "About",

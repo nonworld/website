@@ -30,6 +30,20 @@
   {%- endif -%}
 </div>
 
+{%- assign creds = section.blocks | where: 'type', 'credential' -%}
+{%- if creds.size > 0 -%}
+  {%- comment -%}
+    The design's credentials strip. Static rather than scrolling: four short
+    facts fit on one line, and animating something nobody needs to read twice
+    is motion for its own sake.
+  {%- endcomment -%}
+  <div class="non-creds">
+    {%- for b in creds -%}
+      <span class="non-creds__item" {{ b.shopify_attributes }}>{{ b.settings.text }}</span>
+    {%- endfor -%}
+  </div>
+{%- endif -%}
+
 <div class="non-section">
 
   {%- if page.content != blank -%}
@@ -106,6 +120,31 @@
 {%- endif -%}
 
 {%- comment -%} ── what we're not ────────────────────────────────────────── {%- endcomment -%}
+{%- if section.settings.hard_heading != blank -%}
+  <div class="non-section non-hard">
+    <div>
+      <div class="non-mono non-eyebrow">{{ section.settings.hard_label }}</div>
+      <h2 class="non-hard__title">{{ section.settings.hard_heading }}</h2>
+    </div>
+    <div>
+      <p class="non-hard__body">{{ section.settings.hard_body }}</p>
+
+      {%- if section.settings.who_body != blank or section.settings.where_body != blank -%}
+        <dl class="non-hard__facts">
+          {%- if section.settings.who_body != blank -%}
+            <dt class="non-mono non-eyebrow">{{ section.settings.who_label }}</dt>
+            <dd>{{ section.settings.who_body }}</dd>
+          {%- endif -%}
+          {%- if section.settings.where_body != blank -%}
+            <dt class="non-mono non-eyebrow">{{ section.settings.where_label }}</dt>
+            <dd>{{ section.settings.where_body }}</dd>
+          {%- endif -%}
+        </dl>
+      {%- endif -%}
+    </div>
+  </div>
+{%- endif -%}
+
 {%- assign nots = section.blocks | where: 'type', 'not' -%}
 {%- if nots.size > 0 -%}
   <div class="non-section" style="border-top:1px solid var(--non-line)">
@@ -121,6 +160,39 @@
         </div>
       {%- endfor -%}
     </div>
+  </div>
+{%- endif -%}
+
+{%- assign stats = section.blocks | where: 'type', 'stat' -%}
+{%- if stats.size > 0 -%}
+  <div class="non-section">
+    <div class="non-section__head">
+      <h2 class="non-section__title">{{ section.settings.stats_label }}</h2>
+      <span class="non-section__more">{{ section.settings.stats_note }}</span>
+    </div>
+    <div class="non-stats">
+      {%- for b in stats -%}
+        <div class="non-stat" {{ b.shopify_attributes }}>
+          <div class="non-stat__v">{{ b.settings.value }}</div>
+          <p class="non-stat__b">{{ b.settings.body }}</p>
+        </div>
+      {%- endfor -%}
+    </div>
+  </div>
+{%- endif -%}
+
+{%- assign ctas = section.blocks | where: 'type', 'cta' -%}
+{%- if ctas.size > 0 -%}
+  <div class="non-about-ctas">
+    {%- for b in ctas -%}
+      <div class="non-about-cta{% if forloop.first %} non-about-cta--solid{% endif %}" {{ b.shopify_attributes }}>
+        <div class="non-about-cta__title">{{ b.settings.title }}</div>
+        <p class="non-about-cta__body">{{ b.settings.body }}</p>
+        {%- if b.settings.label != blank -%}
+          <a class="non-about-cta__link" href="{{ b.settings.url | default: '/' }}">{{ b.settings.label }}</a>
+        {%- endif -%}
+      </div>
+    {%- endfor -%}
   </div>
 {%- endif -%}
 
@@ -272,6 +344,60 @@
       "unit": "px",
       "default": 0,
       "info": "0 keeps the section's own spacing."
+    },
+    {
+      "type": "text",
+      "id": "hard_label",
+      "label": "Label",
+      "default": "The difficult part"
+    },
+    {
+      "type": "text",
+      "id": "hard_heading",
+      "label": "Heading",
+      "default": "Water doesn't carry flavour the way alcohol does."
+    },
+    {
+      "type": "textarea",
+      "id": "hard_body",
+      "label": "Body",
+      "default": "So every ingredient is processed on its own before anything is blended: cooked, steeped, sous-vide, roasted, dehydrated. It's slow, and it's the entire difference."
+    },
+    {
+      "type": "text",
+      "id": "who_label",
+      "label": "Who label",
+      "default": "Who makes it"
+    },
+    {
+      "type": "text",
+      "id": "who_body",
+      "label": "Who",
+      "default": "Chefs, food scientists, bartenders and winemakers — in-house."
+    },
+    {
+      "type": "text",
+      "id": "where_label",
+      "label": "Where label",
+      "default": "Where"
+    },
+    {
+      "type": "text",
+      "id": "where_body",
+      "label": "Where",
+      "default": "A purpose-built kitchen in Cheltenham, Melbourne."
+    },
+    {
+      "type": "text",
+      "id": "stats_label",
+      "label": "Stats label",
+      "default": "Leave it better"
+    },
+    {
+      "type": "text",
+      "id": "stats_note",
+      "label": "Stats note",
+      "default": "Made on 100% green energy, shipped carbon neutral."
     }
   ],
   "blocks": [
@@ -304,6 +430,61 @@
           "type": "textarea",
           "id": "body",
           "label": "Body"
+        }
+      ]
+    },
+    {
+      "type": "credential",
+      "name": "Credential",
+      "settings": [
+        {
+          "type": "text",
+          "id": "text",
+          "label": "Text",
+          "default": "chef led"
+        }
+      ]
+    },
+    {
+      "type": "stat",
+      "name": "Stat",
+      "settings": [
+        {
+          "type": "text",
+          "id": "value",
+          "label": "Figure",
+          "default": "100%"
+        },
+        {
+          "type": "textarea",
+          "id": "body",
+          "label": "Body"
+        }
+      ]
+    },
+    {
+      "type": "cta",
+      "name": "Closing CTA",
+      "settings": [
+        {
+          "type": "text",
+          "id": "title",
+          "label": "Title"
+        },
+        {
+          "type": "textarea",
+          "id": "body",
+          "label": "Body"
+        },
+        {
+          "type": "text",
+          "id": "label",
+          "label": "Button label"
+        },
+        {
+          "type": "url",
+          "id": "url",
+          "label": "Link"
         }
       ]
     }

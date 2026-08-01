@@ -78,6 +78,34 @@
             "variant_title": "12",
             "label": "12 case"
           }
+        },
+        "sp1": {
+          "type": "spec",
+          "settings": {
+            "label": "Tastes",
+            "source": "tastes"
+          }
+        },
+        "sp2": {
+          "type": "spec",
+          "settings": {
+            "label": "Sits with",
+            "source": "sits"
+          }
+        },
+        "sp3": {
+          "type": "spec",
+          "settings": {
+            "label": "Nutrition",
+            "source": "nutrition"
+          }
+        },
+        "sp4": {
+          "type": "spec",
+          "settings": {
+            "label": "Serve",
+            "source": "serve"
+          }
         }
       },
       "block_order": [
@@ -90,7 +118,11 @@
         "seed-1",
         "seed-2",
         "seed-3",
-        "seed-4"
+        "seed-4",
+        "sp1",
+        "sp2",
+        "sp3",
+        "sp4"
       ],
       "settings": {
         "show_somm": true,

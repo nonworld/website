@@ -90,7 +90,7 @@
 
       {%- if ingredients != blank -%}
         <div style="border-top:1px solid var(--non-line);padding-top:18px">
-          <div class="non-spec__k">Ingredients</div>
+          <div class="non-spec__k">{{ section.settings.ingredients_label }}</div>
           <div class="non-step__b" style="margin-top:8px;max-width:46ch">{{ ingredients }}</div>
         </div>
       {%- endif -%}
@@ -176,6 +176,12 @@
         }
       ],
       "default": "portrait"
+    },
+    {
+      "type": "text",
+      "id": "ingredients_label",
+      "label": "Ingredients label",
+      "default": "Ingredients"
     },
     {
       "type": "header",

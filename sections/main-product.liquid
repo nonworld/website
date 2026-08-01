@@ -251,31 +251,86 @@
 </div>
 
 {%- comment -%} ── spec strip ────────────────────────────────────────────── {%- endcomment -%}
-<div class="non-specstrip non-specstrip--{{ spec_count }}">
-  <div class="non-specstrip__cell">
-    <div class="non-spec__k">{{ section.settings.spec_tastes }}</div>
-    <div class="non-specstrip__v">{{ tastes | default: product.title }}</div>
-  </div>
+{%- comment -%}
+  Block-driven. This was four fixed settings — spec_tastes, spec_sits,
+  spec_nutrition, spec_serve — which meant the labels were editable but the
+  strip itself was not: you could not add a fifth row, drop one you did not
+  want, or change their order without editing Liquid.
 
-  {%- if sits != blank -%}
-    <div class="non-specstrip__cell">
-      <div class="non-spec__k">{{ section.settings.spec_sits }}</div>
-      <div class="non-specstrip__v">{{ sits }}</div>
-    </div>
+  Each block carries a label and a SOURCE, because the values come from product
+  metafields rather than from the theme. `custom` is there so a row can be
+  written by hand for a product that has no metafield for it.
+
+  A row whose source resolves to nothing is skipped rather than rendered empty,
+  which is what the old `if sits != blank` guards were doing by hand. The count
+  is derived from what actually rendered, so the layout modifier stays honest.
+
+  If no spec blocks exist the four original settings still render, so a template
+  that has not been migrated looks exactly as it did before.
+{%- endcomment -%}
+{%- assign specs = section.blocks | where: 'type', 'spec' -%}
+
+{%- if specs.size > 0 -%}
+  {%- capture spec_cells -%}
+    {%- for block in specs -%}
+      {%- liquid
+        assign val = ''
+        case block.settings.source
+          when 'tastes'
+            assign val = tastes | default: product.title
+          when 'sits'
+            assign val = sits
+          when 'nutrition'
+            assign val = nutrition
+          when 'serve'
+            assign val = serve
+          when 'custom'
+            assign val = block.settings.custom_value
+          else
+            assign val = block.settings.custom_value
+        endcase
+      -%}
+      {%- if val != blank -%}
+        <div class="non-specstrip__cell" {{ block.shopify_attributes }}>
+          <div class="non-spec__k">{{ block.settings.label }}</div>
+          <div class="non-specstrip__v">{{ val }}</div>
+        </div>
+      {%- endif -%}
+    {%- endfor -%}
+  {%- endcapture -%}
+
+  {%- assign rendered_count = spec_cells | split: 'non-specstrip__cell' | size | minus: 1 -%}
+  {%- if rendered_count > 0 -%}
+    <div class="non-specstrip non-specstrip--{{ rendered_count }}">{{ spec_cells }}</div>
   {%- endif -%}
 
-  {%- if nutrition != blank -%}
+{%- else -%}
+  <div class="non-specstrip non-specstrip--{{ spec_count }}">
     <div class="non-specstrip__cell">
-      <div class="non-spec__k">{{ section.settings.spec_nutrition }}</div>
-      <div class="non-specstrip__v">{{ nutrition }}</div>
+      <div class="non-spec__k">{{ section.settings.spec_tastes }}</div>
+      <div class="non-specstrip__v">{{ tastes | default: product.title }}</div>
     </div>
-  {%- endif -%}
 
-  <div class="non-specstrip__cell">
-    <div class="non-spec__k">{{ section.settings.spec_serve }}</div>
-    <div class="non-specstrip__v">{{ serve }}</div>
+    {%- if sits != blank -%}
+      <div class="non-specstrip__cell">
+        <div class="non-spec__k">{{ section.settings.spec_sits }}</div>
+        <div class="non-specstrip__v">{{ sits }}</div>
+      </div>
+    {%- endif -%}
+
+    {%- if nutrition != blank -%}
+      <div class="non-specstrip__cell">
+        <div class="non-spec__k">{{ section.settings.spec_nutrition }}</div>
+        <div class="non-specstrip__v">{{ nutrition }}</div>
+      </div>
+    {%- endif -%}
+
+    <div class="non-specstrip__cell">
+      <div class="non-spec__k">{{ section.settings.spec_serve }}</div>
+      <div class="non-specstrip__v">{{ serve }}</div>
+    </div>
   </div>
-</div>
+{%- endif -%}
 
 <script type="application/json" data-non-catalogue>
   {
@@ -393,7 +448,8 @@
       "type": "text",
       "id": "spec_tastes",
       "label": "Tastes label",
-      "default": "Tastes like"
+      "default": "Tastes like",
+      "info": "Legacy. Used only when the section has no Spec row blocks. Add Spec rows to control the strip."
     },
     {
       "type": "text",
@@ -515,7 +571,55 @@
           "default": "6 pack"
         }
       ]
+    },
+    {
+      "type": "spec",
+      "name": "Spec row",
+      "settings": [
+        {
+          "type": "text",
+          "id": "label",
+          "label": "Label",
+          "default": "Tastes"
+        },
+        {
+          "type": "select",
+          "id": "source",
+          "label": "Value from",
+          "default": "tastes",
+          "info": "Where the value comes from. Metafield sources render nothing when the product has no value, and the row is skipped.",
+          "options": [
+            {
+              "value": "tastes",
+              "label": "Flavour profile (metafield)"
+            },
+            {
+              "value": "sits",
+              "label": "Sits with (metafield)"
+            },
+            {
+              "value": "nutrition",
+              "label": "Nutrition (calories + sugar)"
+            },
+            {
+              "value": "serve",
+              "label": "How to serve (metafield)"
+            },
+            {
+              "value": "custom",
+              "label": "Custom text"
+            }
+          ]
+        },
+        {
+          "type": "text",
+          "id": "custom_value",
+          "label": "Custom text",
+          "info": "Used only when Value from is set to Custom text."
+        }
+      ]
     }
-  ]
+  ],
+  "max_blocks": 30
 }
 {% endschema %}

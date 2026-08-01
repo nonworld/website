@@ -91,6 +91,31 @@
     });
   }
 
+  /**
+   * Failsafe.
+   *
+   * Hiding content in JS and un-hiding it from an IntersectionObserver is the
+   * same trap as hiding it in CSS, one step removed: if the observer never
+   * fires the page stays blank. It does not fire in a background tab, and a
+   * page opened in one and read later would arrive empty.
+   *
+   * So everything reveals unconditionally after a beat, whatever the observer
+   * did or did not do. A reveal that fires early is a cosmetic loss; a page
+   * that never appears is not.
+   */
+  function revealAll() {
+    document.querySelectorAll('[data-reveal]:not(.is-in)').forEach(function (el) {
+      el.classList.add('is-in');
+    });
+  }
+
+  setTimeout(revealAll, 2500);
+
+  // A tab that was never visible has no meaningful viewport to intersect with.
+  document.addEventListener('visibilitychange', function () {
+    if (document.visibilityState === 'visible') setTimeout(revealAll, 1200);
+  });
+
   document.documentElement.classList.add('non-motion');
 
   if (document.readyState === 'loading') {

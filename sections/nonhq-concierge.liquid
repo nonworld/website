@@ -16,6 +16,54 @@
   custom fields depend on the notification template.
 {%- endcomment -%}
 
+{%- comment -%}
+  Everything the design has around the concierge, which the port never built:
+  a hero, the practical facts, the three rooms, what actually happens, the
+  press and two closing offers. The booking form was the only part that
+  existed.
+{%- endcomment -%}
+<div class="non-hq-hero">
+  <div>
+    <div class="non-mono non-eyebrow">{{ section.settings.hero_eyebrow }}</div>
+    <h1 class="non-hq-hero__title">{{ section.settings.hero_heading }}</h1>
+  </div>
+  {%- if section.settings.hero_blurb != blank -%}
+    <p class="non-hq-hero__lead">{{ section.settings.hero_blurb }}</p>
+  {%- endif -%}
+</div>
+
+{%- assign facts = section.blocks | where: 'type', 'fact' -%}
+{%- if facts.size > 0 -%}
+  <div class="non-hq-facts">
+    {%- for b in facts -%}
+      <div class="non-hq-fact" {{ b.shopify_attributes }}>
+        <div class="non-mono non-eyebrow">{{ b.settings.label }}</div>
+        <div class="non-hq-fact__body">{{ b.settings.body }}</div>
+      </div>
+    {%- endfor -%}
+  </div>
+{%- endif -%}
+
+{%- assign rooms = section.blocks | where: 'type', 'room' -%}
+{%- if rooms.size > 0 -%}
+  <div class="non-hq-rooms">
+    {%- for b in rooms -%}
+      <div class="non-hq-room" {{ b.shopify_attributes }}>
+        {%- if b.settings.image != blank -%}
+          {{ b.settings.image | image_url: width: 900 | image_tag:
+             loading: 'lazy', widths: '400,700,900', class: 'non-hq-room__img', alt: b.settings.title }}
+        {%- elsif b.settings.image_url != blank -%}
+          <img class="non-hq-room__img" src="{{ b.settings.image_url }}" alt="{{ b.settings.title | escape }}" loading="lazy">
+        {%- endif -%}
+        <div class="non-hq-room__cap">
+          <div class="non-hq-room__t">{{ b.settings.title }}</div>
+          <div class="non-hq-room__s">{{ b.settings.subtitle }}</div>
+        </div>
+      </div>
+    {%- endfor -%}
+  </div>
+{%- endif -%}
+
 <div class="non-section">
   <div class="non-section__head">
     <h1 class="non-section__title">{{ section.settings.heading }}</h1>
@@ -125,10 +173,91 @@
   {%- endform -%}
 </div>
 
+
+{%- assign steps = section.blocks | where: 'type', 'step' -%}
+{%- if steps.size > 0 -%}
+  <div class="non-section">
+    <div class="non-section__head">
+      <h2 class="non-section__title">{{ section.settings.steps_label }}</h2>
+    </div>
+    <div class="non-hq-steps">
+      {%- for b in steps -%}
+        <div class="non-hq-step" {{ b.shopify_attributes }}>
+          <div class="non-hq-step__n">{{ forloop.index | prepend: '0' | slice: -2, 2 }}</div>
+          <div>
+            <div class="non-hq-step__t">{{ b.settings.title }}</div>
+            <p class="non-hq-step__b">{{ b.settings.body }}</p>
+          </div>
+        </div>
+      {%- endfor -%}
+    </div>
+  </div>
+{%- endif -%}
+
+{%- assign quotes = section.blocks | where: 'type', 'quote' -%}
+{%- if quotes.size > 0 -%}
+  <div class="non-press">
+    <div class="non-mono non-eyebrow">{{ section.settings.press_label }}</div>
+    <div class="non-press__list">
+      {%- for b in quotes -%}
+        <div {{ b.shopify_attributes }}>
+          <blockquote class="non-press__quote" style="margin:0">&ldquo;{{ b.settings.quote }}&rdquo;</blockquote>
+          <div class="non-press__cite">{{ b.settings.source }}</div>
+        </div>
+      {%- endfor -%}
+    </div>
+  </div>
+{%- endif -%}
+
+{%- assign closers = section.blocks | where: 'type', 'closer' -%}
+{%- if closers.size > 0 -%}
+  <div class="non-about-ctas">
+    {%- for b in closers -%}
+      <div class="non-about-cta{% if forloop.last %} non-about-cta--solid{% endif %}" {{ b.shopify_attributes }}>
+        <div class="non-about-cta__title">{{ b.settings.title }}</div>
+        <p class="non-about-cta__body">{{ b.settings.body }}</p>
+        {%- if b.settings.label != blank -%}
+          <a class="non-about-cta__link" href="{{ b.settings.url | default: '/' }}">{{ b.settings.label }}</a>
+        {%- endif -%}
+      </div>
+    {%- endfor -%}
+  </div>
+{%- endif -%}
+
 {% schema %}
 {
   "name": "NONHQ concierge",
   "settings": [
+    {
+      "type": "text",
+      "id": "hero_eyebrow",
+      "label": "Eyebrow",
+      "default": "Cheltenham, Victoria · open Thu–Sun"
+    },
+    {
+      "type": "text",
+      "id": "hero_heading",
+      "label": "Headline",
+      "default": "The world's first 0.0% cellar door."
+    },
+    {
+      "type": "textarea",
+      "id": "hero_blurb",
+      "label": "Blurb",
+      "default": "Nine bottles, a working kitchen and the people who make it. Tell the concierge who's coming and it books the right room."
+    },
+    {
+      "type": "text",
+      "id": "steps_label",
+      "label": "What happens label",
+      "default": "What happens"
+    },
+    {
+      "type": "text",
+      "id": "press_label",
+      "label": "Press label",
+      "default": "Press"
+    },
     {
       "type": "text",
       "id": "heading",
@@ -248,6 +377,108 @@
           "id": "price",
           "label": "Price",
           "default": "$35"
+        }
+      ]
+    },
+    {
+      "type": "fact",
+      "name": "Fact",
+      "settings": [
+        {
+          "type": "text",
+          "id": "label",
+          "label": "Label",
+          "default": "Where"
+        },
+        {
+          "type": "textarea",
+          "id": "body",
+          "label": "Body"
+        }
+      ]
+    },
+    {
+      "type": "room",
+      "name": "Room",
+      "settings": [
+        {
+          "type": "image_picker",
+          "id": "image",
+          "label": "Image"
+        },
+        {
+          "type": "text",
+          "id": "image_url",
+          "label": "Image URL"
+        },
+        {
+          "type": "text",
+          "id": "title",
+          "label": "Title",
+          "default": "The bench"
+        },
+        {
+          "type": "text",
+          "id": "subtitle",
+          "label": "Subtitle"
+        }
+      ]
+    },
+    {
+      "type": "step",
+      "name": "Step",
+      "settings": [
+        {
+          "type": "text",
+          "id": "title",
+          "label": "Title"
+        },
+        {
+          "type": "textarea",
+          "id": "body",
+          "label": "Body"
+        }
+      ]
+    },
+    {
+      "type": "quote",
+      "name": "Press quote",
+      "settings": [
+        {
+          "type": "textarea",
+          "id": "quote",
+          "label": "Quote"
+        },
+        {
+          "type": "text",
+          "id": "source",
+          "label": "Publication"
+        }
+      ]
+    },
+    {
+      "type": "closer",
+      "name": "Closing offer",
+      "settings": [
+        {
+          "type": "text",
+          "id": "title",
+          "label": "Title"
+        },
+        {
+          "type": "textarea",
+          "id": "body",
+          "label": "Body"
+        },
+        {
+          "type": "text",
+          "id": "label",
+          "label": "Button label"
+        },
+        {
+          "type": "url",
+          "id": "url",
+          "label": "Link"
         }
       ]
     }

@@ -18,7 +18,122 @@
         "submit_label": "Send the request",
         "form_note": "We confirm by email, usually same day.",
         "success_message": "Got it. We'll confirm by email, usually the same day."
-      }
+      },
+      "blocks": {
+        "fact-where": {
+          "type": "fact",
+          "settings": {
+            "label": "Where",
+            "body": "7 Cochranes Road\nMoorabbin VIC 3189"
+          }
+        },
+        "fact-hours": {
+          "type": "fact",
+          "settings": {
+            "label": "Hours",
+            "body": "Thu–Fri 12–8pm\nSat–Sun 11–6pm"
+          }
+        },
+        "fact-there": {
+          "type": "fact",
+          "settings": {
+            "label": "Getting there",
+            "body": "8 min from Moorabbin station. Parking on site."
+          }
+        },
+        "room-bench": {
+          "type": "room",
+          "settings": {
+            "title": "The bench",
+            "subtitle": "nine bottles, poured in order",
+            "image_url": "https://cdn.shopify.com/s/files/1/0371/5874/8205/files/non-story-038A8469.jpg?v=1785541727"
+          }
+        },
+        "room-kitchen": {
+          "type": "room",
+          "settings": {
+            "title": "The kitchen",
+            "subtitle": "five courses, matched",
+            "image_url": "https://cdn.shopify.com/s/files/1/0371/5874/8205/files/non-story-038A8614.jpg?v=1785541727"
+          }
+        },
+        "room-lab": {
+          "type": "room",
+          "settings": {
+            "title": "The lab",
+            "subtitle": "where the next bottle starts",
+            "image_url": "https://cdn.shopify.com/s/files/1/0371/5874/8205/files/non-story-038A8661.jpg?v=1785541727"
+          }
+        },
+        "step-1": {
+          "type": "step",
+          "settings": {
+            "title": "You taste blind first",
+            "body": "No labels, no story. Most people spend the first ten minutes deciding what it reminds them of — that is the point."
+          }
+        },
+        "step-2": {
+          "type": "step",
+          "settings": {
+            "title": "Then you taste the parts",
+            "body": "Verjus on its own. Salt on its own. Cinnamon tannin on its own. The argument for 0.0% makes itself once you taste the levers."
+          }
+        },
+        "step-3": {
+          "type": "step",
+          "settings": {
+            "title": "Then food arrives",
+            "body": "Five courses, each matched to a bottle. You leave able to explain to someone else why it works."
+          }
+        },
+        "q-fw": {
+          "type": "quote",
+          "settings": {
+            "quote": "I guarantee NON will change your opinion on how complex a non-alcoholic wine can be.",
+            "source": "Food & Wine"
+          }
+        },
+        "q-forbes": {
+          "type": "quote",
+          "settings": {
+            "quote": "NON isn't just a drink; it's an experience.",
+            "source": "Forbes"
+          }
+        },
+        "close-find": {
+          "type": "closer",
+          "settings": {
+            "title": "Can't get to Melbourne?",
+            "body": "Find the restaurants and retailers pouring NON near you.",
+            "label": "find.non.world",
+            "url": "/pages/store-locator"
+          }
+        },
+        "close-trade": {
+          "type": "closer",
+          "settings": {
+            "title": "Private & trade",
+            "body": "Buyer sessions, staff training and private events for up to 40.",
+            "label": "Enquire",
+            "url": "/pages/contact"
+          }
+        }
+      },
+      "block_order": [
+        "fact-where",
+        "fact-hours",
+        "fact-there",
+        "room-bench",
+        "room-kitchen",
+        "room-lab",
+        "step-1",
+        "step-2",
+        "step-3",
+        "q-fw",
+        "q-forbes",
+        "close-find",
+        "close-trade"
+      ]
     }
   },
   "order": [

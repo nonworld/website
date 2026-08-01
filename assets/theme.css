@@ -672,7 +672,7 @@ button { font-family: inherit; }
   display: flex; align-items: center; justify-content: space-between;
 }
 .non-sommbox__live {
-  font-family: var(--non-mono); font-size: var(--t-mono); color: #fff;
+  font-family: var(--non-mono); font-size: var(--t-mono); color: var(--non-fg-mute);
   display: inline-flex; align-items: center; gap: 7px;
 }
 /* The live dot. Green is a deliberate exception to a monochrome palette — it
@@ -686,7 +686,7 @@ button { font-family: inherit; }
   width: 7px; height: 7px; border-radius: 50%;
   background: var(--non-somm-dot, #4ade80);
   flex: none;
-  animation: sommPulse 2var(--duration-reveal) var(--ease-standard)-out infinite;
+  animation: sommPulse 2s var(--ease-standard) infinite;
 }
 @keyframes sommPulse {
   0%   { box-shadow: 0 0 0 0 var(--non-somm-dot-glow, rgba(74,222,128,.55)); }
@@ -1983,3 +1983,105 @@ a, button, .non-card, .non-filter, .non-pair__opt, .non-somm__seed,
   background: var(--non-somm-fg);
   color: #f2f0ea;
 }
+
+/* --- NON Somm panel: simplified ------------------------------------------
+   What was wrong, from the top:
+
+   - The name appeared twice, six lines apart: the head printed the locale
+     string and the opener printed somm_title directly beneath it.
+   - The opener sat in .non-chat__msg--a, a chat bubble with its own border and
+     background, inside the panel's border. A box in a box — and the bubble's
+     min-height left a large empty area under three lines of text.
+   - The seed chips sized to their own text, so four questions produced four
+     different widths on four ragged rows.
+   - ASK was the quietest control in the panel while ADD, directly above it,
+     was the loudest. The one thing asking for input looked like a footnote.
+
+   The panel is now: name, standfirst, ask, chips. Four things, one border. */
+
+.non-sommbox__opener {
+  margin: 0;
+  font-size: var(--t-copy);
+  line-height: 1.55;
+  color: var(--non-fg-dim);
+  max-width: 46ch;
+  text-wrap: pretty;
+}
+
+/* Ask row reads as the primary action: a filled field with a solid button, not
+   two quiet outlines. */
+.non-sommbox__ask {
+  align-items: stretch;
+  border-top: 1px solid var(--non-line-soft);
+}
+.non-sommbox__submit {
+  background: var(--non-somm-fg, var(--non-invert-bg));
+  color: #f2f0ea;
+  border: 0;
+  font-family: var(--non-sans);
+  font-size: var(--t-mono);
+  font-weight: 600;
+  letter-spacing: .14em;
+  text-transform: uppercase;
+  padding: 11px 20px;
+  cursor: pointer;
+  flex: none;
+}
+
+/* Chips on one rhythm. They are alternatives to each other, so they should
+   scan as a set rather than as four differently-sized objects. */
+.non-sommbox__seeds { display: flex; flex-wrap: wrap; }
+.non-sommbox__seeds .non-somm__seed {
+  flex: 1 1 auto;
+  min-width: 0;
+  text-align: left;
+  white-space: normal;
+  line-height: 1.35;
+  padding: 9px 13px;
+  border-radius: 2px;
+  transition: border-color var(--duration-hover) var(--ease-hover),
+              color var(--duration-hover) var(--ease-hover);
+}
+@media (min-width: 520px) {
+  /* Two per row above the fold rather than one long and three short. */
+  .non-sommbox__seeds .non-somm__seed { flex: 0 1 calc(50% - 4px); }
+}
+
+/* The query box. It was a transparent, borderless input, so it read as a line
+   of static label text rather than something you can click into and type in —
+   the placeholder looked like a caption. The JS was always wired
+   (data-non-somm → Somm()); the affordance was the missing part.
+
+   Now it is an explicit well: its own surface, a border, a resting cursor and a
+   focus ring that does not move anything. */
+.non-sommbox__ask {
+  display: flex;
+  align-items: stretch;
+  gap: 10px;
+  padding: 14px 16px;
+}
+.non-sommbox__ask .non-somm__input {
+  flex: 1 1 auto;
+  min-width: 0;
+  background: var(--non-bg);
+  border: 1px solid var(--non-line-strong);
+  border-radius: 2px;
+  padding: 11px 13px;
+  font-family: var(--non-sans);
+  font-size: var(--t-copy);
+  color: #f2f0ea;
+  cursor: text;
+  transition: border-color var(--duration-hover) var(--ease-hover),
+              box-shadow var(--duration-hover) var(--ease-hover);
+}
+.non-sommbox__ask .non-somm__input::placeholder { color: #8b8880; }
+.non-sommbox__ask .non-somm__input:focus {
+  outline: none;
+  border-color: var(--non-somm-fg, var(--non-fg));
+  box-shadow: 0 0 0 2px rgba(12, 12, 12, .18);
+}
+/* type="search" draws a clear button and an inner shadow in WebKit that fights
+   the border above. */
+.non-sommbox__ask .non-somm__input::-webkit-search-decoration,
+.non-sommbox__ask .non-somm__input::-webkit-search-cancel-button { -webkit-appearance: none; }
+.non-sommbox__ask .non-somm__input { -webkit-appearance: none; appearance: none; }

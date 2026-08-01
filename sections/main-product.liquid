@@ -194,19 +194,34 @@
     {%- comment -%} ── somm, as a panel ────────────────────────────────── {%- endcomment -%}
     {%- if section.settings.show_somm -%}
       <div class="non-sommbox" style="{% if section.settings.somm_dot_colour != blank %}--non-somm-dot: {{ section.settings.somm_dot_colour }};{% endif %}{% if section.settings.somm_bg != blank %}--non-somm-bg: {{ section.settings.somm_bg }};{% endif %}{% if section.settings.somm_border != blank %}--non-somm-border: {{ section.settings.somm_border }};{% endif %}">
+        {%- comment -%}
+          One label, not two. The head printed the locale string "NON Somm" and
+          the opening line printed section.settings.somm_title immediately below
+          it — the same words twice, six lines apart. The setting now drives the
+          single remaining label, so the panel is named in one place and that
+          place is editable.
+        {%- endcomment -%}
         <div class="non-sommbox__head">
-          <span class="non-mono non-eyebrow">{{ 'products.product.somm_heading' | t }}</span>
+          <span class="non-mono non-eyebrow">
+            {{ section.settings.somm_title | default: 'products.product.somm_heading' | t }}
+          </span>
           <span class="non-sommbox__live">
             <span class="non-sommbox__dot" aria-hidden="true"></span>
             {{ section.settings.somm_status }}
           </span>
         </div>
 
+        {%- comment -%}
+          The opener was wrapped in .non-chat__msg--a, a chat bubble with its own
+          border and background sitting inside the panel's border — a box in a
+          box, with the bubble's min-height leaving a large empty area beneath
+          three lines of text. It is not a message; nobody sent it. It reads as
+          the panel's own standfirst, so it is one now.
+
+          The transcript wrapper stays: somm.js appends real replies into it.
+        {%- endcomment -%}
         <div class="non-sommbox__body" data-non-somm-transcript>
-          <div class="non-chat__msg non-chat__msg--a">
-            <span class="non-chat__who">{{ section.settings.somm_title }}</span>
-            {{ section.settings.somm_opener }}
-          </div>
+          <p class="non-sommbox__opener">{{ section.settings.somm_opener }}</p>
           <p class="non-somm__stream" data-non-somm-stream hidden></p>
         </div>
 
@@ -222,7 +237,7 @@
             type="search"
             autocomplete="off"
             data-non-somm-input
-            placeholder="Ask about pairing, sugar, process&hellip;">
+            placeholder="{{ section.settings.somm_placeholder | escape }}">
           <button type="submit" class="non-sommbox__submit">{{ 'products.product.ask' | t }}</button>
         </form>
 

@@ -600,7 +600,7 @@ button { font-family: inherit; }
 @media (min-width: 860px) { .non-buy { padding: 34px var(--non-pad); } }
 
 .non-buy__name {
-  margin: 12px 0 0; font-size: clamp(30px, 2.8vw, 46px);
+  margin: 12px 0 0; font-size: clamp(30px, 3.06vw, 46px);
   line-height: 1.02; font-weight: 600; letter-spacing: -.03em; max-width: 14ch;
 }
 .non-buy__blurb {

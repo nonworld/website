@@ -19,11 +19,21 @@
   endif
 -%}
 
-{%- if items != blank -%}
-  <div
-    class="non-section"
-    data-non-recommendations
-    data-url="{{ routes.product_recommendations_url }}?section_id={{ section.id }}&product_id={{ product.id }}&limit={{ section.settings.limit }}">
+{%- comment -%}
+  The wrapper renders even with nothing in it.
+
+  It used to sit inside the items-not-blank branch, which made the fetch URL
+  unreachable in exactly the case that needed it: recommendations.performed is
+  only true when Shopify renders this section through the Section Rendering
+  API, so on a normal page load a product with no custom.related metafield had
+  no items, therefore no wrapper, therefore no URL, therefore no fetch — and
+  the section could never appear. The hook existed and nothing ever called it.
+{%- endcomment -%}
+<div
+  class="non-section"
+  data-non-recommendations
+  {% if items == blank %}hidden{% endif %}
+  data-url="{{ routes.product_recommendations_url }}?section_id={{ section.id }}&product_id={{ product.id }}&limit={{ section.settings.limit }}">
     <div class="non-mono non-eyebrow">{{ section.settings.heading }}</div>
 
     <div class="non-related">
@@ -46,7 +56,8 @@
       {%- endfor -%}
     </div>
   </div>
-{%- endif -%}
+
+<script src="{{ 'related.js' | asset_url }}" defer></script>
 
 {% schema %}
 {

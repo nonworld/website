@@ -9,6 +9,13 @@
         }}
       {%- elsif block.settings.image_url != blank -%}
         <img src="{{ block.settings.image_url }}" alt="{{ block.settings.title | escape }}" loading="lazy">
+      {%- else -%}
+        {%- comment -%}
+          A visible placeholder rather than nothing. An empty panel reads as a
+          layout bug; a placeholder reads as "an image belongs here", which is
+          what it is.
+        {%- endcomment -%}
+        {{ 'lifestyle-2' | placeholder_svg_tag }}
       {%- endif -%}
 
       <div class="non-split__body">
@@ -34,7 +41,14 @@
         {
           "type": "image_picker",
           "id": "image",
-          "label": "Image"
+          "label": "Image",
+          "info": "Overrides the image URL below."
+        },
+        {
+          "type": "text",
+          "id": "image_url",
+          "label": "Image URL",
+          "info": "Used when no image is picked. Points at an image already on the store's CDN."
         },
         {
           "type": "text",

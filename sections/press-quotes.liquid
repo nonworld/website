@@ -1,4 +1,24 @@
-<div class="non-press">
+{%- comment -%}
+  Press, with the globe filling the space to its right.
+
+  The globe is built by assets/globe.js into the empty div below — the markup
+  is generated rather than written here because it is ~30 nodes of pure
+  geometry (meridian rings, parallels, a canvas overlay and one label per
+  city), none of which anyone would ever edit by hand.
+
+  It only renders when the section is set to show it, and the section falls
+  back to its original two-column layout when it is off.
+{%- endcomment -%}
+
+{%- liquid
+  assign show_globe = section.settings.show_globe
+  assign globe_class = 'non-press'
+  if show_globe
+    assign globe_class = 'non-press non-press--globe'
+  endif
+-%}
+
+<div class="{{ globe_class }}">
   <div class="non-mono non-eyebrow">{{ section.settings.heading }}</div>
 
   <div class="non-press__list">
@@ -11,7 +31,27 @@
       </div>
     {%- endfor -%}
   </div>
+
+  {%- if show_globe -%}
+    <div
+      class="non-globe"
+      data-non-globe
+      data-size="{{ section.settings.globe_size }}"
+      data-lap="{{ section.settings.globe_lap }}"
+      data-logo-lap="{{ section.settings.globe_logo_lap }}"
+      {% if section.settings.globe_logo != blank %}
+        data-logo="{{ section.settings.globe_logo | image_url: width: 240 }}"
+      {% else %}
+        data-logo="{{ 'non-logotype.svg' | asset_url }}"
+      {% endif %}
+      style="--non-globe-box: {{ section.settings.globe_size | plus: 60 }}px"
+      aria-hidden="true"></div>
+  {%- endif -%}
 </div>
+
+{%- if show_globe -%}
+  <script src="{{ 'globe.js' | asset_url }}" defer></script>
+{%- endif -%}
 
 {% schema %}
 {
@@ -22,6 +62,50 @@
       "id": "heading",
       "label": "Heading",
       "default": "Press"
+    },
+    { "type": "header", "content": "Globe" },
+    {
+      "type": "checkbox",
+      "id": "show_globe",
+      "label": "Show the globe",
+      "default": true,
+      "info": "Sits to the right of the quotes. Pauses when scrolled off screen, and renders a single still frame for anyone using reduced motion."
+    },
+    {
+      "type": "range",
+      "id": "globe_size",
+      "label": "Size",
+      "min": 200,
+      "max": 700,
+      "step": 20,
+      "unit": "px",
+      "default": 420
+    },
+    {
+      "type": "range",
+      "id": "globe_lap",
+      "label": "Seconds per rotation",
+      "min": 10,
+      "max": 90,
+      "step": 2,
+      "unit": "s",
+      "default": 34
+    },
+    {
+      "type": "range",
+      "id": "globe_logo_lap",
+      "label": "Seconds per logo sweep",
+      "min": 4,
+      "max": 40,
+      "step": 1,
+      "unit": "s",
+      "default": 9
+    },
+    {
+      "type": "image_picker",
+      "id": "globe_logo",
+      "label": "Mark on the globe",
+      "info": "Defaults to the NON logotype."
     }
   ],
   "blocks": [

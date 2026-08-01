@@ -919,3 +919,65 @@ button { font-family: inherit; }
 }
 .non-cart-prize__apply:hover,
 .non-cart-prize__apply:focus-visible { background: var(--non-ink); color: var(--non-invert-bg); }
+
+/* --- The globe ------------------------------------------------------------
+   Authored in a 100x100 box and scaled up, so every offset in globe.js stays
+   in those units regardless of the display size. The box below reserves the
+   space; the stage inside it is what scales. */
+.non-globe {
+  position: relative;
+  display: grid;
+  place-items: center;
+  min-height: var(--non-globe-box, 420px);
+  overflow: hidden;
+}
+.non-globe__stage {
+  position: relative;
+  width: 100px;
+  height: 100px;
+  transform-origin: center;
+}
+.non-globe__glow {
+  position: absolute; inset: 0; border-radius: 50%;
+  background: radial-gradient(circle at 40% 36%,
+    rgba(255,255,255,.12), rgba(255,255,255,.03) 52%, transparent 70%);
+}
+.non-globe__tilt {
+  position: absolute; inset: 0;
+  transform: rotateZ(-23.4deg) rotateX(-14deg);
+  transform-style: preserve-3d;
+}
+.non-globe__spin { position: absolute; inset: 0; transform-style: preserve-3d; }
+.non-globe__trace { position: absolute; left: 0; top: 0; width: 100px; height: 100px; }
+.non-globe__labels { position: absolute; inset: 0; pointer-events: none; }
+/* 2.4px at the authored scale — at the default 5.2x that renders about 12.5px.
+   JetBrains Mono, per the house rule that anything not Helvetica is mono. */
+.non-globe__label {
+  position: absolute; left: 50%; top: 50%;
+  white-space: nowrap;
+  font-family: var(--non-mono);
+  font-size: 2.4px;
+  letter-spacing: 0.24px;
+  color: #fff;
+  opacity: 0;
+  padding-left: 2.2px;
+  margin-top: -1.4px;
+  will-change: transform, opacity;
+}
+.non-globe__logo {
+  position: absolute; left: 50%; top: 50%;
+  width: 9px; height: auto;
+  margin-left: -4.5px; margin-top: -1.5px;
+  filter: invert(1);
+  will-change: transform, opacity;
+}
+
+/* Press sits beside the globe on desktop and above it on mobile, where a
+   scaled 3D object in a narrow column is just a smudge. */
+.non-press--globe { align-items: center; }
+@media (min-width: 1040px) {
+  .non-press--globe { grid-template-columns: 160px minmax(0, 1fr) minmax(0, 40%); }
+}
+@media (max-width: 1039px) {
+  .non-globe { --non-globe-box: 320px; }
+}

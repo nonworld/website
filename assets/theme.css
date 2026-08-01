@@ -1345,4 +1345,4 @@ button { font-family: inherit; }
 
 /* Card names were 15.5px against the design's 19px — product names on a shop
    page are the thing being scanned, not supporting text. */
-.non-card__name { font-size: clamp(16px, 1.15vw, 19px); }
+.non-card__name { font-size: clamp(16px, 1.32vw, 19px); }

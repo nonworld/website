@@ -1,0 +1,125 @@
+/*
+ * ------------------------------------------------------------
+ * IMPORTANT: The contents of this file are auto-generated.
+ *
+ * This file may be updated by the Shopify admin theme editor
+ * or related systems. Please exercise caution as any changes
+ * made to this file may be overwritten.
+ * ------------------------------------------------------------
+ */
+{
+  "sections": {
+    "main": {
+      "type": "main-collection",
+      "settings": {
+        "show_filters": true,
+        "show_add": true,
+        "columns": "3",
+        "dim_non_matches": true,
+        "dim_level": 34,
+        "eyebrow": "The range",
+        "heading": "Sorted by what you're eating.",
+        "blurb": "Not by price. Not by colour. Tell the shelf what's on the table and it reorders itself — strongest match first, with the reason attached.",
+        "filter_label": "Eating",
+        "promo_product": "mixed-6-pack",
+        "promo_eyebrow": "Cheapest way in",
+        "promo_cta": "Add the mixed six",
+        "promo_show_price": true
+      },
+      "blocks": {
+        "chip-raw": {
+          "type": "occasion",
+          "settings": {
+            "key": "raw",
+            "label": "Raw or cured"
+          }
+        },
+        "chip-seafood": {
+          "type": "occasion",
+          "settings": {
+            "key": "seafood",
+            "label": "Seafood"
+          }
+        },
+        "chip-veg": {
+          "type": "occasion",
+          "settings": {
+            "key": "veg",
+            "label": "Vegetables"
+          }
+        },
+        "chip-charred": {
+          "type": "occasion",
+          "settings": {
+            "key": "charred",
+            "label": "Charred or roasted"
+          }
+        },
+        "chip-braise": {
+          "type": "occasion",
+          "settings": {
+            "key": "braise",
+            "label": "Braised"
+          }
+        },
+        "chip-spice": {
+          "type": "occasion",
+          "settings": {
+            "key": "spice",
+            "label": "Spice and heat"
+          }
+        },
+        "chip-cheese": {
+          "type": "occasion",
+          "settings": {
+            "key": "cheese",
+            "label": "Cheese"
+          }
+        },
+        "chip-sweet": {
+          "type": "occasion",
+          "settings": {
+            "key": "sweet",
+            "label": "Dessert"
+          }
+        },
+        "chip-aperitif": {
+          "type": "occasion",
+          "settings": {
+            "key": "aperitif",
+            "label": "No food, just a glass"
+          }
+        }
+      },
+      "block_order": [
+        "chip-raw",
+        "chip-seafood",
+        "chip-veg",
+        "chip-charred",
+        "chip-braise",
+        "chip-spice",
+        "chip-cheese",
+        "chip-sweet",
+        "chip-aperitif"
+      ]
+    },
+    "sets": {
+      "type": "featured-collection",
+      "settings": {
+        "heading": "Sets",
+        "collection": "non-sets",
+        "columns": "4",
+        "rows": 1,
+        "show_add": false,
+        "link_label": "All sets",
+        "link_url": "/collections/non-sets",
+        "card_max": 380,
+        "layout": "row"
+      }
+    }
+  },
+  "order": [
+    "main",
+    "sets"
+  ]
+}

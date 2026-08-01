@@ -1812,3 +1812,103 @@ a, button, .non-card, .non-filter, .non-pair__opt, .non-somm__seed,
 }
 .non-about-cta--media { color: var(--non-invert-fg, #fff); }
 .non-about-cta--media .non-about-cta__body { color: rgba(255, 255, 255, .82); }
+
+/* --- About: the process rail ----------------------------------------------
+   From the supplied NON_Process_Infographic embed, integrated rather than
+   iframed: an iframe would have cost a second Google Fonts request, put the
+   content out of reach of the page's own type scale, and hidden six stages of
+   copy from search engines and screen readers.
+
+   Its tokens are renamed --np-* and scoped to .non-process. The embed declared
+   --non-bg, --non-fg, --non-line and --non-mono on :root, and those are all
+   live theme globals with different values (#0A0A0A vs #0c0c0c, #EDEAE4 vs
+   #f2f0ea, #2A2722 vs #1f1f1d) — pasting that block would have re-tinted every
+   page on the site from an About-page embed. */
+
+.non-process {
+  --np-mid: #9a948b;
+  --np-muted: #8c867c;
+  --np-dim: #7c766d;
+  --np-faint: #5f5a53;
+  --np-rule: #24221e;
+  --np-station-line: #2a2722;
+
+  background: var(--non-bg);
+  color: var(--non-fg);
+  font-family: var(--non-mono);
+  font-weight: 300;
+  padding: 64px var(--non-pad) 72px;
+  width: 100%;
+  border-top: 1px solid var(--non-line);
+}
+
+.np-head {
+  display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between;
+  gap: 16px;
+  border-bottom: 1px solid var(--np-rule);
+  padding-bottom: 20px;
+  margin-bottom: 56px;
+}
+.np-head span {
+  font-family: var(--non-sans, inherit);
+  font-size: 11px; letter-spacing: .26em; text-transform: uppercase;
+}
+.np-head .np-head-r { color: var(--np-dim); white-space: nowrap; }
+
+.np-rail { position: relative; width: 100%; }
+.np-line {
+  position: absolute; left: 8.3333%; right: 8.3333%; top: 35px;
+  height: 1px; background: var(--np-station-line);
+}
+.np-stations { position: relative; display: grid; grid-template-columns: repeat(6, 1fr); }
+.np-station { display: flex; flex-direction: column; align-items: center; padding: 0 14px; text-align: center; }
+.np-num { font-size: 13px; letter-spacing: .18em; color: var(--np-mid); line-height: 1; }
+.np-dotbox { height: 44px; display: flex; align-items: center; justify-content: center; }
+.np-dot {
+  width: 11px; height: 11px; border-radius: 50%;
+  border: 1px solid var(--non-fg); background: var(--non-bg);
+  display: flex; align-items: center; justify-content: center;
+}
+.np-dot i { width: 3px; height: 3px; border-radius: 50%; background: var(--non-fg); display: block; }
+.np-title {
+  font-family: var(--non-sans, inherit);
+  margin-top: 14px; font-size: 15px; font-weight: 500;
+  letter-spacing: .08em; text-transform: uppercase; color: var(--non-fg);
+}
+.np-body {
+  margin-top: 12px; font-size: 13px; line-height: 1.75;
+  color: var(--np-muted); text-wrap: pretty; max-width: 210px;
+}
+.np-foot {
+  font-family: var(--non-sans, inherit);
+  margin-top: 56px; border-top: 1px solid var(--np-rule); padding-top: 20px;
+  font-size: 11px; letter-spacing: .22em; text-transform: uppercase; color: var(--np-faint);
+}
+
+/* The travelling pulse. Decorative, and the one piece here that invents its own
+   timing — the theme's four motion tokens describe reveals and hovers, not a
+   loop, so there is nothing to reuse. Guarded twice: reduced-motion, and the
+   dot is absent from the DOM order that matters. */
+.np-pulse {
+  position: absolute; top: -1.5px; width: 4px; height: 4px; border-radius: 50%;
+  background: var(--non-fg); box-shadow: 0 0 10px 2px rgba(237, 234, 228, .35);
+  animation: npPulseX 7s linear infinite;
+}
+@keyframes npPulseX { 0% { left: 0; opacity: 0 } 10% { opacity: 1 } 88% { opacity: 1 } 100% { left: 100%; opacity: 0 } }
+@keyframes npPulseY { 0% { top: 0; opacity: 0 } 10% { opacity: 1 } 88% { opacity: 1 } 100% { top: 100%; opacity: 0 } }
+
+/* Below 900px the rail becomes a vertical timeline down the left edge. */
+@media (max-width: 900px) {
+  .non-process { padding: 48px var(--non-pad) 56px; }
+  .np-head { margin-bottom: 40px; }
+  .np-line { left: 5px; right: auto; top: 6px; bottom: 6px; width: 1px; height: auto; }
+  .np-pulse { left: -1.5px; top: 0; animation-name: npPulseY; }
+  .np-stations { display: flex; flex-direction: column; gap: 40px; }
+  .np-station { display: grid; grid-template-columns: 12px 1fr; gap: 20px; align-items: start; padding: 0; text-align: left; }
+  .np-dotbox { height: 18px; grid-row: 1; grid-column: 1; }
+  .np-num { grid-row: 1; grid-column: 2; font-size: 12px; line-height: 1.5; }
+  .np-title { grid-row: 2; grid-column: 2; margin-top: 0; line-height: 1.5; }
+  .np-body { grid-row: 3; grid-column: 2; margin-top: 10px; max-width: 46ch; line-height: 1.8; }
+}
+
+@media (prefers-reduced-motion: reduce) { .np-pulse { display: none } }

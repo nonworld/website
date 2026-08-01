@@ -204,6 +204,50 @@
   </div>
 {%- endif -%}
 
+{%- comment -%} ── the process rail ──────────────────────────────────────── {%- endcomment -%}
+{%- comment -%}
+  The six stages, from the supplied process infographic. It sits here because
+  the band above it argues that every ingredient has to be handled on its own,
+  and this is the evidence for that claim — the reader gets the assertion, then
+  the six steps, then the photograph of the room it happens in.
+
+  Every string is a block or a setting. The numbers are NOT: they come from
+  forloop, the same way the four pillars do, so reordering stations in the theme
+  editor renumbers them instead of leaving 01, 02, 02, 05 behind.
+
+  The rail renders only when there are stations to put on it — an empty rail is
+  a line across the page with nothing attached.
+{%- endcomment -%}
+{%- assign stations = section.blocks | where: 'type', 'process' -%}
+{%- if stations.size > 0 -%}
+  <section class="non-process">
+    <div class="np-head">
+      <span>{{ section.settings.process_label }}</span>
+      {%- if section.settings.process_meta != blank -%}
+        <span class="np-head-r">{{ section.settings.process_meta }}</span>
+      {%- endif -%}
+    </div>
+
+    <div class="np-rail">
+      <div class="np-line"><div class="np-pulse"></div></div>
+      <div class="np-stations">
+        {%- for block in stations -%}
+          <div class="np-station" {{ block.shopify_attributes }}>
+            <div class="np-num">{{ forloop.index | prepend: '0' | slice: -2, 2 }}</div>
+            <div class="np-dotbox"><div class="np-dot"><i></i></div></div>
+            <div class="np-title">{{ block.settings.title }}</div>
+            <div class="np-body">{{ block.settings.body }}</div>
+          </div>
+        {%- endfor -%}
+      </div>
+    </div>
+
+    {%- if section.settings.process_note != blank -%}
+      <div class="np-foot">{{ section.settings.process_note }}</div>
+    {%- endif -%}
+  </section>
+{%- endif -%}
+
 {%- comment -%} ── the kitchen band ──────────────────────────────────────── {%- endcomment -%}
 {%- comment -%}
   Full-bleed image with the caption sitting over it — the design's one moment of
@@ -450,6 +494,30 @@
     },
     {
       "type": "header",
+      "content": "The process rail"
+    },
+    {
+      "type": "text",
+      "id": "process_label",
+      "label": "Rail label",
+      "default": "The Process"
+    },
+    {
+      "type": "text",
+      "id": "process_meta",
+      "label": "Rail meta (right)",
+      "default": "Six stages / 01—06",
+      "info": "Sits opposite the label. Leave empty to hide it."
+    },
+    {
+      "type": "text",
+      "id": "process_note",
+      "label": "Rail footer",
+      "default": "Made in Melbourne",
+      "info": "Leave empty to hide the footer line."
+    },
+    {
+      "type": "header",
       "content": "Appearance"
     },
     {
@@ -657,12 +725,35 @@
           "info": "Design: 038A8469 (NONHQ) and 038A8736 (a glass of NON). Used only when no image is uploaded. Leave both empty to keep the flat panel."
         }
       ]
+    },
+    {
+      "type": "process",
+      "name": "Process station",
+      "settings": [
+        {
+          "type": "text",
+          "id": "title",
+          "label": "Stage",
+          "default": "Preparation"
+        },
+        {
+          "type": "textarea",
+          "id": "body",
+          "label": "Description",
+          "default": "Whole fruit, herbs, spices, tea and verjus are sourced and prepped."
+        },
+        {
+          "type": "paragraph",
+          "content": "The number is generated from the station's position on the rail, so reordering renumbers automatically. There is no number to edit."
+        }
+      ]
     }
   ],
   "presets": [
     {
       "name": "About"
     }
-  ]
+  ],
+  "max_blocks": 30
 }
 {% endschema %}

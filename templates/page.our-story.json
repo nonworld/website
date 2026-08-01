@@ -116,6 +116,48 @@
             "title": "Not an imitation",
             "body": "It takes the seat wine had at the table. It doesn't try to taste like the thing that sat there."
           }
+        },
+        "proc-1": {
+          "type": "process",
+          "settings": {
+            "title": "Preparation",
+            "body": "Whole fruit, herbs, spices, tea and verjus are sourced and prepped. Real produce, not concentrate."
+          }
+        },
+        "proc-2": {
+          "type": "process",
+          "settings": {
+            "title": "Cook",
+            "body": "Ingredients are cooked to build depth, texture and structure."
+          }
+        },
+        "proc-3": {
+          "type": "process",
+          "settings": {
+            "title": "Extraction",
+            "body": "Cold or hot, depending on the ingredient. Draws out flavour, colour and aromatics."
+          }
+        },
+        "proc-4": {
+          "type": "process",
+          "settings": {
+            "title": "Filter",
+            "body": "Solids are removed, leaving a clear, stable base liquid."
+          }
+        },
+        "proc-5": {
+          "type": "process",
+          "settings": {
+            "title": "Blend",
+            "body": "Filtered extracts are blended to the variant’s final flavour profile."
+          }
+        },
+        "proc-6": {
+          "type": "process",
+          "settings": {
+            "title": "Bottle",
+            "body": "The finished liquid is sent out for bottling."
+          }
         }
       },
       "block_order": [
@@ -130,6 +172,12 @@
         "cred-2",
         "cred-3",
         "cred-4",
+        "proc-1",
+        "proc-2",
+        "proc-3",
+        "proc-4",
+        "proc-5",
+        "proc-6",
         "stat-water",
         "stat-green",
         "stat-abv",
@@ -154,7 +202,10 @@
         "hard_image_url": "https://cdn.shopify.com/s/files/1/0371/5874/8205/files/non-story-038A8614.jpg?v=1785541727&width=1600",
         "hard_image_alt": "Spicing cherries by hand in the NON kitchen",
         "kitchen_image_url": "https://cdn.shopify.com/s/files/1/0371/5874/8205/files/non-story-038A8683.jpg?v=1785541727&width=2000",
-        "kitchen_caption": "Every ingredient is processed on its own before anything is blended."
+        "kitchen_caption": "Every ingredient is processed on its own before anything is blended.",
+        "process_label": "The Process",
+        "process_meta": "Six stages / 01—06",
+        "process_note": "Made in Melbourne"
       }
     },
     "poured-at": {

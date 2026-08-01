@@ -8,11 +8,17 @@
   shipped 1080x1350 into a 375px slot, and it is the LCP element, so it hit the
   metric that matters most on mobile hardest.
 
-  Shopify's CDN resizes AND reformats from query parameters, so a srcset of
-  webp can be built from any /cdn/shop/ URL without re-uploading anything. The
-  originals are untouched — this only changes what gets served. The width param is
+  Shopify's CDN resizes from a query parameter, so a srcset can be built from
+  any /cdn/shop/ URL without re-uploading anything. The width param is
   normalised first: the stored URLs already carry ?width=1200 and appending a
   second one wins silently in some CDNs and loses in others.
+
+  format=webp is belt-and-braces, NOT the lever. Measured on the live CDN with
+  real <img> requests: NON3-5.jpg at width=900 returns 73,290 bytes with the
+  parameter and 73,290 without it. The same URL fetched with Accept: */*
+  returns 126,095 bytes of jpeg. The CDN is already negotiating format from the
+  Accept header and has been all along — the parameter only matters for a
+  client that fails to advertise webp support.
 
   Falls back to a plain img for anything not on the Shopify CDN, because the
   width parameter would do nothing there and a srcset of identical files is

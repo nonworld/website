@@ -140,14 +140,20 @@ const OCCASIONS = [
     key: 'aperitif',
     label: 'No food, just a glass',
     dish: {
-      // No plate at all. Every food signal is empty on purpose, so the score
-      // falls to body, acid and the bottle's own balance — which is exactly
+      // No plate at all — proteins and cooking style are empty on purpose, so
+      // the score falls to acid, body and the bottle's own balance, which is
       // what decides whether something drinks well alone.
+      //
+      // fatLevel and weight sit MID rather than at zero. The engine has no way
+      // to say "this axis does not apply", and fatLevel 0 was outside the
+      // stated range of three bottles, so a chip meaning "no food" was
+      // excluding them for the fat content of food that is not there. It
+      // greyed four of six bottles; a shelf that dark is not a filter.
       proteins: [],
-      fatLevel: 0,
+      fatLevel: 2,
       cookingStyle: [],
       dishAcid: 3,
-      weight: 1,
+      weight: 2,
       heat: 0,
       flavourNotes: [],
     },

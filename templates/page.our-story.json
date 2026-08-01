@@ -207,83 +207,9 @@
         "process_meta": "Six stages / 01—06",
         "process_note": "Made in Melbourne"
       }
-    },
-    "poured-at": {
-      "type": "logo-marquee",
-      "blocks": {
-        "v1": {
-          "type": "venue",
-          "settings": {
-            "name": "The French Laundry",
-            "max_height": 44,
-            "image_url": "https://www.non.world/cdn/shop/files/french_laundry_2_-_Copy_4c30ca9f-1794-44ec-9dd7-a3e422c8127a.jpg?v=1754352410&width=300"
-          }
-        },
-        "v2": {
-          "type": "venue",
-          "settings": {
-            "name": "The Fat Duck",
-            "max_height": 70,
-            "image_url": "https://www.non.world/cdn/shop/files/fat_duck_logo.png?v=1754352113&width=300"
-          }
-        },
-        "v3": {
-          "type": "venue",
-          "settings": {
-            "name": "Alinea",
-            "max_height": 70,
-            "image_url": "https://www.non.world/cdn/shop/files/alinea-logo.jpg?v=1752532858&width=300"
-          }
-        },
-        "v4": {
-          "type": "venue",
-          "settings": {
-            "name": "Aman",
-            "max_height": 44,
-            "image_url": "https://www.non.world/cdn/shop/files/Aman_Resorts_logo_svg.png?v=1752532955&width=300"
-          }
-        },
-        "v5": {
-          "type": "venue",
-          "settings": {
-            "name": "Atelier Crenn",
-            "max_height": 44,
-            "image_url": "https://www.non.world/cdn/shop/files/logo-atelier-crenn-2022.jpg?v=1752533002&width=300"
-          }
-        },
-        "v6": {
-          "type": "venue",
-          "settings": {
-            "name": "Vue de Monde",
-            "max_height": 44,
-            "image_url": "https://www.non.world/cdn/shop/files/vue-de-monde-logo.png?v=1773521183&width=300"
-          }
-        },
-        "v7": {
-          "type": "venue",
-          "settings": {
-            "name": "Fortnum & Mason",
-            "max_height": 44,
-            "image_url": "https://www.non.world/cdn/shop/files/Fortnum___Mason_logo.png?v=1754352025&width=300"
-          }
-        }
-      },
-      "block_order": [
-        "v1",
-        "v2",
-        "v3",
-        "v4",
-        "v5",
-        "v6",
-        "v7"
-      ],
-      "settings": {
-        "heading": "Poured at"
-      }
     }
   },
   "order": [
-    "main",
-    "poured-at"
+    "main"
   ]
 }

@@ -1033,3 +1033,33 @@ button { font-family: inherit; }
    it to the shape", so the variable is simply absent and these no-op. */
 .non-trip__img  { max-height: var(--non-trip-max, 62vh); }
 .non-split__img { max-height: var(--non-split-max, none); }
+
+/* --- cart add-ons --------------------------------------------------------- */
+.non-upsell { border-top: 1px solid var(--non-line); padding: 16px 22px 4px; }
+.non-upsell__row {
+  display: grid;
+  grid-template-columns: 44px 1fr auto;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 0;
+}
+.non-upsell__img { width: 44px; height: 44px; object-fit: cover; display: block; background: var(--non-panel); }
+.non-upsell__body { min-width: 0; }
+.non-upsell__name {
+  font-size: var(--t-small); font-weight: 600;
+  overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+}
+.non-upsell__price { font-family: var(--non-mono); font-size: var(--t-mono); color: var(--non-fg-faint); margin-top: 2px; }
+/* 44px, and a border at rest — on touch there is no hover to reveal that this
+   is the actionable part of the row. */
+.non-upsell__add {
+  min-height: 44px; padding: 0 16px;
+  border: 1px solid var(--non-line-strong);
+  background: transparent; color: var(--non-fg);
+  font-family: var(--non-mono); font-size: var(--t-mono);
+  letter-spacing: .12em; text-transform: uppercase; cursor: pointer;
+  transition: background .18s ease, color .18s ease;
+}
+.non-upsell__add:hover,
+.non-upsell__add:focus-visible { background: var(--non-invert-bg); color: var(--non-invert-fg); }
+.non-upsell__add[disabled] { opacity: .5; cursor: default; }

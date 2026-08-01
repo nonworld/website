@@ -67,6 +67,10 @@
       "won": "You won",
       "apply": "Apply to this order",
       "applied": "Applied at checkout"
+    },
+    "upsell": {
+      "add": "Add",
+      "adding": "Adding…"
     }
   },
   "sections": {

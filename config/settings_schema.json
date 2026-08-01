@@ -135,15 +135,47 @@
         "label": "Free shipping threshold",
         "default": "75",
         "info": "In store currency, no symbol. Used for the progress line in the drawer. Set the actual rate in Shopify Shipping — this is display only."
+      },
+      {
+        "type": "header",
+        "content": "Cart add-ons"
+      },
+      {
+        "type": "paragraph",
+        "content": "Offered in the cart drawer. Anything already in the cart is hidden automatically."
+      },
+      {
+        "type": "text",
+        "id": "cart_upsell_heading",
+        "label": "Add-on heading",
+        "default": "Add a stopper"
+      },
+      {
+        "type": "product",
+        "id": "cart_upsell_1",
+        "label": "Add-on 1"
+      },
+      {
+        "type": "product",
+        "id": "cart_upsell_2",
+        "label": "Add-on 2"
       }
     ]
   },
   {
     "name": "Social",
     "settings": [
-      { "type": "url", "id": "social_instagram", "label": "Instagram" },
-      { "type": "text", "id": "contact_email", "label": "Contact email", "default": "hello@non.world" }
+      {
+        "type": "url",
+        "id": "social_instagram",
+        "label": "Instagram"
+      },
+      {
+        "type": "text",
+        "id": "contact_email",
+        "label": "Contact email",
+        "default": "hello@non.world"
+      }
     ]
   }
 ]
-

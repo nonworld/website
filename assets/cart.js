@@ -121,6 +121,8 @@
     } else if (shipping) {
       shipping.hidden = true;
     }
+
+    renderUpsell(cart);
   }
 
   /* --- drawer open/close ------------------------------------------------ */
@@ -254,6 +256,53 @@
           btn.disabled = false;
           btn.textContent = label;
         }
+      });
+  });
+
+  /* --- add-ons ------------------------------------------------------------ */
+
+  // Offer the stopper or the waiter's friend, but only when the cart does not
+  // already hold one. The whole block hides when there is nothing left to
+  // offer, rather than sitting there empty with a heading over it.
+  //
+  // This runs off the real cart payload rather than a flag, so adding one from
+  // anywhere — the product page, a previous session — removes it from the
+  // offer here too.
+  function renderUpsell(cart) {
+    var box = document.querySelector('[data-non-upsell]');
+    if (!box) return;
+
+    var inCart = {};
+    (cart.items || []).forEach(function (i) { inCart[String(i.variant_id)] = true; });
+
+    var offered = 0;
+    box.querySelectorAll('[data-non-upsell-item]').forEach(function (row) {
+      var has = inCart[row.getAttribute('data-variant')];
+      row.hidden = !!has;
+      if (!has) offered++;
+    });
+
+    // An empty cart has nothing to add to — the customer has not chosen a
+    // bottle yet, and leading with an accessory is the wrong first ask.
+    box.hidden = offered === 0 || !(cart.item_count > 0);
+  }
+
+  document.addEventListener('click', function (e) {
+    var btn = e.target.closest('[data-non-upsell-add]');
+    if (!btn) return;
+
+    var id = btn.getAttribute('data-variant');
+    var label = btn.textContent;
+    btn.disabled = true;
+    btn.textContent = window.NON.strings && window.NON.strings.cartUpsellAdding
+      ? window.NON.strings.cartUpsellAdding
+      : 'Adding…';
+
+    add(id, 1)
+      .catch(function () {})
+      .finally(function () {
+        btn.disabled = false;
+        btn.textContent = label;
       });
   });
 

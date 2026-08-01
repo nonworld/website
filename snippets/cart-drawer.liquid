@@ -21,6 +21,60 @@
       <p class="non-drawer__empty">{{ 'cart.general.empty' | t }}</p>
     </div>
 
+    {%- comment -%}
+      Add-ons. Rendered server-side because they need real prices and variant
+      ids, but shown client-side because whether to offer one depends on what
+      is already in the cart — and the cart is only known in the browser.
+
+      Everything starts hidden and cart.js reveals what is still missing. The
+      alternative, rendering visible and hiding on load, flashes an offer to
+      buy something the customer already has.
+    {%- endcomment -%}
+    {%- liquid
+      assign upsells = ''
+      if settings.cart_upsell_1 != blank
+        assign upsells = upsells | append: settings.cart_upsell_1.handle | append: ','
+      endif
+      if settings.cart_upsell_2 != blank
+        assign upsells = upsells | append: settings.cart_upsell_2.handle | append: ','
+      endif
+    -%}
+
+    {%- if upsells != blank -%}
+      <div class="non-upsell" data-non-upsell hidden>
+        <div class="non-mono non-eyebrow">{{ settings.cart_upsell_heading }}</div>
+
+        {%- for handle in upsells | split: ',' -%}
+          {%- assign item = all_products[handle] -%}
+          {%- if item != blank and item.available -%}
+            {%- assign v = item.selected_or_first_available_variant -%}
+            <div class="non-upsell__row" data-non-upsell-item data-variant="{{ v.id }}" hidden>
+              {%- if item.featured_image -%}
+                {{
+                  item.featured_image
+                  | image_url: width: 160
+                  | image_tag: loading: 'lazy', class: 'non-upsell__img', alt: item.title
+                }}
+              {%- endif -%}
+
+              <div class="non-upsell__body">
+                <div class="non-upsell__name">{{ item.title }}</div>
+                <div class="non-upsell__price">{{ v.price | money }}</div>
+              </div>
+
+              <button
+                type="button"
+                class="non-upsell__add"
+                data-non-upsell-add
+                data-variant="{{ v.id }}">
+                {{ 'cart.upsell.add' | t }}
+              </button>
+            </div>
+          {%- endif -%}
+        {%- endfor -%}
+      </div>
+    {%- endif -%}
+
     <footer class="non-drawer__foot">
       {%- comment -%}
         A won NON Lotto prize, carried through to where it gets used. The code

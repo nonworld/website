@@ -268,7 +268,26 @@ button { font-family: inherit; }
   width: 100%; height: 320px; min-height: 100%;
   object-fit: cover; display: block;
 }
-@media (min-width: 860px) { .non-carousel__slide img { height: 100%; min-height: 420px; } }
+@media (min-width: 860px) {
+  /* The media column has to fill whatever height the copy column ends up
+     being. When the somm answers, the answer grows the left column and the
+     hero row with it — and the image, sized from its own intrinsic height,
+     stopped where it stopped and left a slab of empty panel underneath.
+
+     Grid items already stretch, so the media cell IS full row height; the
+     carousel just was not using it. Every slide is absolute now, including the
+     active one, so the carousel takes its height from the cell rather than
+     from whichever photo happens to be showing. min-height keeps it honest
+     when the copy is short. */
+  .non-hero__media { align-self: stretch; }
+  .non-carousel { height: 100%; min-height: 420px; }
+  .non-carousel__slide,
+  .non-carousel__slide.is-active { position: absolute; inset: 0; }
+  .non-carousel__slide img { height: 100%; min-height: 0; }
+
+  /* Same for the single-image hero, which has no carousel to fall back on. */
+  .non-hero__media > img { position: absolute; inset: 0; height: 100%; min-height: 0; }
+}
 
 .non-carousel__dots {
   position: absolute; z-index: 2; left: 20px; bottom: 46px;

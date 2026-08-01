@@ -1436,3 +1436,8 @@ button { font-family: inherit; }
 .non-verdict__media { background: var(--non-photo-bed); overflow: hidden; }
 .non-verdict__img { width: 100%; aspect-ratio: 4/5; object-fit: cover; display: block; }
 .non-verdict .non-pair__trace { margin-top: 14px; }
+
+/* Answered questions dim rather than disappear — you can still see what you
+   told it, and change your mind, which is the point of showing all six. */
+.non-pair__axis.is-answered .non-pair__q { opacity: .55; }
+.non-pair__axis.is-current .non-pair__n { color: var(--non-fg); }

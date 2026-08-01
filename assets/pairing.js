@@ -59,23 +59,43 @@
       .join('');
   }
 
+  /**
+   * Every question is visible at once now, per the design's numbered headings —
+   * numbering a sequence you can only see one step of is pointless. So this no
+   * longer hides anything; it marks progress and scrolls the next question into
+   * view, which is the useful half of what stepping did.
+   *
+   * The dots and the "question n of m" counter are gone from the markup, hence
+   * the guards: this has to keep working if either is absent.
+   */
   function showStep(n) {
     axes.forEach(function (axis, i) {
-      axis.style.display = i === n ? '' : 'none';
+      axis.classList.toggle('is-answered', i < n);
+      axis.classList.toggle('is-current', i === n);
     });
-    dots.forEach(function (dot, i) {
-      dot.className =
-        'non-pair__dot' + (i < n ? ' non-pair__dot--done' : i === n ? ' non-pair__dot--now' : '');
-    });
+
+    if (dots && dots.length) {
+      dots.forEach(function (dot, i) {
+        dot.className =
+          'non-pair__dot' + (i < n ? ' non-pair__dot--done' : i === n ? ' non-pair__dot--now' : '');
+      });
+    }
     if (stepEl) {
       stepEl.textContent =
         n >= axes.length ? 'done' : 'question ' + (n + 1) + ' of ' + axes.length;
+    }
+
+    var next = axes[n];
+    if (next && n > 0) {
+      next.scrollIntoView({ behavior: 'smooth', block: 'center' });
     }
   }
 
   function finish() {
     var code = leader();
-    axes.forEach(function (a) { a.style.display = 'none'; });
+    // The questions stay on screen. They are the page now, and hiding what was
+    // answered to reveal a verdict leaves nothing to change your mind with.
+    axes.forEach(function (a) { a.classList.add('is-answered'); });
     resultEl.hidden = false;
 
     var product = catalogue[code];

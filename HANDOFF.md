@@ -90,7 +90,13 @@ so does the PDP process band — whose CSS sets `grid-template-columns: repeat(2
    set customers can see is out of stock. Needs a publish + archive + handle
    decision (moving the handle changes a live URL).
 
-4. **Favicon** — asset never supplied.
+4. ~~**Favicon** — asset never supplied.~~ **CLOSED 2026-08-01.** The NON Somm
+   identity kit supplied the square mark the brand never had — the full stop
+   from "NON." at baseline left. Shipped as a theme asset
+   (`assets/non-somm-favicon.svg`) and wired in `layout/theme.liquid` as the
+   fallback when Theme settings → Favicon is empty, so it needed no Files
+   upload and no Admin action. Setting a square PNG in Theme settings still
+   wins and additionally emits apple-touch-icon, which SVG cannot serve.
 
 5. **Redirect inventory** — **reconciled 2026-08-01, see
    `docs/redirect-reconciliation.md`.** The rebuild created NO redirect debt:

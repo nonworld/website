@@ -97,6 +97,32 @@ for path in liquid_files:
                 f"it is standalone-only and breaks the whole template"
             )
 
+# 1b. a comment TAG inside {% liquid %}. Inside a liquid block, comments are
+# '#' lines; a {% comment %} tag terminates the enclosing liquid tag at its own
+# '%}' and everything after becomes stray markup. Shopify rejects the file and
+# keeps serving the previous version, so the only symptom is a section that
+# stops updating — sections/product-process.liquid sat frozen on the staging
+# theme from 31 July through two later commits that both pushed cleanly.
+#
+# Matched from the OPENING tag rather than by parsing the block, because the
+# block's extent cannot be trusted once this bug is present: a non-greedy match
+# for the closing '-%}' stops at the comment tag and reports nothing wrong.
+for path in liquid_files:
+    src = open(path).read()
+    for m in re.finditer(r"\{%-?\s*liquid\b", src):
+        rest = src[m.end():]
+        nxt_close = rest.find("%}")
+        nxt_open = rest.find("{%")
+        if nxt_open != -1 and nxt_close != -1 and nxt_open < nxt_close:
+            line = src[: m.start()].count("\n") + 1
+            tag = re.match(r"\{%-?\s*(\w+)", rest[nxt_open:])
+            name = tag.group(1) if tag else "?"
+            issues.append(
+                f"{path}:{line}: `{{% {name} %}}` tag opened inside a "
+                f"{{% liquid %}} block — use '#' comments there; a tag ends the "
+                f"liquid tag early and Shopify silently rejects the file"
+            )
+
 # 3. tag balance
 for path in liquid_files:
     src = open(path).read()

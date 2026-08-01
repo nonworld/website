@@ -22,12 +22,21 @@
   assign pairings = product.metafields.custom.pairings.value
   assign ingredients = product.metafields.custom.ingredients | metafield_text
 
-  {%- comment -%}
-    The section setting wins, so this panel's image can be changed in the
-    editor per template without touching product data. Below it the original
-    chain still applies, which is what keeps all 27 products populated without
-    anyone opening the editor.
-  {%- endcomment -%}
+  # The section setting wins, so this panel's image can be changed in the
+  # editor per template without touching product data. Below it the original
+  # chain still applies, which is what keeps all 27 products populated without
+  # anyone opening the editor.
+  #
+  # These are hash comments. A comment TAG here is a syntax error: inside a
+  # liquid block the enclosing tag ends at the first closing delimiter it meets,
+  # so a nested tag cuts the block short and everything after becomes stray
+  # markup. Shopify then rejects the file and silently keeps serving the
+  # previous version — which is exactly what happened. This section sat frozen
+  # on the staging theme from 31 July through two later commits that both
+  # pushed cleanly. check.py rule 1b now catches it.
+  #
+  # Note there are deliberately no brace-percent sequences in this comment:
+  # a closing delimiter inside the prose would end the block just as surely.
   assign process_image = section.settings.image
   if process_image == blank
     assign process_image = product.metafields.custom.process_image.value

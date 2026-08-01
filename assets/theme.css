@@ -638,6 +638,17 @@ button { font-family: inherit; }
   .non-specstrip--3 { grid-template-columns: repeat(3, 1fr); }
   .non-specstrip--4 { grid-template-columns: repeat(4, 1fr); }
 }
+/* The spec strip labels had NO rule of their own, so they inherited Helvetica
+   and read as body copy sitting above body copy. They are labels — mono, like
+   every other label in the theme. Used on the product page and in the process
+   panel's Ingredients heading. */
+.non-spec__k {
+  font-family: var(--non-mono);
+  font-size: var(--t-mono);
+  letter-spacing: .16em;
+  text-transform: uppercase;
+  color: var(--non-fg-faint);
+}
 .non-specstrip__cell { padding: 26px 28px; border-right: 1px solid var(--non-line); }
 .non-specstrip__cell:last-child { border-right: 0; }
 .non-specstrip__v { font-size: var(--t-lead); margin-top: 8px; line-height: 1.35; }

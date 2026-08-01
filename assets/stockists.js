@@ -209,9 +209,35 @@
     if (!refit) return;
     refit = false;
 
-    if (bounds.length === 1) map.setView(bounds[0], 14);
-    else if (bounds.length > 1) map.fitBounds(bounds, { padding: [30, 30] });
-    else map.setView([-37.84, 144.95], 4); // Melbourne, when a filter empties
+    if (!bounds.length) return map.setView([-37.84, 144.95], 4); // when a filter empties
+    if (bounds.length === 1) return map.setView(bounds[0], 15);
+
+    // Fit the bulk of the results, not the strays.
+    //
+    // Searching "melbourne" returns a venue whose NAME carries the city but
+    // which sits in Adelaide, and a literal fitBounds over every match then
+    // zooms out far enough to hold both — you get half of south-east Australia
+    // and a useless map. Clipping to the 10th-90th percentile of each axis
+    // frames where the results actually are, which is the question being asked.
+    //
+    // Only worth doing once there are enough points for a percentile to mean
+    // something; below that, every point is signal.
+    var fit = bounds;
+    if (bounds.length >= 8) {
+      var lats = bounds.map(function (b) { return b[0]; }).sort(function (a, b) { return a - b; });
+      var lngs = bounds.map(function (b) { return b[1]; }).sort(function (a, b) { return a - b; });
+      var lo = Math.floor(bounds.length * 0.1);
+      var hi = Math.ceil(bounds.length * 0.9) - 1;
+      var box = [[lats[lo], lngs[lo]], [lats[hi], lngs[hi]]];
+      // Guard against a degenerate box when the middle 80% share a coordinate.
+      if (Math.abs(box[0][0] - box[1][0]) > 0.001 || Math.abs(box[0][1] - box[1][1]) > 0.001) {
+        fit = box;
+      }
+    }
+
+    // maxZoom stops a tight cluster from slamming to street level, where the
+    // pins overlap and there is no context left around them.
+    map.fitBounds(fit, { padding: [30, 30], maxZoom: 13 });
   }
 
   // Keep the map honest about its own size when the column reflows — the

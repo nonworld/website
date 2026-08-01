@@ -233,13 +233,40 @@
 {%- assign closers = section.blocks | where: 'type', 'closer' -%}
 {%- if closers.size > 0 -%}
   <div class="non-about-ctas">
+    {%- comment -%}
+      Same component as the About page's closing CTAs, so it reuses that
+      background treatment rather than growing a second one: .non-about-cta__bg
+      for the image, __inner for the content above it, and --media to switch on
+      the scrim. Without an image the card keeps its flat panel, which is what
+      shipped before, so an unset slot is a no-op rather than a hole.
+    {%- endcomment -%}
     {%- for b in closers -%}
-      <div class="non-about-cta{% if forloop.last %} non-about-cta--solid{% endif %}" {{ b.shopify_attributes }}>
-        <div class="non-about-cta__title">{{ b.settings.title }}</div>
-        <p class="non-about-cta__body">{{ b.settings.body }}</p>
-        {%- if b.settings.label != blank -%}
-          <a class="non-about-cta__link" href="{{ b.settings.url | default: '/' }}">{{ b.settings.label }}</a>
+      {%- assign has_bg = false -%}
+      {%- if b.settings.image != blank or b.settings.image_url != blank -%}
+        {%- assign has_bg = true -%}
+      {%- endif -%}
+
+      <div class="non-about-cta{% if forloop.last and has_bg == false %} non-about-cta--solid{% endif %}{% if has_bg %} non-about-cta--media{% endif %}" {{ b.shopify_attributes }}>
+        {%- if has_bg -%}
+          <div class="non-about-cta__bg" aria-hidden="true">
+            {%- if b.settings.image != blank -%}
+              {{ b.settings.image | image_url: width: 1400, format: 'webp' | image_tag: loading: 'lazy', widths: '600,900,1400', alt: '' }}
+            {%- else -%}
+              {% render 'cdn-image',
+                 url: b.settings.image_url,
+                 alt: '',
+                 sizes: '(min-width: 720px) 50vw, 100vw' %}
+            {%- endif -%}
+          </div>
         {%- endif -%}
+
+        <div class="non-about-cta__inner">
+          <div class="non-about-cta__title">{{ b.settings.title }}</div>
+          <p class="non-about-cta__body">{{ b.settings.body }}</p>
+          {%- if b.settings.label != blank -%}
+            <a class="non-about-cta__link" href="{{ b.settings.url | default: '/' }}">{{ b.settings.label }}</a>
+          {%- endif -%}
+        </div>
       </div>
     {%- endfor -%}
   </div>
@@ -500,6 +527,17 @@
           "type": "url",
           "id": "url",
           "label": "Link"
+        },
+        {
+          "type": "image_picker",
+          "id": "image",
+          "label": "Background image"
+        },
+        {
+          "type": "text",
+          "id": "image_url",
+          "label": "Background image URL",
+          "info": "Used only when no image is uploaded. Leave both empty to keep the flat panel."
         }
       ]
     },

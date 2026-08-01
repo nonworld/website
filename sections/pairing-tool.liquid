@@ -1,3 +1,4 @@
+{% render 'section-style', section: section %}
 {%- comment -%}
   Pairing — food → bottle.
 
@@ -106,12 +107,73 @@
 {
   "name": "Pairing tool",
   "settings": [
-    { "type": "text", "id": "heading", "label": "Heading", "default": "What's on the table?" },
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Heading",
+      "default": "What's on the table?"
+    },
     {
       "type": "textarea",
       "id": "intro",
       "label": "Intro",
       "default": "Three questions. The somm shows its working rather than just naming a bottle."
+    },
+    {
+      "type": "header",
+      "content": "Appearance"
+    },
+    {
+      "type": "color",
+      "id": "bg_color",
+      "label": "Background"
+    },
+    {
+      "type": "color",
+      "id": "text_color",
+      "label": "Text colour"
+    },
+    {
+      "type": "select",
+      "id": "font_family",
+      "label": "Font",
+      "options": [
+        {
+          "value": "",
+          "label": "Theme default"
+        },
+        {
+          "value": "sans",
+          "label": "Helvetica (all text)"
+        },
+        {
+          "value": "mono",
+          "label": "JetBrains Mono (all text)"
+        }
+      ],
+      "default": ""
+    },
+    {
+      "type": "range",
+      "id": "text_scale",
+      "label": "Text size",
+      "min": 70,
+      "max": 150,
+      "step": 5,
+      "unit": "%",
+      "default": 100,
+      "info": "Scales every text size in this section together."
+    },
+    {
+      "type": "range",
+      "id": "section_padding",
+      "label": "Vertical padding",
+      "min": 0,
+      "max": 160,
+      "step": 8,
+      "unit": "px",
+      "default": 0,
+      "info": "0 keeps the section's own spacing."
     }
   ],
   "blocks": [
@@ -119,7 +181,11 @@
       "type": "axis",
       "name": "Question",
       "settings": [
-        { "type": "text", "id": "question", "label": "Question" },
+        {
+          "type": "text",
+          "id": "question",
+          "label": "Question"
+        },
         {
           "type": "textarea",
           "id": "options",
@@ -132,11 +198,24 @@
       "type": "reason",
       "name": "Bottle reason",
       "settings": [
-        { "type": "text", "id": "code", "label": "Bottle code", "info": "e.g. NON1" },
-        { "type": "textarea", "id": "reason", "label": "Why this bottle wins" }
+        {
+          "type": "text",
+          "id": "code",
+          "label": "Bottle code",
+          "info": "e.g. NON1"
+        },
+        {
+          "type": "textarea",
+          "id": "reason",
+          "label": "Why this bottle wins"
+        }
       ]
     }
   ],
-  "presets": [{ "name": "Pairing tool" }]
+  "presets": [
+    {
+      "name": "Pairing tool"
+    }
+  ]
 }
 {% endschema %}

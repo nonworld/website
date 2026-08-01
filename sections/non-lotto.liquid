@@ -1,3 +1,4 @@
+{% render 'section-style', section: section %}
 {%- comment -%}
   NON Lotto — scratch and reveal.
 
@@ -89,8 +90,18 @@
 {
   "name": "NON Lotto",
   "settings": [
-    { "type": "text", "id": "heading", "label": "Heading", "default": "Scratch & reveal" },
-    { "type": "text", "id": "reveal_label", "label": "Unlock button", "default": "Reveal my pour" },
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Heading",
+      "default": "Scratch & reveal"
+    },
+    {
+      "type": "text",
+      "id": "reveal_label",
+      "label": "Unlock button",
+      "default": "Reveal my pour"
+    },
     {
       "type": "text",
       "id": "reveal_path",
@@ -114,6 +125,62 @@
       "unit": "%",
       "default": 55,
       "info": "How much foil has to be scratched away before the prize snaps open. Whole percentages only — Shopify validates ranges with (max - min) / step and decimal steps fail that check on floating point, which silently invalidates the whole section."
+    },
+    {
+      "type": "header",
+      "content": "Appearance"
+    },
+    {
+      "type": "color",
+      "id": "bg_color",
+      "label": "Background"
+    },
+    {
+      "type": "color",
+      "id": "text_color",
+      "label": "Text colour"
+    },
+    {
+      "type": "select",
+      "id": "font_family",
+      "label": "Font",
+      "options": [
+        {
+          "value": "",
+          "label": "Theme default"
+        },
+        {
+          "value": "sans",
+          "label": "Helvetica (all text)"
+        },
+        {
+          "value": "mono",
+          "label": "JetBrains Mono (all text)"
+        }
+      ],
+      "default": ""
+    },
+    {
+      "type": "range",
+      "id": "text_scale",
+      "label": "Text size",
+      "min": 70,
+      "max": 150,
+      "step": 5,
+      "unit": "%",
+      "default": 100,
+      "info": "Scales every text size in this section together."
+    },
+    {
+      "type": "range",
+      "id": "section_padding",
+      "label": "Vertical padding",
+      "min": 0,
+      "max": 160,
+      "step": 8,
+      "unit": "px",
+      "default": 0,
+      "info": "0 keeps the section's own spacing."
     }
   ]
 }

@@ -1,3 +1,4 @@
+{% render 'section-style', section: section %}
 {%- comment -%}
   Product page, rebuilt against the design (design-reference/product.html).
 
@@ -288,26 +289,101 @@
 {
   "name": "Product",
   "settings": [
-    { "type": "checkbox", "id": "show_somm", "label": "Show the somm in the buy box", "default": true },
+    {
+      "type": "checkbox",
+      "id": "show_somm",
+      "label": "Show the somm in the buy box",
+      "default": true
+    },
     {
       "type": "textarea",
       "id": "somm_opener",
       "label": "Somm opening line",
       "default": "I've read the whole spec sheet for this bottle. Ask me anything — pairing, process, sugar, or whether it's right for you."
+    },
+    {
+      "type": "header",
+      "content": "Appearance"
+    },
+    {
+      "type": "color",
+      "id": "bg_color",
+      "label": "Background"
+    },
+    {
+      "type": "color",
+      "id": "text_color",
+      "label": "Text colour"
+    },
+    {
+      "type": "select",
+      "id": "font_family",
+      "label": "Font",
+      "options": [
+        {
+          "value": "",
+          "label": "Theme default"
+        },
+        {
+          "value": "sans",
+          "label": "Helvetica (all text)"
+        },
+        {
+          "value": "mono",
+          "label": "JetBrains Mono (all text)"
+        }
+      ],
+      "default": ""
+    },
+    {
+      "type": "range",
+      "id": "text_scale",
+      "label": "Text size",
+      "min": 70,
+      "max": 150,
+      "step": 5,
+      "unit": "%",
+      "default": 100,
+      "info": "Scales every text size in this section together."
+    },
+    {
+      "type": "range",
+      "id": "section_padding",
+      "label": "Vertical padding",
+      "min": 0,
+      "max": 160,
+      "step": 8,
+      "unit": "px",
+      "default": 0,
+      "info": "0 keeps the section's own spacing."
     }
   ],
   "blocks": [
     {
       "type": "trust",
       "name": "Reassurance",
-      "settings": [{ "type": "text", "id": "text", "label": "Text" }]
+      "settings": [
+        {
+          "type": "text",
+          "id": "text",
+          "label": "Text"
+        }
+      ]
     },
     {
       "type": "seed",
       "name": "Suggested question",
       "settings": [
-        { "type": "text", "id": "label", "label": "Question" },
-        { "type": "textarea", "id": "answer", "label": "Answer" }
+        {
+          "type": "text",
+          "id": "label",
+          "label": "Question"
+        },
+        {
+          "type": "textarea",
+          "id": "answer",
+          "label": "Answer"
+        }
       ]
     }
   ]

@@ -53,12 +53,16 @@
      and paragraph read small once the shell went full-bleed. These grow with
      the viewport and stop growing at the top end so nothing turns into a
      poster. */
-  --t-mono:    clamp(11px,  0.62vw, 13px);   /* eyebrows, labels, meta */
-  --t-small:   clamp(13px,  0.78vw, 15px);   /* card notes, captions */
-  --t-body:    clamp(15.5px, 0.95vw, 18px);  /* card names, list items */
-  --t-copy:    clamp(16.5px, 1.05vw, 20px);  /* paragraphs */
-  --t-lead:    clamp(17px,  1.15vw, 21px);   /* somm answers */
-  --t-title:   clamp(28px,  2.4vw, 44px);    /* product name, section leads */
+  /* --non-type-scale is set per section by snippets/section-style.liquid, so
+     the Text size control in the customizer moves the whole scale together
+     rather than one arbitrary element. Defaults to 1, i.e. no change. */
+  --non-type-scale: 1;
+  --t-mono:    calc(clamp(11px,  0.62vw, 13px)  * var(--non-type-scale));
+  --t-small:   calc(clamp(13px,  0.78vw, 15px)  * var(--non-type-scale));
+  --t-body:    calc(clamp(15.5px, 0.95vw, 18px) * var(--non-type-scale));
+  --t-copy:    calc(clamp(16.5px, 1.05vw, 20px) * var(--non-type-scale));
+  --t-lead:    calc(clamp(17px,  1.15vw, 21px)  * var(--non-type-scale));
+  --t-title:   calc(clamp(28px,  2.4vw, 44px)   * var(--non-type-scale));
 }
 
 @media (min-width: 860px) {

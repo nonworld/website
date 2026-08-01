@@ -1,3 +1,4 @@
+{% render 'section-style', section: section %}
 {%- comment -%}
   The somm answers in bottle codes and the theme resolves them here. That means
   the catalogue has to cover every code the somm can return — the bottles AND
@@ -211,16 +212,35 @@
 {
   "name": "Hero + NON Somm",
   "settings": [
-    { "type": "text", "id": "eyebrow", "label": "Eyebrow", "default": "0.0% alcohol · not a mocktail" },
-    { "type": "text", "id": "heading", "label": "Heading", "default": "Cooked, not de-alcoholised." },
+    {
+      "type": "text",
+      "id": "eyebrow",
+      "label": "Eyebrow",
+      "default": "0.0% alcohol · not a mocktail"
+    },
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Heading",
+      "default": "Cooked, not de-alcoholised."
+    },
     {
       "type": "textarea",
       "id": "blurb",
       "label": "Blurb",
       "default": "Fruit, tannin, salt and acid, built from zero at 0.0%. Tell the somm what's on the table and it will tell you what to pour."
     },
-    { "type": "text", "id": "placeholder", "label": "Input placeholder", "default": "Tell me what's on the table tonight" },
-    { "type": "image_picker", "id": "image", "label": "Hero image" },
+    {
+      "type": "text",
+      "id": "placeholder",
+      "label": "Input placeholder",
+      "default": "Tell me what's on the table tonight"
+    },
+    {
+      "type": "image_picker",
+      "id": "image",
+      "label": "Hero image"
+    },
     {
       "type": "text",
       "id": "image_url",
@@ -228,7 +248,12 @@
       "info": "Used only when no image is uploaded. Defaults to the design's hero on NON's CDN.",
       "default": "https://www.non.world/cdn/shop/t/91/assets/non-home-hero-main-1.webp?v=85646433329311323311783460768"
     },
-    { "type": "text", "id": "caption", "label": "Image caption", "default": "Built like a dish. Bottled at 0.0%." },
+    {
+      "type": "text",
+      "id": "caption",
+      "label": "Image caption",
+      "default": "Built like a dish. Bottled at 0.0%."
+    },
     {
       "type": "range",
       "id": "slide_interval",
@@ -251,6 +276,62 @@
       "id": "sets_collection",
       "label": "Sets the somm can recommend",
       "info": "Needed for the code SET to resolve. Defaults to non-sets."
+    },
+    {
+      "type": "header",
+      "content": "Appearance"
+    },
+    {
+      "type": "color",
+      "id": "bg_color",
+      "label": "Background"
+    },
+    {
+      "type": "color",
+      "id": "text_color",
+      "label": "Text colour"
+    },
+    {
+      "type": "select",
+      "id": "font_family",
+      "label": "Font",
+      "options": [
+        {
+          "value": "",
+          "label": "Theme default"
+        },
+        {
+          "value": "sans",
+          "label": "Helvetica (all text)"
+        },
+        {
+          "value": "mono",
+          "label": "JetBrains Mono (all text)"
+        }
+      ],
+      "default": ""
+    },
+    {
+      "type": "range",
+      "id": "text_scale",
+      "label": "Text size",
+      "min": 70,
+      "max": 150,
+      "step": 5,
+      "unit": "%",
+      "default": 100,
+      "info": "Scales every text size in this section together."
+    },
+    {
+      "type": "range",
+      "id": "section_padding",
+      "label": "Vertical padding",
+      "min": 0,
+      "max": 160,
+      "step": 8,
+      "unit": "px",
+      "default": 0,
+      "info": "0 keeps the section's own spacing."
     }
   ],
   "blocks": [
@@ -258,21 +339,52 @@
       "type": "slide",
       "name": "Hero slide",
       "settings": [
-        { "type": "image_picker", "id": "image", "label": "Image" },
-        { "type": "text", "id": "image_url", "label": "Image URL", "info": "Used only when no image is uploaded." },
-        { "type": "text", "id": "alt", "label": "Alt text" }
+        {
+          "type": "image_picker",
+          "id": "image",
+          "label": "Image"
+        },
+        {
+          "type": "text",
+          "id": "image_url",
+          "label": "Image URL",
+          "info": "Used only when no image is uploaded."
+        },
+        {
+          "type": "text",
+          "id": "alt",
+          "label": "Alt text"
+        }
       ]
     },
     {
       "type": "seed",
       "name": "Suggested question",
       "settings": [
-        { "type": "text", "id": "label", "label": "Question" },
-        { "type": "textarea", "id": "answer", "label": "Canned answer", "info": "Also the offline fallback when the API is unreachable." },
-        { "type": "text", "id": "picks", "label": "Bottle codes", "info": "Comma separated, e.g. NON3,NON1" }
+        {
+          "type": "text",
+          "id": "label",
+          "label": "Question"
+        },
+        {
+          "type": "textarea",
+          "id": "answer",
+          "label": "Canned answer",
+          "info": "Also the offline fallback when the API is unreachable."
+        },
+        {
+          "type": "text",
+          "id": "picks",
+          "label": "Bottle codes",
+          "info": "Comma separated, e.g. NON3,NON1"
+        }
       ]
     }
   ],
-  "presets": [{ "name": "Hero + NON Somm" }]
+  "presets": [
+    {
+      "name": "Hero + NON Somm"
+    }
+  ]
 }
 {% endschema %}

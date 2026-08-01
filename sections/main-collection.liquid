@@ -1,3 +1,4 @@
+{% render 'section-style', section: section %}
 {%- comment -%}
   Shop — "the somm is the filter".
 
@@ -90,20 +91,42 @@
 {
   "name": "Collection",
   "settings": [
-    { "type": "checkbox", "id": "show_filters", "label": "Show the somm food filter", "default": true },
+    {
+      "type": "checkbox",
+      "id": "show_filters",
+      "label": "Show the somm food filter",
+      "default": true
+    },
     {
       "type": "select",
       "id": "image_ratio",
       "label": "Image shape",
       "options": [
-        { "value": "portrait", "label": "Portrait (3:4)" },
-        { "value": "tall", "label": "Tall (4:5)" },
-        { "value": "square", "label": "Square (1:1)" },
-        { "value": "landscape", "label": "Landscape (4:3)" }
+        {
+          "value": "portrait",
+          "label": "Portrait (3:4)"
+        },
+        {
+          "value": "tall",
+          "label": "Tall (4:5)"
+        },
+        {
+          "value": "square",
+          "label": "Square (1:1)"
+        },
+        {
+          "value": "landscape",
+          "label": "Landscape (4:3)"
+        }
       ],
       "default": "portrait"
     },
-    { "type": "checkbox", "id": "show_add", "label": "Show add to cart on cards", "default": true },
+    {
+      "type": "checkbox",
+      "id": "show_add",
+      "label": "Show add to cart on cards",
+      "default": true
+    },
     {
       "type": "range",
       "id": "card_max",
@@ -120,16 +143,36 @@
       "id": "columns",
       "label": "Columns",
       "options": [
-        { "value": "2", "label": "2" },
-        { "value": "3", "label": "3" },
-        { "value": "4", "label": "4" },
-        { "value": "5", "label": "5" },
-        { "value": "6", "label": "6" }
+        {
+          "value": "2",
+          "label": "2"
+        },
+        {
+          "value": "3",
+          "label": "3"
+        },
+        {
+          "value": "4",
+          "label": "4"
+        },
+        {
+          "value": "5",
+          "label": "5"
+        },
+        {
+          "value": "6",
+          "label": "6"
+        }
       ],
       "info": "A maximum. Very wide screens fit more rather than stretching each card.",
       "default": "3"
     },
-    { "type": "checkbox", "id": "dim_non_matches", "label": "Fade bottles that don't answer", "default": true },
+    {
+      "type": "checkbox",
+      "id": "dim_non_matches",
+      "label": "Fade bottles that don't answer",
+      "default": true
+    },
     {
       "type": "range",
       "id": "dim_level",
@@ -140,6 +183,62 @@
       "unit": "%",
       "default": 34,
       "info": "Whole percentages only — Shopify rejects decimal-step ranges on a floating-point divisibility check, which invalidates the section."
+    },
+    {
+      "type": "header",
+      "content": "Appearance"
+    },
+    {
+      "type": "color",
+      "id": "bg_color",
+      "label": "Background"
+    },
+    {
+      "type": "color",
+      "id": "text_color",
+      "label": "Text colour"
+    },
+    {
+      "type": "select",
+      "id": "font_family",
+      "label": "Font",
+      "options": [
+        {
+          "value": "",
+          "label": "Theme default"
+        },
+        {
+          "value": "sans",
+          "label": "Helvetica (all text)"
+        },
+        {
+          "value": "mono",
+          "label": "JetBrains Mono (all text)"
+        }
+      ],
+      "default": ""
+    },
+    {
+      "type": "range",
+      "id": "text_scale",
+      "label": "Text size",
+      "min": 70,
+      "max": 150,
+      "step": 5,
+      "unit": "%",
+      "default": 100,
+      "info": "Scales every text size in this section together."
+    },
+    {
+      "type": "range",
+      "id": "section_padding",
+      "label": "Vertical padding",
+      "min": 0,
+      "max": 160,
+      "step": 8,
+      "unit": "px",
+      "default": 0,
+      "info": "0 keeps the section's own spacing."
     }
   ],
   "blocks": [
@@ -147,9 +246,23 @@
       "type": "occasion",
       "name": "Food occasion",
       "settings": [
-        { "type": "text", "id": "key", "label": "Key", "info": "Must match a key in the product's custom.food_tags metafield." },
-        { "type": "text", "id": "label", "label": "Label" },
-        { "type": "textarea", "id": "somm_line", "label": "Somm line", "info": "The prose shown when this filter is active." }
+        {
+          "type": "text",
+          "id": "key",
+          "label": "Key",
+          "info": "Must match a key in the product's custom.food_tags metafield."
+        },
+        {
+          "type": "text",
+          "id": "label",
+          "label": "Label"
+        },
+        {
+          "type": "textarea",
+          "id": "somm_line",
+          "label": "Somm line",
+          "info": "The prose shown when this filter is active."
+        }
       ]
     }
   ]

@@ -1,3 +1,4 @@
+{% render 'section-style', section: section %}
 {%- if section.blocks.size > 0 -%}
   <div class="non-announce">
     <div class="non-announce__track" aria-hidden="true">
@@ -34,17 +35,100 @@
       "type": "message",
       "name": "Message",
       "settings": [
-        { "type": "text", "id": "text", "label": "Text", "default": "0.0% ABV" }
+        {
+          "type": "text",
+          "id": "text",
+          "label": "Text",
+          "default": "0.0% ABV"
+        }
       ]
     }
   ],
   "default": {
     "blocks": [
-      { "type": "message", "settings": { "text": "0.0% ABV" } },
-      { "type": "message", "settings": { "text": "chef made" } },
-      { "type": "message", "settings": { "text": "free shipping over $75" } },
-      { "type": "message", "settings": { "text": "vegan & gluten free" } }
+      {
+        "type": "message",
+        "settings": {
+          "text": "0.0% ABV"
+        }
+      },
+      {
+        "type": "message",
+        "settings": {
+          "text": "chef made"
+        }
+      },
+      {
+        "type": "message",
+        "settings": {
+          "text": "free shipping over $75"
+        }
+      },
+      {
+        "type": "message",
+        "settings": {
+          "text": "vegan & gluten free"
+        }
+      }
     ]
-  }
+  },
+  "settings": [
+    {
+      "type": "header",
+      "content": "Appearance"
+    },
+    {
+      "type": "color",
+      "id": "bg_color",
+      "label": "Background"
+    },
+    {
+      "type": "color",
+      "id": "text_color",
+      "label": "Text colour"
+    },
+    {
+      "type": "select",
+      "id": "font_family",
+      "label": "Font",
+      "options": [
+        {
+          "value": "",
+          "label": "Theme default"
+        },
+        {
+          "value": "sans",
+          "label": "Helvetica (all text)"
+        },
+        {
+          "value": "mono",
+          "label": "JetBrains Mono (all text)"
+        }
+      ],
+      "default": ""
+    },
+    {
+      "type": "range",
+      "id": "text_scale",
+      "label": "Text size",
+      "min": 70,
+      "max": 150,
+      "step": 5,
+      "unit": "%",
+      "default": 100,
+      "info": "Scales every text size in this section together."
+    },
+    {
+      "type": "range",
+      "id": "section_padding",
+      "label": "Vertical padding",
+      "min": 0,
+      "max": 160,
+      "step": 8,
+      "unit": "px",
+      "default": 0,
+      "info": "0 keeps the section's own spacing."
+    }
+  ]
 }
 {% endschema %}

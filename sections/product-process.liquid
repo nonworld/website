@@ -1,3 +1,4 @@
+{% render 'section-style', section: section %}
 {%- comment -%}
   "How it's made" and "Pour it with", rebuilt against the design.
 
@@ -136,8 +137,16 @@
       "label": "Process heading",
       "default": "How it's made — not de-alcoholised"
     },
-    { "type": "text", "id": "pairings_heading", "label": "Pairings heading", "default": "Pour it with" },
-    { "type": "header", "content": "Media" },
+    {
+      "type": "text",
+      "id": "pairings_heading",
+      "label": "Pairings heading",
+      "default": "Pour it with"
+    },
+    {
+      "type": "header",
+      "content": "Media"
+    },
     {
       "type": "image_picker",
       "id": "image",
@@ -149,14 +158,86 @@
       "id": "media_ratio",
       "label": "Image shape",
       "options": [
-        { "value": "square", "label": "Square (1:1)" },
-        { "value": "tall", "label": "Tall (4:5)" },
-        { "value": "portrait", "label": "Portrait (3:4)" },
-        { "value": "fill", "label": "Fill the panel" }
+        {
+          "value": "square",
+          "label": "Square (1:1)"
+        },
+        {
+          "value": "tall",
+          "label": "Tall (4:5)"
+        },
+        {
+          "value": "portrait",
+          "label": "Portrait (3:4)"
+        },
+        {
+          "value": "fill",
+          "label": "Fill the panel"
+        }
       ],
       "default": "portrait"
+    },
+    {
+      "type": "header",
+      "content": "Appearance"
+    },
+    {
+      "type": "color",
+      "id": "bg_color",
+      "label": "Background"
+    },
+    {
+      "type": "color",
+      "id": "text_color",
+      "label": "Text colour"
+    },
+    {
+      "type": "select",
+      "id": "font_family",
+      "label": "Font",
+      "options": [
+        {
+          "value": "",
+          "label": "Theme default"
+        },
+        {
+          "value": "sans",
+          "label": "Helvetica (all text)"
+        },
+        {
+          "value": "mono",
+          "label": "JetBrains Mono (all text)"
+        }
+      ],
+      "default": ""
+    },
+    {
+      "type": "range",
+      "id": "text_scale",
+      "label": "Text size",
+      "min": 70,
+      "max": 150,
+      "step": 5,
+      "unit": "%",
+      "default": 100,
+      "info": "Scales every text size in this section together."
+    },
+    {
+      "type": "range",
+      "id": "section_padding",
+      "label": "Vertical padding",
+      "min": 0,
+      "max": 160,
+      "step": 8,
+      "unit": "px",
+      "default": 0,
+      "info": "0 keeps the section's own spacing."
     }
   ],
-  "presets": [{ "name": "Process & pairings" }]
+  "presets": [
+    {
+      "name": "Process & pairings"
+    }
+  ]
 }
 {% endschema %}

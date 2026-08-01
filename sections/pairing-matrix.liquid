@@ -1,3 +1,4 @@
+{% render 'section-style', section: section %}
 {%- comment -%}
   "The whole table, at a glance" — course × bottle.
 
@@ -81,13 +82,79 @@
 {
   "name": "Pairing matrix",
   "settings": [
-    { "type": "text", "id": "heading", "label": "Heading", "default": "The whole table, at a glance" },
-    { "type": "text", "id": "subheading", "label": "Subheading", "default": "Course × bottle" },
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Heading",
+      "default": "The whole table, at a glance"
+    },
+    {
+      "type": "text",
+      "id": "subheading",
+      "label": "Subheading",
+      "default": "Course × bottle"
+    },
     {
       "type": "text",
       "id": "why_heading",
       "label": "Why heading",
       "default": "Why any of this works without alcohol"
+    },
+    {
+      "type": "header",
+      "content": "Appearance"
+    },
+    {
+      "type": "color",
+      "id": "bg_color",
+      "label": "Background"
+    },
+    {
+      "type": "color",
+      "id": "text_color",
+      "label": "Text colour"
+    },
+    {
+      "type": "select",
+      "id": "font_family",
+      "label": "Font",
+      "options": [
+        {
+          "value": "",
+          "label": "Theme default"
+        },
+        {
+          "value": "sans",
+          "label": "Helvetica (all text)"
+        },
+        {
+          "value": "mono",
+          "label": "JetBrains Mono (all text)"
+        }
+      ],
+      "default": ""
+    },
+    {
+      "type": "range",
+      "id": "text_scale",
+      "label": "Text size",
+      "min": 70,
+      "max": 150,
+      "step": 5,
+      "unit": "%",
+      "default": 100,
+      "info": "Scales every text size in this section together."
+    },
+    {
+      "type": "range",
+      "id": "section_padding",
+      "label": "Vertical padding",
+      "min": 0,
+      "max": 160,
+      "step": 8,
+      "unit": "px",
+      "default": 0,
+      "info": "0 keeps the section's own spacing."
     }
   ],
   "blocks": [
@@ -95,15 +162,28 @@
       "type": "bottle",
       "name": "Column (bottle)",
       "settings": [
-        { "type": "text", "id": "code", "label": "Code", "default": "NON1" },
-        { "type": "text", "id": "name", "label": "Name" }
+        {
+          "type": "text",
+          "id": "code",
+          "label": "Code",
+          "default": "NON1"
+        },
+        {
+          "type": "text",
+          "id": "name",
+          "label": "Name"
+        }
       ]
     },
     {
       "type": "course",
       "name": "Row (course)",
       "settings": [
-        { "type": "text", "id": "course", "label": "Course" },
+        {
+          "type": "text",
+          "id": "course",
+          "label": "Course"
+        },
         {
           "type": "textarea",
           "id": "cells",
@@ -116,11 +196,23 @@
       "type": "note",
       "name": "Why it works",
       "settings": [
-        { "type": "text", "id": "title", "label": "Title" },
-        { "type": "textarea", "id": "body", "label": "Body" }
+        {
+          "type": "text",
+          "id": "title",
+          "label": "Title"
+        },
+        {
+          "type": "textarea",
+          "id": "body",
+          "label": "Body"
+        }
       ]
     }
   ],
-  "presets": [{ "name": "Pairing matrix" }]
+  "presets": [
+    {
+      "name": "Pairing matrix"
+    }
+  ]
 }
 {% endschema %}

@@ -1,3 +1,4 @@
+{% render 'section-style', section: section %}
 {%- comment -%}
   "Made for" — the food photography attached to every bottle.
 
@@ -110,16 +111,33 @@
 {
   "name": "Made for",
   "settings": [
-    { "type": "text", "id": "heading", "label": "Heading", "default": "Made for" },
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Heading",
+      "default": "Made for"
+    },
     {
       "type": "select",
       "id": "image_ratio",
       "label": "Image shape",
       "options": [
-        { "value": "square", "label": "Square (1:1)" },
-        { "value": "tall", "label": "Tall (4:5)" },
-        { "value": "portrait", "label": "Portrait (3:4)" },
-        { "value": "landscape", "label": "Landscape (3:2)" }
+        {
+          "value": "square",
+          "label": "Square (1:1)"
+        },
+        {
+          "value": "tall",
+          "label": "Tall (4:5)"
+        },
+        {
+          "value": "portrait",
+          "label": "Portrait (3:4)"
+        },
+        {
+          "value": "landscape",
+          "label": "Landscape (3:2)"
+        }
       ],
       "default": "tall",
       "info": "Applies to every tile, so the row stays even."
@@ -127,6 +145,62 @@
     {
       "type": "paragraph",
       "content": "Add a Tile to choose your own images. With no tiles, this falls back to the product's Made-for metafields."
+    },
+    {
+      "type": "header",
+      "content": "Appearance"
+    },
+    {
+      "type": "color",
+      "id": "bg_color",
+      "label": "Background"
+    },
+    {
+      "type": "color",
+      "id": "text_color",
+      "label": "Text colour"
+    },
+    {
+      "type": "select",
+      "id": "font_family",
+      "label": "Font",
+      "options": [
+        {
+          "value": "",
+          "label": "Theme default"
+        },
+        {
+          "value": "sans",
+          "label": "Helvetica (all text)"
+        },
+        {
+          "value": "mono",
+          "label": "JetBrains Mono (all text)"
+        }
+      ],
+      "default": ""
+    },
+    {
+      "type": "range",
+      "id": "text_scale",
+      "label": "Text size",
+      "min": 70,
+      "max": 150,
+      "step": 5,
+      "unit": "%",
+      "default": 100,
+      "info": "Scales every text size in this section together."
+    },
+    {
+      "type": "range",
+      "id": "section_padding",
+      "label": "Vertical padding",
+      "min": 0,
+      "max": 160,
+      "step": 8,
+      "unit": "px",
+      "default": 0,
+      "info": "0 keeps the section's own spacing."
     }
   ],
   "blocks": [
@@ -134,13 +208,30 @@
       "type": "tile",
       "name": "Tile",
       "settings": [
-        { "type": "image_picker", "id": "image", "label": "Image" },
-        { "type": "text", "id": "caption", "label": "Caption", "default": "Made for" },
-        { "type": "text", "id": "subcaption", "label": "Sub-caption" }
+        {
+          "type": "image_picker",
+          "id": "image",
+          "label": "Image"
+        },
+        {
+          "type": "text",
+          "id": "caption",
+          "label": "Caption",
+          "default": "Made for"
+        },
+        {
+          "type": "text",
+          "id": "subcaption",
+          "label": "Sub-caption"
+        }
       ]
     }
   ],
   "max_blocks": 6,
-  "presets": [{ "name": "Made for" }]
+  "presets": [
+    {
+      "name": "Made for"
+    }
+  ]
 }
 {% endschema %}

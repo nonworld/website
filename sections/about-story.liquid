@@ -1,3 +1,4 @@
+{% render 'section-style', section: section %}
 {%- comment -%}
   About.
 
@@ -119,7 +120,12 @@
 {
   "name": "About",
   "settings": [
-    { "type": "text", "id": "eyebrow", "label": "Eyebrow", "default": "About" },
+    {
+      "type": "text",
+      "id": "eyebrow",
+      "label": "Eyebrow",
+      "default": "About"
+    },
     {
       "type": "text",
       "id": "heading",
@@ -132,7 +138,11 @@
       "label": "Lead",
       "default": "A chef-led drinks company in Melbourne, building wine alternatives out of real produce — fruit, tannin, salinity, acidity — and nothing that has ever been fermented."
     },
-    { "type": "image_picker", "id": "lead_image", "label": "Lead image" },
+    {
+      "type": "image_picker",
+      "id": "lead_image",
+      "label": "Lead image"
+    },
     {
       "type": "text",
       "id": "lead_image_url",
@@ -140,14 +150,23 @@
       "info": "Used only when no image is uploaded.",
       "default": "https://www.non.world/cdn/shop/files/Work_With_Us.jpg?v=1739406834&width=1800"
     },
-    { "type": "image_picker", "id": "origin_image", "label": "Origin image" },
+    {
+      "type": "image_picker",
+      "id": "origin_image",
+      "label": "Origin image"
+    },
     {
       "type": "text",
       "id": "origin_image_url",
       "label": "Origin image URL",
       "info": "A portrait of the founder works here. Used only when no image is uploaded."
     },
-    { "type": "text", "id": "origin_label", "label": "Origin label", "default": "The origin" },
+    {
+      "type": "text",
+      "id": "origin_label",
+      "label": "Origin label",
+      "default": "The origin"
+    },
     {
       "type": "text",
       "id": "origin_heading",
@@ -166,34 +185,125 @@
       "label": "Quote",
       "default": "I thought it was a real shame that these drinks lived and died in fancy restaurants."
     },
-    { "type": "text", "id": "quote_cite", "label": "Quote attribution", "default": "Aaron Trotman, founder" },
-    { "type": "text", "id": "pillars_label", "label": "Pillars label", "default": "What we actually do" },
+    {
+      "type": "text",
+      "id": "quote_cite",
+      "label": "Quote attribution",
+      "default": "Aaron Trotman, founder"
+    },
+    {
+      "type": "text",
+      "id": "pillars_label",
+      "label": "Pillars label",
+      "default": "What we actually do"
+    },
     {
       "type": "text",
       "id": "pillars_heading",
       "label": "Pillars heading",
       "default": "Every glass is built from four things"
     },
-    { "type": "text", "id": "nots_label", "label": "Contrast label", "default": "What we're not" }
+    {
+      "type": "text",
+      "id": "nots_label",
+      "label": "Contrast label",
+      "default": "What we're not"
+    },
+    {
+      "type": "header",
+      "content": "Appearance"
+    },
+    {
+      "type": "color",
+      "id": "bg_color",
+      "label": "Background"
+    },
+    {
+      "type": "color",
+      "id": "text_color",
+      "label": "Text colour"
+    },
+    {
+      "type": "select",
+      "id": "font_family",
+      "label": "Font",
+      "options": [
+        {
+          "value": "",
+          "label": "Theme default"
+        },
+        {
+          "value": "sans",
+          "label": "Helvetica (all text)"
+        },
+        {
+          "value": "mono",
+          "label": "JetBrains Mono (all text)"
+        }
+      ],
+      "default": ""
+    },
+    {
+      "type": "range",
+      "id": "text_scale",
+      "label": "Text size",
+      "min": 70,
+      "max": 150,
+      "step": 5,
+      "unit": "%",
+      "default": 100,
+      "info": "Scales every text size in this section together."
+    },
+    {
+      "type": "range",
+      "id": "section_padding",
+      "label": "Vertical padding",
+      "min": 0,
+      "max": 160,
+      "step": 8,
+      "unit": "px",
+      "default": 0,
+      "info": "0 keeps the section's own spacing."
+    }
   ],
   "blocks": [
     {
       "type": "pillar",
       "name": "Pillar",
       "settings": [
-        { "type": "text", "id": "title", "label": "Title" },
-        { "type": "textarea", "id": "body", "label": "Body" }
+        {
+          "type": "text",
+          "id": "title",
+          "label": "Title"
+        },
+        {
+          "type": "textarea",
+          "id": "body",
+          "label": "Body"
+        }
       ]
     },
     {
       "type": "not",
       "name": "What we're not",
       "settings": [
-        { "type": "text", "id": "title", "label": "Title" },
-        { "type": "textarea", "id": "body", "label": "Body" }
+        {
+          "type": "text",
+          "id": "title",
+          "label": "Title"
+        },
+        {
+          "type": "textarea",
+          "id": "body",
+          "label": "Body"
+        }
       ]
     }
   ],
-  "presets": [{ "name": "About" }]
+  "presets": [
+    {
+      "name": "About"
+    }
+  ]
 }
 {% endschema %}

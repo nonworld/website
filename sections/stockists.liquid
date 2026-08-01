@@ -1,3 +1,4 @@
+{% render 'section-style', section: section %}
 {%- comment -%}
   Stockists — sourced from find.non.world.
 
@@ -135,7 +136,12 @@
 {
   "name": "Stockists",
   "settings": [
-    { "type": "text", "id": "heading", "label": "Heading", "default": "Where to find it" },
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Heading",
+      "default": "Where to find it"
+    },
     {
       "type": "textarea",
       "id": "intro",
@@ -153,10 +159,22 @@
       "id": "default_region",
       "label": "Open on",
       "options": [
-        { "value": "all", "label": "Worldwide" },
-        { "value": "AU", "label": "Australia" },
-        { "value": "UK", "label": "UK" },
-        { "value": "US", "label": "US" }
+        {
+          "value": "all",
+          "label": "Worldwide"
+        },
+        {
+          "value": "AU",
+          "label": "Australia"
+        },
+        {
+          "value": "UK",
+          "label": "UK"
+        },
+        {
+          "value": "US",
+          "label": "US"
+        }
       ],
       "default": "all"
     },
@@ -170,29 +188,126 @@
       "default": 30,
       "info": "The map always shows every match; this only caps the written list."
     },
-    { "type": "text", "id": "search_placeholder", "label": "Search placeholder", "default": "Suburb, city or venue name" },
-    { "type": "checkbox", "id": "show_map", "label": "Show the map", "default": true },
-    { "type": "text", "id": "featured_heading", "label": "Featured heading", "default": "Worth the trip" },
-    { "type": "url", "id": "find_url", "label": "Full map URL", "info": "Defaults to https://find.non.world" },
+    {
+      "type": "text",
+      "id": "search_placeholder",
+      "label": "Search placeholder",
+      "default": "Suburb, city or venue name"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_map",
+      "label": "Show the map",
+      "default": true
+    },
+    {
+      "type": "text",
+      "id": "featured_heading",
+      "label": "Featured heading",
+      "default": "Worth the trip"
+    },
+    {
+      "type": "url",
+      "id": "find_url",
+      "label": "Full map URL",
+      "info": "Defaults to https://find.non.world"
+    },
     {
       "type": "text",
       "id": "find_prompt",
       "label": "Full map prompt",
       "default": "Looking for somewhere not listed?"
     },
-    { "type": "text", "id": "find_label", "label": "Full map label", "default": "Open the full map at find.non.world" }
+    {
+      "type": "text",
+      "id": "find_label",
+      "label": "Full map label",
+      "default": "Open the full map at find.non.world"
+    },
+    {
+      "type": "header",
+      "content": "Appearance"
+    },
+    {
+      "type": "color",
+      "id": "bg_color",
+      "label": "Background"
+    },
+    {
+      "type": "color",
+      "id": "text_color",
+      "label": "Text colour"
+    },
+    {
+      "type": "select",
+      "id": "font_family",
+      "label": "Font",
+      "options": [
+        {
+          "value": "",
+          "label": "Theme default"
+        },
+        {
+          "value": "sans",
+          "label": "Helvetica (all text)"
+        },
+        {
+          "value": "mono",
+          "label": "JetBrains Mono (all text)"
+        }
+      ],
+      "default": ""
+    },
+    {
+      "type": "range",
+      "id": "text_scale",
+      "label": "Text size",
+      "min": 70,
+      "max": 150,
+      "step": 5,
+      "unit": "%",
+      "default": 100,
+      "info": "Scales every text size in this section together."
+    },
+    {
+      "type": "range",
+      "id": "section_padding",
+      "label": "Vertical padding",
+      "min": 0,
+      "max": 160,
+      "step": 8,
+      "unit": "px",
+      "default": 0,
+      "info": "0 keeps the section's own spacing."
+    }
   ],
   "blocks": [
     {
       "type": "venue",
       "name": "Featured venue",
       "settings": [
-        { "type": "text", "id": "name", "label": "Name" },
-        { "type": "text", "id": "address", "label": "Address" },
-        { "type": "text", "id": "pours", "label": "What they pour" }
+        {
+          "type": "text",
+          "id": "name",
+          "label": "Name"
+        },
+        {
+          "type": "text",
+          "id": "address",
+          "label": "Address"
+        },
+        {
+          "type": "text",
+          "id": "pours",
+          "label": "What they pour"
+        }
       ]
     }
   ],
-  "presets": [{ "name": "Stockists" }]
+  "presets": [
+    {
+      "name": "Stockists"
+    }
+  ]
 }
 {% endschema %}

@@ -1,3 +1,4 @@
+{% render 'section-style', section: section %}
 {%- if section.blocks.size > 0 -%}
   <div class="non-poured">
     <div class="non-poured__label">{{ section.settings.heading }}</div>
@@ -38,16 +39,90 @@
 {
   "name": "Poured at",
   "settings": [
-    { "type": "text", "id": "heading", "label": "Heading", "default": "Poured at" }
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Heading",
+      "default": "Poured at"
+    },
+    {
+      "type": "header",
+      "content": "Appearance"
+    },
+    {
+      "type": "color",
+      "id": "bg_color",
+      "label": "Background"
+    },
+    {
+      "type": "color",
+      "id": "text_color",
+      "label": "Text colour"
+    },
+    {
+      "type": "select",
+      "id": "font_family",
+      "label": "Font",
+      "options": [
+        {
+          "value": "",
+          "label": "Theme default"
+        },
+        {
+          "value": "sans",
+          "label": "Helvetica (all text)"
+        },
+        {
+          "value": "mono",
+          "label": "JetBrains Mono (all text)"
+        }
+      ],
+      "default": ""
+    },
+    {
+      "type": "range",
+      "id": "text_scale",
+      "label": "Text size",
+      "min": 70,
+      "max": 150,
+      "step": 5,
+      "unit": "%",
+      "default": 100,
+      "info": "Scales every text size in this section together."
+    },
+    {
+      "type": "range",
+      "id": "section_padding",
+      "label": "Vertical padding",
+      "min": 0,
+      "max": 160,
+      "step": 8,
+      "unit": "px",
+      "default": 0,
+      "info": "0 keeps the section's own spacing."
+    }
   ],
   "blocks": [
     {
       "type": "venue",
       "name": "Venue",
       "settings": [
-        { "type": "image_picker", "id": "image", "label": "Logo" },
-        { "type": "text", "id": "image_url", "label": "Logo URL", "info": "Used only when no image is uploaded." },
-        { "type": "text", "id": "name", "label": "Venue name" },
+        {
+          "type": "image_picker",
+          "id": "image",
+          "label": "Logo"
+        },
+        {
+          "type": "text",
+          "id": "image_url",
+          "label": "Logo URL",
+          "info": "Used only when no image is uploaded."
+        },
+        {
+          "type": "text",
+          "id": "name",
+          "label": "Venue name"
+        },
         {
           "type": "range",
           "id": "max_height",
@@ -62,6 +137,10 @@
       ]
     }
   ],
-  "presets": [{ "name": "Poured at" }]
+  "presets": [
+    {
+      "name": "Poured at"
+    }
+  ]
 }
 {% endschema %}

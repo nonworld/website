@@ -1,3 +1,4 @@
+{% render 'section-style', section: section %}
 {%- comment -%}
   Press, with the globe filling the space to its right.
 
@@ -63,7 +64,10 @@
       "label": "Heading",
       "default": "Press"
     },
-    { "type": "header", "content": "Globe" },
+    {
+      "type": "header",
+      "content": "Globe"
+    },
     {
       "type": "checkbox",
       "id": "show_globe",
@@ -106,6 +110,62 @@
       "id": "globe_logo",
       "label": "Mark on the globe",
       "info": "Defaults to the NON logotype."
+    },
+    {
+      "type": "header",
+      "content": "Appearance"
+    },
+    {
+      "type": "color",
+      "id": "bg_color",
+      "label": "Background"
+    },
+    {
+      "type": "color",
+      "id": "text_color",
+      "label": "Text colour"
+    },
+    {
+      "type": "select",
+      "id": "font_family",
+      "label": "Font",
+      "options": [
+        {
+          "value": "",
+          "label": "Theme default"
+        },
+        {
+          "value": "sans",
+          "label": "Helvetica (all text)"
+        },
+        {
+          "value": "mono",
+          "label": "JetBrains Mono (all text)"
+        }
+      ],
+      "default": ""
+    },
+    {
+      "type": "range",
+      "id": "text_scale",
+      "label": "Text size",
+      "min": 70,
+      "max": 150,
+      "step": 5,
+      "unit": "%",
+      "default": 100,
+      "info": "Scales every text size in this section together."
+    },
+    {
+      "type": "range",
+      "id": "section_padding",
+      "label": "Vertical padding",
+      "min": 0,
+      "max": 160,
+      "step": 8,
+      "unit": "px",
+      "default": 0,
+      "info": "0 keeps the section's own spacing."
     }
   ],
   "blocks": [

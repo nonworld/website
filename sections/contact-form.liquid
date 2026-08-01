@@ -1,3 +1,4 @@
+{% render 'section-style', section: section %}
 {%- comment -%}
   Contact.
 
@@ -96,7 +97,12 @@
 {
   "name": "Contact form",
   "settings": [
-    { "type": "text", "id": "heading", "label": "Heading", "default": "Contact" },
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Heading",
+      "default": "Contact"
+    },
     {
       "type": "textarea",
       "id": "intro",
@@ -104,24 +110,108 @@
       "info": "Shown only when the page body is empty.",
       "default": "Trade enquiries, press, stockist requests or something that has gone wrong. We answer everything."
     },
-    { "type": "text", "id": "submit_label", "label": "Submit label", "default": "Send" },
+    {
+      "type": "text",
+      "id": "submit_label",
+      "label": "Submit label",
+      "default": "Send"
+    },
     {
       "type": "textarea",
       "id": "success_message",
       "label": "Success message",
       "default": "Got it. We'll come back to you, usually the same day."
     },
-    { "type": "image_picker", "id": "image", "label": "Image" },
-    { "type": "text", "id": "aside_heading", "label": "Aside heading", "default": "Also" },
-    { "type": "richtext", "id": "aside_text", "label": "Aside text" }
+    {
+      "type": "image_picker",
+      "id": "image",
+      "label": "Image"
+    },
+    {
+      "type": "text",
+      "id": "aside_heading",
+      "label": "Aside heading",
+      "default": "Also"
+    },
+    {
+      "type": "richtext",
+      "id": "aside_text",
+      "label": "Aside text"
+    },
+    {
+      "type": "header",
+      "content": "Appearance"
+    },
+    {
+      "type": "color",
+      "id": "bg_color",
+      "label": "Background"
+    },
+    {
+      "type": "color",
+      "id": "text_color",
+      "label": "Text colour"
+    },
+    {
+      "type": "select",
+      "id": "font_family",
+      "label": "Font",
+      "options": [
+        {
+          "value": "",
+          "label": "Theme default"
+        },
+        {
+          "value": "sans",
+          "label": "Helvetica (all text)"
+        },
+        {
+          "value": "mono",
+          "label": "JetBrains Mono (all text)"
+        }
+      ],
+      "default": ""
+    },
+    {
+      "type": "range",
+      "id": "text_scale",
+      "label": "Text size",
+      "min": 70,
+      "max": 150,
+      "step": 5,
+      "unit": "%",
+      "default": 100,
+      "info": "Scales every text size in this section together."
+    },
+    {
+      "type": "range",
+      "id": "section_padding",
+      "label": "Vertical padding",
+      "min": 0,
+      "max": 160,
+      "step": 8,
+      "unit": "px",
+      "default": 0,
+      "info": "0 keeps the section's own spacing."
+    }
   ],
   "blocks": [
     {
       "type": "topic",
       "name": "Topic",
-      "settings": [{ "type": "text", "id": "label", "label": "Label" }]
+      "settings": [
+        {
+          "type": "text",
+          "id": "label",
+          "label": "Label"
+        }
+      ]
     }
   ],
-  "presets": [{ "name": "Contact form" }]
+  "presets": [
+    {
+      "name": "Contact form"
+    }
+  ]
 }
 {% endschema %}

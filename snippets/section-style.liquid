@@ -1,0 +1,66 @@
+{%- comment -%}
+  Per-section appearance: background, text colour, font and text size.
+
+  Emits a <style> block scoped to this section's own wrapper id, so the
+  settings apply to that instance only and two copies of the same section can
+  differ. Everything is expressed by overriding the theme's own custom
+  properties rather than by restyling elements, which means a section picks up
+  the change wherever those properties are already used and nothing has to be
+  re-plumbed per element.
+
+  Only the two house faces are offered. The brand is Helvetica Neue and, where
+  it is not Helvetica, JetBrains Mono — a free-text font field would just be a
+  way to break that quietly.
+
+  Every control is optional. Left at its default, no declaration is written at
+  all, so a section that has not been touched costs nothing and inherits.
+
+  Usage:  {% render 'section-style', section: section %}
+{%- endcomment -%}
+
+{%- liquid
+  assign bg = section.settings.bg_color
+  assign fg = section.settings.text_color
+  assign fam = section.settings.font_family
+  assign scale = section.settings.text_scale | default: 100
+  assign pad = section.settings.section_padding
+
+  assign sel = '#shopify-section-' | append: section.id
+-%}
+
+{%- capture rules -%}
+  {%- if bg != blank and bg != 'rgba(0,0,0,0)' -%}
+    background: {{ bg }};
+  {%- endif -%}
+  {%- if fg != blank and fg != 'rgba(0,0,0,0)' -%}
+    color: {{ fg }};
+    --non-fg: {{ fg }};
+  {%- endif -%}
+  {%- if fam == 'mono' -%}
+    --non-sans: var(--non-mono);
+  {%- elsif fam == 'sans' -%}
+    --non-mono: var(--non-sans);
+  {%- endif -%}
+  {%- unless scale == 100 -%}
+    --non-type-scale: {{ scale | divided_by: 100.0 }};
+  {%- endunless -%}
+  {%- if pad and pad > 0 -%}
+    padding-top: {{ pad }}px;
+    padding-bottom: {{ pad }}px;
+  {%- endif -%}
+{%- endcapture -%}
+
+{%- assign rules = rules | strip -%}
+
+{%- if rules != blank -%}
+  <style>
+    {{ sel }} { {{ rules }} }
+    {%- comment -%}
+      Descendants that paint their own background would otherwise punch holes
+      in a custom one. Only neutralised when a background is actually set.
+    {%- endcomment -%}
+    {%- if bg != blank and bg != 'rgba(0,0,0,0)' -%}
+      {{ sel }} .non-section, {{ sel }} .non-shell { background: transparent; }
+    {%- endif -%}
+  </style>
+{%- endif -%}

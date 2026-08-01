@@ -1,0 +1,12 @@
+{%- assign recipes = shop.metaobjects.non_recipe.values -%}
+{%- for recipe in recipes -%}
+  {%- liquid
+    assign bottle = recipe.bottle.value
+    assign key = bottle.handle
+    assign marker = '|' | append: key | append: '|'
+  -%}
+  <i>{{ key }}{{ marker }}</i>
+{%- endfor -%}
+{% schema %}
+{ "name": "p-liquidblock", "settings": [] }
+{% endschema %}

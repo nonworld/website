@@ -49,7 +49,7 @@
     {%- if product.media.size > 0 -%}
       {{
         product.featured_media
-        | image_url: width: 1400
+        | image_url: width: 1400, format: 'webp'
         | image_tag:
           loading: 'eager',
           fetchpriority: 'high',
@@ -67,10 +67,10 @@
               type="button"
               class="non-gallery__thumb"
               data-non-gallery-thumb
-              data-full="{{ media | image_url: width: 1400 }}"
+              data-full="{{ media | image_url: width: 1400, format: 'webp' }}"
               aria-current="{% if forloop.first %}true{% else %}false{% endif %}"
               aria-label="View image {{ forloop.index }}">
-              <img src="{{ media | image_url: width: 200 }}" alt="" loading="lazy">
+              <img src="{{ media | image_url: width: 200, format: 'webp' }}" alt="" loading="lazy">
             </button>
           {%- endfor -%}
         </div>
@@ -290,7 +290,7 @@
         {{ c | json }}: {
           "title": {{ p.title | json }},
           "url": {{ p.url | json }},
-          "image": {{ p.featured_image | image_url: width: 200 | json }},
+          "image": {{ p.featured_image | image_url: width: 200, format: 'webp' | json }},
           "price": {{ p.price | money | json }},
           "note": {{ p.metafields.custom.profile | metafield_text | default: '' | truncate: 44 | json }},
           "variantId": {{ p.selected_or_first_available_variant.id | json }},

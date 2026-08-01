@@ -12,7 +12,7 @@
       {%- for item in cart.items -%}
         <div class="non-drawer__item">
           {%- if item.image -%}
-            <img src="{{ item.image | image_url: width: 160 }}" alt="{{ item.title | escape }}" loading="lazy">
+            <img src="{{ item.image | image_url: width: 160, format: 'webp' }}" alt="{{ item.title | escape }}" loading="lazy">
           {%- endif -%}
 
           <div style="flex:1">

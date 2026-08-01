@@ -86,7 +86,7 @@
 
       <div class="non-verdict__media">
         {%- if section.settings.verdict_image != blank -%}
-          {{ section.settings.verdict_image | image_url: width: 1000
+          {{ section.settings.verdict_image | image_url: width: 1000, format: 'webp'
              | image_tag: loading: 'lazy', widths: '400,700,1000', class: 'non-verdict__img',
                alt: section.settings.verdict_label }}
         {%- elsif section.settings.verdict_image_url != blank -%}
@@ -124,7 +124,7 @@
       {{ c | json }}: {
         "title": {{ p.title | json }},
         "url": {{ p.url | json }},
-        "image": {{ p.featured_image | image_url: width: 200 | json }},
+        "image": {{ p.featured_image | image_url: width: 200, format: 'webp' | json }},
         "price": {{ p.price | money | json }},
         "note": {{ p.metafields.custom.tastes | metafield_text | default: '' | json }},
         "variantId": {{ p.selected_or_first_available_variant.id | json }},

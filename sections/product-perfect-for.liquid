@@ -62,7 +62,7 @@
             {%- endcomment -%}
             {{
               block.settings.image
-              | image_url: width: 1200
+              | image_url: width: 1200, format: 'webp'
               | image_tag:
                 loading: 'lazy',
                 widths: '400,600,900,1200',
@@ -88,7 +88,7 @@
         <div class="non-trip__cell">
           {{
             image
-            | image_url: width: 1200
+            | image_url: width: 1200, format: 'webp'
             | image_tag:
               loading: 'lazy',
               widths: '400,600,900,1200',

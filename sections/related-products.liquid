@@ -41,7 +41,7 @@
         {%- capture item_code %}{% render 'non-code', product: item %}{% endcapture -%}
         <a class="non-related__card" href="{{ item.url }}">
           {%- if item.featured_image -%}
-            <img src="{{ item.featured_image | image_url: width: 200 }}" alt="{{ item.title | escape }}" loading="lazy">
+            <img src="{{ item.featured_image | image_url: width: 200, format: 'webp' }}" alt="{{ item.title | escape }}" loading="lazy">
           {%- endif -%}
           <span class="non-related__meta">
             <span class="non-related__code">{{ item_code | strip }}</span>

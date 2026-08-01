@@ -6,7 +6,7 @@
       {%- if block.settings.image != blank -%}
         {{
           block.settings.image
-          | image_url: width: 1200
+          | image_url: width: 1200, format: 'webp'
           | image_tag: loading: 'lazy', widths: '600,900,1200', class: 'non-split__img', alt: alt_text
         }}
       {%- elsif block.settings.image_url != blank -%}

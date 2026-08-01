@@ -24,6 +24,11 @@
 
 {%- assign og_image = page_image | default: product.featured_image | default: article.image -%}
 {%- if og_image -%}
+  {%- comment -%}
+    Deliberately NOT webp. Social scrapers are inconsistent with it — Facebook
+    and LinkedIn still favour jpg/png — and a broken share preview costs more
+    than the bytes save. This image is fetched by a crawler, not a customer.
+  {%- endcomment -%}
   <meta property="og:image" content="http:{{ og_image | image_url: width: 1200 }}">
   <meta property="og:image:secure_url" content="https:{{ og_image | image_url: width: 1200 }}">
 {%- endif -%}

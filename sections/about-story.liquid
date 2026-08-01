@@ -59,7 +59,7 @@
 {%- if section.settings.lead_image != blank or section.settings.lead_image_url != blank -%}
   <div class="non-split__cell" style="min-height:0">
     {%- if section.settings.lead_image != blank -%}
-      {{ section.settings.lead_image | image_url: width: 1800 | image_tag: loading: 'lazy', widths: '800,1200,1800', class: 'non-about__band', alt: section.settings.heading }}
+      {{ section.settings.lead_image | image_url: width: 1800, format: 'webp' | image_tag: loading: 'lazy', widths: '800,1200,1800', class: 'non-about__band', alt: section.settings.heading }}
     {%- else -%}
       {% render 'cdn-image',
          url: section.settings.lead_image_url,
@@ -84,7 +84,7 @@
         {%- if section.settings.origin_image != blank or section.settings.origin_image_url != blank -%}
           <div style="margin-top:26px">
             {%- if section.settings.origin_image != blank -%}
-              {{ section.settings.origin_image | image_url: width: 1200 | image_tag: loading: 'lazy', widths: '600,900,1200', alt: section.settings.origin_heading }}
+              {{ section.settings.origin_image | image_url: width: 1200, format: 'webp' | image_tag: loading: 'lazy', widths: '600,900,1200', alt: section.settings.origin_heading }}
             {%- else -%}
               {% render 'cdn-image',
                  url: section.settings.origin_image_url,

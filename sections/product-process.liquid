@@ -100,7 +100,7 @@
       {%- if process_image != blank -%}
         {{
           process_image
-          | image_url: width: 1200
+          | image_url: width: 1200, format: 'webp'
           | image_tag:
             loading: 'lazy',
             widths: '600,900,1200',

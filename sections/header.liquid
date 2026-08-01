@@ -3,7 +3,7 @@
   <a href="{{ routes.root_url }}" aria-label="{{ shop.name }}">
     {%- if settings.logo != blank -%}
       <img
-        src="{{ settings.logo | image_url: width: 400 }}"
+        src="{{ settings.logo | image_url: width: 400, format: 'webp' }}"
         alt="{{ shop.name | escape }}"
         class="non-header__logo"
         style="height: {{ settings.logo_height | default: '19px' }}"

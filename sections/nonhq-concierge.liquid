@@ -50,7 +50,7 @@
     {%- for b in rooms -%}
       <div class="non-hq-room" {{ b.shopify_attributes }}>
         {%- if b.settings.image != blank -%}
-          {{ b.settings.image | image_url: width: 900 | image_tag:
+          {{ b.settings.image | image_url: width: 900, format: 'webp' | image_tag:
              loading: 'lazy', widths: '400,700,900', class: 'non-hq-room__img', alt: b.settings.title }}
         {%- elsif b.settings.image_url != blank -%}
           {% render 'cdn-image',

@@ -8,8 +8,9 @@
   shipped 1080x1350 into a 375px slot, and it is the LCP element, so it hit the
   metric that matters most on mobile hardest.
 
-  Shopify's CDN resizes from a query parameter, so a srcset can be built from
-  any /cdn/shop/ URL without re-uploading anything. The width param is
+  Shopify's CDN resizes AND reformats from query parameters, so a srcset of
+  webp can be built from any /cdn/shop/ URL without re-uploading anything. The
+  originals are untouched — this only changes what gets served. The width param is
   normalised first: the stored URLs already carry ?width=1200 and appending a
   second one wins silently in some CDNs and loses in others.
 
@@ -53,13 +54,13 @@
     {%- assign list = widths | split: ',' -%}
     {%- for w in list -%}
       {%- assign ww = w | strip -%}
-      {{ src }}?{% if v != blank %}v={{ v }}&{% endif %}width={{ ww }} {{ ww }}w
+      {{ src }}?{% if v != blank %}v={{ v }}&{% endif %}width={{ ww }}&format=webp {{ ww }}w
       {%- unless forloop.last -%}, {% endunless -%}
     {%- endfor -%}
   {%- endcapture -%}
 
   <img
-    src="{{ src }}?{% if v != blank %}v={{ v }}&{% endif %}width=1200"
+    src="{{ src }}?{% if v != blank %}v={{ v }}&{% endif %}width=1200&format=webp"
     srcset="{{ srcset | strip }}"
     sizes="{{ sizes }}"
     alt="{{ alt | default: shop.name | escape }}"

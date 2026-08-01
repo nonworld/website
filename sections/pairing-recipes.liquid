@@ -117,7 +117,7 @@
             {%- if recipe.image -%}
               {{
                 recipe.image.value
-                | image_url: width: 900
+                | image_url: width: 900, format: 'webp'
                 | image_tag: loading: 'lazy', widths: '420,640,900', alt: recipe.title
               }}
             {%- endif -%}

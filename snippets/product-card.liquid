@@ -37,7 +37,7 @@
     {%- if product.featured_image -%}
       {{
         product.featured_image
-        | image_url: width: 800
+        | image_url: width: 800, format: 'webp'
         | image_tag:
           loading: 'lazy',
           widths: '300,400,600,800',

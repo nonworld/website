@@ -117,7 +117,7 @@
           {%- if block.settings.image != blank -%}
             {{
               block.settings.image
-              | image_url: width: 1400
+              | image_url: width: 1400, format: 'webp'
               | image_tag:
                 loading: loading,
                 widths: '480,760,1000,1400',
@@ -157,7 +157,7 @@
       {%- if section.settings.image != blank -%}
         {{
           section.settings.image
-          | image_url: width: 1000
+          | image_url: width: 1000, format: 'webp'
           | image_tag: loading: 'eager', fetchpriority: 'high', widths: '420,640,840,1000', alt: section.settings.image.alt | default: shop.name
         }}
       {%- else -%}
@@ -191,7 +191,7 @@
         {{ code | json }}: {
           "title": {{ product.title | json }},
           "url": {{ product.url | json }},
-          "image": {{ product.featured_image | image_url: width: 200 | json }},
+          "image": {{ product.featured_image | image_url: width: 200, format: 'webp' | json }},
           "price": {{ product.price | money | json }},
           "note": {{ product.metafields.custom.profile | metafield_text | default: product.metafields.custom.tastes | metafield_text | default: '' | truncate: 44 | json }},
           "variantId": {{ product.selected_or_first_available_variant.id | json }},
@@ -210,7 +210,7 @@
         ,{{ code | json }}: {
           "title": {{ product.title | json }},
           "url": {{ product.url | json }},
-          "image": {{ product.featured_image | image_url: width: 200 | json }},
+          "image": {{ product.featured_image | image_url: width: 200, format: 'webp' | json }},
           "price": {{ product.price | money | json }},
           "note": {{ product.metafields.custom.profile | metafield_text | default: '' | truncate: 44 | json }},
           "variantId": {{ product.selected_or_first_available_variant.id | json }},

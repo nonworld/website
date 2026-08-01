@@ -9,7 +9,7 @@
       <a href="{{ collection.url }}" class="non-card">
         <span class="non-card__media">
           {%- if collection.featured_image -%}
-            {{ collection.featured_image | image_url: width: 800 | image_tag: loading: 'lazy', alt: collection.title }}
+            {{ collection.featured_image | image_url: width: 800, format: 'webp' | image_tag: loading: 'lazy', alt: collection.title }}
           {%- endif -%}
         </span>
         <span class="non-card__name">{{ collection.title }}</span>

@@ -52,7 +52,7 @@
               {%- if item.featured_image -%}
                 {{
                   item.featured_image
-                  | image_url: width: 160
+                  | image_url: width: 160, format: 'webp'
                   | image_tag: loading: 'lazy', class: 'non-upsell__img', alt: item.title
                 }}
               {%- endif -%}

@@ -41,7 +41,7 @@
       data-lap="{{ section.settings.globe_lap }}"
       data-logo-lap="{{ section.settings.globe_logo_lap }}"
       {% if section.settings.globe_logo != blank %}
-        data-logo="{{ section.settings.globe_logo | image_url: width: 240 }}"
+        data-logo="{{ section.settings.globe_logo | image_url: width: 240, format: 'webp' }}"
       {% else %}
         data-logo="{{ 'non-logotype.svg' | asset_url }}"
       {% endif %}

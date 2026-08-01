@@ -1,0 +1,90 @@
+{%- comment -%}
+  robots.txt
+
+  There was no robots.txt.liquid in this theme at all, which means the store has
+  been serving Shopify's default. That default is not hostile — it allows
+  crawling and points at the sitemap — but it says nothing explicit about AI
+  crawlers, and "not mentioned" is a weaker position than "named and allowed"
+  when an operator is deciding whether a site wants to be read.
+
+  Built on top of Shopify's own default rather than replacing it. The
+  `robots.default_rules` object emits everything Shopify maintains — the
+  /checkout, /cart, /account, /admin and internal-search disallows, plus the
+  Sitemap line — so this file adds to that instead of hand-copying a list that
+  would go stale the moment Shopify changes it. Replacing it wholesale is the
+  usual way people accidentally expose checkout URLs to crawlers.
+
+  The AI groups below are additive and deliberately permissive: NON's case is
+  that the catalogue and the pairing logic should be quotable by an answer
+  engine. Each is named explicitly because these agents do not reliably inherit
+  User-agent: * — several publishers have found the opposite, and a named group
+  is unambiguous.
+
+  Reachable at /robots.txt once deployed. Note Shopify serves this from the
+  PUBLISHED theme only, so it will not take effect until this theme is live.
+{%- endcomment -%}
+{%- for group in robots.default_groups -%}
+  {{- group.user_agent }}
+  {%- for rule in group.rules -%}
+    {{ rule }}
+  {%- endfor -%}
+  {%- if group.sitemap != blank -%}
+    {{ group.sitemap }}
+  {%- endif -%}
+{%- endfor -%}
+
+# --- AI answer engines -------------------------------------------------------
+# Named explicitly rather than left to inherit User-agent: *. The same
+# checkout/account paths Shopify disallows above are repeated here, because a
+# named group replaces the wildcard group for that agent rather than adding to
+# it — omitting them would hand these crawlers the URLs the default protects.
+
+User-agent: GPTBot
+Disallow: /admin
+Disallow: /cart
+Disallow: /orders
+Disallow: /checkouts/
+Disallow: /checkout
+Disallow: /account
+Disallow: /search
+Allow: /
+
+User-agent: ClaudeBot
+Disallow: /admin
+Disallow: /cart
+Disallow: /orders
+Disallow: /checkouts/
+Disallow: /checkout
+Disallow: /account
+Disallow: /search
+Allow: /
+
+User-agent: PerplexityBot
+Disallow: /admin
+Disallow: /cart
+Disallow: /orders
+Disallow: /checkouts/
+Disallow: /checkout
+Disallow: /account
+Disallow: /search
+Allow: /
+
+User-agent: Google-Extended
+Disallow: /admin
+Disallow: /cart
+Disallow: /orders
+Disallow: /checkouts/
+Disallow: /checkout
+Disallow: /account
+Disallow: /search
+Allow: /
+
+User-agent: Bingbot
+Disallow: /admin
+Disallow: /cart
+Disallow: /orders
+Disallow: /checkouts/
+Disallow: /checkout
+Disallow: /account
+Disallow: /search
+Allow: /

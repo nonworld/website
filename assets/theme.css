@@ -1290,7 +1290,7 @@ button { font-family: inherit; }
   border-radius: 50%;
   background: var(--non-fg);
   opacity: .25;
-  animation: sommThink 1var(--duration-hover) var(--ease-hover)-in-out infinite;
+  animation: sommThink 1.1s var(--ease-hover) infinite;
 }
 .non-think__dot:nth-child(2) { left: calc(var(--dot) * 2.15); animation-delay: .16s; }
 .non-think__dot:nth-child(3) { left: calc(var(--dot) * 3.4);  animation-delay: .32s; }

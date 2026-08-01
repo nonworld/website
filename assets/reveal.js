@@ -46,6 +46,18 @@
     '.non-stock-offer',
     '.non-promo',
     '.non-creds',
+    // Bands built 2026-08-01. Each is one reveal for the whole band, not one
+    // per child — the spec's "one clear reveal per section beats five
+    // competing effects". The process rail is deliberately a single target
+    // rather than six stations: staggering the stations would animate a
+    // diagram of a process, which reads as decoration of the content rather
+    // than of the page.
+    '.non-prail',
+    '.non-about-origin',
+    '.non-about-kitchen',
+    '.non-about-hard-media',
+    '.non-stock-nominate',
+    '.non-specstrip',
   ].join(',');
 
   var io = new IntersectionObserver(function (entries) {

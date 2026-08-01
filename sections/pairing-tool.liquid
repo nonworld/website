@@ -90,8 +90,11 @@
              | image_tag: loading: 'lazy', widths: '400,700,1000', class: 'non-verdict__img',
                alt: section.settings.verdict_label }}
         {%- elsif section.settings.verdict_image_url != blank -%}
-          <img class="non-verdict__img" src="{{ section.settings.verdict_image_url }}"
-               alt="{{ section.settings.verdict_label | escape }}" loading="lazy">
+          {% render 'cdn-image',
+             url: section.settings.verdict_image_url,
+             alt: section.settings.verdict_label,
+             class: 'non-verdict__img',
+             sizes: '(min-width: 860px) 420px, 100vw' %}
         {%- else -%}
           {{ 'lifestyle-1' | placeholder_svg_tag }}
         {%- endif -%}

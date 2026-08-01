@@ -10,7 +10,11 @@
           | image_tag: loading: 'lazy', widths: '600,900,1200', class: 'non-split__img', alt: alt_text
         }}
       {%- elsif block.settings.image_url != blank -%}
-        <img class="non-split__img" src="{{ block.settings.image_url }}" alt="{{ alt_text | escape }}" loading="lazy">
+        {% render 'cdn-image',
+           url: block.settings.image_url,
+           alt: alt_text,
+           class: 'non-split__img',
+           sizes: '(min-width: 860px) 50vw, 100vw' %}
       {%- else -%}
         {%- comment -%}
           A visible placeholder rather than nothing. An empty panel reads as a

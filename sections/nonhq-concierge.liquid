@@ -53,7 +53,11 @@
           {{ b.settings.image | image_url: width: 900 | image_tag:
              loading: 'lazy', widths: '400,700,900', class: 'non-hq-room__img', alt: b.settings.title }}
         {%- elsif b.settings.image_url != blank -%}
-          <img class="non-hq-room__img" src="{{ b.settings.image_url }}" alt="{{ b.settings.title | escape }}" loading="lazy">
+          {% render 'cdn-image',
+             url: b.settings.image_url,
+             alt: b.settings.title,
+             class: 'non-hq-room__img',
+             sizes: '(min-width: 720px) 33vw, 100vw' %}
         {%- endif -%}
         <div class="non-hq-room__cap">
           <div class="non-hq-room__t">{{ b.settings.title }}</div>

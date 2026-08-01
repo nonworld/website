@@ -1,0 +1,78 @@
+{%- comment -%}
+  A responsive <img> for images referenced by URL rather than by Shopify image
+  object.
+
+  Sections that store a CDN URL in a text setting — the hero slides, the
+  triptych, the split panels, the NONHQ rooms — were emitting a bare
+  <img src>. One file, one size, to every device. On a 375px phone the hero
+  shipped 1080x1350 into a 375px slot, and it is the LCP element, so it hit the
+  metric that matters most on mobile hardest.
+
+  Shopify's CDN resizes from a query parameter, so a srcset can be built from
+  any /cdn/shop/ URL without re-uploading anything. The width param is
+  normalised first: the stored URLs already carry ?width=1200 and appending a
+  second one wins silently in some CDNs and loses in others.
+
+  Falls back to a plain img for anything not on the Shopify CDN, because the
+  width parameter would do nothing there and a srcset of identical files is
+  worse than none.
+
+  Usage:
+    {% render 'cdn-image',
+       url: block.settings.image_url,
+       alt: block.settings.title,
+       sizes: '(min-width: 860px) 40vw, 100vw',
+       class: 'non-trip__img',
+       eager: true %}
+{%- endcomment -%}
+
+{%- liquid
+  assign src = url | split: '?' | first
+  assign is_shopify_cdn = false
+  if src contains '/cdn/shop/' or src contains 'cdn.shopify.com'
+    assign is_shopify_cdn = true
+  endif
+
+  assign v = ''
+  if url contains 'v='
+    assign v = url | split: 'v=' | last | split: '&' | first
+  endif
+
+  assign widths = widths | default: '400,600,900,1200,1600'
+  assign sizes = sizes | default: '100vw'
+  assign loading = 'lazy'
+  assign priority = ''
+  if eager
+    assign loading = 'eager'
+    assign priority = 'high'
+  endif
+-%}
+
+{%- if is_shopify_cdn -%}
+  {%- capture srcset -%}
+    {%- assign list = widths | split: ',' -%}
+    {%- for w in list -%}
+      {%- assign ww = w | strip -%}
+      {{ src }}?{% if v != blank %}v={{ v }}&{% endif %}width={{ ww }} {{ ww }}w
+      {%- unless forloop.last -%}, {% endunless -%}
+    {%- endfor -%}
+  {%- endcapture -%}
+
+  <img
+    src="{{ src }}?{% if v != blank %}v={{ v }}&{% endif %}width=1200"
+    srcset="{{ srcset | strip }}"
+    sizes="{{ sizes }}"
+    alt="{{ alt | default: shop.name | escape }}"
+    {% if class != blank %}class="{{ class }}"{% endif %}
+    loading="{{ loading }}"
+    {% if priority != blank %}fetchpriority="{{ priority }}"{% endif %}
+    decoding="async">
+{%- else -%}
+  <img
+    src="{{ url }}"
+    alt="{{ alt | default: shop.name | escape }}"
+    {% if class != blank %}class="{{ class }}"{% endif %}
+    loading="{{ loading }}"
+    {% if priority != blank %}fetchpriority="{{ priority }}"{% endif %}
+    decoding="async">
+{%- endif -%}

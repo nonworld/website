@@ -946,7 +946,10 @@ button { font-family: inherit; }
 .non-lotto__claim[hidden] { display: none; }
 .non-lotto__email {
   flex: 1; border: 1px solid var(--non-line-strong); background: var(--non-panel); color: var(--non-fg);
-  padding: 12px 13px; font-family: var(--non-sans); font-size: 13.5px; outline: none;
+    /* 16px is the floor. iOS Safari auto-zooms any focused input below it and
+     does not zoom back out, so a 13.5px field means tapping it breaks the
+     page layout for the rest of the session. */
+  padding: 12px 13px; font-family: var(--non-sans); font-size: 16px; outline: none;
 }
 .non-lotto__send {
   border: 0; background: var(--non-invert-bg); color: var(--non-invert-fg);
@@ -999,7 +1002,12 @@ button { font-family: inherit; }
 
 .non-field {
   width: 100%; border: 1px solid var(--non-line-strong); background: var(--non-panel);
-  color: var(--non-fg); padding: 12px 13px; font-family: var(--non-sans); font-size: 14px; outline: none;
+  color: var(--non-fg); padding: 12px 13px; font-family: var(--non-sans);
+  /* 16px floor, same reason as the lotto field: iOS zooms anything smaller on
+     focus and does not zoom back. .non-field is every form on the site — the
+     contact page and the NONHQ concierge — so this was the bug in six places,
+     not one. */
+  font-size: 16px; outline: none;
 }
 .non-field:focus { border-color: var(--non-fg); }
 .non-label { font-family: var(--non-mono); font-size: 9.5px; letter-spacing: .16em; text-transform: uppercase; color: var(--non-fg-faint); display: block; margin-bottom: 7px; }

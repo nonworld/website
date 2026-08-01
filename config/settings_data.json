@@ -19,7 +19,6 @@
     "lotto_delay": 1400,
     "lotto_cooldown_days": 14,
     "cart_drawer": true,
-    "free_shipping_threshold": "75",
     "social_instagram": "https://www.instagram.com/non.world/",
     "contact_email": "hello@non.world",
     "core_range_collection": "the-range"

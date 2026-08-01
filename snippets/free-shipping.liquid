@@ -1,0 +1,55 @@
+{%- comment -%}
+  Free shipping threshold, per market. Single source of truth.
+
+  Previously there was one global number — `settings.free_shipping_threshold`,
+  hardcoded to 75 — applied to all five enabled markets, plus a second,
+  completely separate hardcoding of the literal string "free shipping over $75"
+  in the announcement bar. A UK customer at £55 was told "£20 away from free
+  shipping" when they already qualified, and was shown a dollar sign either way.
+  A line that discourages checkout at the moment of decision.
+
+  Keyed on `localization.country.iso_code` rather than on currency, because the
+  International market can present in USD. Keying on currency would show a US
+  visitor's $75 threshold to a Netherlands customer who has no free rate at all.
+  Country is the thing the shipping rate is actually attached to.
+
+  Thresholds are the rates confirmed configured in Shopify Shipping. Anything
+  not listed renders NOTHING rather than guessing a number — CA, NZ and
+  International have no confirmed free rate, and cart.js's own comment already
+  conceded this line "is display-only, the real rate lives in Shopify Shipping".
+  Promising a threshold that does not exist is worse than staying quiet.
+
+  When you add a market, add it here and nowhere else. Both the cart drawer
+  progress line and the announcement bar read from this one snippet.
+
+  Usage:
+    {% render 'free-shipping', mode: 'json' %}   → {"threshold":7500,"symbol":"$"}
+    {% render 'free-shipping', mode: 'text' %}   → free shipping over $75
+
+  Both render empty/zero for a market with no confirmed rate.
+{%- endcomment -%}
+
+{%- liquid
+  assign fs_amount = 0
+  assign fs_symbol = ''
+
+  case localization.country.iso_code
+    when 'AU'
+      assign fs_amount = 75
+      assign fs_symbol = '$'
+    when 'US'
+      assign fs_amount = 75
+      assign fs_symbol = '$'
+    when 'GB'
+      assign fs_amount = 50
+      assign fs_symbol = '£'
+  endcase
+
+  assign fs_cents = fs_amount | times: 100
+-%}
+
+{%- if mode == 'json' -%}
+{"threshold":{{ fs_cents }},"symbol":{{ fs_symbol | json }}}
+{%- elsif mode == 'text' -%}
+{%- if fs_amount > 0 -%}free shipping over {{ fs_symbol }}{{ fs_amount }}{%- endif -%}
+{%- endif -%}

@@ -73,12 +73,16 @@ Full audit with exact file:line references: **`docs/cart-cro-audit.md`**.
   US $75 ✓, **UK £50 ✗**, CA/NZ appear to have no free rate at all
 - Cart add-ons are built but no products selected in Theme settings → Cart
 
-**Since first reported:** the threshold is hardcoded in **two independent
-places**, not one. `assets/cart.js:115` reads the global setting
-(`config/settings_data.json:22`), *and* `sections/announcement-bar.liquid:64`
-plus `sections/header-group.json:23` carry the literal string
-`"free shipping over $75"` — wrong numeral **and** wrong currency symbol for a
-UK visitor. Fixing `cart.js` alone does not fix the announcement bar.
+**Free shipping is FIXED** — both locations, one commit, deployed to staging.
+`snippets/free-shipping.liquid` is now the single source of truth, keyed on
+`localization.country.iso_code`: AU $75, US $75, GB £50, and **nothing rendered**
+for CA / NZ / International. The global `settings.free_shipping_threshold` is
+gone, and the announcement bar's hardcoded `"free shipping over $75"` is now a
+`free_shipping` block type that resolves per market. Add a market in the snippet
+and nowhere else.
+
+Still open in the cart: the Lotto button size, and the add-ons with no products
+selected.
 
 ---
 

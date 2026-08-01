@@ -18,10 +18,8 @@
           }
         },
         "m3": {
-          "type": "message",
-          "settings": {
-            "text": "free shipping over $75"
-          }
+          "type": "free_shipping",
+          "settings": {}
         },
         "m4": {
           "type": "message",

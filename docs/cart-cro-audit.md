@@ -22,7 +22,14 @@ with the purchase.
 
 Fix: shrink the prize CTA to a text link, or make Checkout full-width and taller.
 
-### 2. Free-shipping threshold is hardcoded across all markets — High
+### 2. Free-shipping threshold is hardcoded across all markets — High — **FIXED**
+
+> **Resolved.** Both locations fixed together and deployed to `staging`.
+> Thresholds now resolve per market from `snippets/free-shipping.liquid`:
+> AU $75, US $75, GB £50, and **nothing rendered** for CA / NZ / International,
+> where no free rate is confirmed. The description below is retained as the
+> record of what was wrong.
+
 
 There is **one** global threshold, applied to **five** enabled markets
 (AU, CA, NZ, UK, International).

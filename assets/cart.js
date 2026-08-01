@@ -10,8 +10,22 @@
   var NON = window.NON || {};
   var routes = NON.routes || {};
   var settings = NON.settings || {};
+  var strings = NON.strings || {};
 
   /* --- money ------------------------------------------------------------ */
+
+  // Money in an explicit symbol rather than the shop's format. `moneyFormat`
+  // is `shop.money_format`, which is the SHOP's currency, not the market's —
+  // under Shopify Markets a GBP cart still formats with the shop's symbol.
+  // The free-shipping line carries its own symbol from free-shipping.liquid
+  // so the threshold and the amount agree with each other.
+  function formatIn(symbol, cents) {
+    var value = (cents / 100).toFixed(2);
+    var parts = value.split('.');
+    var whole = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+
+    return symbol + whole + '.' + parts[1];
+  }
 
   function formatMoney(cents) {
     var format = settings.moneyFormat || '${{amount}}';
@@ -111,13 +125,21 @@
 
     subtotal.textContent = formatMoney(cart.total_price);
 
-    // Display-only progress line. The real rate lives in Shopify Shipping.
-    var threshold = parseFloat(settings.freeShippingThreshold) * 100;
-    if (threshold > 0 && cart.item_count) {
-      var remaining = threshold - cart.total_price;
+    // Display-only progress line. The real rate lives in Shopify Shipping —
+    // which is exactly why this is resolved per market in snippets/free-shipping.liquid
+    // and renders nothing where no free rate is confirmed. A threshold of 0
+    // means "this market has no rate we can promise", not "no threshold set".
+    var freeShipping = settings.freeShipping || { threshold: 0, symbol: '' };
+    if (freeShipping.threshold > 0 && cart.item_count) {
+      var remaining = freeShipping.threshold - cart.total_price;
       shipping.hidden = false;
       shipping.textContent =
-        remaining > 0 ? formatMoney(remaining) + ' away from free shipping' : 'Free shipping unlocked';
+        remaining > 0
+          ? (strings.freeShippingProgress || '[amount] away from free shipping').replace(
+              '[amount]',
+              formatIn(freeShipping.symbol, remaining)
+            )
+          : strings.freeShippingMet || 'Free shipping unlocked';
     } else if (shipping) {
       shipping.hidden = true;
     }

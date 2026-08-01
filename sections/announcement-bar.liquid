@@ -1,4 +1,17 @@
 {% render 'section-style', section: section %}
+{%- comment -%}
+  Two block types. `message` is free merchant text. `free_shipping` resolves per
+  market via snippets/free-shipping.liquid and renders NOTHING in a market with
+  no confirmed free rate.
+
+  It used to be a plain `message` block carrying the literal string
+  "free shipping over $75", shown to every market — including the UK, where the
+  real threshold is £50 and the symbol is not a dollar sign, and including CA,
+  NZ and International, where no free rate is confirmed to exist at all.
+
+  A block resolving to empty is skipped entirely rather than emitting a blank
+  span, so the marquee does not develop a gap where the message used to be.
+{%- endcomment -%}
 {%- if section.blocks.size > 0 -%}
   <div class="non-announce">
     <div class="non-announce__track" aria-hidden="true">
@@ -8,11 +21,20 @@
       {%- endcomment -%}
       {%- for i in (1..2) -%}
         <div class="non-announce__set">
-          {%- for block in section.blocks -%}
-            <span {{ block.shopify_attributes }}>{{ block.settings.text }}</span>
-          {%- endfor -%}
-          {%- for block in section.blocks -%}
-            <span>{{ block.settings.text }}</span>
+          {%- for j in (1..2) -%}
+            {%- for block in section.blocks -%}
+              {%- capture block_text -%}
+                {%- if block.type == 'free_shipping' -%}
+                  {%- render 'free-shipping', mode: 'text' -%}
+                {%- else -%}
+                  {{- block.settings.text -}}
+                {%- endif -%}
+              {%- endcapture -%}
+              {%- assign block_text = block_text | strip -%}
+              {%- if block_text != blank -%}
+                <span {% if j == 1 %}{{ block.shopify_attributes }}{% endif %}>{{ block_text }}</span>
+              {%- endif -%}
+            {%- endfor -%}
           {%- endfor -%}
         </div>
       {%- endfor -%}
@@ -20,7 +42,17 @@
 
     <ul class="visually-hidden">
       {%- for block in section.blocks -%}
-        <li>{{ block.settings.text }}</li>
+        {%- capture block_text -%}
+          {%- if block.type == 'free_shipping' -%}
+            {%- render 'free-shipping', mode: 'text' -%}
+          {%- else -%}
+            {{- block.settings.text -}}
+          {%- endif -%}
+        {%- endcapture -%}
+        {%- assign block_text = block_text | strip -%}
+        {%- if block_text != blank -%}
+          <li>{{ block_text }}</li>
+        {%- endif -%}
       {%- endfor -%}
     </ul>
   </div>
@@ -42,6 +74,16 @@
           "default": "0.0% ABV"
         }
       ]
+    },
+    {
+      "type": "free_shipping",
+      "name": "Free shipping (per market)",
+      "settings": [
+        {
+          "type": "paragraph",
+          "content": "Shows the free shipping threshold for the visitor's market, in that market's currency. Hidden entirely in markets with no free shipping rate configured. Thresholds are set in snippets/free-shipping.liquid, not here — there is no text to edit, deliberately, because a hardcoded amount was previously shown to every market at once."
+        }
+      ]
     }
   ],
   "default": {
@@ -59,10 +101,7 @@
         }
       },
       {
-        "type": "message",
-        "settings": {
-          "text": "free shipping over $75"
-        }
+        "type": "free_shipping"
       },
       {
         "type": "message",

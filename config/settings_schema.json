@@ -130,11 +130,8 @@
         "info": "Uncheck to redirect to /cart instead."
       },
       {
-        "type": "text",
-        "id": "free_shipping_threshold",
-        "label": "Free shipping threshold",
-        "default": "75",
-        "info": "In store currency, no symbol. Used for the progress line in the drawer. Set the actual rate in Shopify Shipping — this is display only."
+        "type": "paragraph",
+        "content": "Free shipping thresholds are per market and live in snippets/free-shipping.liquid. There is deliberately no single field here — one global number was previously shown to all five markets, including the UK, where the real threshold is different."
       },
       {
         "type": "header",

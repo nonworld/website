@@ -62,7 +62,7 @@
         },
         settings: {
           cartDrawer: {{ settings.cart_drawer | default: true | json }},
-          freeShippingThreshold: {{ settings.free_shipping_threshold | default: 0 | json }},
+          freeShipping: {% render 'free-shipping', mode: 'json' %},
           moneyFormat: {{ shop.money_format | json }},
           sommEndpoint: {{ settings.somm_endpoint | default: '' | json }},
           sommStream: {{ settings.somm_stream | default: true | json }},
@@ -73,7 +73,9 @@
           sommError: {{ 'sections.somm.error' | t | json }},
           lottoUnavailable: {{ 'sections.lotto.unavailable' | t | json }},
           cartEmpty: {{ 'cart.general.empty' | t | json }},
-          soldOut: {{ 'products.product.sold_out' | t | json }}
+          soldOut: {{ 'products.product.sold_out' | t | json }},
+          freeShippingProgress: {{ 'cart.general.free_shipping_progress' | t: amount: '[amount]' | json }},
+          freeShippingMet: {{ 'cart.general.free_shipping_met' | t | json }}
         }
       };
     </script>

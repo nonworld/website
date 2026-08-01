@@ -109,6 +109,41 @@
       if (answerBox) answerBox.hidden = false;
     }
 
+    /* The working state, per the NON Somm identity: the mark is the full stop
+       lifted out of "NON.", locked bottom-left and never centred — "the offset
+       is the whole idea". Thinking is that full stop multiplied, three dots
+       reading left to right, which is also the states row in the identity doc.
+
+       It is built here rather than in Liquid so the hero and the product page
+       get the same mark without either template knowing about it. */
+    var thinkingEl = null;
+
+    function thinking(on, failed) {
+      if (!stream) return;
+
+      if (!on) {
+        if (thinkingEl) { thinkingEl.remove(); thinkingEl = null; }
+        return;
+      }
+
+      if (!thinkingEl) {
+        thinkingEl = document.createElement('div');
+        thinkingEl.className = 'non-think';
+        thinkingEl.setAttribute('role', 'status');
+        // Screen readers get words; the dots are decoration to them.
+        thinkingEl.setAttribute('aria-label', 'The somm is thinking');
+        thinkingEl.innerHTML =
+          '<span class="non-think__tile" aria-hidden="true">' +
+          '<i class="non-think__dot"></i>' +
+          '<i class="non-think__dot"></i>' +
+          '<i class="non-think__dot"></i>' +
+          '</span>';
+        stream.parentNode.insertBefore(thinkingEl, stream);
+      }
+
+      thinkingEl.classList.toggle('is-failed', !!failed);
+    }
+
     function type(text, picks) {
       clearInterval(timer);
       show();
@@ -167,6 +202,7 @@
       submit.disabled = true;
       show();
       stream.textContent = '';
+      thinking(true);
 
       fetch(ENDPOINT, {
         method: 'POST',
@@ -186,13 +222,17 @@
           if (type_.indexOf('text/event-stream') !== -1) return readStream(res);
 
           return res.json().then(function (data) {
+            thinking(false);
             type(data.answer || '', data.picks || []);
             history.push({ role: 'assistant', text: data.answer || '' });
           });
         })
         .catch(function () {
           // Endpoint down or CORS-blocked: fall back rather than show nothing.
-          fallback(query);
+          // The mark goes red for a beat first — the identity doc has a red
+          // state and this is what it is for — then the fallback answers.
+          thinking(true, true);
+          setTimeout(function () { thinking(false); fallback(query); }, 700);
         })
         .finally(function () {
           submit.disabled = false;
@@ -226,6 +266,10 @@
             } catch (e) {
               text += line;
             }
+            // The dots hand over on the FIRST token, not at the end of the
+            // stream. Leaving them up while text arrives underneath would say
+            // "still thinking" while it is plainly already answering.
+            if (text) thinking(false);
             stream.textContent = text;
           });
 

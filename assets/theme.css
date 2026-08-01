@@ -1229,3 +1229,54 @@ button { font-family: inherit; }
 /* The triptych is three photos edge to edge with a 2px gap showing the page
    through it. That gap IS the separation — a border as well would double it. */
 .non-trip { background: var(--non-line); }
+
+/* --- the somm working state ----------------------------------------------
+   Per the NON Somm identity: the mark is the full stop lifted out of "NON.",
+   kept in its exact typographic position — baseline-left, one stem-width in.
+   Never centred; the offset is the whole idea. The dot is 22.5% of the tile,
+   the optical size of the period in the logotype.
+
+   The doc is explicit that a loose dot on a page is nothing and the tile has
+   to carry it, so the tile is real here rather than implied. Thinking is that
+   full stop multiplied — three of them, reading left to right. */
+.non-think { display: flex; align-items: center; min-height: 34px; }
+.non-think__tile {
+  --tile: 34px;
+  --dot: calc(var(--tile) * 0.225);   /* 22.5%, per the spec */
+  position: relative;
+  width: var(--tile); height: var(--tile);
+  background: var(--non-panel);
+  border: 1px solid var(--non-line);
+  flex: none;
+}
+.non-think__dot {
+  position: absolute;
+  /* baseline-left, one stem-width in — the stem being the dot's own width */
+  bottom: calc(var(--dot) * 0.9);
+  left: calc(var(--dot) * 0.9);
+  width: var(--dot); height: var(--dot);
+  border-radius: 50%;
+  background: var(--non-fg);
+  opacity: .25;
+  animation: sommThink 1.25s ease-in-out infinite;
+}
+.non-think__dot:nth-child(2) { left: calc(var(--dot) * 2.15); animation-delay: .16s; }
+.non-think__dot:nth-child(3) { left: calc(var(--dot) * 3.4);  animation-delay: .32s; }
+
+@keyframes sommThink {
+  0%, 70%, 100% { opacity: .22; }
+  35%           { opacity: 1; }
+}
+
+/* The red state from the identity doc's states row. Used for the beat before
+   the offline fallback answers, so a failure is legible rather than silent. */
+.non-think.is-failed .non-think__dot {
+  background: #b03a3a;
+  animation: none;
+  opacity: 1;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .non-think__dot { animation: none; opacity: .6; }
+  .non-think__dot:nth-child(1) { opacity: 1; }
+}

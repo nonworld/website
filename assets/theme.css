@@ -1346,3 +1346,31 @@ button { font-family: inherit; }
 /* Card names were 15.5px against the design's 19px — product names on a shop
    page are the thing being scanned, not supporting text. */
 .non-card__name { font-size: clamp(16px, 1.32vw, 19px); }
+
+/* --- about hero -----------------------------------------------------------
+   The design's largest type on the site: an 88px statement with the standfirst
+   beside it. The port had the page title as the h1 at 11px and the statement
+   as an h2 capped at 58px, so the loudest thing on the page was 44% short and
+   was not the heading. */
+.non-about-hero {
+  display: grid; grid-template-columns: 1fr;
+  gap: 22px; padding: 46px var(--non-pad) 40px;
+}
+@media (min-width: 860px) {
+  .non-about-hero {
+    grid-template-columns: 1fr minmax(0, 34%);
+    align-items: end; gap: 52px;
+    padding: 78px var(--non-pad) 62px;
+  }
+}
+.non-about-hero__title {
+  margin: 16px 0 0;
+  font-size: clamp(38px, 6.1vw, 88px);
+  line-height: .94; font-weight: 600; letter-spacing: -.03em;
+  max-width: 16ch; text-wrap: balance;
+}
+.non-about-hero__lead {
+  margin: 0; max-width: 44ch;
+  font-size: var(--t-copy); line-height: 1.55;
+  color: var(--non-fg-dim); text-wrap: pretty;
+}

@@ -11,18 +11,26 @@
   Everything is editable. The defaults are the design's copy verbatim.
 {%- endcomment -%}
 
-<div class="non-section">
-  <div class="non-section__head">
-    <h1 class="non-section__title">{{ page.title | default: section.settings.eyebrow }}</h1>
+{%- comment -%}
+  The page title was the <h1>, rendered through .non-section__title at 11px,
+  while the actual statement sat in an <h2> capped at 58px. The design puts the
+  statement at 88px and treats it as the page's one heading — so the eyebrow is
+  an eyebrow now and the statement is the h1.
+{%- endcomment -%}
+<div class="non-about-hero">
+  <div>
+    <div class="non-mono non-eyebrow">
+      {{ section.settings.eyebrow | default: page.title }}
+    </div>
+    <h1 class="non-about-hero__title">{{ section.settings.heading }}</h1>
   </div>
 
-  <h2 class="non-hero__title" style="font-size:clamp(30px,3.4vw,58px);margin-top:26px;max-width:22ch">
-    {{ section.settings.heading }}
-  </h2>
-
   {%- if section.settings.lead != blank -%}
-    <p class="non-hero__blurb" style="max-width:58ch">{{ section.settings.lead }}</p>
+    <p class="non-about-hero__lead">{{ section.settings.lead }}</p>
   {%- endif -%}
+</div>
+
+<div class="non-section">
 
   {%- if page.content != blank -%}
     <div class="non-rte" style="margin-top:26px">{{ page.content }}</div>

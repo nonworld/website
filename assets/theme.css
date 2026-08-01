@@ -396,8 +396,13 @@ button { font-family: inherit; }
   .non-grid { gap: 14px; }
 }
 /* The cap lives here so a smaller card leaves its column rather than
-   collapsing the grid. Unset, it simply fills the column as before. */
-.non-grid > * { max-width: var(--non-card-max, none); width: 100%; }
+   collapsing the grid. Unset, it simply fills the column as before.
+
+   max() is the belt to the Liquid's braces: a stored 0 from when this setting
+   meant "auto" resolved to max-width:0 and collapsed every card to nothing —
+   images gone, product titles wrapping one word per line. The Liquid no longer
+   emits a zero, and this makes a zero harmless even if one arrives. */
+.non-grid > * { max-width: max(120px, var(--non-card-max, 100%)); width: 100%; }
 
 /* One line holding the whole collection, scrolling sideways when it overruns.
    Distinct from the grid: a grid must wrap, a row must not. */

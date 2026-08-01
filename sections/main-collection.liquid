@@ -41,7 +41,7 @@
   {%- if collection.products.size > 0 -%}
     <div
       class="non-grid non-grid--{{ section.settings.columns }} non-grid--ratio-{{ section.settings.image_ratio | default: 'portrait' }}"
-      {% if section.settings.card_max > 0 %}style="--non-card-max: {{ section.settings.card_max }}px"{% endif %}
+      {% if section.settings.card_max >= 120 %}style="--non-card-max: {{ section.settings.card_max }}px"{% endif %}
       data-non-shelf
       data-dim="{{ section.settings.dim_level | default: 34 | divided_by: 100.0 }}"
       data-dim-enabled="{{ section.settings.dim_non_matches }}">

@@ -3,7 +3,13 @@
   assign coll = section.settings.collection | default: collections[settings.core_range_collection]
   assign cols = section.settings.columns | default: 4 | times: 1
   assign rows = section.settings.rows | default: 2
-  assign card_max = section.settings.card_max | default: 260
+  # A stored 0 predates this setting being a real width — it used to mean
+  # "auto". Emitting it produced max-width:0 and collapsed every card to
+  # nothing. Anything below the slider's own minimum means "no cap".
+  assign card_max = section.settings.card_max | default: 0
+  if card_max < 120
+    assign card_max = 0
+  endif
 
   comment
     Two layouts.
@@ -39,7 +45,7 @@
         <div
           class="non-row non-grid--ratio-{{ section.settings.image_ratio | default: 'portrait' }}"
           data-non-row
-          style="--non-card-max: {{ card_max }}px">
+         {% if card_max > 0 %} style="--non-card-max: {{ card_max }}px"{% endif %}>
           {%- for product in coll.products limit: limit -%}
             {% render 'product-card', product: product, show_add: section.settings.show_add %}
           {%- endfor -%}
@@ -50,7 +56,7 @@
     {%- else -%}
       <div
         class="non-grid non-grid--{{ section.settings.columns }} non-grid--ratio-{{ section.settings.image_ratio | default: 'portrait' }}"
-        style="--non-card-max: {{ card_max }}px">
+       {% if card_max > 0 %} style="--non-card-max: {{ card_max }}px"{% endif %}>
         {%- for product in coll.products limit: limit -%}
           {% render 'product-card', product: product, show_add: section.settings.show_add %}
         {%- endfor -%}

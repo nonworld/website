@@ -89,12 +89,21 @@ const FIT_CASES = [
     expect: 'strong',
   },
   {
-    // The case that exposed the bad profile. Pinot is the classic salmon red;
-    // the old NON9 (body 5, tannin 5, red meat only) called this a bad match.
-    name: 'NON9 + poached salmon',
+    // This assertion used to read `expect: 'strong'`, on the reasoning that
+    // pinot is the classic salmon red. Aaron has overruled that twice — "NON9
+    // with salmon no good, it's like a pinot" — and it stands: NON9 is the
+    // oaked blackberry and plum, firm tannin from Shiraz skin and french oak,
+    // and it runs straight over a poached fillet.
+    //
+    // It is kept as a test rather than deleted, because this is the assumption
+    // that already crept back in once. 'white fish' and 'raw fish' were still
+    // sitting in NON9.bestWith.proteins long after the copy was corrected, and
+    // it was this test that justified them. Salmon belongs to NON3, which the
+    // 'poached salmon -> NON3' case above asserts.
+    name: 'NON9 + poached salmon (deliberately not a strong match)',
     code: 'NON9',
     dish: { proteins: ['white fish'], fatLevel: 2, cookingStyle: ['poached'], dishAcid: 2, weight: 2, heat: 0, flavourNotes: ['delicate'] },
-    expect: 'strong',
+    expect: 'workable',
   },
   {
     // A genuinely weak pairing, so the honest-no path is still covered.

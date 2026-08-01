@@ -46,7 +46,7 @@ const OCCASIONS = [
     dish: {
       proteins: ['white fish', 'shellfish'],
       fatLevel: 2,
-      cookingStyle: ['steamed', 'poached', 'grilled'],
+      cookingStyle: ['steamed', 'poached', 'lightly cooked'],
       dishAcid: 3,
       weight: 2,
       heat: 0,
@@ -112,8 +112,11 @@ const OCCASIONS = [
     label: 'Cheese',
     dish: {
       proteins: ['hard cheese', 'goat cheese'],
-      fatLevel: 5,
-      cookingStyle: ['raw', 'cured'],
+      // A cheese board is not cooked and not especially heavy on the palate.
+      // Style is empty rather than ['raw','cured']: a cheese chip should not
+      // quietly reward the bottles that happen to list raw preparations.
+      fatLevel: 4,
+      cookingStyle: [],
       dishAcid: 2,
       weight: 3,
       heat: 0,

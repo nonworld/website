@@ -39,6 +39,7 @@
 const PRODUCTS = [
   {
     id: 'NON1',
+    heatFit: 'cools', // acid and fruit cool chilli where alcohol stokes it
     core: true, // core range deck
     name: 'Salted Raspberry & Chamomile',
     handle: 'salted-raspberry-chamomile',
@@ -81,6 +82,7 @@ const PRODUCTS = [
     // stays scoreable, but it should not out-rank a core bottle on that
     // bottle's own headline pairing.
     id: 'NON2',
+    heatFit: 'clashes', // NON scores it 0 for heat; nothing in it meets chilli
     core: false, // not in the core range deck
     name: 'Caramelised Pear & Kombu',
     handle: 'caramelised-pear-kombu',
@@ -119,6 +121,7 @@ const PRODUCTS = [
   },
   {
     id: 'NON3',
+    heatFit: 'neutral', // no cooling claim, but nothing that fights heat either
     core: true, // core range deck
     name: 'Toasted Cinnamon & Yuzu',
     handle: 'toasted-cinnamon-yuzu',
@@ -158,6 +161,7 @@ const PRODUCTS = [
   },
   {
     id: 'NON5',
+    heatFit: 'cools', // 140mg salt and the hardest verjus acid in the range
     core: true, // core range deck
     name: 'Lemon Marmalade & Hibiscus',
     handle: 'lemon-marmalade-hibiscus',
@@ -192,10 +196,10 @@ const PRODUCTS = [
     },
     positioning: 'Sits where a dry sparkling sat',
     // The only bottle that actively cools chilli — see heatBonus below.
-    coolsHeat: true,
   },
   {
     id: 'NON7',
+    heatFit: 'clashes', // coffee bitterness on top of tannin 4 sharpens capsaicin
     core: true, // core range deck
     name: 'Stewed Cherry & Coffee',
     handle: 'stewed-cherry-coffee',
@@ -236,6 +240,7 @@ const PRODUCTS = [
   },
   {
     id: 'NON9',
+    heatFit: 'neutral', // ancho warmth sits with spice rather than fighting it
     core: true, // core range deck
     name: 'Oaked Blackberry & Plum',
     handle: 'non9-oaked-blackberry-plum',
@@ -251,10 +256,9 @@ const PRODUCTS = [
       // because the acid carries it, not the weight.
       proteins: [
         'red meat', 'beef', 'lamb', 'mushroom', 'hard cheese',
-        'white fish', 'raw fish',
       ],
       fatLevel: [1, 5],
-      cookingStyle: ['charred', 'grilled', 'roasted', 'braised', 'smoked', 'poached'],
+      cookingStyle: ['charred', 'grilled', 'roasted', 'braised', 'smoked'],
       dishAcid: [0, 4],
     },
     // Verified against the store's own custom.nutritional_panel and
@@ -358,14 +362,37 @@ function scoreProduct(product, dish) {
   // Heat. Alcohol dissolves capsaicin and amplifies burn; salt and acid cool
   // it. Without this axis a hot dish scores on protein alone and the engine
   // recommends a big tannic bottle, which is the worst possible answer.
+  // heatFit is stated per bottle rather than inferred, because inference gave
+  // a free pass: the old rule only REWARDED coolsHeat and only PENALISED
+  // tannin >= 4, so a mid-tannin bottle with no cooling ability sailed through
+  // a chilli dish having earned nothing and lost nothing. NON2 scored 67
+  // against a plate NON itself rates it 0 for.
+  //
+  // 'neutral' is a real answer, not a default — it says "this is fine with
+  // heat", which is why it also suppresses the blanket tannin penalty. NON9 is
+  // the case that matters: tannin 4, but its ancho warmth sits with spice
+  // rather than fighting it, and the old rule punished it for the tannin alone.
   const heat = dish.heat ?? 0;
   if (heat >= 3) {
-    if (product.coolsHeat) {
+    const fit = product.heatFit || 'neutral';
+    if (fit === 'cools') {
       score += 18;
       reasons.push('salt and acid cool chilli heat');
-    } else if (product.tannin >= 4) {
-      score -= 12;
-      reasons.push('tannin would sharpen the heat');
+    } else if (fit === 'neutral') {
+      // Capped too, one band higher than a clash. 'Neutral' means no cooling
+      // ability, and a bottle with no answer to chilli should not top the heat
+      // chip on the strength of matching the poultry underneath it. It stays
+      // available — workable, not the recommendation.
+      score = Math.min(score, 55);
+      reasons.push('no cooling ability — workable with heat, not the answer');
+    } else if (fit === 'clashes') {
+      // A cap, not a deduction. -18 was not enough: NON2 matched the protein,
+      // the fat, the style, the acid and the body of a chilli plate and still
+      // landed mid-table on the strength of all that, which is the same free
+      // pass in a smaller size. If a bottle fights the chilli then how well it
+      // suits the poultry underneath is not the question being asked.
+      score = Math.min(score, 25);
+      reasons.push('nothing here meets chilli — it sharpens rather than cools');
     }
   }
 

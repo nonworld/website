@@ -123,6 +123,41 @@ for path in liquid_files:
                 f"liquid tag early and Shopify silently rejects the file"
             )
 
+# 1c. `for … in section.blocks` without a type filter, in a section that
+# declares more than one block type. This has now caused three visible bugs:
+# credential blocks rendering as venues on Stockists, reason blocks rendering as
+# empty questions 04/05/06 on Pairing, and a `unless forloop.last` evaluated
+# across all blocks emitting invalid JSON. Every one of them shipped, because a
+# section with one block type is fine and the failure only appears once a second
+# type is added later.
+#
+# `{% for b in section.blocks %}` with an inner `if b.type == '…'` is allowed —
+# it is filtering, just verbosely — so the check looks for a type test anywhere
+# inside the loop body before reporting.
+for path in liquid_files:
+    src = open(path).read()
+    schema = schema_of(path)
+    if not schema:
+        continue
+    if len(schema.get("blocks", [])) < 2:
+        continue
+
+    body = src.split("{% schema %}")[0]
+    for m in re.finditer(r"\{%-?\s*for\s+(\w+)\s+in\s+section\.blocks\s*-?%\}", body):
+        var = m.group(1)
+        end = body.find("{% endfor", m.end())
+        if end == -1:
+            end = body.find("{%- endfor", m.end())
+        inner = body[m.end(): end if end != -1 else len(body)]
+        if re.search(rf"{var}\.type\s*==", inner):
+            continue
+        line = body[: m.start()].count("\n") + 1
+        issues.append(
+            f"{path}:{line}: `for {var} in section.blocks` with no type filter, "
+            f"in a section declaring {len(schema['blocks'])} block types — "
+            f"use `| where: 'type', '…'` or the loop will render every type"
+        )
+
 # 3. tag balance
 for path in liquid_files:
     src = open(path).read()

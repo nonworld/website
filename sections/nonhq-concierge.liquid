@@ -197,10 +197,19 @@
 
 {%- assign steps = section.blocks | where: 'type', 'step' -%}
 {%- if steps.size > 0 -%}
-  <div class="non-section">
-    <div class="non-section__head">
-      <h2 class="non-section__title">{{ section.settings.steps_label }}</h2>
-    </div>
+  {%- comment -%}
+    The design lays this out as 160px 1fr — the label in its own left column
+    with the steps STACKED beside it, each step 44px 1fr. The build put the
+    label above and ran the three steps across in repeat(3, 1fr), which reads
+    as three parallel things rather than one sequence, and is the main reason
+    the page did not feel like the design.
+
+    The label moves into the grid rather than sitting in .non-section__head,
+    because the head is a full-width band and cannot become a column.
+  {%- endcomment -%}
+  <div class="non-section non-hq-happens">
+    <h2 class="non-section__title non-hq-happens__label">{{ section.settings.steps_label }}</h2>
+
     <div class="non-hq-steps">
       {%- for b in steps -%}
         <div class="non-hq-step" {{ b.shopify_attributes }}>

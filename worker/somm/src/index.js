@@ -26,6 +26,7 @@
 
 import { PRODUCTS, rankProducts, scoreProduct, factsSheet } from './scoring-engine.js';
 
+import { BRAND_SYSTEM } from './brand-kb.js';
 const MAX_QUERY = 500;
 
 const DISH_SCHEMA = {
@@ -122,6 +123,9 @@ Examples that are facts, not pairing:
 Anything asking how healthy, how sweet, how strong or what is in the bottle is
 facts. Only route to pairing when the question is about what to drink WITH
 something, or which bottle suits an occasion.
+brand    — asks about NON itself: who started it, why, where the name came
+           from, when it launched, what NON is trying to be, how it differs
+           from the category, Aaron's background, awards
 other    — anything else (shipping, orders, stockists, wholesale, careers)
 
 If it asks both, answer pairing.`;
@@ -195,7 +199,7 @@ async function routeQuery(env, query) {
       messages: [{ role: 'user', content: query }],
     });
     const clean = word.toLowerCase().replace(/[^a-z]/g, '');
-    if (clean === 'facts' || clean === 'other') return clean;
+    if (clean === 'facts' || clean === 'other' || clean === 'brand') return clean;
     return 'pairing';
   } catch (e) {
     // Routing is an optimisation, not a gate. If it fails, pair.
@@ -494,6 +498,23 @@ export default {
 
     // ---- route: factual questions never reach the pairing engine ---------
     const intent = await routeQuery(env, query);
+
+    // Brand questions answer from the approved knowledge base, never from the
+    // product data sheet and never from the model's own recall. The KB is the
+    // only cleared source; anything outside it is refused rather than guessed.
+    if (intent === 'brand') {
+      try {
+        const answer = await claude(env, {
+          model: env.EXPLAIN_MODEL || 'claude-sonnet-5',
+          maxTokens: 400,
+          system: BRAND_SYSTEM,
+          messages: [{ role: 'user', content: query }],
+        });
+        return json({ intent: 'brand', answer, explanation: answer, picks: [], productId: null });
+      } catch (e) {
+        return json(fallbackResponse('brand', e, env), 200);
+      }
+    }
 
     if (intent === 'facts' || intent === 'other') {
       try {

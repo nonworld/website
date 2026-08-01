@@ -2309,3 +2309,26 @@ a, button, .non-card, .non-filter, .non-pair__opt, .non-somm__seed,
 @media (prefers-reduced-motion: reduce) {
   .non-steps .non-step__n { animation: none; opacity: 1; }
 }
+
+/* --- NONHQ "What happens": label column, steps stacked ---------------------
+   design-reference lays this band out as 160px 1fr — the label in its own left
+   column, the steps stacked in the right one, each step 44px 1fr. The build had
+   the label above and the steps across in repeat(3, 1fr), which reads as three
+   parallel options rather than one sequence you move through. */
+.non-hq-happens {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 20px;
+}
+@media (min-width: 860px) {
+  .non-hq-happens { grid-template-columns: 160px 1fr; gap: 0; align-items: start; }
+}
+.non-hq-happens__label { margin: 0; }
+
+/* Stacked, not three across. Overrides the earlier repeat(3, 1fr). */
+.non-hq-steps { display: flex; flex-direction: column; gap: 30px; margin-top: 0; }
+@media (min-width: 860px) {
+  .non-hq-steps { display: flex; flex-direction: column; gap: 34px; }
+}
+/* 44px number column, matching the design and the PDP's .non-step. */
+.non-hq-step { grid-template-columns: 44px 1fr; gap: 18px; }

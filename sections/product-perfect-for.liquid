@@ -34,7 +34,7 @@
     assign has_meta = true
   endif
 
-  assign ratio = section.settings.image_ratio | default: 'tall'
+  assign ratio = section.settings.image_ratio | default: 'square'
 -%}
 
 {%- if use_blocks or has_meta -%}
@@ -139,7 +139,7 @@
           "label": "Landscape (3:2)"
         }
       ],
-      "default": "tall",
+      "default": "square",
       "info": "Applies to every tile, so the row stays even."
     },
     {

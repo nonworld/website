@@ -1,5 +1,5 @@
 {% render 'section-style', section: section %}
-{%- assign ratio = section.settings.image_ratio | default: 'tall' -%}
+{%- assign ratio = section.settings.image_ratio | default: 'square' -%}
 <div class="non-trip non-trip--ratio-{{ ratio }}"{% if section.settings.max_height > 0 %} style="--non-trip-max: {{ section.settings.max_height }}px"{% endif %}>
   {%- for block in section.blocks -%}
     {%- assign alt_text = block.settings.image_alt | default: block.settings.title -%}
@@ -57,7 +57,7 @@
           "label": "Landscape (3:2)"
         }
       ],
-      "default": "tall"
+      "default": "square"
     },
     {
       "type": "range",

@@ -16,6 +16,13 @@
   --non-line: #1f1f1d;
   --non-line-strong: #333331;
   --non-line-soft: #262624;
+  /* One shape for repeating content imagery: cards, tiles, rooms, the pairing
+     verdict, the stockist offer cards. Bands, the PDP gallery and the venue
+     logos deliberately do NOT read this — a hero forced to 1:1 is taller than
+     the viewport, a 750ml bottle cropped square loses its neck, and a wordmark
+     padded into a square box stops being a wordmark. Sections that expose a
+     ratio setting still win; this is the floor, not an override. */
+  --non-image-ratio: 1;
   --non-panel: #131311;
   /* Every NON Somm surface reads this one token — the chat box on the homepage,
      the product-page box, the pairing tool and the stockists search all share
@@ -498,7 +505,7 @@ button { font-family: inherit; }
 /* Ratio is a setting now (Product grid -> Image shape), not a hardcoded 3/4.
    Portrait is right for a bottle on its own; square is right when the shelf is
    dense. Falls back to the old 3/4 so nothing shifts unless it is set. */
-.non-card__media { position: relative; overflow: hidden; background: var(--non-photo-bed); aspect-ratio: var(--non-card-ratio, 3/4); }
+.non-card__media { position: relative; overflow: hidden; background: var(--non-photo-bed); aspect-ratio: var(--non-card-ratio, var(--non-image-ratio)); }
 .non-grid--ratio-square { --non-card-ratio: 1/1; }
 .non-grid--ratio-portrait { --non-card-ratio: 3/4; }
 .non-grid--ratio-tall { --non-card-ratio: 4/5; }
@@ -536,7 +543,7 @@ button { font-family: inherit; }
    tile is now the same shape, set from the section's Image shape setting. */
 .non-trip__img {
   width: 100%;
-  aspect-ratio: var(--non-trip-ratio, 4/5);
+  aspect-ratio: var(--non-trip-ratio, var(--non-image-ratio));
   object-fit: cover;
   object-position: center;
   display: block;
@@ -546,9 +553,11 @@ button { font-family: inherit; }
 .non-trip--ratio-tall { --non-trip-ratio: 4/5; }
 .non-trip--ratio-portrait { --non-trip-ratio: 3/4; }
 .non-trip--ratio-landscape { --non-trip-ratio: 3/2; }
-/* A three-up band across an 1800px shell gives 600px tiles; at 4/5 that is a
-   750px-tall photo of a single plate. Cap it so the band stays a band. */
-.non-trip__img { max-height: 62vh; }
+/* No default cap. A max-height on an element with aspect-ratio silently wins
+   once the computed height exceeds it, and the taller the chosen ratio the
+   likelier that is — which made "square" look like the setting that would not
+   stick. The cap is opt-in through the editor now (--non-trip-max) rather than
+   a constant fighting every ratio. */
 .non-trip__cap {
   position: absolute; inset: auto 0 0 0; padding: 22px;
   background: linear-gradient(to top, var(--non-scrim), transparent);
@@ -605,7 +614,7 @@ button { font-family: inherit; }
 @media (min-width: 860px) { .non-gallery { padding: 28px 0 28px var(--non-pad); } }
 
 .non-gallery__main {
-  width: 100%; aspect-ratio: 4/5; max-height: 78vh;
+  width: 100%; aspect-ratio: 4/5;
   object-fit: cover; background: var(--non-panel-alt); display: block;
 }
 
@@ -772,9 +781,10 @@ button { font-family: inherit; }
 .non-process__media--square .non-process__img { height: auto; aspect-ratio: 1/1; }
 .non-process__media--tall .non-process__img { height: auto; aspect-ratio: 4/5; }
 .non-process__media--portrait .non-process__img { height: auto; aspect-ratio: 3/4; }
-.non-process__media--square .non-process__img,
-.non-process__media--tall .non-process__img,
-.non-process__media--portrait .non-process__img { max-height: 78vh; }
+/* Cap removed for the same reason as .non-trip__img: it overrode whichever
+   ratio was chosen the moment the computed height passed it. `fill` is
+   untouched — it keeps the panel's 420px min-height on purpose, which is what
+   filling the band means. */
 
 .non-steps { display: flex; flex-direction: column; gap: 22px; }
 .non-step { display: grid; grid-template-columns: 44px 1fr; gap: 18px; align-items: start; }
@@ -1148,7 +1158,7 @@ button { font-family: inherit; }
 
 /* Optional height caps for the editorial bands. 0 in the editor means "leave
    it to the shape", so the variable is simply absent and these no-op. */
-.non-trip__img  { max-height: var(--non-trip-max, 62vh); }
+.non-trip__img  { max-height: var(--non-trip-max, none); }
 .non-split__img { max-height: var(--non-split-max, none); }
 
 /* --- cart add-ons --------------------------------------------------------- */
@@ -1466,7 +1476,7 @@ button { font-family: inherit; }
   font-family: var(--non-mono); font-size: var(--t-mono); color: var(--non-fg-mute);
 }
 .non-verdict__media { background: var(--non-photo-bed); overflow: hidden; }
-.non-verdict__img { width: 100%; aspect-ratio: 4/5; object-fit: cover; display: block; }
+.non-verdict__img { width: 100%; aspect-ratio: var(--non-image-ratio); object-fit: cover; display: block; }
 .non-verdict .non-pair__trace { margin-top: 14px; }
 
 /* Answered questions dim rather than disappear — you can still see what you
@@ -1605,7 +1615,7 @@ button { font-family: inherit; }
 .non-hq-rooms { display: grid; grid-template-columns: 1fr; gap: 2px; background: var(--non-line); }
 @media (min-width: 720px) { .non-hq-rooms { grid-template-columns: repeat(3, 1fr); } }
 .non-hq-room { position: relative; background: var(--non-photo-bed); }
-.non-hq-room__img { width: 100%; aspect-ratio: 4/5; object-fit: cover; display: block; }
+.non-hq-room__img { width: 100%; aspect-ratio: var(--non-image-ratio); object-fit: cover; display: block; }
 .non-hq-room__cap {
   position: absolute; left: 0; right: 0; bottom: 0; padding: 18px 20px;
   background: linear-gradient(to top, var(--non-scrim), transparent);
@@ -2169,7 +2179,7 @@ a, button, .non-card, .non-filter, .non-pair__opt, .non-somm__seed,
 .non-stock-offer__media {
   align-self: stretch;
   margin: -26px -26px 22px;
-  aspect-ratio: 16 / 9;
+  aspect-ratio: var(--non-image-ratio);
   overflow: hidden;
 }
 .non-stock-offer__media > img {

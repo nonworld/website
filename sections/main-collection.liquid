@@ -86,7 +86,7 @@
 
   {%- if collection.products.size > 0 -%}
     <div
-      class="non-grid non-grid--{{ section.settings.columns }} non-grid--ratio-{{ section.settings.image_ratio | default: 'portrait' }}"
+      class="non-grid non-grid--{{ section.settings.columns }} non-grid--ratio-{{ section.settings.image_ratio | default: 'square' }}"
       {% if section.settings.card_max >= 120 %}style="--non-card-max: {{ section.settings.card_max }}px"{% endif %}
       data-non-shelf
       data-dim="{{ section.settings.dim_level | default: 34 | divided_by: 100.0 }}"
@@ -216,6 +216,10 @@
       "label": "Image shape",
       "options": [
         {
+          "value": "square",
+          "label": "Square (1:1)"
+        },
+        {
           "value": "portrait",
           "label": "Portrait (3:4)"
         },
@@ -224,15 +228,11 @@
           "label": "Tall (4:5)"
         },
         {
-          "value": "square",
-          "label": "Square (1:1)"
-        },
-        {
           "value": "landscape",
           "label": "Landscape (4:3)"
         }
       ],
-      "default": "portrait"
+      "default": "square"
     },
     {
       "type": "checkbox",

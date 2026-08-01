@@ -43,7 +43,7 @@
       <div class="non-row-wrap" data-non-row-wrap>
         <button type="button" class="non-row-arrow non-row-arrow--prev" data-non-row-prev aria-label="Previous">&#8592;</button>
         <div
-          class="non-row non-grid--ratio-{{ section.settings.image_ratio | default: 'portrait' }}"
+          class="non-row non-grid--ratio-{{ section.settings.image_ratio | default: 'square' }}"
           data-non-row
          {% if card_max > 0 %} style="--non-card-max: {{ card_max }}px"{% endif %}>
           {%- for product in coll.products limit: limit -%}
@@ -55,7 +55,7 @@
       <script src="{{ 'row-scroller.js' | asset_url }}" defer></script>
     {%- else -%}
       <div
-        class="non-grid non-grid--{{ section.settings.columns }} non-grid--ratio-{{ section.settings.image_ratio | default: 'portrait' }}"
+        class="non-grid non-grid--{{ section.settings.columns }} non-grid--ratio-{{ section.settings.image_ratio | default: 'square' }}"
        {% if card_max > 0 %} style="--non-card-max: {{ card_max }}px"{% endif %}>
         {%- for product in coll.products limit: limit -%}
           {% render 'product-card', product: product, show_add: section.settings.show_add %}
@@ -157,6 +157,10 @@
       "label": "Image shape",
       "options": [
         {
+          "value": "square",
+          "label": "Square (1:1)"
+        },
+        {
           "value": "portrait",
           "label": "Portrait (3:4)"
         },
@@ -165,15 +169,11 @@
           "label": "Tall (4:5)"
         },
         {
-          "value": "square",
-          "label": "Square (1:1)"
-        },
-        {
           "value": "landscape",
           "label": "Landscape (4:3)"
         }
       ],
-      "default": "portrait"
+      "default": "square"
     },
     {
       "type": "checkbox",

@@ -99,9 +99,42 @@
           {%- endfor -%}
 
         {%- else -%}
-          {%- assign chunks = prose | split: '
+          {%- comment -%}
+            Split on the SECTION KEYWORDS, not on blank lines.
+
+            Checked every bottle against the live store: NON1 is the only one
+            whose custom.process separates sections with a blank line. NON2,
+            NON3, NON5 and NON7 use a single newline. Splitting on a blank line
+            therefore gave NON1 five steps and every other bottle exactly one —
+            the whole process crushed into step 01 "Fruit" with "TANNIN -",
+            "SALINITY -" and the rest buried mid-paragraph. That is what made
+            the other PDPs look nothing like NON1: the theme was correct only
+            for the one product whose data happened to match the parser.
+
+            Keying on the keywords makes the parse independent of how the prose
+            is typed, so a merchandiser reformatting a metafield cannot silently
+            collapse a product's process again. A product using none of the
+            keywords falls back to the old blank-line split.
+
+            &nbsp; is stripped because NON3 and NON5 hold it literally — it was
+            rendering as the visible characters "&nbsp;" mid-sentence.
+          {%- endcomment -%}
+          {%- liquid
+            assign norm = prose | replace: '&nbsp;', ' '
+            assign norm = norm | replace: '&amp;nbsp;', ' '
+            assign norm = norm | replace: 'FRUIT - ', '~~FRUIT - '
+            assign norm = norm | replace: 'TANNIN - ', '~~TANNIN - '
+            assign norm = norm | replace: 'SALINITY - ', '~~SALINITY - '
+            assign norm = norm | replace: 'ACIDITY - ', '~~ACIDITY - '
+            assign norm = norm | replace: 'BALANCE - ', '~~BALANCE - '
+          -%}
+          {%- if norm contains '~~' -%}
+            {%- assign chunks = norm | split: '~~' -%}
+          {%- else -%}
+            {%- assign chunks = norm | split: '
 
 ' -%}
+          {%- endif -%}
           {%- for chunk in chunks -%}
             {%- liquid
               assign clean = chunk | strip

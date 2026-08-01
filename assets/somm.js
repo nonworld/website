@@ -120,6 +120,15 @@
 
     function show() {
       if (answerBox) answerBox.hidden = false;
+      // The stream too, not just the box around it. On the product page they
+      // are DIFFERENT elements: the transcript paragraph sits in
+      // .non-sommbox__body (main-product.liquid:235) carrying a `hidden`
+      // attribute, while [data-non-somm-answer] is a separate div further down
+      // holding the picks. Unhiding only the box meant every answer was written
+      // into a still-hidden paragraph — the request succeeded, the somm
+      // replied, and the page showed nothing at all. On the hero the two are
+      // nested, so this is a no-op there.
+      if (stream) stream.hidden = false;
     }
 
     /* The working state, per the NON Somm identity: the mark is the full stop

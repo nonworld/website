@@ -169,8 +169,15 @@ button { font-family: inherit; }
 .non-shell {
   width: 100%;
   /* Full-bleed, but not unbounded. Past ~1800px the product shots stop being
-     photographs and start being wallpaper, and line lengths go with them. */
-  max-width: 1800px;
+     photographs and start being wallpaper, and line lengths go with them.
+
+     1520, not 1800. The reasoning above was right and the number was wrong:
+     design-reference is authored around 1440, so at 1800 every band renders
+     ~25% larger than it was ever drawn. On the PDP that put the gallery column
+     near 900px, and a 4/5 shot is then 1125px tall — a single bottle taller
+     than the viewport. The ratio matched the design exactly; the canvas did
+     not. */
+  max-width: 1520px;
   margin: 0 auto;
   overflow-x: clip;
   background: var(--non-bg);
@@ -613,8 +620,14 @@ button { font-family: inherit; }
 .non-gallery { display: flex; flex-direction: column; gap: 12px; padding: 20px var(--non-pad); }
 @media (min-width: 860px) { .non-gallery { padding: 28px 0 28px var(--non-pad); } }
 
+/* 4/5 is the design's ratio and stays. The cap is on WIDTH, not height —
+   pairing a max-height with aspect-ratio makes the height win and silently
+   re-crops the shot to whatever ratio the column happens to produce, which is
+   the conflict that made the earlier image audit's ratios unreliable. Bounding
+   the width lets the ratio govern cleanly at every viewport. */
 .non-gallery__main {
-  width: 100%; aspect-ratio: 4/5;
+  width: 100%; max-width: 560px; margin-inline: auto;
+  aspect-ratio: 4/5;
   object-fit: cover; background: var(--non-panel-alt); display: block;
 }
 
@@ -2162,7 +2175,16 @@ a, button, .non-card, .non-filter, .non-pair__opt, .non-somm__seed,
 .non-somm__input::placeholder,
 .non-sommbox__ask input::placeholder { color: #6b6862; }
 .non-somm__seed { color: #3a3a38; }
-.non-somm__stream { color: var(--non-somm-fg); }
+/* SCOPED, not global. The answer is NOT inside the grey panel — on the hero
+   .non-somm__answer sits after </form> (hero-somm.liquid:80), on the near-black
+   page. This rule used to be unscoped, so the streamed answer was painted
+   #0c0c0c on #0c0c0c: the somm replied and nothing appeared.
+
+   Same shape as the pairing seeds — a light-surface correction applied to
+   something that never sits on the light surface. Anything outside the panel
+   keeps the page's own ink. */
+.non-somm .non-somm__stream,
+.non-sommbox .non-somm__stream { color: var(--non-somm-fg); }
 
 /* The submit button keeps its inversion, which on a light surface means it goes
    dark — still the most prominent thing in the component, which is the point. */
@@ -2530,20 +2552,31 @@ a, button, .non-card, .non-filter, .non-pair__opt, .non-somm__seed,
    Replaces the number-brightening pass: with a real line and dots, brightening
    the numerals as well was two animations saying the same thing. */
 .non-steps { position: relative; }
+
+/* The gutter has to be wide enough to hold the dot AND leave air after it.
+   .non-step is 44px 1fr with an 18px gap, so the copy began at 62px while the
+   ring occupied 49–60px — two pixels of clearance, which rendered as "○Fruit"
+   with the marker welded to the word. Widening the gutter to 28px puts the copy
+   at 72px and gives the ring 8px of air on its right.
+
+   Scoped to .non-steps so NONHQ's own step list, which has no rail and needs no
+   gutter, keeps its spacing. Everything below is centred on 58px — the middle
+   of the new 44–72px gutter — so line, ring and pulse share one axis. */
+.non-steps .non-step { grid-template-columns: 44px 1fr; gap: 28px; }
 .non-steps::before {
   content: '';
   position: absolute;
-  left: 53px;
+  left: 58px;
   top: 10px;
   bottom: 10px;
   width: 1px;
   background: var(--non-line-strong);
 }
 .non-step { position: relative; }
-.non-step::before {
+.non-steps .non-step::before {
   content: '';
   position: absolute;
-  left: 49px;
+  left: 53px;
   top: 9px;
   width: 9px;
   height: 9px;
@@ -2554,7 +2587,9 @@ a, button, .non-card, .non-filter, .non-pair__opt, .non-somm__seed,
 .non-steps::after {
   content: '';
   position: absolute;
-  left: 51px;
+  /* 56, not 51 — the pulse was 2px off the ring's axis, so it drifted past each
+     marker slightly to the left instead of through it. */
+  left: 56px;
   width: 5px;
   height: 5px;
   border-radius: 50%;

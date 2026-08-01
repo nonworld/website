@@ -49,9 +49,12 @@
   var panel = root.querySelector('[data-non-lotto-panel]');
   var errorEl = root.querySelector('[data-non-lotto-error]');
   var sentEl = root.querySelector('[data-non-lotto-sent]');
+  var teaserEl = root.querySelector('[data-non-lotto-teaser]');
+  var realEl = root.querySelector('[data-non-lotto-real]');
+  var hintEl = root.querySelector('[data-non-lotto-hint]');
   var REVEAL_PATH = root.getAttribute('data-reveal-path') || '/lotto/reveal';
   var EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
-  var unlocked = false;
+  var claimed = false;
 
   var ctx = null;
   var drawing = false;
@@ -59,6 +62,20 @@
   var ticks = 0;
   var revealed = false;
   var current = null;
+
+  // The real letterform, from the design's scratch card. Filled twice per tile
+  // to emboss it — see paintFoil. Path2D is not in every browser we support, so
+  // the wordmark degrades to nothing rather than throwing; the foil without its
+  // watermark is still a foil.
+  var NON_AR = 131.26 / 367.43;
+  var NON_PATH = null;
+  try {
+    NON_PATH = new Path2D(
+      'M285.19,3l66.07,101.74h.35V3h15.82V128.45H349.15L283.61,27.76h-.35V128.45H267.44V3ZM127.31,41a62,62,0,0,1,11.33-21,55.4,55.4,0,0,1,18.8-14.58Q168.69,0,183.63,0t26.18,5.45A55.4,55.4,0,0,1,228.61,20a62.15,62.15,0,0,1,11.33,21,82.52,82.52,0,0,1,0,49.38,62.15,62.15,0,0,1-11.33,21,54.43,54.43,0,0,1-18.8,14.49q-11.25,5.35-26.18,5.36t-26.19-5.36a54.43,54.43,0,0,1-18.8-14.49,62,62,0,0,1-11.33-21,82.52,82.52,0,0,1,0-49.38m15.37,43.4A50.93,50.93,0,0,0,150.41,101a39.66,39.66,0,0,0,13.53,11.86q8.26,4.48,19.69,4.48t19.68-4.48A39.66,39.66,0,0,0,216.84,101a50.93,50.93,0,0,0,7.73-16.61,72.38,72.38,0,0,0,0-37.42,50.93,50.93,0,0,0-7.73-16.61,39.66,39.66,0,0,0-13.53-11.86q-8.26-4.48-19.68-4.48t-19.69,4.48A39.66,39.66,0,0,0,150.41,30.4,50.93,50.93,0,0,0,142.68,47a72.38,72.38,0,0,0,0,37.42M17.75,3,83.82,104.73h.35V3H100V128.45H81.71L16.17,27.76h-.36V128.45H0V3Z'
+    );
+  } catch (e) {
+    NON_PATH = null;
+  }
 
   /* --- foil -------------------------------------------------------------- */
 
@@ -86,28 +103,58 @@
     c.fillStyle = g;
     c.fillRect(0, 0, w, h);
 
-    // brushed grain
+    // Brushed grain — WIDE ALTERNATING BANDS, white against grey, not hairlines.
+    //
+    // This is what makes it read as foil rather than as flat grey card. The
+    // gradient underneath was already right; the previous pass drew the grain
+    // as uniform 1px #8f8f97 strokes every 6px, which is a screen door laid
+    // over the gradient. It removes the highlights instead of creating them —
+    // every sixth pixel darkened, nothing ever lightened. The design alternates
+    // 20px-wide white and grey parallelograms on a 40px pitch, so the surface
+    // catches light in broad strips. That is the vibrancy.
     c.save();
     c.globalAlpha = 0.14;
-    c.strokeStyle = '#8f8f97';
-    c.lineWidth = 1;
-    for (var i = -h; i < w + h; i += 6) {
+    for (var x = -h; x < w; x += 40) {
+      c.fillStyle = ((x / 40) | 0) % 2 ? '#ffffff' : '#8f8f97';
       c.beginPath();
-      c.moveTo(i, 0);
-      c.lineTo(i + h, h);
-      c.stroke();
+      c.moveTo(x, 0);
+      c.lineTo(x + 20, 0);
+      c.lineTo(x + 20 - h, h);
+      c.lineTo(x - h, h);
+      c.closePath();
+      c.fill();
     }
     c.restore();
 
-    // tiled NON wordmark
-    c.save();
-    c.fillStyle = 'rgba(255,255,255,.55)';
-    c.font = '600 15px NONHelvetica, "Helvetica Neue", Helvetica, Arial, sans-serif';
-    for (var y = 22; y < h + 24; y += 34) {
-      var offset = (y / 34) % 2 === 0 ? 0 : -30;
-      for (var x = 10 + offset; x < w + 60; x += 68) c.fillText('NON', x, y);
+    // Tiled NON wordmark, EMBOSSED — the real letterform filled twice, a white
+    // highlight offset by 0.8px under a grey body. It was fillText() in flat
+    // white, which is why it read as a watermark printed on the foil rather
+    // than as something stamped into it.
+    var logoW = 46;
+    var s = logoW / 367.43;
+    var logoH = logoW * NON_AR;
+    var stepX = logoW + 24;
+    var stepY = logoH + 20;
+    var row = 0;
+    for (var y = 8; NON_PATH && y < h + logoH; y += stepY) {
+      var offX = row % 2 ? -(stepX / 2) : 0;
+      for (var lx = offX; lx < w; lx += stepX) {
+        c.save();
+        c.translate(lx + 0.8, y + 0.8);
+        c.scale(s, s);
+        c.fillStyle = 'rgba(255,255,255,.42)';
+        c.fill(NON_PATH);
+        c.restore();
+
+        c.save();
+        c.translate(lx, y);
+        c.scale(s, s);
+        c.fillStyle = 'rgba(92,92,100,.5)';
+        c.fill(NON_PATH);
+        c.restore();
+      }
+      row++;
     }
-    c.restore();
 
     c.save();
     c.globalCompositeOperation = 'multiply';
@@ -124,7 +171,11 @@
   }
 
   function scratchAt(e, moving) {
-    if (!ctx || revealed || !unlocked) return;
+    // No `unlocked` check any more. The foil is scratchable the moment the card
+    // opens — it was gated on the email, so the one thing on screen that looks
+    // interactive did nothing until you filled in a field above it.
+    if (!ctx || revealed) return;
+    if (hintEl && !hintEl.hidden) hintEl.hidden = true;
     var r = canvas.getBoundingClientRect();
     var t = e.touches ? e.touches[0] : e;
     var x = t.clientX - r.left;
@@ -168,10 +219,34 @@
     return total ? gone / total : 0;
   }
 
+  // The foil comes off, and THAT is what brings up the claim. The ask lands on
+  // a prize already won rather than in front of one.
   function clearFoil() {
     if (revealed) return;
     revealed = true;
     if (ctx) ctx.clearRect(0, 0, canvas.width, canvas.height);
+    if (hintEl) hintEl.hidden = true;
+    if (canvas) canvas.classList.add('is-off');
+
+    // No endpoint means no prize to claim. Say so instead of taking an email
+    // for something that cannot be delivered.
+    if (!ENDPOINT) {
+      showTeaser(false);
+      winEl.textContent = window.NON.strings.lottoUnavailable;
+      copyBtn.hidden = true;
+      return;
+    }
+
+    if (gateForm && !claimed) {
+      gateForm.hidden = false;
+      var field = gateForm.querySelector('input');
+      if (field) field.focus({ preventScroll: true });
+    }
+  }
+
+  function showTeaser(on) {
+    if (teaserEl) teaserEl.hidden = !on;
+    if (realEl) realEl.hidden = on;
   }
 
   /* --- draw -------------------------------------------------------------- */
@@ -200,10 +275,13 @@
     errorEl.textContent = msg;
   }
 
-  // Email in, code back, foil unlocked. Nothing is scratchable before this
-  // resolves, so there is no state where a code exists on screen unclaimed.
-  function reveal(email) {
+  // Email in, code back. The foil is already off by the time this runs, so what
+  // this does is swap the teaser under it for the real prize. The code still
+  // does not exist in the document until the API has issued one — re-ordering
+  // the flow gave nothing away, because there was never anything there to give.
+  function claim(email) {
     if (!ENDPOINT) {
+      showTeaser(false);
       winEl.textContent = window.NON.strings.lottoUnavailable;
       copyBtn.hidden = true;
       return Promise.reject(new Error('no endpoint'));
@@ -253,10 +331,9 @@
           }
         }
 
-        unlocked = true;
-        if (panel) panel.classList.remove('is-locked');
+        claimed = true;
+        showTeaser(false);
         if (gateForm) gateForm.hidden = true;
-        requestAnimationFrame(function () { requestAnimationFrame(paintFoil); });
       });
   }
 
@@ -282,21 +359,15 @@
   function open() {
     root.hidden = false;
     revealed = false;
-    unlocked = false;
-    if (panel) panel.classList.add('is-locked');
-    if (gateForm) gateForm.hidden = false;
+    claimed = false;
+    showTeaser(true);
+    if (gateForm) gateForm.hidden = true;
+    if (hintEl) hintEl.hidden = false;
+    if (canvas) canvas.classList.remove('is-off');
     if (sentEl) sentEl.hidden = true;
     if (errorEl) errorEl.hidden = true;
     watchFoil();
     requestAnimationFrame(function () { requestAnimationFrame(paintFoil); });
-
-    // No endpoint means no prize. Say so up front rather than take an email
-    // for something that cannot be delivered.
-    if (!ENDPOINT) {
-      winEl.textContent = window.NON.strings.lottoUnavailable;
-      copyBtn.hidden = true;
-      if (gateForm) gateForm.hidden = true;
-    }
   }
 
   function close(remember) {
@@ -335,7 +406,7 @@
   // Keyboard and pointer-less access: scratching is decorative, so let anyone
   // who can't drag simply open the prize.
   canvas.addEventListener('keydown', function (e) {
-    if ((e.key === 'Enter' || e.key === ' ') && unlocked) { e.preventDefault(); clearFoil(); }
+    if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); clearFoil(); }
   });
   canvas.setAttribute('tabindex', '0');
 
@@ -366,7 +437,7 @@
       var label = btn.textContent;
       btn.textContent = 'One moment';
 
-      reveal(email)
+      claim(email)
         .catch(function (err) {
           showError(
             err.message === 'closed'

@@ -1065,13 +1065,40 @@ button { font-family: inherit; }
 .non-lotto__ref { font-family: var(--non-mono); font-size: 10.5px; color: var(--non-fg-ghost); }
 .non-lotto__title { font-size: 34px; line-height: 1.02; font-weight: 600; letter-spacing: -.03em; }
 .non-lotto__sub { margin: 10px 0 0; font-size: 14px; line-height: 1.55; color: var(--non-fg-dim); }
-.non-lotto__gate { display: flex; gap: 8px; }
+/* The claim, which now appears AFTER the scratch. It animates in because it is
+   new information arriving, not a field that was always sitting there. */
+.non-lotto__gate {
+  display: flex; flex-direction: column; gap: 10px;
+  animation: cardIn var(--duration-reveal) var(--ease-standard) both;
+}
 .non-lotto__gate[hidden] { display: none; }
+.non-lotto__claimhead {
+  font-size: 17px; font-weight: 600; letter-spacing: -.01em; color: var(--non-fg);
+}
 
-/* Locked until an address is in. Not decoration — the foil is unscratchable
-   and looks it, so the exchange is obvious before anyone tries. */
-.non-lotto__panel.is-locked { opacity: .4; pointer-events: none; filter: grayscale(1); }
-.non-lotto__panel.is-locked .non-lotto__foil { cursor: not-allowed; }
+/* `is-locked` is gone. It greyed out and disabled the foil until an email had
+   been entered — which is precisely the behaviour that read as "scratch doesn't
+   work", because a scratch card is the one control nobody reads instructions
+   for. The exchange is now the other way round: scratch, then claim. */
+
+/* The nudge on the foil. Hidden by JS on the first scratch, and it never blocks
+   a pointer — the whole panel has to stay scratchable through it. */
+.non-lotto__hint {
+  position: absolute; left: 0; right: 0; bottom: 14px; z-index: 2;
+  text-align: center; pointer-events: none;
+  font-family: var(--non-mono); font-size: 10px; letter-spacing: .18em;
+  text-transform: uppercase; color: rgba(35, 31, 32, .55);
+  animation: blink 2.4s steps(1) infinite;
+}
+.non-lotto__hint[hidden] { display: none; }
+
+/* Once the foil is off there is nothing left to scratch, so stop offering. */
+.non-lotto__foil.is-off { cursor: default; }
+
+@media (prefers-reduced-motion: reduce) {
+  .non-lotto__hint { animation: none; }
+  .non-lotto__gate { animation: none; }
+}
 
 .non-lotto__sent {
   font-family: var(--non-mono); font-size: var(--t-mono);
@@ -1949,8 +1976,18 @@ a, button, .non-card, .non-filter, .non-pair__opt, .non-somm__seed,
   line-height: 1.25;
   letter-spacing: -.015em;
   max-width: 40ch;
-  color: var(--non-invert-fg, #fff);
-  background: linear-gradient(to top, rgba(0, 0, 0, .62), rgba(0, 0, 0, 0));
+  /* #f2f0ea, NOT var(--non-invert-fg). That token is #000000 — "invert" means
+     the dark-on-light pairing, so asking for it here got pure black type on a
+     photograph of a dark room. The `#fff` fallback never fired either, because
+     a var() fallback only applies when the variable is UNDEFINED, and this one
+     is defined at :root. It read as a token doing the right thing while doing
+     the exact opposite. */
+  color: #f2f0ea;
+  /* Deeper and taller than before. .62 over a busy, mid-tone photograph left
+     the descenders fighting the highlights in the steel. */
+  background: linear-gradient(to top, rgba(0, 0, 0, .82) 0%, rgba(0, 0, 0, .55) 45%, rgba(0, 0, 0, 0) 100%);
+  padding-top: 78px;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, .45);
 }
 
 /* CTA cards on photography. Without an image the card keeps the flat panel it

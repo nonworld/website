@@ -34,42 +34,79 @@
     </div>
 
     {%- comment -%}
-      The email gate sits before the foil, not after it. The Worker enforces
-      this too — a client-side gate is a courtesy, not a control — but putting
-      the field here is what makes the exchange legible: one field, then the
-      prize. Asking after the reveal is asking for nothing in return.
+      SCRATCH FIRST, EMAIL AFTER.
+
+      This was the other way round: the email sat above the foil and nothing was
+      scratchable until it had been submitted. Two problems, and the first one
+      is fatal — the card LOOKS scratchable, so people scratch it, and nothing
+      happens. There is no affordance saying "type here first"; there is a
+      silver panel, which every human alive reads as scratch me.
+
+      And it asked for the email before giving any reason to hand it over. Now
+      the ritual comes first and the ask lands on a prize already won: scratch,
+      see that something is yours, then claim it.
+
+      Nothing is given away by re-ordering. The code never exists in the page
+      until the API issues one — under the foil before claiming there is only
+      the teaser below, which is copy, not a prize. The Worker remains the
+      control; this is presentation.
     {%- endcomment -%}
-    <form class="non-lotto__gate" data-non-lotto-gate>
-      <label class="visually-hidden" for="lotto-email">Email</label>
-      <input
-        id="lotto-email"
-        class="non-lotto__email"
-        type="email"
-        required
-        autocomplete="email"
-        inputmode="email"
-        placeholder="{{ 'sections.lotto.email_placeholder' | t }}">
-      <button type="submit" class="non-lotto__send" data-non-lotto-reveal>
-        {{ section.settings.reveal_label }}
-      </button>
-    </form>
-    <p class="non-error" data-non-lotto-error hidden></p>
-
-    <div class="non-lotto__panel is-locked" data-non-lotto-panel>
+    <div class="non-lotto__panel" data-non-lotto-panel>
       <div class="non-lotto__prize">
-        <div class="non-lotto__won">{{ 'sections.lotto.won' | t }}</div>
-        <div class="non-lotto__win" data-non-lotto-win></div>
+        {%- comment -%} What is under the foil before the claim. {%- endcomment -%}
+        <div class="non-lotto__teaser" data-non-lotto-teaser>
+          <div class="non-lotto__won">{{ section.settings.teaser_eyebrow }}</div>
+          <div class="non-lotto__win">{{ section.settings.teaser_text }}</div>
+        </div>
 
-        <button type="button" class="non-lotto__copy" data-non-lotto-copy hidden>
-          <span class="non-lotto__copy-k" data-non-lotto-copy-label>{{ 'sections.lotto.code' | t }}</span>
-          <b class="non-lotto__copy-v" data-non-lotto-code></b>
-        </button>
+        {%- comment -%} And what replaces it once the API has issued a code. {%- endcomment -%}
+        <div class="non-lotto__real" data-non-lotto-real hidden>
+          <div class="non-lotto__won">{{ 'sections.lotto.won' | t }}</div>
+          <div class="non-lotto__win" data-non-lotto-win></div>
 
-        <div class="non-lotto__fine" data-non-lotto-terms></div>
+          <button type="button" class="non-lotto__copy" data-non-lotto-copy hidden>
+            <span class="non-lotto__copy-k" data-non-lotto-copy-label>{{ 'sections.lotto.code' | t }}</span>
+            <b class="non-lotto__copy-v" data-non-lotto-code></b>
+          </button>
+
+          <div class="non-lotto__fine" data-non-lotto-terms></div>
+        </div>
       </div>
 
-      <canvas class="non-lotto__foil" data-non-lotto-foil aria-label="Scratch to reveal"></canvas>
+      <canvas class="non-lotto__foil" data-non-lotto-foil aria-label="{{ section.settings.scratch_label | escape }}"></canvas>
+
+      {%- comment -%}
+        The nudge. It sits on the foil and fades the moment a scratch starts —
+        a scratch card that has to explain itself has failed, but one line for
+        the first two seconds costs nothing.
+      {%- endcomment -%}
+      <div class="non-lotto__hint" data-non-lotto-hint aria-hidden="true">
+        {{ section.settings.scratch_label }}
+      </div>
     </div>
+
+    {%- comment -%}
+      The claim. Hidden until the foil is off, then it is the only thing on the
+      card asking for anything.
+    {%- endcomment -%}
+    <form class="non-lotto__gate" data-non-lotto-gate hidden>
+      <div class="non-lotto__claimhead">{{ section.settings.claim_heading }}</div>
+      <div class="non-lotto__claim">
+        <label class="visually-hidden" for="lotto-email">{{ 'sections.lotto.email_placeholder' | t }}</label>
+        <input
+          id="lotto-email"
+          class="non-lotto__email"
+          type="email"
+          required
+          autocomplete="email"
+          inputmode="email"
+          placeholder="{{ 'sections.lotto.email_placeholder' | t }}">
+        <button type="submit" class="non-lotto__send" data-non-lotto-reveal>
+          {{ section.settings.claim_label }}
+        </button>
+      </div>
+    </form>
+    <p class="non-error" data-non-lotto-error hidden></p>
 
     <p class="non-lotto__sent" data-non-lotto-sent hidden></p>
 
@@ -98,9 +135,35 @@
     },
     {
       "type": "text",
-      "id": "reveal_label",
-      "label": "Unlock button",
-      "default": "Reveal my pour"
+      "id": "scratch_label",
+      "label": "Scratch prompt",
+      "default": "Scratch here",
+      "info": "Sits on the foil and fades on the first scratch."
+    },
+    {
+      "type": "text",
+      "id": "teaser_eyebrow",
+      "label": "Under the foil — eyebrow",
+      "default": "It's yours"
+    },
+    {
+      "type": "text",
+      "id": "teaser_text",
+      "label": "Under the foil — line",
+      "default": "One pour, with your name on it.",
+      "info": "Shown after the scratch, before the email. No code exists at this point."
+    },
+    {
+      "type": "text",
+      "id": "claim_heading",
+      "label": "Claim heading",
+      "default": "Claim your prize"
+    },
+    {
+      "type": "text",
+      "id": "claim_label",
+      "label": "Claim button",
+      "default": "Claim it"
     },
     {
       "type": "text",

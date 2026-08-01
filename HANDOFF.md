@@ -32,11 +32,20 @@ local before concluding anything about whether a change landed.
 
 ## BLOCKED — needs Aaron, nothing proceeds without these
 
-1. **Shopify Admin token returns 401.** The Lotto cannot issue codes. `/health`
-   says `ok:true` because it only checks the secret *exists*. `wrangler tail`
-   shows `shopify 401`. Needs an Admin API access token (`shpat_…`) from a
-   custom app with `read_discounts`, set via
-   `cd worker/lotto && npx wrangler secret put SHOPIFY_ADMIN_TOKEN`.
+1. ~~**Shopify Admin token returns 401.**~~ **CLOSED — Aaron confirmed the token
+   is fine, 2026-08-01.** Do not re-raise this. It was written here as an open
+   blocker and every subsequent session inherited the claim, could not verify it
+   from a sandbox, and asked about it again. That loop is the reason this entry
+   now says closed rather than being deleted.
+
+   Corroborating evidence, so nobody re-opens it on a hunch: Admin API calls
+   authenticate fine — themes, files, products, discounts, redirects and menus
+   were all read successfully on 2026-08-01. All six NON Lotto discount codes
+   (LOTTO10, LOTTO15, FREESTOPPER, FREEPOUR, ONEONUS, THEHOUSE) are **ACTIVE**.
+
+   If the Lotto still fails to issue a code, look elsewhere before blaming the
+   token — and note `/health` is not a usable signal either way, because
+   `worker/lotto/src/index.js:256` only checks the variable is non-empty.
 
 2. **Publish the theme, then publish `visit-us`.** `templates/page.visit-us.json`
    renders through *this* theme. The live theme is Ven and has none of these
@@ -72,6 +81,13 @@ Full audit with exact file:line references: **`docs/cart-cro-audit.md`**.
 - Free-shipping line hardcodes **75** across **5 markets**. Real: AU $75 ✓,
   US $75 ✓, **UK £50 ✗**, CA/NZ appear to have no free rate at all
 - Cart add-ons are built but no products selected in Theme settings → Cart
+
+**NON Lotto — the remaining gap is Klaviyo, not the token.** The Worker posts an
+event named `Scratched NON Lotto` (`worker/lotto/wrangler.toml`, list `WQLa3T`).
+No such metric exists in Klaviyo and no flow receives it, so a revealed code
+currently emails nobody. A metric only comes into existence when its first event
+arrives, and a metric-triggered flow needs an existing metric to bind to — so
+this is built after one real event has fired, not before.
 
 **Free shipping is FIXED** — both locations, one commit, deployed to staging.
 `snippets/free-shipping.liquid` is now the single source of truth, keyed on

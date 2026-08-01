@@ -16,7 +16,15 @@
         "show_add": true,
         "columns": "3",
         "dim_non_matches": true,
-        "dim_level": 34
+        "dim_level": 34,
+        "eyebrow": "The range",
+        "heading": "Sorted by what you're eating.",
+        "blurb": "Not by price. Not by colour. Tell the shelf what's on the table and it reorders itself — strongest match first, with the reason attached.",
+        "filter_label": "Eating",
+        "promo_product": "mixed-6-pack",
+        "promo_eyebrow": "Cheapest way in",
+        "promo_cta": "Add the mixed six",
+        "promo_show_price": true
       },
       "blocks": {
         "chip-raw": {

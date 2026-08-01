@@ -1,0 +1,217 @@
+<div>probe a</div>
+{% schema %}
+{
+  "name": "Probe A",
+  "settings": [
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Eyebrow",
+      "default": "Bottle → dish",
+      "info": "The small mono line above the statement."
+    },
+    {
+      "type": "text",
+      "id": "subheading",
+      "label": "Statement",
+      "default": "Already got the bottle. Now cook for it."
+    },
+    {
+      "type": "textarea",
+      "id": "standfirst",
+      "label": "Standfirst",
+      "default": "Pick what's in the fridge and how much effort you have. The somm writes a dish built around that bottle's tannin, salt and acid — not a recipe it found lying around."
+    },
+    {
+      "type": "metaobject_list",
+      "id": "recipes",
+      "label": "Recipes",
+      "metaobject_type": "non_recipe",
+      "info": "Leave empty to show every non_recipe entry."
+    },
+    {
+      "type": "header",
+      "content": "Labels"
+    },
+    {
+      "type": "text",
+      "id": "bottle_label",
+      "label": "Bottle picker",
+      "default": "The bottle"
+    },
+    {
+      "type": "text",
+      "id": "effort_label",
+      "label": "Effort picker",
+      "default": "Effort"
+    },
+    {
+      "type": "text",
+      "id": "write_label",
+      "label": "Write button",
+      "default": "Write the dish"
+    },
+    {
+      "type": "text",
+      "id": "method_label",
+      "label": "Method",
+      "default": "Method"
+    },
+    {
+      "type": "text",
+      "id": "why_label",
+      "label": "Why it works",
+      "default": "Why it works with",
+      "info": "The bottle code is appended automatically."
+    },
+    {
+      "type": "text",
+      "id": "list_label",
+      "label": "Shopping list",
+      "default": "Shopping list"
+    },
+    {
+      "type": "text",
+      "id": "add_label",
+      "label": "Add button",
+      "default": "Add"
+    },
+    {
+      "type": "text",
+      "id": "another_label",
+      "label": "Write another",
+      "default": "Write me another"
+    },
+    {
+      "type": "text",
+      "id": "empty_text",
+      "label": "Nothing written yet",
+      "default": "No recipe written for that combination yet. Try another effort."
+    },
+    {
+      "type": "header",
+      "content": "Effort names"
+    },
+    {
+      "type": "text",
+      "id": "effort_fast",
+      "label": "fast",
+      "default": "Weeknight"
+    },
+    {
+      "type": "text",
+      "id": "effort_sunday",
+      "label": "sunday",
+      "default": "Sunday"
+    },
+    {
+      "type": "text",
+      "id": "effort_showoff",
+      "label": "showoff",
+      "default": "Show off"
+    },
+    {
+      "type": "text",
+      "id": "effort_aperitivo",
+      "label": "aperitivo",
+      "default": "Aperitivo"
+    },
+    {
+      "type": "text",
+      "id": "effort_sweet",
+      "label": "sweet",
+      "default": "Cheese & dessert"
+    },
+    {
+      "type": "header",
+      "content": "The somm writing"
+    },
+    {
+      "type": "textarea",
+      "id": "trace",
+      "label": "Thinking lines",
+      "default": "Reading the bottle's structure — tannin, salt, acid.\nMatching it to what the effort allows.\nWriting the dish around it.",
+      "info": "One per line, shown in order while the dish is written. Leave empty to skip the pause."
+    },
+    {
+      "type": "range",
+      "id": "trace_speed",
+      "label": "Writing pace",
+      "min": 120,
+      "max": 700,
+      "step": 20,
+      "default": 340,
+      "unit": "ms",
+      "info": "Per line. Reduced motion skips this entirely."
+    },
+    {
+      "type": "header",
+      "content": "Appearance"
+    },
+    {
+      "type": "color",
+      "id": "band_bg",
+      "label": "Band background",
+      "default": "#c9c7c2",
+      "info": "The design makes this a light island in the dark page."
+    },
+    {
+      "type": "color",
+      "id": "bg_color",
+      "label": "Background"
+    },
+    {
+      "type": "color",
+      "id": "text_color",
+      "label": "Text colour"
+    },
+    {
+      "type": "select",
+      "id": "font_family",
+      "label": "Font",
+      "options": [
+        {
+          "value": "",
+          "label": "Theme default"
+        },
+        {
+          "value": "sans",
+          "label": "Helvetica (all text)"
+        },
+        {
+          "value": "mono",
+          "label": "JetBrains Mono (all text)"
+        }
+      ],
+      "default": ""
+    },
+    {
+      "type": "range",
+      "id": "text_scale",
+      "label": "Text size",
+      "min": 70,
+      "max": 150,
+      "step": 5,
+      "unit": "%",
+      "default": 100,
+      "info": "Scales every text size in this section together."
+    },
+    {
+      "type": "range",
+      "id": "section_padding",
+      "label": "Vertical padding",
+      "min": 0,
+      "max": 160,
+      "step": 8,
+      "unit": "px",
+      "default": 0,
+      "info": "0 keeps the section's own spacing."
+    }
+  ],
+  "presets": [
+    {
+      "name": "Probe A"
+    }
+  ]
+}
+{% endschema %}

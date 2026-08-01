@@ -202,8 +202,18 @@
           place is editable.
         {%- endcomment -%}
         <div class="non-sommbox__head">
+          {%- comment -%}
+            NOT `setting | default: 'key' | t`. Liquid applies `t` to whatever
+            the chain produces, so a set value gets looked up as a translation
+            key and renders "Translation missing: en.NON Somm". The locale
+            string is only a fallback for when the setting is empty.
+          {%- endcomment -%}
           <span class="non-mono non-eyebrow">
-            {{ section.settings.somm_title | default: 'products.product.somm_heading' | t }}
+            {%- if section.settings.somm_title != blank -%}
+              {{ section.settings.somm_title }}
+            {%- else -%}
+              {{ 'products.product.somm_heading' | t }}
+            {%- endif -%}
           </span>
           <span class="non-sommbox__live">
             <span class="non-sommbox__dot" aria-hidden="true"></span>

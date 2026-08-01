@@ -2241,3 +2241,36 @@ a, button, .non-card, .non-filter, .non-pair__opt, .non-somm__seed,
 .non-about-cta--media::after {
   background: linear-gradient(to top, rgba(0, 0, 0, .80) 0%, rgba(0, 0, 0, .55) 45%, rgba(0, 0, 0, .30) 100%);
 }
+
+/* --- The live dot, actually visible ---------------------------------------
+   sommPulse animates a box-shadow halo only — the dot itself never changes.
+   That was legible against the near-black panel it was designed on; against the
+   grey surface a green glow at .55 alpha is close to invisible, which is why
+   the animation reads as "not working" even though it is running.
+
+   The dot now flashes its own opacity as well as throwing the halo. Opacity is
+   the safe property here: it does not touch layout, so the label beside it
+   cannot be nudged. Still one keyframe set, still the shared easing token, and
+   still switched off under reduced-motion by the existing rule. */
+@keyframes sommDotFlash {
+  0%, 100% { opacity: 1; }
+  55%      { opacity: .35; }
+}
+.non-sommbox__dot,
+.non-somm__dot {
+  animation:
+    sommPulse 2s var(--ease-standard) infinite,
+    sommDotFlash 2s var(--ease-standard) infinite;
+  box-shadow: 0 0 0 0 rgba(74, 222, 128, .8);
+}
+/* Halo tuned for the light panel: the old rgba(74,222,128,.55) sat almost
+   exactly on the grey's luminance and disappeared into it. */
+@keyframes sommPulse {
+  0%   { box-shadow: 0 0 0 0 rgba(74, 222, 128, .85); }
+  70%  { box-shadow: 0 0 0 8px rgba(74, 222, 128, 0); }
+  100% { box-shadow: 0 0 0 0 rgba(74, 222, 128, 0); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .non-sommbox__dot,
+  .non-somm__dot { animation: none; opacity: 1; }
+}

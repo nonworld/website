@@ -158,6 +158,47 @@ for path in liquid_files:
             f"use `| where: 'type', '…'` or the loop will render every type"
         )
 
+# 1d. `contains` chained with a comparison — `a contains b == false`.
+#
+# Liquid has no boolean negation of `contains`. Chaining `== false` (or
+# `!= true`, or any comparison) onto it is a PARSE ERROR, and Shopify rejects
+# the entire file for it without saying so, continuing to serve the previous
+# version.
+#
+# This cost a full evening. `sections/pairing-recipes.liquid` was rewritten
+# against the design and every push afterwards reported success while the
+# 31 July build stayed live — because Shopify only validates on WRITE, so the
+# offending line sat unnoticed inside an already-accepted file and only bit
+# when that file was next pushed. Bisected down to a single line by pushing
+# isolated probe sections and checking which ones Shopify accepted.
+#
+# snippets/non-code.liquid:22 already carried a comment warning about exactly
+# this, written the first time it happened. A comment in one file does not stop
+# it recurring in another; this rule does.
+#
+# Use nested `{% if %}` / `{% unless %}` instead.
+#
+# Comment blocks are blanked (not removed) before scanning, so the prose warning
+# in non-code.liquid — and the one in pairing-recipes.liquid explaining the fix —
+# do not report themselves. Blanking preserves newlines so line numbers stay
+# true.
+for path in liquid_files:
+    src = open(path).read()
+    body = src.split("{% schema %}")[0]
+    body = re.sub(
+        r"\{%-?\s*comment\s*-?%\}.*?\{%-?\s*endcomment\s*-?%\}",
+        lambda m: re.sub(r"[^\n]", " ", m.group(0)),
+        body,
+        flags=re.S,
+    )
+    for m in re.finditer(r"contains\s+[\w.'\"\[\]]+\s*(==|!=)", body):
+        line = body[: m.start()].count("\n") + 1
+        issues.append(
+            f"{path}:{line}: `contains … {m.group(1)} …` — Liquid cannot chain a "
+            f"comparison onto `contains`. This is a parse error and Shopify will "
+            f"reject the whole file silently. Use a nested `unless` instead"
+        )
+
 # 3. tag balance
 for path in liquid_files:
     src = open(path).read()

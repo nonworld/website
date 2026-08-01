@@ -72,7 +72,21 @@
                 assign key = bottle.handle
                 assign marker = '|' | append: key | append: '|'
               -%}
-              {%- if key != blank and seen contains marker == false -%}
+              {%- comment -%}
+                Two nested tests, NOT `key != blank and seen contains marker ==
+                false`. Liquid has no boolean negation of `contains`: chaining
+                `== false` onto it is a parse error, and Shopify rejects the
+                whole file for it — silently, keeping the previous version.
+
+                This is what froze this section on the 31 July build while three
+                later pushes reported success. It only survived that long
+                because Shopify validates on WRITE, so the bad line sat happily
+                in an already-accepted file and only bit when the file was next
+                pushed. snippets/non-code.liquid:22 documents the same trap; the
+                note never made it here. check.py rule 1d now catches it.
+              {%- endcomment -%}
+              {%- if key != blank -%}
+              {%- unless seen contains marker -%}
                 {%- assign seen = seen | append: marker -%}
                 {%- capture bcode %}{% render 'non-code', product: bottle %}{% endcapture -%}
                 <button
@@ -82,6 +96,7 @@
                   aria-pressed="false">
                   {{ bcode | strip }}
                 </button>
+              {%- endunless -%}
               {%- endif -%}
             {%- endfor -%}
           </div>

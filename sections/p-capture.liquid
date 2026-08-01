@@ -1,6 +1,0 @@
-{%- assign p = all_products['stewed-cherry-coffee'] -%}
-{%- capture bcode %}{% render 'non-code', product: p %}{% endcapture -%}
-<span>{{ bcode | strip }}</span>
-{% schema %}
-{ "name": "p-capture", "settings": [] }
-{% endschema %}

@@ -1825,13 +1825,13 @@ a, button, .non-card, .non-filter, .non-pair__opt, .non-somm__seed,
    content out of reach of the page's own type scale, and hidden six stages of
    copy from search engines and screen readers.
 
-   Its tokens are renamed --np-* and scoped to .non-process. The embed declared
+   Its tokens are renamed --np-* and scoped to .non-prail. The embed declared
    --non-bg, --non-fg, --non-line and --non-mono on :root, and those are all
    live theme globals with different values (#0A0A0A vs #0c0c0c, #EDEAE4 vs
    #f2f0ea, #2A2722 vs #1f1f1d) — pasting that block would have re-tinted every
    page on the site from an About-page embed. */
 
-.non-process {
+.non-prail {
   --np-mid: #9a948b;
   --np-muted: #8c867c;
   --np-dim: #7c766d;
@@ -1905,7 +1905,7 @@ a, button, .non-card, .non-filter, .non-pair__opt, .non-somm__seed,
 
 /* Below 900px the rail becomes a vertical timeline down the left edge. */
 @media (max-width: 900px) {
-  .non-process { padding: 48px var(--non-pad) 56px; }
+  .non-prail { padding: 48px var(--non-pad) 56px; }
   .np-head { margin-bottom: 40px; }
   .np-line { left: 5px; right: auto; top: 6px; bottom: 6px; width: 1px; height: auto; }
   .np-pulse { left: -1.5px; top: 0; animation-name: npPulseY; }

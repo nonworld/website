@@ -220,7 +220,7 @@
 {%- endcomment -%}
 {%- assign stations = section.blocks | where: 'type', 'process' -%}
 {%- if stations.size > 0 -%}
-  <section class="non-process">
+  <section class="non-prail">
     <div class="np-head">
       <span>{{ section.settings.process_label }}</span>
       {%- if section.settings.process_meta != blank -%}

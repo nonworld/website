@@ -23,6 +23,22 @@
   assign find_url = section.settings.find_url | default: 'https://find.non.world'
 -%}
 
+{%- comment -%}
+  The design opens with a statement and a live count, then closes with two
+  offers: become a stockist, or skip the trip and buy direct. The port had the
+  tool and nothing around it — the page answered "where" and never "what if
+  the answer is nowhere near me".
+{%- endcomment -%}
+<div class="non-stock-hero">
+  <div>
+    <div class="non-mono non-eyebrow" data-non-hero-count>{{ section.settings.eyebrow }}</div>
+    <h1 class="non-stock-hero__title">{{ section.settings.hero_heading }}</h1>
+  </div>
+  {%- if section.settings.hero_blurb != blank -%}
+    <p class="non-stock-hero__lead">{{ section.settings.hero_blurb }}</p>
+  {%- endif -%}
+</div>
+
 <div
   class="non-section"
   data-non-stockists
@@ -110,6 +126,37 @@
     Defaulted here rather than in the schema: Shopify's `url` setting type
     rejects a "default" key outright, and rejects the whole file with it.
   {%- endcomment -%}
+  {%- comment -%} Two offers, side by side, for when the map comes up empty. {%- endcomment -%}
+  {%- if section.settings.trade_heading != blank or section.settings.direct_heading != blank -%}
+    <div class="non-stock-offers">
+      {%- if section.settings.trade_heading != blank -%}
+        <div class="non-stock-offer">
+          <div class="non-mono non-eyebrow">{{ section.settings.trade_label }}</div>
+          <div class="non-stock-offer__title">{{ section.settings.trade_heading }}</div>
+          <p class="non-stock-offer__body">{{ section.settings.trade_body }}</p>
+          {%- if section.settings.trade_cta != blank -%}
+            <a class="non-stock-offer__cta" href="{{ section.settings.trade_url | default: '/pages/contact' }}">
+              {{ section.settings.trade_cta }}
+            </a>
+          {%- endif -%}
+        </div>
+      {%- endif -%}
+
+      {%- if section.settings.direct_heading != blank -%}
+        <div class="non-stock-offer non-stock-offer--solid">
+          <div class="non-mono non-eyebrow">{{ section.settings.direct_label }}</div>
+          <div class="non-stock-offer__title">{{ section.settings.direct_heading }}</div>
+          <p class="non-stock-offer__body">{{ section.settings.direct_body }}</p>
+          {%- if section.settings.direct_cta != blank -%}
+            <a class="non-stock-offer__cta" href="{{ section.settings.direct_url | default: '/collections/the-range' }}">
+              {{ section.settings.direct_cta }}
+            </a>
+          {%- endif -%}
+        </div>
+      {%- endif -%}
+    </div>
+  {%- endif -%}
+
   <p class="non-note" style="margin-top:28px">
     {{ section.settings.find_prompt }}
     <a href="{{ find_url }}" style="text-decoration:underline">
@@ -136,6 +183,82 @@
 {
   "name": "Stockists",
   "settings": [
+    {
+      "type": "text",
+      "id": "eyebrow",
+      "label": "Eyebrow",
+      "default": "Stockists"
+    },
+    {
+      "type": "text",
+      "id": "hero_heading",
+      "label": "Headline",
+      "default": "Find it poured near you."
+    },
+    {
+      "type": "textarea",
+      "id": "hero_blurb",
+      "label": "Blurb",
+      "default": "Search the full live directory — restaurants, bars and retailers, updated weekly."
+    },
+    {
+      "type": "text",
+      "id": "trade_label",
+      "label": "Trade label",
+      "default": "Trade"
+    },
+    {
+      "type": "text",
+      "id": "trade_heading",
+      "label": "Trade heading",
+      "default": "Stock NON"
+    },
+    {
+      "type": "textarea",
+      "id": "trade_body",
+      "label": "Trade body",
+      "default": "Restaurants, bars and retailers. Tell us where you are and we will put you in touch with the right distributor."
+    },
+    {
+      "type": "text",
+      "id": "trade_cta",
+      "label": "Trade button",
+      "default": "Get in touch"
+    },
+    {
+      "type": "url",
+      "id": "trade_url",
+      "label": "Trade link"
+    },
+    {
+      "type": "text",
+      "id": "direct_label",
+      "label": "Direct label",
+      "default": "Or skip the trip"
+    },
+    {
+      "type": "text",
+      "id": "direct_heading",
+      "label": "Direct heading",
+      "default": "Have it delivered"
+    },
+    {
+      "type": "textarea",
+      "id": "direct_body",
+      "label": "Direct body",
+      "default": "The full range ships direct, and free over $75."
+    },
+    {
+      "type": "text",
+      "id": "direct_cta",
+      "label": "Direct button",
+      "default": "Shop the range"
+    },
+    {
+      "type": "url",
+      "id": "direct_url",
+      "label": "Direct link"
+    },
     {
       "type": "text",
       "id": "heading",

@@ -134,6 +134,15 @@
       moreBtn.textContent = 'Show ' + Math.min(remaining, PAGE) + ' more';
     }
 
+    // The hero eyebrow carries the live total too — the design shows a count
+    // up there and a hardcoded one would be wrong the day a venue is added.
+    var heroCount = document.querySelector('[data-non-hero-count]');
+    if (heroCount && all.length) {
+      var base = heroCount.getAttribute('data-base') || heroCount.textContent.trim();
+      heroCount.setAttribute('data-base', base);
+      heroCount.textContent = base + ' · ' + all.length.toLocaleString() + ' venues';
+    }
+
     if (countEl) {
       countEl.textContent =
         shown.length === all.length

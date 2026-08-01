@@ -19,7 +19,9 @@
         "find_label": "Open the full map at find.non.world",
         "eyebrow": "Stockists · 1,400+ venues",
         "hero_heading": "Find it poured near you.",
-        "featured_heading": "On the list at"
+        "featured_heading": "On the list at",
+        "trade_image_url": "https://cdn.shopify.com/s/files/1/0371/5874/8205/files/non-story-038A8614.jpg?v=1785541727&width=1200",
+        "direct_image_url": "https://www.non.world/cdn/shop/files/Mixed-6.jpg?v=1763080460&width=1200"
       },
       "blocks": {
         "v1": {

@@ -212,6 +212,18 @@
     <div class="non-stock-offers">
       {%- if section.settings.trade_heading != blank -%}
         <div class="non-stock-offer">
+          {%- if section.settings.trade_image != blank or section.settings.trade_image_url != blank -%}
+            <div class="non-stock-offer__media">
+              {%- if section.settings.trade_image != blank -%}
+                {{ section.settings.trade_image | image_url: width: 1200, format: 'webp' | image_tag: loading: 'lazy', widths: '400,700,1200', alt: section.settings.trade_heading }}
+              {%- else -%}
+                {% render 'cdn-image',
+                   url: section.settings.trade_image_url,
+                   alt: section.settings.trade_heading,
+                   sizes: '(min-width: 720px) 50vw, 100vw' %}
+              {%- endif -%}
+            </div>
+          {%- endif -%}
           <div class="non-mono non-eyebrow">{{ section.settings.trade_label }}</div>
           <div class="non-stock-offer__title">{{ section.settings.trade_heading }}</div>
           <p class="non-stock-offer__body">{{ section.settings.trade_body }}</p>
@@ -225,6 +237,18 @@
 
       {%- if section.settings.direct_heading != blank -%}
         <div class="non-stock-offer non-stock-offer--solid">
+          {%- if section.settings.direct_image != blank or section.settings.direct_image_url != blank -%}
+            <div class="non-stock-offer__media">
+              {%- if section.settings.direct_image != blank -%}
+                {{ section.settings.direct_image | image_url: width: 1200, format: 'webp' | image_tag: loading: 'lazy', widths: '400,700,1200', alt: section.settings.direct_heading }}
+              {%- else -%}
+                {% render 'cdn-image',
+                   url: section.settings.direct_image_url,
+                   alt: section.settings.direct_heading,
+                   sizes: '(min-width: 720px) 50vw, 100vw' %}
+              {%- endif -%}
+            </div>
+          {%- endif -%}
           <div class="non-mono non-eyebrow">{{ section.settings.direct_label }}</div>
           <div class="non-stock-offer__title">{{ section.settings.direct_heading }}</div>
           <p class="non-stock-offer__body">{{ section.settings.direct_body }}</p>
@@ -491,6 +515,28 @@
       "type": "url",
       "id": "nominate_url",
       "label": "Nominate link"
+    },
+    {
+      "type": "image_picker",
+      "id": "trade_image",
+      "label": "Trade card image"
+    },
+    {
+      "type": "text",
+      "id": "trade_image_url",
+      "label": "Trade card image URL",
+      "info": "Design: 038A8614. Used only when no image is uploaded."
+    },
+    {
+      "type": "image_picker",
+      "id": "direct_image",
+      "label": "Direct card image"
+    },
+    {
+      "type": "text",
+      "id": "direct_image_url",
+      "label": "Direct card image URL",
+      "info": "Design: Mixed-6. Used only when no image is uploaded."
     },
     {
       "type": "header",

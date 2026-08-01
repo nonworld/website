@@ -1708,8 +1708,11 @@ a, button, .non-card, .non-filter, .non-pair__opt, .non-somm__seed,
 .non-somm__seed,
 .non-sommbox__seeds button {
   border-radius: 999px;
-  min-height: 34px;
-  padding: 0 14px;
+  /* 44, not 34. I set 34 when making these pills and it walks back the mobile
+     audit's own finding — these chips were flagged at 26x18 and the fix was a
+     44px minimum. A suggestion chip is a primary interaction, not a label. */
+  min-height: 44px;
+  padding: 0 16px;
   border: 1px solid var(--non-line-strong);
   background: var(--non-panel-alt);
 }

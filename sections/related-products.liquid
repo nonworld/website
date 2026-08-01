@@ -36,23 +36,23 @@
   data-url="{{ routes.product_recommendations_url }}?section_id={{ section.id }}&product_id={{ product.id }}&limit={{ section.settings.limit }}">
     <div class="non-mono non-eyebrow">{{ section.settings.heading }}</div>
 
-    <div class="non-related">
+    {%- comment -%}
+      The SAME card as the shop grid and the homepage row.
+
+      This band used a bespoke horizontal card — a 62x80 thumb beside the text —
+      carried over from design-reference. Overridden deliberately on Aaron's
+      instruction to apply the card principles to the PDP: the site now has one
+      product card, square, on the photo bed, and a PDP showing bottles in a
+      different component to every other page makes one product look like two.
+
+      Nothing bespoke survives here, so a future change to product-card reaches
+      this band rather than leaving it to drift.
+    {%- endcomment -%}
+    <div
+      class="non-grid non-grid--{{ section.settings.columns }} non-grid--ratio-{{ section.settings.image_ratio | default: 'square' }}"
+      style="--non-card-max: {{ section.settings.card_max | default: 380 }}px">
       {%- for item in items limit: section.settings.limit -%}
-        {%- capture item_code %}{% render 'non-code', product: item %}{% endcapture -%}
-        <a class="non-related__card" href="{{ item.url }}">
-          {%- if item.featured_image -%}
-            <img src="{{ item.featured_image | image_url: width: 200, format: 'webp' }}" alt="{{ item.title | escape }}" loading="lazy">
-          {%- endif -%}
-          <span class="non-related__meta">
-            <span class="non-related__code">{{ item_code | strip }}</span>
-            <span class="non-related__name">{{ item.title }}</span>
-            <span class="non-related__note">
-              {%- assign note = item.metafields.custom.profile | metafield_text -%}
-              {%- if note != blank -%}{{ note | truncate: 40 }} &middot; {% endif -%}
-              {{ item.price | money }}
-            </span>
-          </span>
-        </a>
+        {% render 'product-card', product: item, show_add: section.settings.show_add %}
       {%- endfor -%}
     </div>
   </div>
@@ -77,6 +77,48 @@
       "max": 6,
       "step": 1,
       "default": 3
+    },
+    {
+      "type": "select",
+      "id": "columns",
+      "label": "Columns",
+      "options": [
+        { "value": "2", "label": "2" },
+        { "value": "3", "label": "3" },
+        { "value": "4", "label": "4" },
+        { "value": "5", "label": "5" }
+      ],
+      "default": "4",
+      "info": "Exact number per row on desktop."
+    },
+    {
+      "type": "range",
+      "id": "card_max",
+      "label": "Card width",
+      "min": 120,
+      "max": 640,
+      "step": 20,
+      "unit": "px",
+      "default": 380,
+      "info": "Matches the shop grid and the homepage row at 380."
+    },
+    {
+      "type": "select",
+      "id": "image_ratio",
+      "label": "Image shape",
+      "options": [
+        { "value": "square", "label": "Square (1:1)" },
+        { "value": "portrait", "label": "Portrait (3:4)" },
+        { "value": "tall", "label": "Tall (4:5)" },
+        { "value": "landscape", "label": "Landscape (4:3)" }
+      ],
+      "default": "square"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_add",
+      "label": "Show add button",
+      "default": false
     },
     {
       "type": "header",

@@ -21,7 +21,14 @@
       .then(function (html) {
         var doc = new DOMParser().parseFromString(html, 'text/html');
         var fresh = doc.querySelector('[data-non-recommendations]');
-        var list = fresh && fresh.querySelector('.non-related');
+        // `.non-grid`, not `.non-related`. This band was rebuilt on the shared
+        // product card, so the bespoke wrapper class no longer exists — and
+        // this selector missing would have failed the quiet way: the fetch
+        // succeeds, `list` is null, and the early return below leaves the
+        // section hidden forever. Identical on screen to "this product has no
+        // recommendations", which is why it needed catching here rather than
+        // in a screenshot. Kept generic so the next layout change survives it.
+        var list = fresh && fresh.querySelector('.non-grid, .non-row');
 
         // No recommendations for this product is a real answer, not a failure.
         // Leave the section hidden rather than showing an empty heading.

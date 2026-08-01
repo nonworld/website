@@ -47,8 +47,38 @@
     <div class="non-process__copy">
       <div class="non-mono non-eyebrow">{{ section.settings.steps_heading }}</div>
 
+      {%- comment -%}
+        Three sources, in priority order: Step blocks, then the process_steps
+        JSON metafield, then the prose metafield split on blank lines.
+
+        Blocks come first so the section is editable at all — it had no block
+        types, so the theme editor offered two headings and nothing else while
+        the five visible steps came from per-product data with no way to touch
+        them from here.
+
+        Blocks are an OVERRIDE, not a replacement. Step copy is genuinely
+        per-product — NON1's raspberries are not NON5's hibiscus — so the
+        metafield stays the default and blocks win only where someone has
+        deliberately added them. Adding a Step block to the default product
+        template would otherwise give all nine bottles the same process.
+      {%- endcomment -%}
+      {%- assign step_blocks = section.blocks | where: 'type', 'step' -%}
+
       <div class="non-steps">
-        {%- if steps != blank -%}
+        {%- if step_blocks.size > 0 -%}
+          {%- for block in step_blocks -%}
+            <div class="non-step" {{ block.shopify_attributes }}>
+              <div class="non-step__n">
+                {{- block.settings.number | default: forloop.index | prepend: '0' | slice: -2, 2 -}}
+              </div>
+              <div>
+                <div class="non-step__t">{{ block.settings.title }}</div>
+                <p class="non-step__b">{{ block.settings.body }}</p>
+              </div>
+            </div>
+          {%- endfor -%}
+
+        {%- elsif steps != blank -%}
           {%- for step in steps -%}
             <div class="non-step">
               <div class="non-step__n">{{ step.n }}</div>
@@ -112,17 +142,32 @@
   </div>
 {%- endif -%}
 
-{%- if pairings != blank -%}
+{%- comment -%}
+  Pairing cards, same override rule as the steps: Pairing blocks win, the
+  metafield is the default. Pairings are per-product too — the engine derives
+  them — so blocks are for overriding one bottle, not for authoring all nine.
+{%- endcomment -%}
+{%- assign pair_blocks = section.blocks | where: 'type', 'pairing' -%}
+{%- if pair_blocks.size > 0 or pairings != blank -%}
   <div class="non-section" style="border-top:1px solid var(--non-line)">
     <div class="non-mono non-eyebrow">{{ section.settings.pairings_heading }}</div>
 
     <div class="non-pairs">
-      {%- for pair in pairings -%}
-        <div class="non-pair-card">
-          <div class="non-pair-card__t">{{ pair.title }}</div>
-          <p class="non-pair-card__b">{{ pair.body }}</p>
-        </div>
-      {%- endfor -%}
+      {%- if pair_blocks.size > 0 -%}
+        {%- for block in pair_blocks -%}
+          <div class="non-pair-card" {{ block.shopify_attributes }}>
+            <div class="non-pair-card__t">{{ block.settings.title }}</div>
+            <p class="non-pair-card__b">{{ block.settings.body }}</p>
+          </div>
+        {%- endfor -%}
+      {%- else -%}
+        {%- for pair in pairings -%}
+          <div class="non-pair-card">
+            <div class="non-pair-card__t">{{ pair.title }}</div>
+            <p class="non-pair-card__b">{{ pair.body }}</p>
+          </div>
+        {%- endfor -%}
+      {%- endif -%}
     </div>
   </div>
 {%- endif -%}
@@ -243,6 +288,56 @@
   "presets": [
     {
       "name": "Process & pairings"
+    }
+  ],
+  "max_blocks": 30,
+  "blocks": [
+    {
+      "type": "step",
+      "name": "Step",
+      "settings": [
+        {
+          "type": "paragraph",
+          "content": "Overrides the product's process_steps metafield for THIS template only. Leave the section with no Step blocks to keep using each product's own data."
+        },
+        {
+          "type": "text",
+          "id": "title",
+          "label": "Title",
+          "default": "Fruit"
+        },
+        {
+          "type": "textarea",
+          "id": "body",
+          "label": "Body"
+        },
+        {
+          "type": "text",
+          "id": "number",
+          "label": "Number",
+          "info": "Optional. Auto-numbers from position when empty."
+        }
+      ]
+    },
+    {
+      "type": "pairing",
+      "name": "Pairing card",
+      "settings": [
+        {
+          "type": "paragraph",
+          "content": "Overrides the product's pairings metafield for THIS template only."
+        },
+        {
+          "type": "text",
+          "id": "title",
+          "label": "Title"
+        },
+        {
+          "type": "textarea",
+          "id": "body",
+          "label": "Body"
+        }
+      ]
     }
   ]
 }

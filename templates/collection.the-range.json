@@ -111,7 +111,7 @@
         "collection": "non-sets",
         "columns": "4",
         "rows": 1,
-        "show_add": false,
+        "show_add": true,
         "link_label": "All sets",
         "link_url": "/collections/non-sets",
         "card_max": 380,

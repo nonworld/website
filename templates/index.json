@@ -179,7 +179,7 @@
       "settings": {
         "heading": "Core range",
         "columns": "3",
-        "show_add": false,
+        "show_add": true,
         "link_label": "All bottles",
         "collection": "the-range",
         "link_url": "/collections/the-range",
@@ -288,7 +288,7 @@
         "heading": "Sets",
         "collection": "non-sets",
         "columns": "4",
-        "show_add": false,
+        "show_add": true,
         "link_label": "All sets",
         "link_url": "/collections/non-sets",
         "rows": 1,

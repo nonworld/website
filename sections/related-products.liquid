@@ -1,10 +1,11 @@
 {% render 'section-style', section: section %}
 {%- comment -%}
-  "Goes well in a case with", rebuilt against the design.
+  "Goes well in a case with".
 
-  Horizontal cards — a 62x80 bottle shot beside the code, name and tasting
-  note. The port used the vertical grid card from the shop, which is a
-  different component doing a different job.
+  Uses the shared product card — square, on the photo bed, with quick add —
+  the same component as the shop grid and the homepage row. It previously used
+  a bespoke horizontal card from design-reference; see the note above the grid
+  for why that was dropped.
 
   Prefers the product's own custom.related (a list of product references,
   matching the design's hand-picked array), falling back to Shopify's
@@ -118,7 +119,7 @@
       "type": "checkbox",
       "id": "show_add",
       "label": "Show add button",
-      "default": false
+      "default": true
     },
     {
       "type": "header",

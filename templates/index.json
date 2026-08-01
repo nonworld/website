@@ -175,7 +175,8 @@
         "collection": "the-range",
         "link_url": "/collections/the-range",
         "rows": 2,
-        "card_max": 0
+        "card_max": 640,
+        "layout": "grid"
       }
     },
     "made-for": {
@@ -282,7 +283,8 @@
         "link_label": "All sets",
         "link_url": "/collections/non-sets",
         "rows": 1,
-        "card_max": 0
+        "card_max": 640,
+        "layout": "grid"
       }
     }
   },

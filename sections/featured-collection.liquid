@@ -3,8 +3,23 @@
   assign coll = section.settings.collection | default: collections[settings.core_range_collection]
   assign cols = section.settings.columns | default: 4 | times: 1
   assign rows = section.settings.rows | default: 2
-  assign limit = cols | times: rows
-  assign card_max = section.settings.card_max | default: 0
+  assign card_max = section.settings.card_max | default: 260
+
+  comment
+    Two layouts.
+
+    Grid  — columns x rows, the count follows the shape.
+    Row   — one line holding the WHOLE collection, scrolling sideways with
+            arrows when it overruns. This exists because "show me all six"
+            and "fit them on screen" are not the same request: a grid has to
+            wrap, a row does not.
+  endcomment
+  assign layout = section.settings.layout | default: 'grid'
+  if layout == 'row'
+    assign limit = 50
+  else
+    assign limit = cols | times: rows
+  endif
 -%}
 
 <div class="non-section">
@@ -18,11 +33,29 @@
   </div>
 
   {%- if coll.products.size > 0 -%}
-    <div class="non-grid non-grid--{{ section.settings.columns }} non-grid--ratio-{{ section.settings.image_ratio | default: 'portrait' }}"{% if card_max > 0 %} style="--non-card-max: {{ card_max }}px"{% endif %}>
-      {%- for product in coll.products limit: limit -%}
-        {% render 'product-card', product: product, show_add: section.settings.show_add %}
-      {%- endfor -%}
-    </div>
+    {%- if layout == 'row' -%}
+      <div class="non-row-wrap" data-non-row-wrap>
+        <button type="button" class="non-row-arrow non-row-arrow--prev" data-non-row-prev aria-label="Previous">&#8592;</button>
+        <div
+          class="non-row non-grid--ratio-{{ section.settings.image_ratio | default: 'portrait' }}"
+          data-non-row
+          style="--non-card-max: {{ card_max }}px">
+          {%- for product in coll.products limit: limit -%}
+            {% render 'product-card', product: product, show_add: section.settings.show_add %}
+          {%- endfor -%}
+        </div>
+        <button type="button" class="non-row-arrow non-row-arrow--next" data-non-row-next aria-label="Next">&#8594;</button>
+      </div>
+      <script src="{{ 'row-scroller.js' | asset_url }}" defer></script>
+    {%- else -%}
+      <div
+        class="non-grid non-grid--{{ section.settings.columns }} non-grid--ratio-{{ section.settings.image_ratio | default: 'portrait' }}"
+        style="--non-card-max: {{ card_max }}px">
+        {%- for product in coll.products limit: limit -%}
+          {% render 'product-card', product: product, show_add: section.settings.show_add %}
+        {%- endfor -%}
+      </div>
+    {%- endif -%}
   {%- else -%}
     <p class="non-note" style="margin-top:24px">
       Pick a collection for this section in the theme editor.
@@ -39,6 +72,23 @@
       "id": "heading",
       "label": "Heading",
       "default": "Core range"
+    },
+    {
+      "type": "select",
+      "id": "layout",
+      "label": "Layout",
+      "options": [
+        {
+          "value": "grid",
+          "label": "Grid (columns x rows)"
+        },
+        {
+          "value": "row",
+          "label": "One row, scrolls sideways"
+        }
+      ],
+      "default": "grid",
+      "info": "A row shows the whole collection on one line, with arrows when it runs off screen."
     },
     {
       "type": "collection",
@@ -58,13 +108,13 @@
     {
       "type": "range",
       "id": "card_max",
-      "label": "Card width cap",
-      "min": 0,
-      "max": 560,
+      "label": "Card width",
+      "min": 120,
+      "max": 640,
       "step": 20,
       "unit": "px",
-      "default": 0,
-      "info": "Caps how wide a single card can get, which is what sets the picture size. 0 sizes them from the column count."
+      "default": 640,
+      "info": "How wide a card may get. Drag left for smaller pictures."
     },
     {
       "type": "select",
@@ -92,7 +142,7 @@
           "label": "6"
         }
       ],
-      "info": "A maximum. Very wide screens fit more rather than stretching each card.",
+      "info": "Exact number of products per row on desktop.",
       "default": "4"
     },
     {

@@ -15,7 +15,13 @@
       <button type="button" class="non-footer__button" data-non-lotto-open>NON Lotto</button>
     {%- endif -%}
 
-    {%- if settings.contact_email != blank -%}
+    {%- comment -%}
+      Behind a setting rather than deleted. The address is still in Theme
+      settings and still used elsewhere; this controls whether the FOOTER
+      prints it. Deleting the markup would have made putting it back a code
+      change rather than a checkbox.
+    {%- endcomment -%}
+    {%- if section.settings.show_email and settings.contact_email != blank -%}
       <a href="mailto:{{ settings.contact_email }}">{{ settings.contact_email }}</a>
     {%- endif -%}
   </span>
@@ -93,6 +99,12 @@
       "unit": "px",
       "default": 0,
       "info": "0 keeps the section's own spacing."
+    },
+    {
+      "type": "checkbox",
+      "id": "show_email",
+      "label": "Show contact email",
+      "default": false
     }
   ]
 }

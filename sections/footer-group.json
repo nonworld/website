@@ -4,8 +4,14 @@
   "sections": {
     "footer": {
       "type": "footer",
-      "settings": { "menu": "footer", "show_lotto_link": true }
+      "settings": {
+        "menu": "footer",
+        "show_lotto_link": false,
+        "show_email": false
+      }
     }
   },
-  "order": ["footer"]
+  "order": [
+    "footer"
+  ]
 }

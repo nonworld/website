@@ -2427,3 +2427,28 @@ a, button, .non-card, .non-filter, .non-pair__opt, .non-somm__seed,
   align-self: end;
 }
 .non-hq-hero--media { align-items: end; }
+
+/* --- Select control -------------------------------------------------------
+   The native arrow was being drawn by the browser in its own colour on a dark
+   field — a light chevron on light chrome, misaligned with the field's own
+   padding. Appearance is reset and the chevron drawn as a background SVG so it
+   inherits the theme's ink and sits where the padding puts it.
+
+   Inline data URI rather than an asset: a strict CSP blocks nothing here, but a
+   one-glyph chevron is smaller than the request that would fetch it. */
+.non-field select,
+select.non-field,
+.non-contact select,
+select {
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+  background-image: url("data:image/svg+xml;charset=UTF-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1.5 6 6.5 11 1.5' fill='none' stroke='%23f2f0ea' stroke-width='1.5' stroke-linecap='square'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 16px center;
+  background-size: 12px 8px;
+  padding-right: 42px;
+}
+/* Firefox keeps a focus ring inside the field; remove it so the theme's own
+   focus treatment is the only one. */
+select:-moz-focusring { color: transparent; text-shadow: 0 0 0 var(--non-fg); }

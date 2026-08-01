@@ -207,10 +207,38 @@ async function routeQuery(env, query) {
   }
 }
 
-async function answerFacts(env, query, code) {
+async function answerFacts(env, query, code, facts) {
   const scope = code
     ? PRODUCTS.filter((p) => p.id === String(code).toUpperCase())
     : PRODUCTS;
+
+  // The theme's own sheet for the bottle being viewed. PRODUCTS is this
+  // Worker's static copy of the range and carries what the engine needs to
+  // score — it has never carried storage, serving or ingredient prose. Shopify
+  // does, on every bottle, and the product page now sends it. Appended rather
+  // than merged so the two sources stay distinguishable, and only fields with a
+  // value are included: an empty one must read as absent, not as a blank fact.
+  let sheet = '';
+  if (facts && typeof facts === 'object') {
+    const rows = [
+      ['Storage and shelf life', facts.storage],
+      ['How to serve', facts.serve],
+      ['Ingredients', facts.ingredients],
+      ['Producer notes', facts.notes],
+      ['Flavour profile', facts.profile],
+      ['Sits where', facts.sits],
+      ['Nutrition', facts.nutrition],
+      ['Price', facts.price],
+    ].filter(([, v]) => v !== undefined && v !== null && String(v).trim() !== '');
+
+    if (rows.length) {
+      sheet =
+        '\n\nThe page the customer is on publishes this sheet for ' +
+        (facts.title || facts.code || 'this bottle') +
+        '. Prefer it over the range data above where they overlap:\n' +
+        rows.map(([k, v]) => '- ' + k + ': ' + v).join('\n');
+    }
+  }
 
   const answer = await claude(env, {
     model: env.EXPLAIN_MODEL || 'claude-sonnet-5',
@@ -223,6 +251,7 @@ async function answerFacts(env, query, code) {
           'Data sheet — this is the complete range, ' +
           (scope.length ? scope : PRODUCTS).length + ' bottles:\n\n' +
           factsSheet(scope.length ? scope : PRODUCTS) +
+          sheet +
           '\n\nQuestion: ' + query,
       },
     ],
@@ -518,7 +547,7 @@ export default {
 
     if (intent === 'facts' || intent === 'other') {
       try {
-        const result = await answerFacts(env, query, context);
+        const result = await answerFacts(env, query, context, body.facts);
         return json({
           intent: intent,
           answer: result.answer,

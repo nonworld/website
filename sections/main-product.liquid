@@ -383,8 +383,32 @@
         endcase
       -%}
       {%- if val != blank -%}
+        {%- comment -%}
+          The icon is derived from the block's SOURCE, not chosen per block.
+          The source already says what the cell is — tastes, sits, nutrition,
+          serve — so a separate picker would be a second place to keep the same
+          fact, and the two would drift. A custom cell gets no icon rather than
+          a wrong one.
+        {%- endcomment -%}
+        {%- liquid
+          case block.settings.source
+            when 'tastes'
+              assign cell_icon = 'palate'
+            when 'sits'
+              assign cell_icon = 'seat'
+            when 'nutrition'
+              assign cell_icon = 'nutrition'
+            when 'serve'
+              assign cell_icon = 'serve'
+            else
+              assign cell_icon = ''
+          endcase
+        -%}
         <div class="non-specstrip__cell" {{ block.shopify_attributes }}>
-          <div class="non-spec__k">{{ block.settings.label }}</div>
+          <div class="non-spec__k non-spec__k--icon">
+            {%- if cell_icon != blank -%}{% render 'stat-icon', icon: cell_icon %}{%- endif -%}
+            <span>{{ block.settings.label }}</span>
+          </div>
           <div class="non-specstrip__v">{{ val }}</div>
         </div>
       {%- endif -%}

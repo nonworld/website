@@ -893,6 +893,13 @@ button { font-family: inherit; }
    and read as body copy sitting above body copy. They are labels — mono, like
    every other label in the theme. Used on the product page and in the process
    panel's Ingredients heading. */
+/* The icon sits INLINE with the label, not stacked above it the way the About
+   stat icons do. A spec cell is a label and a value; a third stacked element
+   would make the strip a third taller for decoration. 15px is the mono
+   label's own cap height, so the icon reads as part of the word rather than
+   as a bullet beside it, and it inherits the label's muted ink. */
+.non-spec__k--icon { display: flex; align-items: center; gap: 8px; }
+.non-spec__k--icon .non-stat__icon { width: 15px; height: 15px; margin: 0; flex: none; color: inherit; }
 .non-spec__k {
   font-family: var(--non-mono);
   font-size: var(--t-mono);
@@ -925,6 +932,33 @@ button { font-family: inherit; }
 .non-process__media--square .non-process__img { height: auto; aspect-ratio: 1/1; }
 .non-process__media--tall .non-process__img { height: auto; aspect-ratio: 4/5; }
 .non-process__media--portrait .non-process__img { height: auto; aspect-ratio: 3/4; }
+/* A YouTube embed cannot be cropped with object-fit — it is an iframe, and
+   object-fit only applies to replaced content with intrinsic dimensions. So
+   the box crops instead (overflow: hidden) and the iframe is sized to COVER
+   it: 16/9 held by aspect-ratio, then min-width/min-height force whichever
+   axis is short to fill, and the centring translate throws the overflow away
+   evenly on both sides. A portrait band showing a 16:9 film would otherwise
+   letterbox two black bars onto a page that has no black bars anywhere.
+
+   pointer-events: none is load-bearing, not defensive. YouTube draws its
+   title card and share buttons on hover no matter which parameters are set,
+   and this band is a texture behind copy — there is nothing to click, so
+   nothing may be hovered. It also means a stray tap cannot navigate a
+   customer off the product page to youtube.com. */
+.non-process__media--yt { overflow: hidden; }
+.non-process__media--yt.non-process__media--square { aspect-ratio: 1/1; }
+.non-process__media--yt.non-process__media--tall { aspect-ratio: 4/5; }
+.non-process__media--yt.non-process__media--portrait { aspect-ratio: 3/4; }
+.non-process__yt {
+  position: absolute; top: 50%; left: 50%;
+  translate: -50% -50%;
+  width: auto; height: 100%;
+  aspect-ratio: 16 / 9;
+  min-width: 100%; min-height: 100%;
+  border: 0;
+  pointer-events: none;
+}
+
 /* Cap removed for the same reason as .non-trip__img: it overrode whichever
    ratio was chosen the moment the computed height passed it. `fill` is
    untouched — it keeps the panel's 420px min-height on purpose, which is what

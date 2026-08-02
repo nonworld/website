@@ -49,6 +49,51 @@
   endif
 
   assign media_ratio = section.settings.media_ratio | default: 'portrait'
+
+  # Video, on the same ladder as the image and taking priority over it.
+  #
+  # These are per-bottle films, so the PRODUCT metafield is the real path --
+  # product.json is one template shared by every product, so a section setting
+  # would put one video on all of them, which is the same mistake the eyebrow
+  # suffix made when it printed an ABV on a metal stopper.
+  #
+  # Two shapes arrive depending on where the file was uploaded, and both are
+  # handled at the markup below rather than normalised here:
+  #   Shopify FILES  -- a generic file, addressed by .url
+  #   product MEDIA  -- a video object carrying .sources
+  # The image is still resolved above and becomes the poster frame, so the
+  # panel is never empty while a video buffers and never breaks if one is
+  # missing.
+  assign process_video = section.settings.video
+  if process_video == blank
+    assign process_video = product.metafields.custom.process_video.value
+  endif
+  if process_video == blank
+    for item in product.media
+      if item.media_type == 'video'
+        assign process_video = item
+        break
+      endif
+    endfor
+  endif
+
+  assign process_video_url = section.settings.video_url
+  if process_video_url == blank
+    assign process_video_url = product.metafields.custom.process_video_url | metafield_text
+  endif
+
+  # YouTube is a different animal to a file: it is an iframe, not a video
+  # element, so object-fit cannot crop it and the player draws its own chrome.
+  # Pull the id out of whichever of the three URL shapes was pasted.
+  assign yt_id = ''
+  if process_video_url contains 'youtube.com/watch'
+    assign yt_id = process_video_url | split: 'v=' | last | split: '&' | first
+  elsif process_video_url contains 'youtu.be/'
+    assign yt_id = process_video_url | split: 'youtu.be/' | last | split: '?' | first
+  elsif process_video_url contains '/embed/'
+    assign yt_id = process_video_url | split: '/embed/' | last | split: '?' | first
+  endif
+  assign yt_id = yt_id | strip
 -%}
 
 {%- if steps != blank or prose != blank -%}
@@ -180,8 +225,86 @@
       {%- endif -%}
     </div>
 
-    <div class="non-process__media non-process__media--{{ media_ratio }}">
-      {%- if process_image != blank -%}
+    <div class="non-process__media non-process__media--{{ media_ratio }}{% if yt_id != blank %} non-process__media--yt{% endif %}">
+      {%- liquid
+        assign poster = ''
+        if process_image != blank
+          assign poster = process_image | image_url: width: 1200
+        endif
+      -%}
+      {%- if yt_id != blank -%}
+        {%- comment -%}
+          YouTube, with the player suppressed as far as YouTube allows.
+
+          loop=1 does nothing on its own — the API only loops a PLAYLIST, so a
+          single video has to name itself as its own playlist. That is the one
+          parameter everybody misses and it is why "loop" appears not to work.
+
+          controls=0 removes the scrub bar. The title card and the share
+          buttons are drawn on hover regardless of any parameter, so the iframe
+          takes pointer-events: none in CSS — nothing here is clickable by
+          design, it is a texture behind the process copy, and that also stops
+          a stray tap sending someone to youtube.com.
+
+          nocookie host, because this plays for every visitor without consent
+          and the cookie-writing host would make it a tracking surface.
+        {%- endcomment -%}
+        <iframe
+          class="non-process__yt"
+          src="https://www.youtube-nocookie.com/embed/{{ yt_id }}?autoplay=1&mute=1&loop=1&playlist={{ yt_id }}&controls=0&modestbranding=1&rel=0&iv_load_policy=3&disablekb=1&fs=0&playsinline=1"
+          title="{{ product.title | escape }}"
+          allow="autoplay; encrypted-media"
+          referrerpolicy="strict-origin-when-cross-origin"
+          loading="lazy"
+          tabindex="-1"
+          aria-hidden="true"
+          frameborder="0"></iframe>
+      {%- elsif process_video_url != blank -%}
+        {%- comment -%}
+          A plain file URL — the Shopify Files route. Muted autoplay is the
+          only kind a browser will start without a gesture, and a band behind
+          copy must never grab audio. controls stay off: this is a texture,
+          not a player, and there is nothing to seek.
+        {%- endcomment -%}
+        <video
+          class="non-process__img"
+          autoplay
+          loop
+          muted
+          playsinline
+          preload="metadata"
+          {% if poster != blank %}poster="{{ poster }}"{% endif %}
+          aria-label="{{ product.title | escape }}">
+          <source src="{{ process_video_url }}" type="video/mp4">
+        </video>
+      {%- elsif process_video.sources.size > 0 -%}
+        {%- comment -%}
+          A Shopify-hosted video — product media or the video picker. video_tag
+          writes the whole source set, so it is preferred over hand-rolling one.
+        {%- endcomment -%}
+        {{
+          process_video
+          | video_tag:
+            class: 'non-process__img',
+            autoplay: true,
+            loop: true,
+            muted: true,
+            controls: false,
+            image_size: '1200x'
+        }}
+      {%- elsif process_video.url != blank -%}
+        <video
+          class="non-process__img"
+          autoplay
+          loop
+          muted
+          playsinline
+          preload="metadata"
+          {% if poster != blank %}poster="{{ poster }}"{% endif %}
+          aria-label="{{ product.title | escape }}">
+          <source src="{{ process_video.url }}" type="video/mp4">
+        </video>
+      {%- elsif process_image != blank -%}
         {{
           process_image
           | image_url: width: 1200, format: 'webp'
@@ -245,6 +368,18 @@
     {
       "type": "header",
       "content": "Media"
+    },
+    {
+      "type": "video",
+      "id": "video",
+      "label": "Process video",
+      "info": "Plays muted and looping, and replaces the image. Per-product films belong on the product's custom.process_video metafield instead — this setting applies to EVERY product, because one template renders them all."
+    },
+    {
+      "type": "text",
+      "id": "video_url",
+      "label": "Process video file URL",
+      "info": "For an .mp4 uploaded to Shopify Files: copy its URL and paste it here. Wins over every other media source. Per product, use custom.process_video_url."
     },
     {
       "type": "image_picker",

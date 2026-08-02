@@ -202,28 +202,43 @@
         {%- endif -%}
       </div>
 
-      <div class="non-verdict__media">
-        {%- if section.settings.verdict_image != blank -%}
-          {{ section.settings.verdict_image | image_url: width: 1000, format: 'webp'
-             | image_tag: loading: 'lazy', widths: '400,700,1000', class: 'non-verdict__img',
-               alt: section.settings.verdict_label }}
-        {%- elsif section.settings.verdict_image_url != blank -%}
-          {% render 'cdn-image',
-             url: section.settings.verdict_image_url,
-             alt: section.settings.verdict_label,
-             class: 'non-verdict__img',
-             sizes: '(min-width: 860px) 420px, 100vw' %}
-        {%- else -%}
-          {{ 'lifestyle-1' | placeholder_svg_tag }}
-        {%- endif -%}
-      </div>
-
       {%- comment -%}
-        No trace panel under the photograph. It repeated the answered lines
-        that the verdict column already lists, so the same three reasons
-        appeared twice, either side of one result.
+        No photograph. The panel is the SOMM'S ANSWER, and a stock shot of the
+        cellar said nothing about the bottle it had just picked — it was the
+        largest thing in the column and the only part carrying no information.
+
+        In its place the same living dash field the Contact page uses, drawn by
+        contact-field.js on a canvas behind the picks. No envelope here, so
+        envelope scale is 0 — that motif belongs to a contact form, not to a
+        verdict.
+
+        No trace panel either. It repeated the answered lines that the verdict
+        column already lists, so the same three reasons appeared twice, either
+        side of one result.
       {%- endcomment -%}
-      <div class="non-somm__picks" data-non-somm-picks hidden style="margin-top:18px"></div>
+      <div class="non-verdict__stage">
+        {%- if section.settings.show_field -%}
+          <div
+            class="non-contact-field non-verdict__field"
+            data-non-contact-field
+            data-density="{{ section.settings.field_density }}"
+            data-ink="{{ section.settings.field_ink | default: '242,240,234' }}"
+            data-envelope-x="0.5"
+            data-envelope-scale="0"
+            aria-hidden="true">
+            <canvas></canvas>
+          </div>
+          <script src="{{ 'contact-field.js' | asset_url }}" defer></script>
+        {%- endif -%}
+
+        <div class="non-somm__picks non-verdict__picks" data-non-somm-picks hidden></div>
+
+        {%- comment -%}
+          Something to say before a bottle has been chosen, so the panel does
+          not open as an empty rectangle the way the header bands did.
+        {%- endcomment -%}
+        <p class="non-verdict__await" data-non-verdict-await>{{ section.settings.verdict_await }}</p>
+      </div>
     </aside>
   </div>
 </div>
@@ -294,17 +309,6 @@
       "id": "verdict_label",
       "label": "Verdict label",
       "default": "The verdict"
-    },
-    {
-      "type": "image_picker",
-      "id": "verdict_image",
-      "label": "Verdict image"
-    },
-    {
-      "type": "text",
-      "id": "verdict_image_url",
-      "label": "Verdict image URL",
-      "info": "Used when no image is picked."
     },
     {
       "type": "textarea",
@@ -433,6 +437,41 @@
       "unit": "px",
       "default": 0,
       "info": "0 keeps the section's own spacing."
+    },
+    {
+      "type": "text",
+      "id": "verdict_await",
+      "label": "Waiting line",
+      "default": "Answer the questions and the somm shows its working."
+    },
+    {
+      "type": "header",
+      "content": "Verdict background"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_field",
+      "label": "Show the moving field",
+      "default": true,
+      "info": "The same living dash field as the Contact page, drawn behind the picks."
+    },
+    {
+      "type": "range",
+      "id": "field_density",
+      "label": "Field density",
+      "min": 10,
+      "max": 40,
+      "step": 2,
+      "unit": "px",
+      "default": 20,
+      "info": "Lower is denser and costs more to draw."
+    },
+    {
+      "type": "text",
+      "id": "field_ink",
+      "label": "Ink (R,G,B)",
+      "default": "242,240,234",
+      "info": "Comma-separated RGB, no rgb() wrapper."
     }
   ],
   "blocks": [

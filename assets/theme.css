@@ -5096,3 +5096,47 @@ select:-moz-focusring { color: transparent; text-shadow: 0 0 0 var(--non-fg); }
   border-color: var(--non-invert-bg);
   font-weight: 400;
 }
+
+/* ==========================================================================
+   The verdict panel's stage.
+
+   It used to be a photograph — the largest element in the column and the only
+   one carrying no information about the bottle just chosen. Replaced with the
+   Contact page's living dash field, drawn on a canvas behind the picks, so the
+   panel is the somm's answer rather than a picture of a cellar.
+   ========================================================================== */
+.non-verdict__stage {
+  position: relative;
+  min-height: 260px;
+  margin-top: 14px;
+  padding: 16px;
+  overflow: hidden;
+  border: 1px solid var(--non-line);
+}
+
+/* The field is the background: behind everything, never clickable. */
+.non-verdict__field {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+}
+.non-verdict__field canvas { width: 100%; height: 100%; display: block; }
+
+.non-verdict__picks,
+.non-verdict__await { position: relative; z-index: 1; }
+
+.non-verdict__await {
+  margin: 0;
+  font-family: var(--non-mono);
+  font-size: var(--t-mono);
+  line-height: 1.7;
+  color: var(--non-fg-faint);
+  max-width: 34ch;
+}
+/* Once there are picks the waiting line has nothing left to say. */
+.non-verdict__stage:has(.non-verdict__picks:not([hidden])) .non-verdict__await { display: none; }
+
+@media (max-width: 859px) {
+  .non-verdict__stage { min-height: 200px; }
+}

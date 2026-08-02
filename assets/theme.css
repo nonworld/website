@@ -1004,12 +1004,37 @@ button { font-family: inherit; }
    agree with the steps column, so the band had a seam. Stretching to the grid
    row means the two columns end together by construction at every width, and
    the crop is only ever as tight as the copy makes it. */
+/* A film gets the full width and its own shape, ABOVE the steps.
+
+   Side by side, this could not be uncropped. The media column has to be as
+   tall as the copy beside it, and an uncropped 16:9 that is 586px tall needs
+   to be 1042px wide — which leaves 238px for five steps of process copy. The
+   two requirements are mutually exclusive at any split, which is why widening
+   the column kept improving the crop (42 → 52 → 60 → 69%) without ever
+   reaching it. Stacking removes the constraint instead of negotiating with it:
+   the band goes one column, the film takes the whole width at its own 16/9,
+   and nothing is cropped at all.
+
+   Only when there IS a video — a still photograph still sits beside the copy,
+   because an image can be cropped to a column without losing the subject. */
+.non-process:has(.non-process__media--yt) {
+  grid-template-columns: 1fr;
+}
+.non-process:has(.non-process__media--yt) .non-process__copy {
+  border-right: 0;
+  /* The film is above the copy, so the hairline between them is the copy's
+     TOP edge. border-right was the divider for the side-by-side layout. */
+  border-top: 1px solid var(--non-line);
+}
 .non-process__media--yt {
   overflow: hidden;
   min-height: 0;
-  height: 100%;
-  align-self: stretch;
-  aspect-ratio: auto;
+  height: auto;
+  aspect-ratio: 16 / 9;
+  /* Above the copy. The markup order is copy-then-media because that is the
+     reading order when they sit side by side; order flips it for the stack
+     without moving the source. */
+  order: -1;
 }
 .non-process__yt {
   position: absolute; top: 50%; left: 50%;
@@ -1026,11 +1051,10 @@ button { font-family: inherit; }
   max-width: none;
   border: 0;
   pointer-events: none;
-  /* A hair beyond cover. Sub-pixel rounding on the centring translate can
-     leave a 1px page-coloured sliver down an edge at some widths, and on a
-     near-black page against a dark film that reads as a rendering fault
-     rather than as a seam. 1.02 is under half a percent of visible frame. */
-  scale: 1.02;
+  /* No overscan. The 1.02 that was here existed to hide a sub-pixel sliver
+     when a 16:9 film was being force-cropped into a portrait box — with the
+     box now at 16/9 itself the iframe matches it exactly, and scaling up
+     would crop the 2% the stack was built to stop cropping. */
 }
 
 /* Cap removed for the same reason as .non-trip__img: it overrode whichever

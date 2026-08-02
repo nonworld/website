@@ -26,8 +26,22 @@
   assign ar = ratio | default: section.settings.header_image_ratio | default: '21 / 9'
 -%}
 
+{%- liquid
+  assign has_image = false
+  if img != blank or img_url != blank
+    assign has_image = true
+  endif
+-%}
+
 {%- if section.settings.show_header_image -%}
-  <div class="non-pagehead-media" style="--non-pagehead-ar: {{ ar }}">
+  {%- comment -%}
+    An unset header renders a SLIM notice, not a full-size empty box. Drawing
+    the real 380px band with nothing in it put a large blank rectangle in the
+    prime position on six pages and pushed the actual content below the fold —
+    the reminder was louder than the page. It only takes the full band once
+    there is an image to put in it.
+  {%- endcomment -%}
+  <div class="non-pagehead-media{% unless has_image %} non-pagehead-media--empty{% endunless %}" style="--non-pagehead-ar: {{ ar }}">
     {%- if img != blank -%}
       {{
         img

@@ -5173,3 +5173,31 @@ select:-moz-focusring { color: transparent; text-shadow: 0 0 0 var(--non-fg); }
   .non-pagehead-media { margin: 20px auto 0; aspect-ratio: 16 / 9; max-height: 220px; }
   .non-pagehead-media__phhint { font-size: 12px; }
 }
+
+/* Unset header: a slim notice, not a full-size empty box.
+
+   Rendering the real 380px band with nothing in it put a large blank
+   rectangle in the prime position on six pages and pushed the actual content
+   below the fold. The reminder was louder than the page it was reminding
+   about. The band only claims its full height once there is an image. */
+.non-pagehead-media--empty {
+  aspect-ratio: auto;
+  max-height: none;
+  height: auto;
+  background: transparent;
+}
+.non-pagehead-media--empty .non-pagehead-media__ph {
+  flex-direction: row;
+  flex-wrap: wrap;
+  gap: 6px 14px;
+  padding: 12px 16px;
+  min-height: 0;
+  background-image: none;
+  text-align: left;
+  justify-content: flex-start;
+}
+.non-pagehead-media--empty .non-pagehead-media__phhint { max-width: none; }
+
+@media (max-width: 859px) {
+  .non-pagehead-media--empty .non-pagehead-media__ph { flex-direction: column; align-items: flex-start; }
+}

@@ -284,6 +284,9 @@
     <div class="non-grid" style="margin-top:26px;grid-template-columns:repeat(auto-fit,minmax(280px,1fr))">
       {%- for block in nots -%}
         <div {{ block.shopify_attributes }}>
+          {%- if block.settings.icon != blank and block.settings.icon != 'none' -%}
+            {% render 'stat-icon', icon: block.settings.icon %}
+          {%- endif -%}
           <div class="non-step__t">{{ block.settings.title }}</div>
           <p class="non-step__b">{{ block.settings.body }}</p>
         </div>

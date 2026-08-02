@@ -122,6 +122,47 @@
       <path d="M7 6.6 c0-1.6 1.2-2.6 2.4-3"/>
     </svg>
 
+  {%- comment -%}
+    The "what we're not" set. One shared idea: draw the thing, then rule a
+    single diagonal through it. A negation needs to read as a negation at 26px,
+    and a struck object does that where a clever symbol would not. The rule is
+    the same 1px butt-capped stroke as everything else, so the strike reads as
+    drawn rather than applied.
+  {%- endcomment -%}
+
+  {%- when 'no-stripped' -%}
+    {%- comment -%} A bottle, struck — nothing here was made then stripped. {%- endcomment -%}
+    <svg class="non-stat__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+         stroke-width="1" stroke-linecap="butt" stroke-linejoin="miter" aria-hidden="true" focusable="false">
+      <path d="M10 2.5 h4 v4 l2.4 3.2 V21 h-8.8 V9.7 L10 6.5 z"/>
+      <path d="M7.6 13.5 h8.8"/>
+      <path d="M3.4 21 L20.6 3"/>
+    </svg>
+
+  {%- when 'no-mocktail' -%}
+    {%- comment -%} A coupe with a straw, struck — not mixed to order. {%- endcomment -%}
+    <svg class="non-stat__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+         stroke-width="1" stroke-linecap="butt" stroke-linejoin="miter" aria-hidden="true" focusable="false">
+      <path d="M4.5 5 h15 L12 13.5 z"/>
+      <path d="M12 13.5 V20"/>
+      <path d="M8.5 20 h7"/>
+      <path d="M14.5 3 L10.5 11"/>
+      <path d="M3.4 21 L20.6 3"/>
+    </svg>
+
+  {%- when 'no-imitation' -%}
+    {%- comment -%}
+      Two identical glasses, one struck — it is not a copy of the other thing.
+    {%- endcomment -%}
+    <svg class="non-stat__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+         stroke-width="1" stroke-linecap="butt" stroke-linejoin="miter" aria-hidden="true" focusable="false">
+      <path d="M2.5 4 h7 l-1 6.4 a2.5 2.5 0 0 1-5 0 z"/>
+      <path d="M6 12.9 V19 M3.6 19 h4.8"/>
+      <path d="M14.5 4 h7 l-1 6.4 a2.5 2.5 0 0 1-5 0 z"/>
+      <path d="M18 12.9 V19 M15.6 19 h4.8"/>
+      <path d="M13.4 21 L22.6 3"/>
+    </svg>
+
   {%- when 'palate' -%}
     {%- comment -%}
       A filled wine glass, for TASTES. The liquid line is what makes it about

@@ -4904,22 +4904,34 @@ select:-moz-focusring { color: transparent; text-shadow: 0 0 0 var(--non-fg); }
    artworks carry very different proportions and built-in whitespace.
 
    Capping width AND height means a wide mark is limited by its width and a
-   compact one by its height, which is much closer to equal visual area. It
-   cannot be perfect in CSS alone — optical balance across mixed logo artwork
-   ultimately needs per-logo tuning, and the Logo marquee block still has a
-   "Maximum height" setting for exactly that if any one still looks off. */
+   compact one by its height, which is much closer to equal visual area.
+
+   The cap is applied as a fixed BOX, not as max-* on the image itself. With
+   max-height alone every mark got the same cap height, so the tall artworks
+   collapsed: The Fat Duck is 300x423 and Alinea 300x300, which at a 22px cap
+   render 15.6px and 22px wide — slivers next to AMAN's 80px wordmark. That
+   collapse is what the per-logo inline "Maximum height" was compensating for,
+   and why the row never looked even: the override beat every rule here.
+
+   Now each logo gets an identical slot and object-fit: contain fits its own
+   proportions inside it. A wide mark hits the sides, a tall one hits the top
+   and bottom, and both occupy the same area. The block's "Maximum height"
+   setting is no longer emitted — sizing lives here, in one place. */
 .non-poured__set img {
-  height: auto;
-  width: auto;
-  max-height: 30px;
-  max-width: 120px;
+  flex: 0 0 auto;
+  width: 120px;
+  height: 40px;
+  max-width: none;
+  max-height: none;
   min-width: 0;
   margin: 0 30px;
+  padding: 0;
+  box-sizing: border-box;
   object-fit: contain;
-  flex: 0 0 auto;
+  object-position: center;
 }
 @media (max-width: 859px) {
-  .non-poured__set img { max-height: 22px; max-width: 88px; margin: 0 18px; }
+  .non-poured__set img { width: 88px; height: 30px; margin: 0 18px; }
 }
 
 /* ==========================================================================

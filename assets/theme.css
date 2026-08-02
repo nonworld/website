@@ -5115,6 +5115,11 @@ select:-moz-focusring { color: transparent; text-shadow: 0 0 0 var(--non-fg); }
      ~860px on a large display — taller than the viewport on a laptop, so the
      page opened on an empty rectangle with the heading scrolled off. The cap
      wins over the ratio, and object-fit: cover keeps the image honest. */
+  /* width MUST be explicit. With width auto the ratio is free to solve for
+     width instead of height, so the cap shrank the band to 887px on a 1200px
+     column — narrower than the heading above it. Pinned at 100% the ratio can
+     only give on height, which is what the cap is for. */
+  width: 100%;
   aspect-ratio: var(--non-pagehead-ar, 21 / 9);
   max-height: 380px;
 

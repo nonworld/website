@@ -313,6 +313,52 @@ Note the stray "ALSO" is gone regardless — `templates/page.contact.json` had
 `aside_heading: "Also"` and that IS cleared and deployed. The rejection only
 blocks the new header.
 
+## NEXT: NON Somm premium redesign — design analysed, NOT built
+
+Aaron supplied `Somm boxes premium redesign.zip` (Desktop) twice and it is the
+top item. The design is fully decoded below so the next session can build
+without re-deriving it. `NON Somm.dc.html` in that zip is the readable source.
+
+**The idea: the box goes away.** It is not a restyle of the grey panel. The
+Somm becomes an open, centred, near-black surface — no border, no fill, no
+rounded slab. That is the answer to "grey box, not premium".
+
+Palette (all dark, so the light-island rules MUST be unwound with it):
+`#000`/`#1e1e1c` ground, `#232321` hairline under the input, `#3a3a37`
+borders, `#EDEDE8` ink, `#8d8d87`/`#a9a9a2` muted, `#5f5f5b`/`#4a4a46`/`#3d3d3a`
+progressively quieter, and three faint tints (`#dfe6f2`, `#e6f2df`, `#f2e0df`)
+used for state, not decoration.
+
+Six keyframes — this is the "dynamic nature" Aaron says the build lost:
+
+- `breathe`  idle orb: scale 1 → 1.06, opacity .85 → 1
+- `listen`   active orb: scale 1.1 → 1.24, opacity 1 → .9
+- `ring`     three concentric rings, scale .72 → 1.45, opacity .5 → 0,
+             2.4s `cubic-bezier(.2,.7,.2,1)`, staggered 0s / .8s / 1.6s
+- `shimmer`  gradient sweep across TEXT via `background-clip: text`
+             (`linear-gradient(100deg,#3d3d3a 25%,#EDEDE8 50%,#3d3d3a 75%)`,
+             `background-size: 200% 100%`, animate `background-position` to -200%)
+- `sweep`    a 36%-wide segment travelling a 180x1px rule, 1.4s
+- `lineIn`   answers resolve in: opacity 0→1, translateY 8px→0, blur 6px→0
+
+Structure: a 220x220 button holding a 200px blurred orb plus three rings; a
+26px shimmering prompt; a borderless centred input with only a
+`border-bottom: 1px solid #232321`; the sweep rule as the thinking state.
+
+**Brand conflict to settle before building:** the design uses `border-radius:
+999px` on the CTA. NON has no soft corners — the somm seed chips were
+explicitly de-pilled and carry a comment saying so. Circles are fine (the orb
+and rings are circles by nature). Recommend keeping the CTA square and taking
+the motion wholesale; confirm with Aaron.
+
+**Learn from the failed attempt (reverted, 35983c1).** Flipping
+`--non-somm-bg`/`--non-somm-fg` and the radii is NOT enough. There are 8
+references to `--non-somm-fg` in theme.css (lines ~32, 2635, 2636, 2645, 2658,
+2663, 2698, 2760) plus white-filled seed chips. Changing three of them produced
+contrast ratios of 1.01, 1.05 and 1.63 — invisible. **Unwind all eight, then
+verify by computed contrast in the browser, not by eye.** Anything under 4.5:1
+is a fail.
+
 ## NON Lotto returns "closed" — narrowed to the Worker's own token (2026-08-02)
 
 Aaron scratched, entered an email, and got "NON Lotto is closed right now."

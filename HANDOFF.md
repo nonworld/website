@@ -359,6 +359,31 @@ contrast ratios of 1.01, 1.05 and 1.63 — invisible. **Unwind all eight, then
 verify by computed contrast in the browser, not by eye.** Anything under 4.5:1
 is a fail.
 
+## Pairing dish chips: the handler never binds (measured 2026-08-02)
+
+The chips still do nothing, and the cause is NOT the old `data-answer` bug —
+that attribute is confirmed absent now. Measured live on /pages/pairing by
+clicking "A dozen oysters":
+
+- no JS errors at all
+- `[data-non-somm-stream]`, `[data-non-somm-picks]`, `[data-non-somm-answer]`
+  and `[data-non-somm-root]` all present
+- `data-answer` on the chip: null (correct)
+- **`.non-somm__input`.value stays empty after the click**
+
+That last line is the tell. `somm.js`'s seed handler opens with
+`if (input) input.value = btn.textContent.trim()`. The value never changes, so
+the handler is not attached to these buttons — it is not throwing, it is not
+running.
+
+**Where to look:** how `somm.js` scopes its seed binding. It almost certainly
+queries seeds within a root (a form or `[data-non-somm-root]`) and the pairing
+page's dish chips sit outside it, or the pairing markup has no element matching
+the root selector the binder expects. Compare against the PDP, where the same
+chips DO bind, and diff the containment.
+
+Do not re-clear `data-answer` — that is already done and is not the problem.
+
 ## REDO PROPERLY — the process animation conversion is wrong
 
 Aaron: "Animation hasn't been converted right - needs to be redone from

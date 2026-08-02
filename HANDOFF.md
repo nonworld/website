@@ -188,22 +188,69 @@ Every optional target in `somm.js` is now guarded.
 
 ---
 
+## OPEN BUG — `sections/contact-form.liquid` is being silently rejected
+
+Staging serves the **22:51 version (8456 bytes)**; local is 9551. Every other
+file in the same commits deployed. `check.py` passes, the schema is valid JSON,
+tags balance.
+
+What changed in the rejected version:
+1. A `.non-contact-hero` header block (mono eyebrow + display h1 + lead), added
+   because Contact was opening with `.non-section__title` — the 11px label used
+   INSIDE a section — while every other page has a display hero.
+2. Two new settings, `eyebrow` (text) and `lead` (textarea).
+3. `aside_heading`'s default emptied to remove the stray "ALSO" on the page.
+
+Already tried and NOT the cause: `"default": ""` on the `aside_heading` text
+setting. Removing the key entirely still gets rejected.
+
+**Do not guess at this.** Bisect it the way the `contains` bug was found — push
+`sections/probe-a.liquid` (this schema + trivial body) and
+`sections/probe-b.liquid` (this body + a three-setting schema) in one commit and
+see which Shopify accepts, then halve the failing side. That method located a
+single bad line in three pushes.
+
+Note the stray "ALSO" is gone regardless — `templates/page.contact.json` had
+`aside_heading: "Also"` and that IS cleared and deployed. The rejection only
+blocks the new header.
+
 ## Outstanding after 2026-08-01 — nothing started, no half-built work
 
-1. **Stockists** — the largest remaining design gap, and a rebuild rather than a
+1. **Stockists offer cards** — the two closing cards ("Stock NON" / "Have it
+   delivered") still put a large image ABOVE the text in a bordered card, while
+   the equivalent pairs on Pairing and Shop overlay the text ON the photograph
+   via `split-feature`. Aaron has flagged this twice as "not consistent". The
+   fix is to render those two through `split-feature` like the others rather
+   than tuning the ratio again — the media is now 16/9, and it is still the odd
+   one out because it is a different component.
+
+2. **Pairing dish chips do nothing useful** — they carry
+   `data-answer="{{ block.settings.label }}"`, i.e. the answer IS the dish name,
+   so clicking one types the label back at you instead of asking the somm. The
+   chips are wired and fire (verified in a browser); the data is the problem.
+   Either give `dish` blocks a real answer field, or drop `data-answer` and make
+   somm.js fall through to a live `ask(label)` when a seed has none.
+
+3. **Checkout is NOT theme-controlled.** Aaron flagged it as inconsistent. It is
+   Shopify's hosted checkout — nothing in this repo styles it. It is changed
+   through Settings → Checkout branding, or the Admin API
+   (`checkoutBrandingUpsert`). That is a LIVE surface, so it needs explicit
+   sign-off before anyone touches it.
+
+4. **Stockists** — the largest remaining design gap, and a rebuild rather than a
    tweak. `design-reference/stockists.html` has: a display headline ("Find it
    poured near you.") over an eyebrow, a two-column panel with the map BESIDE
    the list rather than under it, result rows carrying venue type / bottles
    poured / distance, a "See all 1,400+ venues" card closing the list column,
    and a venue-suggestion form under the map. The build has none of that shape.
    Raised twice by Aaron; deliberately not started rather than half-done.
-2. **Mobile** — untouched all evening, and Aaron has seen it ("pretty bad").
+5. **Mobile** — untouched all evening, and Aaron has seen it ("pretty bad").
    Everything below 860px is unverified, and several 2026-08-01 changes have
    breakpoint behaviour only checked at desktop: the 5-across grids, the 380px
    card caps, the now-full-bleed shell, the recipe band's two-column panel, the
    PDP's 44px/28px step rail. Render every page at 390 and 768 in the harness
    and produce a list BEFORE changing anything.
-3. **Cart "YOU WON" banner** — Aaron reports the animation not firing, and his
+6. **Cart "YOU WON" banner** — Aaron reports the animation not firing, and his
    screenshot also shows the description and code slots blank. Traced from
    source as far as it goes: `prize-pop.js` IS loaded, `is-popping` IS applied
    in `maybePop()`, which bails on three conditions — `box.hidden`, empty code,
@@ -212,7 +259,7 @@ Every optional target in `somm.js` is now guarded.
    `cart.js` cannot un-hide that box without a code present, so a visible box
    with empty slots does not reconcile from source. Needs the live page; do not
    guess at it.
-4. **Shop bottom cards** — done, but the two images are my pick from what was
+7. **Shop bottom cards** — done, but the two images are my pick from what was
    already on the CDN, not a brief. Swap in the editor if wrong.
 
 ## Queue, in order

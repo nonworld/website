@@ -6,6 +6,16 @@
       {%- for i in (1..4) -%}
         <div class="non-poured__set">
           {%- for block in section.blocks -%}
+            {%- comment -%}
+              Captured, not inlined. This was written as a filter argument
+              holding its own output tag — a nested set of braces inside an
+              output tag, which is a hard Liquid syntax error, and Shopify
+              rejected the whole file while git happily reported success.
+            {%- endcomment -%}
+            {%- capture logo_style -%}
+              --logo-scale:{{ block.settings.scale | default: 100 | divided_by: 100.0 }}
+            {%- endcapture -%}
+            {%- assign logo_style = logo_style | strip -%}
             {%- if block.settings.image != blank -%}
               {{
                 block.settings.image
@@ -13,19 +23,20 @@
                 | image_tag:
                   loading: 'lazy',
                   alt: block.settings.name,
-                  style: '--logo-scale:{{ block.settings.scale | default: 100 | divided_by: 100.0 }}'
+                  style: logo_style
               }}
             {%- elsif block.settings.image_url != blank -%}
               {%- comment -%}
-                No inline max-height. Every mark is normalised to one cap
-                height in theme.css; a per-logo inline style beats any
-                stylesheet rule and is what made the row look uneven.
+                A custom property, not a max-height. The old inline
+                max-height BEAT every stylesheet rule, which is why the row
+                stayed uneven whatever the CSS said. This one feeds the rule
+                in theme.css instead of overriding it.
               {%- endcomment -%}
               <img
                 src="{{ block.settings.image_url }}"
                 alt="{{ block.settings.name | escape }}"
                 loading="lazy"
-                style="--logo-scale:{{ block.settings.scale | default: 100 | divided_by: 100.0 }}">
+                style="{{ logo_style }}">
             {%- endif -%}
           {%- endfor -%}
         </div>

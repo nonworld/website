@@ -4978,3 +4978,20 @@ select:-moz-focusring { color: transparent; text-shadow: 0 0 0 var(--non-fg); }
     animation: none; opacity: 1;
   }
 }
+
+/* Seamless loop: each set must be at least as wide as the viewport.
+
+   The track holds two identical sets and animates translateX(0) → -50%, which
+   moves exactly one set width. That is only seamless if a single set already
+   covers the screen — otherwise the first set runs off the left before the
+   second arrives, and you see empty track. Shrinking the logos made each set
+   narrower than the viewport, which is what opened the gap.
+
+   min-width: 100% forces each set to fill the screen; space-around then
+   distributes the logos across it, so both sets stay identical in width and
+   the -50% lands exactly on the seam. */
+.non-poured__set {
+  min-width: 100%;
+  justify-content: space-around;
+  flex: none;
+}

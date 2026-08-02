@@ -149,7 +149,12 @@
                     type="button"
                     class="non-somm__seed"
                     data-non-somm-seed
-                    data-answer="{{ block.settings.label | escape }}"
+                    {%- comment -%}
+                      No data-answer. It used to be the dish label itself, which
+                      made somm.js type the label back instead of asking — the
+                      chips looked dead. Without it the seed falls through to a
+                      real request, which is what naming a dish should do.
+                    {%- endcomment -%}
                     {{ block.shopify_attributes }}>
                     {{ block.settings.label }}
                   </button>

@@ -360,6 +360,14 @@
         // people press first.
         var answer = btn.getAttribute('data-answer') || '';
         var picks = (btn.getAttribute('data-picks') || '').split(',').map(function (s) { return s.trim(); }).filter(Boolean);
+
+        // No canned answer means ASK FOR A REAL ONE. The pairing page's dish
+        // chips set data-answer to the dish name itself, so this path typed the
+        // label straight back at you — the click worked, the request never
+        // happened, and it read as a dead button. A seed without vetted copy is
+        // a question, not an answer.
+        if (!answer) return ask(btn.textContent.trim());
+
         show();
         if (stream) stream.textContent = '';
         thinking(true);

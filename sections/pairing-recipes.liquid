@@ -212,6 +212,23 @@
                     | image_tag: loading: 'lazy', widths: '420,640,900',
                       class: 'non-recipe__img', alt: recipe.title
                   }}
+                {%- elsif bottle.featured_image != blank -%}
+                  {%- comment -%}
+                    Falls back to the BOTTLE's own shot. All thirty non_recipe
+                    entries have an empty `image` field (docs/recipes.md), so
+                    this slot was a bare grey rectangle on every recipe — which
+                    reads as a broken image, not as a missing one. The bottle is
+                    honest: it is the thing the dish was written around, and it
+                    is the one photograph guaranteed to exist. Replace it per
+                    recipe by filling the metaobject's image field; nothing here
+                    changes when you do.
+                  {%- endcomment -%}
+                  {{
+                    bottle.featured_image
+                    | image_url: width: 900
+                    | image_tag: loading: 'lazy', widths: '420,640,900',
+                      class: 'non-recipe__img', alt: bottle.title
+                  }}
                 {%- endif -%}
               </div>
 

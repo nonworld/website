@@ -55,12 +55,93 @@ OPENING tag, because once the bug is present a non-greedy match for the closing
 delimiter stops at the nested tag and reports nothing wrong. That is why nine
 earlier rules and every prior sync missed it.
 
+**JSON templates are the exception — do NOT byte-compare them.** Shopify
+re-serialises `templates/*.json` on write: it re-orders keys, re-indents, and
+re-adds its own auto-generated comment header. `templates/index.json` is 10462
+bytes locally and 7389 on the theme, with identical content. Byte-size is a
+valid deploy check for `.liquid`, `.css` and `.js` only. For a JSON template,
+fetch the body and read it:
+
+```graphql
+files(filenames: ["templates/index.json"], first: 1) {
+  edges { node { body { ... on OnlineStoreThemeFileBodyText { content } } } }
+}
+```
+
 **And the limit of byte-checking:** it proves the file arrived, not that the page
 looks right. The About process rail deployed perfectly every time while rendering
 as an unrecognisable two-column mess, because it used `class="non-process"` and
 so does the PDP process band — whose CSS sets `grid-template-columns: repeat(2,
 1fr)`. Renamed to `.non-prail`. **Before adding a new component class, grep
 `assets/theme.css` for the name.** Nothing automated will catch a collision.
+
+### The silent rejection that cost an evening (2026-08-01)
+
+`sections/pairing-recipes.liquid` sat frozen on its 31 July version while four
+later pushes reported success. One line:
+
+```liquid
+{%- if key != blank and seen contains marker == false -%}
+```
+
+**Liquid cannot chain a comparison onto `contains`.** `a contains b == false` is
+a parse error, not a negation. Shopify rejects the whole file for it and keeps
+serving the previous version. Use nested `{% if %}` / `{% unless %}`.
+
+It hid because **Shopify only validates on WRITE**. The line was accepted at
+some earlier point, sat harmlessly in an already-live file, and only bit when
+that file was next pushed — so the bug appeared to arrive with an unrelated
+change. `snippets/non-code.liquid:22` had warned about this exact construct in
+prose since the first time it happened; a comment in one file does not stop it
+recurring in another. It is now **check.py rule 1d**, which blanks comment
+blocks before scanning so the warnings do not report themselves.
+
+**How to find the next one:** bisect with probe sections. Push
+`sections/probe-a.liquid` (suspect schema, trivial body) and
+`sections/probe-b.liquid` (suspect body, minimal schema) in one commit, see
+which Shopify accepts, then halve the failing side. Six probes over three
+pushes located this to a single line. Guessing did not.
+
+### Rendering from a container
+
+**`non.world` is blocked.** The egress gateway answers 403 to
+`CONNECT non.world:443` — an org policy denial, which `/root/.ccr/README.md`
+says to report, not retry. Staging previews are equally unreachable. So the
+live site cannot be screenshotted from here.
+
+What works instead, and is genuinely decisive for layout, sizing and contrast:
+render the **real `assets/theme.css`** against markup mirroring the section, in
+Chromium via Playwright (`/opt/pw-browsers/chromium-1194/chrome-linux/chrome`),
+and **measure computed geometry** rather than eyeballing. This caught two fixes
+that were wrong: a `.non-shell` cap that letterboxed the site, and a thumb
+override placed above the rule it was meant to beat, which rendered identically
+to the bug. Label it a harness — it cannot see Liquid output or live data.
+
+### The pattern behind half of tonight's bugs
+
+**A default that nobody chose, quietly doing the wrong thing.** Not a missing
+setting — an actively wrong one:
+
+- `card_max` defaults to **640** in the schema; the collection template never
+  set it, so every shop card capped at 640px.
+- `--non-invert-fg` is **#000000** ("invert" = the dark-on-light pairing), so
+  `color: var(--non-invert-fg, #fff)` painted black type on a dark photograph.
+  The `#fff` fallback never fires — a var() fallback only applies when the
+  variable is UNDEFINED.
+- `.non-filter` hardcodes `color: #e8e8e6` for the near-black page, so on any
+  light band its unselected chips were invisible.
+
+The editability audit (`docs/editability-audit.md`) checked for settings that
+render nothing. It did not check for defaults that render badly. That is a real
+gap in it.
+
+**Second recurring shape: scope.** Somm CSS corrections are scoped
+`.non-somm …` because the panel is a light island. Anything living outside the
+form — the pairing seeds, the hero answer stream — matches none of them and
+falls back to dark-page defaults. Two separate "it doesn't work" reports came
+from this, plus a third where `somm.js` resolved a missing target to `null` and
+threw mid-handler. **A thrown click is indistinguishable from a dead button.**
+Every optional target in `somm.js` is now guarded.
 
 ---
 
@@ -106,6 +187,33 @@ so does the PDP process band — whose CSS sets `grid-template-columns: repeat(2
    all of it needs sign-off.
 
 ---
+
+## Outstanding after 2026-08-01 — nothing started, no half-built work
+
+1. **Stockists** — the largest remaining design gap, and a rebuild rather than a
+   tweak. `design-reference/stockists.html` has: a display headline ("Find it
+   poured near you.") over an eyebrow, a two-column panel with the map BESIDE
+   the list rather than under it, result rows carrying venue type / bottles
+   poured / distance, a "See all 1,400+ venues" card closing the list column,
+   and a venue-suggestion form under the map. The build has none of that shape.
+   Raised twice by Aaron; deliberately not started rather than half-done.
+2. **Mobile** — untouched all evening, and Aaron has seen it ("pretty bad").
+   Everything below 860px is unverified, and several 2026-08-01 changes have
+   breakpoint behaviour only checked at desktop: the 5-across grids, the 380px
+   card caps, the now-full-bleed shell, the recipe band's two-column panel, the
+   PDP's 44px/28px step rail. Render every page at 390 and 768 in the harness
+   and produce a list BEFORE changing anything.
+3. **Cart "YOU WON" banner** — Aaron reports the animation not firing, and his
+   screenshot also shows the description and code slots blank. Traced from
+   source as far as it goes: `prize-pop.js` IS loaded, `is-popping` IS applied
+   in `maybePop()`, which bails on three conditions — `box.hidden`, empty code,
+   or `alreadyPopped(code)`, which marks a code in storage so **it only ever
+   animates once per code**. That alone would explain "not triggering". But
+   `cart.js` cannot un-hide that box without a code present, so a visible box
+   with empty slots does not reconcile from source. Needs the live page; do not
+   guess at it.
+4. **Shop bottom cards** — done, but the two images are my pick from what was
+   already on the CDN, not a brief. Swap in the editor if wrong.
 
 ## Queue, in order
 

@@ -4615,3 +4615,36 @@ select:-moz-focusring { color: transparent; text-shadow: 0 0 0 var(--non-fg); }
   .non-somm::before, .non-sommbox::before { width: 66px; height: 66px; }
   .non-somm__submit, .non-sommbox__submit { padding: 0 18px; }
 }
+
+/* Orb: uncropped, brighter, and pulsing hard enough to read.
+
+   It was being clipped at the top — the blur extends ~14px past the element
+   box, and an ancestor was cropping it. overflow: visible on the component
+   plus a little headroom lets the whole form show.
+
+   Brightness and range both up: the gradient's core is now opaque and the
+   cycle swings .42 → 1 with a wider scale. A blurred form has no edge to
+   track, so brightness is the only cue the eye reliably gets — that is where
+   the range has to go. */
+.non-somm,
+.non-sommbox {
+  overflow: visible;
+  padding-top: 14px;
+}
+.non-somm::before,
+.non-sommbox::before {
+  background:
+    radial-gradient(circle at 40% 34%,
+      #ffffff 0%,
+      rgba(242, 240, 234, .95) 30%,
+      rgba(242, 240, 234, .58) 52%,
+      rgba(242, 240, 234, .22) 70%,
+      rgba(242, 240, 234, .06) 82%,
+      transparent 90%);
+  filter: blur(8px);
+  animation: non-somm-orb 3.6s ease-in-out infinite;
+}
+@keyframes non-somm-orb {
+  0%, 100% { transform: scale(.9); opacity: .42; }
+  50% { transform: scale(1.12); opacity: 1; }
+}

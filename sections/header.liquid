@@ -29,15 +29,62 @@
     {%- endfor -%}
   </nav>
 
+  {%- comment -%}
+    Mobile menu. Six links in a sideways-scrolling strip fitted 225px of a
+    361px nav on a 375px screen, so two thirds of the site was reachable only
+    by a swipe nobody is told about. The strip is hidden below 860 and this
+    takes over.
+
+    The button is always in the markup and hidden by CSS above 860 rather than
+    rendered conditionally, because Liquid cannot know the viewport and a
+    server-rendered guess would be wrong for half of visitors.
+
+    The panel repeats the same link_list, so there is ONE menu to edit in the
+    theme editor and no second list to drift from the first.
+  {%- endcomment -%}
+  <button
+    type="button"
+    class="non-header__menu"
+    data-non-menu-open
+    aria-expanded="false"
+    aria-controls="non-menu-{{ section.id }}">
+    {{ section.settings.menu_label | default: 'Menu' }}
+  </button>
+
   <button type="button" class="non-header__cart" data-non-cart-open data-non-cart-count>
     {{ 'sections.header.cart_count' | t: count: cart.item_count }}
   </button>
 </header>
 
+<div class="non-menu" id="non-menu-{{ section.id }}" data-non-menu hidden>
+  <div class="non-menu__head">
+    <span class="non-mono non-menu__eyebrow">{{ section.settings.menu_label | default: 'Menu' }}</span>
+    <button type="button" class="non-menu__close" data-non-menu-close aria-label="{{ section.settings.close_label | default: 'Close' | escape }}">&times;</button>
+  </div>
+  <nav class="non-menu__nav" role="navigation" aria-label="Primary, mobile">
+    {%- for link in section.settings.menu.links -%}
+      <a href="{{ link.url }}" {% if link.active %}aria-current="page"{% endif %}>{{ link.title }}</a>
+    {%- endfor -%}
+  </nav>
+</div>
+<script src="{{ 'menu.js' | asset_url }}" defer></script>
+
 {% schema %}
 {
   "name": "Header",
   "settings": [
+    {
+      "type": "text",
+      "id": "menu_label",
+      "label": "Mobile menu button",
+      "default": "Menu"
+    },
+    {
+      "type": "text",
+      "id": "close_label",
+      "label": "Mobile menu close label",
+      "default": "Close"
+    },
     {
       "type": "link_list",
       "id": "menu",

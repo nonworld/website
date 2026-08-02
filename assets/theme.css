@@ -3257,22 +3257,93 @@ select:-moz-focusring { color: transparent; text-shadow: 0 0 0 var(--non-fg); }
    scroll sideways on one line: the header stays one bar tall and every link
    stays reachable. Cart is pinned out of the scroller so it never scrolls
    away from the thumb. */
+/* The sideways-scrolling strip is gone. It fitted 225px of a 361px nav on a
+   375px screen, so four of the six links existed only behind a swipe with no
+   affordance pointing at it. Below 860 the nav is replaced by a Menu button
+   and a full-height panel. */
+.non-header__menu { display: none; }
 @media (max-width: 859px) {
   .non-header { flex-wrap: nowrap; gap: 10px; }
-  .non-header__nav {
-    flex-wrap: nowrap;
-    overflow-x: auto;
-    scrollbar-width: none;
-    -webkit-overflow-scrolling: touch;
-    min-width: 0;
-    padding-bottom: 2px;
+  .non-header__nav { display: none; }
+  .non-header__menu {
+    display: inline-flex;
+    align-items: center;
+    margin-left: auto;
+    /* 44px is the tap target, not the type size — the label is 11px mono like
+       every other control in this header. */
+    min-height: 44px;
+    padding: 0 12px;
+    border: 1px solid var(--non-line-strong);
+    background: transparent;
+    color: var(--non-fg);
+    font-family: var(--non-mono);
+    font-size: var(--t-mono);
+    letter-spacing: .16em;
+    text-transform: uppercase;
+    cursor: pointer;
   }
-  .non-header__nav::-webkit-scrollbar { display: none; }
-  .non-header__nav > * { white-space: nowrap; flex: none; }
   .non-header__cart { flex: none; }
 
   /* The globe was a 420px minimum on a screen barely twice that tall, so it
      ate most of a scroll. It is decoration behind the press quotes, not the
      content. */
   .non-globe { min-height: var(--non-globe-box, 260px); }
+}
+
+/* --- Mobile menu panel ----------------------------------------------------
+   Full height and opaque, not a translucent sheet: it sits over photography
+   that is already near-black, and a scrim would leave the links competing
+   with a bottle shot behind them. Above 860 the panel can never open — the
+   button that opens it is display:none — but it stays hidden rather than
+   removed so a window dragged narrow finds it intact. */
+.non-menu {
+  position: fixed;
+  inset: 0;
+  z-index: 90;
+  background: var(--non-bg);
+  display: flex;
+  flex-direction: column;
+  padding: 0 var(--non-pad) 40px;
+  opacity: 0;
+  transform: translateY(-8px);
+  transition:
+    opacity var(--duration-reveal) var(--ease-standard),
+    transform var(--duration-reveal) var(--ease-standard);
+}
+.non-menu.is-open { opacity: 1; transform: none; }
+.non-menu[hidden] { display: none; }
+.non-menu__head {
+  display: flex; align-items: center; justify-content: space-between;
+  min-height: 52px; border-bottom: 1px solid var(--non-line);
+}
+.non-menu__eyebrow {
+  font-size: var(--t-mono); letter-spacing: .16em; text-transform: uppercase;
+  color: var(--non-fg-faint);
+}
+.non-menu__close {
+  min-width: 44px; min-height: 44px;
+  border: 0; background: transparent; color: var(--non-fg);
+  font-size: 26px; line-height: 1; cursor: pointer;
+}
+.non-menu__nav { display: flex; flex-direction: column; margin-top: 12px; }
+/* Display type, not the 11px mono of the desktop strip. On a phone this is
+   the whole navigation and it should read like the page's headings do. */
+.non-menu__nav a {
+  padding: 16px 0;
+  border-bottom: 1px solid var(--non-line);
+  font-size: clamp(26px, 8vw, 34px);
+  font-weight: 500;
+  letter-spacing: -.02em;
+  text-decoration: none;
+  color: var(--non-fg);
+}
+.non-menu__nav a[aria-current="page"] { color: var(--non-fg-mute); }
+
+/* Scroll lock. The panel is fixed, so without this the page behind it scrolls
+   under the thumb and the customer returns to a different place than they
+   left. */
+.non-menu-lock, .non-menu-lock body { overflow: hidden; }
+
+@media (prefers-reduced-motion: reduce) {
+  .non-menu { transition: none; transform: none; }
 }

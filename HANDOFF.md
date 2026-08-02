@@ -214,6 +214,33 @@ Note the stray "ALSO" is gone regardless — `templates/page.contact.json` had
 `aside_heading: "Also"` and that IS cleared and deployed. The rejection only
 blocks the new header.
 
+## NEXT UP — Sets and the Stopper PDPs (raised 2026-08-02, not started)
+
+Aaron: "Sets PDP need a lot of copy and work to make them feel consistent with
+singles. Check the stopper too."
+
+The singles PDPs are rich because they carry metafields the sets and the
+accessories do not. Verified against the live store on 2026-08-02:
+
+- `custom.process` exists on NON1/2/3/5/7 (and drives the numbered "How it's
+  made" rail). **The Spice Set, The Spring Set, The Everyday Set, Mixed 6 Pack,
+  The Stopper Set, The NON Stopper and NON Waiter's Friend have none**, so the
+  whole process band is absent on those pages.
+- Same story for the eyebrow/spec strip (`custom.style`, serve, storage,
+  nutrition) and `custom.food_tags`.
+- `The NON Stopper` is productType "Bottle Stoppers & Savers" and
+  `NON Waiter's Friend` has NO productType at all — worth setting.
+
+So this is mostly a MERCHANDISING DATA job, not a theme job: the sections
+already render whatever is present and correctly render nothing when it is
+absent. Before writing any Liquid, check which metafields a set actually has —
+the temptation is to build a fallback that invents copy, and this project has
+already been bitten by a fake `custom.serve` fallback once.
+
+A set also needs a different shape to a single: what is IN it, why those three,
+and what it costs per bottle versus buying them separately. That is new copy,
+and it is Aaron's to write or approve.
+
 ## Outstanding after 2026-08-01 — nothing started, no half-built work
 
 1. **Stockists offer cards** — the two closing cards ("Stock NON" / "Have it

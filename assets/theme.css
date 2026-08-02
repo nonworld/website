@@ -3863,3 +3863,93 @@ select:-moz-focusring { color: transparent; text-shadow: 0 0 0 var(--non-fg); }
   color: #4ade80;
   background: #4ade80;
 }
+
+/* ==========================================================================
+   Process scenes: continuous motion, not a one-off draw.
+
+   The first build drew each scene once and stopped, which is a diagram that
+   animated rather than an animation. The supplied sequence keeps moving —
+   fruit falls, steam rises, the balance rocks — and that is what makes it read
+   as a process happening rather than a picture of one. Keyframes mirror the
+   source's dcFall / dcSteam / dcTilt / dcBob, retimed to the house tokens.
+
+   Each loop is deliberately slow and offset. Five scenes moving in lockstep
+   would read as a jitter across the band; staggered by --non-proc-delay they
+   read as five separate things happening.
+   ========================================================================== */
+
+/* FRUIT — falls into the pot, over and over. */
+.non-proc__step.is-in .non-proc__fruit circle {
+  animation:
+    non-proc-in var(--duration-reveal, 700ms) var(--ease-standard) both,
+    non-proc-fall 3.6s cubic-bezier(.4, 0, .7, 1) infinite;
+  animation-delay: calc(var(--non-proc-delay, 0ms) + 220ms), calc(var(--non-proc-delay, 0ms) + 900ms);
+}
+.non-proc__step.is-in .non-proc__fruit circle:nth-of-type(2) { animation-delay: calc(var(--non-proc-delay, 0ms) + 220ms), calc(var(--non-proc-delay, 0ms) + 1500ms); }
+.non-proc__step.is-in .non-proc__fruit circle:nth-of-type(3) { animation-delay: calc(var(--non-proc-delay, 0ms) + 220ms), calc(var(--non-proc-delay, 0ms) + 2100ms); }
+@keyframes non-proc-fall {
+  0%   { transform: translateY(-6px); opacity: 0; }
+  18%  { opacity: 1; }
+  70%  { transform: translateY(7px); opacity: 1; }
+  100% { transform: translateY(9px); opacity: 0; }
+}
+
+/* TANNIN — the leaf steeping drifts, and steam lifts off the cup. */
+.non-proc__step.is-in .non-proc__fruit path {
+  animation:
+    non-proc-in var(--duration-reveal, 700ms) var(--ease-standard) both,
+    non-proc-bob 4.2s ease-in-out infinite;
+  animation-delay: calc(var(--non-proc-delay, 0ms) + 220ms), calc(var(--non-proc-delay, 0ms) + 800ms);
+}
+@keyframes non-proc-bob {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-1.6px); }
+}
+
+/* SALINITY — the grains fall in sequence, like salt actually leaving a cellar. */
+.non-proc__step.is-in .non-proc__grains path {
+  animation: non-proc-grain 2.8s ease-in infinite;
+  transform-origin: center;
+}
+.non-proc__step.is-in .non-proc__grains path:nth-child(1) { animation-delay: 0s; }
+.non-proc__step.is-in .non-proc__grains path:nth-child(2) { animation-delay: .5s; }
+.non-proc__step.is-in .non-proc__grains path:nth-child(3) { animation-delay: 1s; }
+.non-proc__step.is-in .non-proc__grains path:nth-child(4) { animation-delay: 1.5s; }
+@keyframes non-proc-grain {
+  0%   { transform: translateY(-4px); opacity: 0; }
+  20%  { opacity: .9; }
+  75%  { transform: translateY(8px); opacity: .9; }
+  100% { transform: translateY(11px); opacity: 0; }
+}
+
+/* ACIDITY — the pour runs continuously rather than sitting drawn. */
+.non-proc__step.is-in .non-proc__art path[stroke*="accent"],
+.non-proc__step.is-in .non-proc__fruit[stroke] {
+  animation: non-proc-pour 2.6s linear infinite;
+}
+@keyframes non-proc-pour {
+  0%   { stroke-dasharray: 3 5; stroke-dashoffset: 0; opacity: .7; }
+  50%  { opacity: 1; }
+  100% { stroke-dasharray: 3 5; stroke-dashoffset: -16; opacity: .7; }
+}
+
+/* BALANCE — the beam rocks and settles, then rocks again. */
+.non-proc__step.is-in .non-proc__art g {
+  transform-origin: 50% 50%;
+}
+.non-proc__step:nth-child(5).is-in .non-proc__art g {
+  animation: non-proc-tilt 5s ease-in-out infinite;
+  animation-delay: calc(var(--non-proc-delay, 0ms) + 900ms);
+}
+@keyframes non-proc-tilt {
+  0%, 100% { transform: rotate(0deg); }
+  30% { transform: rotate(-2.2deg); }
+  65% { transform: rotate(1.6deg); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .non-proc__step.is-in .non-proc__fruit circle,
+  .non-proc__step.is-in .non-proc__fruit path,
+  .non-proc__step.is-in .non-proc__grains path,
+  .non-proc__step:nth-child(5).is-in .non-proc__art g { animation: none; opacity: 1; }
+}

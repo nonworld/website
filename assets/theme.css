@@ -630,7 +630,9 @@ button { font-family: inherit; }
 .non-product { display: grid; grid-template-columns: 1fr; }
 @media (min-width: 860px) { .non-product { grid-template-columns: repeat(2, 1fr); } }
 
-.non-gallery { display: flex; flex-direction: column; gap: 18px; padding: 20px var(--non-pad); }
+/* Stretches to the row so the shot can take its height from it. */
+.non-gallery { display: flex; flex-direction: column; gap: 18px; padding: 20px var(--non-pad); min-height: 0; }
+@media (min-width: 860px) { .non-product { align-items: stretch; } }
 @media (min-width: 860px) { .non-gallery { padding: 28px 0 28px var(--non-pad); } }
 
 /* 4/5 is the design's ratio and stays. The cap is on WIDTH, not height —
@@ -646,21 +648,22 @@ button { font-family: inherit; }
    The width cap stays: that is what actually holds the size at any viewport,
    and it is why the shell needs no max-width. */
 .non-gallery__main {
-  width: 100%; max-width: 560px; margin-inline: auto;
-  aspect-ratio: 1/1;
-  /* CONTAIN, not cover. Square + cover crops roughly a fifth off the height of
-     a tall bottle shot — it takes the cap or the base off NON1 and NON3, which
-     is fine on a 350px card where the bottle is an icon and ruinous on the
-     560px hero shot where it IS the product.
+  /* HEIGHT-DRIVEN, not width-driven. The shot must be exactly as tall as the
+     buy column beside it and still be square, so the height comes from the grid
+     row and the width is derived from it by aspect-ratio — the reverse of every
+     other image on the site. width:auto is what lets aspect-ratio compute from
+     the height instead of the other way round; without it the width wins and
+     the square dictates the height again.
 
-     The bed is the paper cream rather than --non-photo-bed (#17171a): the
-     product photography is shot on cream, so a light bed reads as the edge of
-     the photograph, while the dark bed would frame every bottle in two black
-     bands. Cards keep cover — they crop to a consistent square on purpose. */
-  /* cover, not contain. contain letterboxes — cream bands top and bottom on a
-     square box — and the bands were the complaint. The product shots are close
-     to square already, so cover crops only a few percent off the long edge and
-     the bottle survives it, while the frame fills edge to edge. */
+     min-height:0 because a flex item defaults to min-height:auto and will not
+     shrink below its content, which would push the column taller than the row
+     and defeat the whole thing. */
+  flex: 1 1 auto;
+  min-height: 0;
+  height: 100%;
+  width: auto;
+  max-width: 100%;
+  aspect-ratio: 1 / 1;
   object-fit: cover;
   background: #f2f0ea;
   display: block;

@@ -186,7 +186,7 @@
           "type": "procbottle",
           "settings": {
             "code": "NON1",
-            "accent": "#E4573F",
+            "accent": "#D9576E",
             "captions": "48 HOURS · COLD\nCHAMOMILE · TANNIN\nMURRAY RIVER SALT\nSEMILLON · VERJUS\nSUGAR TO TASTE"
           }
         },
@@ -194,7 +194,7 @@
           "type": "procbottle",
           "settings": {
             "code": "NON2",
-            "accent": "#C69A57",
+            "accent": "#C8813A",
             "captions": "PEARS · CARAMELISED\nBLACK TEA · SPICE\nKOMBU · OLIVE BRINE\nSEMILLON · VERJUS\nAGAVE · VANILLA"
           }
         },
@@ -202,7 +202,7 @@
           "type": "procbottle",
           "settings": {
             "code": "NON3",
-            "accent": "#D97A3C",
+            "accent": "#D8C25A",
             "captions": "ORANGE · YUZU\nCINNAMON · TOASTED\nSALT\nSEMILLON · VERJUS\nSUGAR TO TASTE"
           }
         },
@@ -210,7 +210,7 @@
           "type": "procbottle",
           "settings": {
             "code": "NON5",
-            "accent": "#CDBB4E",
+            "accent": "#C4455C",
             "captions": "LEMON · MARMALADE\nHIBISCUS · LIQUORICE\nSALT · HOPS\nSEMILLON · VERJUS\nSUGAR TO TASTE"
           }
         },
@@ -218,7 +218,7 @@
           "type": "procbottle",
           "settings": {
             "code": "NON7",
-            "accent": "#A63C4C",
+            "accent": "#8E2F3F",
             "captions": "CHERRIES · STEWED\nARABICA · GARAM MASALA\nSALT · PINK PEPPER\nSEMILLON · VERJUS\nTASTED BACK"
           }
         },
@@ -226,7 +226,7 @@
           "type": "procbottle",
           "settings": {
             "code": "NON9",
-            "accent": "#7A5289",
+            "accent": "#6B4A82",
             "captions": "PLUM · BLACKBERRY\nFRENCH OAK · PINE\nTAMARI · SALT\nSEMILLON · VERJUS\nSUGAR · ANCHO"
           }
         }
@@ -287,7 +287,7 @@
         "proc_heading": "What we actually do",
         "proc_note": "Every glass is built from five things",
         "proc_blurb": "Nothing here is fermented and nothing is de-alcoholised. Every bottle is cooked — built from zero for the structure alcohol used to provide.",
-        "proc_accent": "#E4573F"
+        "proc_accent": "#D9576E"
       }
     }
   },

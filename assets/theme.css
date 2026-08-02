@@ -1842,35 +1842,71 @@ button { font-family: inherit; }
   line-height: 1.55; color: var(--non-fg-dim); text-wrap: pretty;
 }
 
+/* THE SAME PAIR AS EVERY OTHER PAGE.
+
+   These were a different component: a big photograph stacked ABOVE the copy in
+   a bordered card, while the closing pairs on Pairing, Shop and About all
+   overlay the text ON the photograph via .non-split. Two shapes doing one job,
+   which is what kept reading as inconsistent — and why tuning the image ratio
+   twice never fixed it. The ratio was never the problem; the component was.
+
+   Rebuilt on .non-split's geometry: full-bleed image, copy sitting on it,
+   caps title, underlined text link. No card border, no aspect-ratio — the cell
+   sets a min-height and the photograph fills whatever that is. */
 .non-stock-offers {
-  display: grid; grid-template-columns: 1fr; gap: 2px;
-  margin-top: 34px; background: var(--non-line);
-  border: 1px solid var(--non-line);
+  display: grid; grid-template-columns: 1fr;
+  margin-top: 34px;
 }
 @media (min-width: 720px) { .non-stock-offers { grid-template-columns: 1fr 1fr; } }
-.non-stock-offer { padding: 26px; background: var(--non-bg); }
-/* One of the two is the commercial ask and should look like it. */
+.non-stock-offer {
+  position: relative;
+  min-height: 330px;
+  display: flex; flex-direction: column; justify-content: flex-end;
+  padding: 34px var(--non-pad) 38px;
+  color: #f2f0ea;
+  overflow: hidden;
+}
+@media (min-width: 720px) { .non-stock-offer { min-height: 420px; } }
 .non-stock-offer--solid { background: var(--non-panel); }
+
+/* The photograph, behind everything. */
+.non-stock-offer__media {
+  position: absolute; inset: 0; margin: 0; aspect-ratio: auto; z-index: 0;
+}
+.non-stock-offer__media > img {
+  width: 100%; height: 100%; object-fit: cover; display: block;
+}
+/* A scrim, because the copy has to survive whatever the photograph does.
+   Explicit light ink above rather than var(--non-invert-fg), which is #000000
+   and would put black type on a dark picture — the exact bug from the About
+   kitchen caption. */
+.non-stock-offer__media::after {
+  content: ''; position: absolute; inset: 0;
+  background: linear-gradient(to top, rgba(0,0,0,.82) 0%, rgba(0,0,0,.5) 48%, rgba(0,0,0,.12) 100%);
+}
+.non-stock-offer > *:not(.non-stock-offer__media) { position: relative; z-index: 1; }
+
 .non-stock-offer__title {
   margin-top: 10px;
-  font-size: clamp(20px, 1.8vw, 26px); font-weight: 600; letter-spacing: -.02em;
+  font-size: clamp(22px, 2.2vw, 32px); font-weight: 500;
+  letter-spacing: .01em; text-transform: uppercase;
 }
 .non-stock-offer__body {
-  margin: 10px 0 0; max-width: 40ch;
-  font-size: var(--t-small); line-height: 1.55; color: var(--non-fg-dim);
+  margin: 12px 0 0; max-width: 38ch;
+  font-size: var(--t-copy); line-height: 1.55; color: rgba(242, 240, 234, .86);
 }
+/* Underlined text link, matching the closing cards elsewhere — a bordered
+   button on a photograph reads as a form control. */
 .non-stock-offer__cta {
-  display: inline-flex; align-items: center; min-height: 44px;
-  margin-top: 18px; padding: 0 20px;
-  border: 1px solid var(--non-fg);
+  align-self: flex-start;
+  margin-top: 16px; padding: 0 0 3px;
+  border: 0; border-bottom: 1px solid rgba(242, 240, 234, .55);
+  background: none; color: #f2f0ea;
   font-family: var(--non-mono); font-size: var(--t-mono);
   letter-spacing: .12em; text-transform: uppercase; text-decoration: none;
-  transition: background var(--duration-hover) var(--ease-hover), color var(--duration-hover) var(--ease-hover);
+  transition: border-color var(--duration-hover) var(--ease-hover);
 }
-.non-stock-offer__cta:hover { background: var(--non-fg); color: var(--non-bg); opacity: 1; }
-.non-stock-offer--solid .non-stock-offer__cta {
-  background: var(--non-invert-bg); color: var(--non-invert-fg); border-color: var(--non-invert-bg);
-}
+.non-stock-offer__cta:hover { border-color: #f2f0ea; opacity: 1; }
 
 /* --- about: credentials, the difficult part, stats, closing CTAs ---------- */
 .non-creds {
@@ -2629,22 +2665,7 @@ a, button, .non-card, .non-filter, .non-pair__opt, .non-somm__seed,
 
 /* Image sits above the eyebrow, per the design, and is edge-to-edge inside the
    card's padding rather than inset again. */
-/* 16/9, NOT --non-image-ratio. That token is 1 (square), and these two cards
-   sit side by side across the full page — a square each means ~750x750 of
-   photography on a 1500px screen, which is why they read as wallpaper. The
-   paired cards elsewhere (About's CTA pair, split-feature) run 330–420px tall;
-   16/9 lands in that band at every width and keeps them consistent with the
-   rest of the site. */
-.non-stock-offer__media {
-  align-self: stretch;
-  margin: -26px -26px 22px;
-  aspect-ratio: 16 / 9;
-  overflow: hidden;
-}
-.non-stock-offer__media > img {
-  width: 100%; height: 100%;
-  object-fit: cover; display: block;
-}
+
 
 /* --- Closing CTA cards on photography -------------------------------------
    Matching design-reference: a tall image card, the title set in caps, and the

@@ -4127,3 +4127,16 @@ select:-moz-focusring { color: transparent; text-shadow: 0 0 0 var(--non-fg); }
   50% { transform: scale(1.06); opacity: .95; }
 }
 .non-sommbox::before { animation-duration: 5s; opacity: 1; }
+
+/* HERO ORB REMOVED.
+
+   `flex: 0 0 100%` on the ::before set its flex-basis to the full bar width,
+   which overrode `width: clamp(72px,7vw,96px)` — and `aspect-ratio: 1/1` then
+   made it that tall as well. A ~1100px sphere swallowed the homepage hero.
+
+   Not re-tuned, removed. The hero Somm is a compact single-row bar sitting
+   under a display headline; there is no room above it for a presence object
+   without restructuring the hero, and the orb belongs where the Somm is the
+   subject of the surface rather than a control on it. The PDP keeps it. */
+.non-somm__bar::before { content: none; display: none; }
+.non-somm__bar { display: flex; flex-wrap: nowrap; justify-content: flex-start; }

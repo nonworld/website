@@ -326,9 +326,23 @@
     <div class="non-proc__rail">
       {%- for block in psteps -%}
         <div class="non-proc__step" data-non-proc-step {{ block.shopify_attributes }}>
-          <div class="non-proc__scene">
-            {% render 'process-scene', scene: block.settings.scene %}
-          </div>
+          {%- if block.settings.image != blank -%}
+            <div class="non-bandimg">
+              {{
+                block.settings.image
+                | image_url: width: 1200, format: 'webp'
+                | image_tag:
+                  loading: 'lazy',
+                  widths: '400,700,1000,1200',
+                  class: 'non-bandimg__img',
+                  alt: block.settings.image_alt | default: block.settings.title
+              }}
+            </div>
+          {%- else -%}
+            <div class="non-proc__scene">
+              {% render 'process-scene', scene: block.settings.scene %}
+            </div>
+          {%- endif -%}
           <div class="non-mono non-proc__n">{{ forloop.index | prepend: '0' | slice: -2, 2 }}</div>
           <div class="non-mono non-proc__label">{{ block.settings.label }}</div>
           <div class="non-step__t non-proc__title">{{ block.settings.title }}</div>
@@ -352,6 +366,24 @@
     <div class="non-grid" style="margin-top:26px;grid-template-columns:repeat(auto-fit,minmax(280px,1fr))">
       {%- for block in nots -%}
         <div {{ block.shopify_attributes }}>
+          {%- comment -%}
+            Optional picture. Renders only when one is chosen, so an empty slot
+            is an empty slot rather than a grey placeholder box — and the icon
+            still carries the band on its own until photography arrives.
+          {%- endcomment -%}
+          {%- if block.settings.image != blank -%}
+            <div class="non-bandimg">
+              {{
+                block.settings.image
+                | image_url: width: 1200, format: 'webp'
+                | image_tag:
+                  loading: 'lazy',
+                  widths: '400,700,1000,1200',
+                  class: 'non-bandimg__img',
+                  alt: block.settings.image_alt | default: block.settings.title
+              }}
+            </div>
+          {%- endif -%}
           {%- if block.settings.icon != blank and block.settings.icon != 'none' -%}
             {% render 'stat-icon', icon: block.settings.icon %}
           {%- endif -%}
@@ -792,6 +824,8 @@
       "type": "not",
       "name": "What we're not",
       "settings": [
+        { "type": "image_picker", "id": "image", "label": "Picture" },
+        { "type": "text", "id": "image_alt", "label": "Picture alt text" },
         {
           "type": "select",
           "id": "icon",
@@ -821,6 +855,8 @@
       "type": "procstep",
       "name": "Process step",
       "settings": [
+        { "type": "image_picker", "id": "image", "label": "Picture" },
+        { "type": "text", "id": "image_alt", "label": "Picture alt text" },
         {
           "type": "select",
           "id": "scene",

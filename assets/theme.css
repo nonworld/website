@@ -4169,3 +4169,19 @@ select:-moz-focusring { color: transparent; text-shadow: 0 0 0 var(--non-fg); }
 @media (max-width: 859px) {
   .non-poured__set img { width: 116px; height: 42px; padding: 0 16px; }
 }
+
+/* Editable band pictures.
+
+   One square shape for every band image, so a row of them stays a row no
+   matter what proportions the photography arrives in — the same reasoning as
+   the product cards. Only rendered when an image is actually chosen, so an
+   empty band shows nothing rather than a placeholder. */
+.non-bandimg { margin-bottom: 16px; background: var(--non-photo-bed); overflow: hidden; }
+.non-bandimg__img {
+  width: 100%;
+  height: auto;
+  aspect-ratio: 1 / 1;
+  object-fit: cover;
+  object-position: center;
+  display: block;
+}

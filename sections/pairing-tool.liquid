@@ -225,6 +225,7 @@
             data-ink="{{ section.settings.field_ink | default: '242,240,234' }}"
             data-envelope-x="0.5"
             data-envelope-scale="0"
+            data-gain="{{ section.settings.field_gain | default: 220 | divided_by: 100.0 }}"
             aria-hidden="true">
             <canvas></canvas>
           </div>
@@ -465,6 +466,17 @@
       "unit": "px",
       "default": 20,
       "info": "Lower is denser and costs more to draw."
+    },
+    {
+      "type": "range",
+      "id": "field_gain",
+      "label": "Field brightness",
+      "min": 100,
+      "max": 400,
+      "step": 10,
+      "unit": "%",
+      "default": 220,
+      "info": "The envelope carries most of the light on Contact. Without it the field needs lifting to read."
     },
     {
       "type": "text",

@@ -326,9 +326,7 @@
     "process_animation": {
       "type": "process-animation",
       "settings": {
-        "eyebrow": "How it's made",
-        "heading": "",
-        "section_padding": 0
+        "eyebrow": "How it's made"
       }
     }
   },

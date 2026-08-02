@@ -49,6 +49,13 @@
   var envX = parseFloat(wrap.getAttribute('data-envelope-x'));
   if (!(envX > 0 && envX < 1)) envX = 0.7;
   var envScale = parseFloat(wrap.getAttribute('data-envelope-scale'));
+
+  // Brightness multiplier. The alpha below is mostly carried by the envelope
+  // term, so switching the envelope off — as the pairing verdict does — takes
+  // most of the light with it and the field reads as an empty box. gain lets
+  // an instance without an envelope sit at the same visual weight.
+  var gain = parseFloat(wrap.getAttribute('data-gain'));
+  if (!(gain > 0)) gain = 1;
   if (!(envScale > 0)) envScale = 1.4;
 
   var reduced =
@@ -116,7 +123,7 @@
         var uy = d > 0.01 ? dy / d : 0;
         var cxp = x + ux * push, cyp = y + uy * push;
         var len = 3 + near * 5 + ring * 3 + env * 4;
-        var a = 0.1 + near * 0.45 + ring * 0.18 + env * 0.5;
+        var a = (0.1 + near * 0.45 + ring * 0.18 + env * 0.5) * gain;
 
         ctx.strokeStyle = 'rgba(' + ink + ',' + Math.min(0.95, a).toFixed(3) + ')';
         ctx.lineWidth = env > 0.5 ? 1 : 0.7;

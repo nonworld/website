@@ -16,7 +16,7 @@
           "type": "axis",
           "settings": {
             "question": "Which course?",
-            "options": "Starters | NON1:2,NON5:1 | Light plates, salinity before weight.\nMains | NON3:2 | The plate has structure, so the glass needs grip.\nDessert & cheese | NON3:1,NON1:1 | Sugar and fat, so bitterness has to survive it. | 2\nJust a glass | NON5:2 | Nothing to match, so it only has to be sharp. | 2 3"
+            "options": "Starters | NON1:2,NON5:1 | Light plates, salinity before weight. | 4\nMains | NON3:2 | The plate has structure, so the glass needs grip. | 4\nDessert & cheese | NON3:1,NON1:1 | Sugar and fat, so bitterness has to survive it. | 2 3\nJust a glass | NON5:2 | Nothing to match, so it only has to be sharp. | 2 3 4"
           }
         },
         "a2": {
@@ -77,12 +77,20 @@
           "settings": {
             "label": "Cheese board"
           }
+        },
+        "a4": {
+          "type": "axis",
+          "settings": {
+            "question": "What kind?",
+            "options": "Chocolate or coffee | NON7:3,NON9:1 | Roast and tannin to answer the cocoa.\nFruit or citrus | NON3:3,NON1:1 | Acid rather than more sugar.\nCreamy or custard | NON1:3,NON2:1 | Salt and acid to cut the cream.\nCheese board | NON2:3,NON9:1 | Savoury depth and minerality, not fruit."
+          }
         }
       },
       "block_order": [
         "a1",
         "a2",
         "a3",
+        "a4",
         "r1",
         "r2",
         "r3",

@@ -118,7 +118,7 @@
           "settings": {
             "image_url": "https://www.non.world/cdn/shop/files/french_laundry_2_-_Copy_4c30ca9f-1794-44ec-9dd7-a3e422c8127a.jpg?v=1754352410&width=300",
             "name": "The French Laundry",
-            "max_height": 44
+            "scale": 80
           }
         },
         "v2": {
@@ -126,7 +126,7 @@
           "settings": {
             "image_url": "https://www.non.world/cdn/shop/files/fat_duck_logo.png?v=1754352113&width=300",
             "name": "The Fat Duck",
-            "max_height": 70
+            "scale": 145
           }
         },
         "v3": {
@@ -134,7 +134,7 @@
           "settings": {
             "image_url": "https://www.non.world/cdn/shop/files/alinea-logo.jpg?v=1752532858&width=300",
             "name": "Alinea",
-            "max_height": 70
+            "scale": 125
           }
         },
         "v4": {
@@ -142,7 +142,7 @@
           "settings": {
             "image_url": "https://www.non.world/cdn/shop/files/Aman_Resorts_logo_svg.png?v=1752532955&width=300",
             "name": "Aman",
-            "max_height": 44
+            "scale": 80
           }
         },
         "v5": {
@@ -150,7 +150,7 @@
           "settings": {
             "image_url": "https://www.non.world/cdn/shop/files/logo-atelier-crenn-2022.jpg?v=1752533002&width=300",
             "name": "Atelier Crenn",
-            "max_height": 44
+            "scale": 100
           }
         },
         "v6": {
@@ -158,7 +158,7 @@
           "settings": {
             "image_url": "https://www.non.world/cdn/shop/files/vue-de-monde-logo.png?v=1773521183&width=300",
             "name": "Vue de Monde",
-            "max_height": 44
+            "scale": 85
           }
         },
         "v7": {
@@ -166,7 +166,7 @@
           "settings": {
             "image_url": "https://www.non.world/cdn/shop/files/Fortnum___Mason_logo.png?v=1754352025&width=300",
             "name": "Fortnum & Mason",
-            "max_height": 44
+            "scale": 95
           }
         }
       },

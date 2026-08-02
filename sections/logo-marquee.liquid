@@ -3,7 +3,7 @@
   <div class="non-poured">
     <div class="non-poured__label">{{ section.settings.heading }}</div>
     <div class="non-poured__track" aria-hidden="true">
-      {%- for i in (1..2) -%}
+      {%- for i in (1..4) -%}
         <div class="non-poured__set">
           {%- for block in section.blocks -%}
             {%- if block.settings.image != blank -%}
@@ -12,7 +12,8 @@
                 | image_url: width: 300, format: 'webp'
                 | image_tag:
                   loading: 'lazy',
-                  alt: block.settings.name
+                  alt: block.settings.name,
+                  style: '--logo-scale:{{ block.settings.scale | default: 100 | divided_by: 100.0 }}'
               }}
             {%- elsif block.settings.image_url != blank -%}
               {%- comment -%}
@@ -23,7 +24,8 @@
               <img
                 src="{{ block.settings.image_url }}"
                 alt="{{ block.settings.name | escape }}"
-                loading="lazy">
+                loading="lazy"
+                style="--logo-scale:{{ block.settings.scale | default: 100 | divided_by: 100.0 }}">
             {%- endif -%}
           {%- endfor -%}
         </div>
@@ -128,14 +130,14 @@
         },
         {
           "type": "range",
-          "id": "max_height",
-          "label": "Max height",
-          "min": 24,
-          "max": 80,
-          "step": 2,
-          "unit": "px",
-          "default": 44,
-          "info": "Wordmarks and lockups don't share an optical size — trim each one here."
+          "id": "scale",
+          "label": "Size",
+          "min": 60,
+          "max": 180,
+          "step": 5,
+          "unit": "%",
+          "default": 100,
+          "info": "Relative to the other logos. Wordmarks and round marks never balance at one size — trim each one here."
         }
       ]
     }

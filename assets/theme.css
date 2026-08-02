@@ -5140,3 +5140,54 @@ select:-moz-focusring { color: transparent; text-shadow: 0 0 0 var(--non-fg); }
 @media (max-width: 859px) {
   .non-verdict__stage { min-height: 200px; }
 }
+
+/* ==========================================================================
+   Poured at — the logo bar, overhauled.
+
+   It was reading as four tiny marks marooned in a very wide white band. Three
+   causes, all of them mine:
+
+   1. `min-width: 100%` forced each SET to fill the viewport, and space-around
+      then pushed seven logos apart across 2000px — 165px of white between
+      each. On a wide display it looked like a bar that had failed to load.
+   2. A 120x40 slot is small on a band that wide, and object-fit: contain then
+      capped square marks by their HEIGHT, so Alinea and Fortnum drew at ~40px
+      against AMAN's 120px. Same slot, a third of the presence.
+   3. Removing the per-logo control took away the only thing that could fix 2.
+      One slot cannot optically balance artwork ranging from 3.7:1 to 0.7:1.
+
+   Now: sets are their natural width with a fixed gap and four of them, so the
+   track always overruns the viewport and the -50% seam still lands exactly.
+   Size is a per-logo SCALE that multiplies a shared base height — it feeds
+   this rule rather than fighting it, which is what the old inline max-height
+   did.
+   ========================================================================== */
+.non-poured__track { animation: marq 60s linear infinite; }
+
+.non-poured__set {
+  min-width: 0;
+  width: max-content;
+  justify-content: flex-start;
+  align-items: center;
+  gap: 64px;
+  padding-left: 64px;
+  flex: none;
+}
+
+.non-poured__set img {
+  /* Height leads, scaled per logo; width follows the artwork's own ratio. */
+  height: calc(var(--non-logo-h, 46px) * var(--logo-scale, 1));
+  width: auto;
+  min-width: 0;
+  max-width: 220px;
+  max-height: none;
+  margin: 0;
+  padding: 0;
+  object-fit: contain;
+  flex: 0 0 auto;
+}
+
+@media (max-width: 859px) {
+  .non-poured__set { gap: 40px; padding-left: 40px; }
+  .non-poured__set img { --non-logo-h: 32px; max-width: 150px; }
+}

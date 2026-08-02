@@ -3740,3 +3740,52 @@ select:-moz-focusring { color: transparent; text-shadow: 0 0 0 var(--non-fg); }
 
 /* The caret and prompt mark on the hero read as page ink too. */
 .non-somm__caret { color: #8d8d87; }
+
+/* The live orb, at a size where the pulse is actually perceivable.
+
+   Measured before this: a 7x7px dot running `breathe` at scale 1 → 1.06. That
+   is 0.4px of travel. The animation was running the whole time and could not
+   be seen — "not pulsing" was a size problem, not a motion problem, and no
+   amount of retiming would have fixed it. The rings had the same issue,
+   expanding from a 13px box to 19px at 1px stroke.
+
+   So: a bigger orb, a wider swing, and a halo that carries the pulse beyond
+   the orb itself. Green stays — it is the documented exception, the one thing
+   on the page reporting a system state rather than saying something. */
+.non-sommbox__dot,
+.non-somm__dot {
+  width: 11px;
+  height: 11px;
+  flex: none;
+  box-shadow: 0 0 0 0 currentColor;
+  animation: non-somm-breathe 2.8s ease-in-out infinite;
+}
+.non-sommbox__dot::before,
+.non-sommbox__dot::after,
+.non-somm__dot::before,
+.non-somm__dot::after {
+  content: "";
+  position: absolute;
+  inset: -7px;
+  border-radius: 50%;
+  border: 1px solid currentColor;
+  opacity: 0;
+  animation: non-somm-ring 2.8s cubic-bezier(.2, .7, .2, 1) infinite;
+}
+.non-sommbox__dot::after,
+.non-somm__dot::after { animation-delay: 1.4s; }
+
+/* A perceivable swing. 1 → 1.18 on 11px is ~2px of travel, which reads as a
+   breath; 1.06 on 7px did not. */
+@keyframes non-somm-breathe {
+  0%, 100% { transform: scale(1); opacity: .8; }
+  50% { transform: scale(1.18); opacity: 1; }
+}
+@keyframes non-somm-ring {
+  0% { transform: scale(.6); opacity: .55; }
+  100% { transform: scale(1.8); opacity: 0; }
+}
+
+/* The status line gets room for the bigger orb without the text shifting. */
+.non-sommbox__live,
+.non-somm__live { gap: 10px; }

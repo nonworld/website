@@ -5285,3 +5285,60 @@ select:-moz-focusring { color: transparent; text-shadow: 0 0 0 var(--non-fg); }
 .non-somm__answer:has(.non-somm__stream:not([hidden])) .non-sommbox__opener {
   display: none;
 }
+
+/* ==========================================================================
+   About — the kitchen band, as three squares.
+
+   Was one full-bleed strip at 420px with the caption laid over it. Three equal
+   square frames read as a set of observations from the same room rather than
+   one hero shot, and a square survives a phone: a 2000px-wide crop on a 375px
+   screen shows a sliver of the middle and loses the subject.
+
+   Overrides the old full-bleed rules deliberately — they are earlier in the
+   file and would otherwise still be stretching the first image.
+   ========================================================================== */
+.non-about-kitchen {
+  margin: 0;
+  padding: 0 var(--non-pad);
+  height: auto;
+  max-height: none;
+}
+.non-about-kitchen__grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 20px;
+}
+.non-about-kitchen__cell {
+  position: relative;
+  aspect-ratio: 1 / 1;
+  overflow: hidden;
+  background: var(--non-panel);
+}
+.non-about-kitchen__cell img,
+.non-about-kitchen__img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+/* The caption sits under the row now, not over the photography. */
+.non-about-kitchen__caption {
+  position: static;
+  margin-top: 14px;
+  padding: 0;
+  max-width: 62ch;
+  font-family: var(--non-mono);
+  font-size: var(--t-mono);
+  line-height: 1.7;
+  color: var(--non-fg-mute);
+  background: none;
+  text-shadow: none;
+}
+
+/* One column below the breakpoint — three squares side by side on a phone are
+   120px each, which is a thumbnail, not a photograph. */
+@media (max-width: 859px) {
+  .non-about-kitchen__grid { grid-template-columns: 1fr; gap: 14px; }
+}

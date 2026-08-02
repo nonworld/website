@@ -343,16 +343,76 @@
   is a setting rather than hardcoded, and the band renders only when there is an
   image to carry it. Caption over an empty frame would be worse than neither.
 {%- endcomment -%}
-{%- if section.settings.kitchen_image != blank or section.settings.kitchen_image_url != blank -%}
+{%- comment -%}
+  THREE squares, not one full-bleed strip.
+
+  It was a single 420px-tall band with the caption laid over it. Three square
+  frames at equal size, evenly spaced, read as a set of observations from the
+  same room rather than one hero shot, and squares survive a phone far better
+  than a wide crop — a 2000px-wide band on a 375px screen shows a sliver of
+  the middle and loses whatever the photograph was about.
+
+  Each frame is independent, so the band renders whatever is filled in: three,
+  two, or one. The caption sits BELOW the row now rather than over the
+  photography — type on an image only worked because the old crop had a dead
+  area to put it in.
+{%- endcomment -%}
+{%- assign k1 = section.settings.kitchen_image_url_1 | default: section.settings.kitchen_image_url -%}
+{%- assign has_kitchen = false -%}
+{%- if section.settings.kitchen_image != blank or k1 != blank
+   or section.settings.kitchen_image_url_2 != blank
+   or section.settings.kitchen_image_url_3 != blank -%}
+  {%- assign has_kitchen = true -%}
+{%- endif -%}
+
+{%- if has_kitchen -%}
   <figure class="non-about-kitchen">
-    {%- if section.settings.kitchen_image != blank -%}
-      {{ section.settings.kitchen_image | image_url: width: 2000, format: 'webp' | image_tag: loading: 'lazy', widths: '800,1200,1600,2000', alt: section.settings.kitchen_caption }}
-    {%- else -%}
-      {% render 'cdn-image',
-         url: section.settings.kitchen_image_url,
-         alt: section.settings.kitchen_caption,
-         sizes: '100vw' %}
-    {%- endif -%}
+    <div class="non-about-kitchen__grid">
+      {%- if section.settings.kitchen_image != blank -%}
+        <div class="non-about-kitchen__cell">
+          {{ section.settings.kitchen_image | image_url: width: 900, format: 'webp'
+             | image_tag: loading: 'lazy', widths: '300,600,900',
+               sizes: '(min-width: 860px) 33vw, 100vw',
+               class: 'non-about-kitchen__img',
+               alt: section.settings.kitchen_caption }}
+        </div>
+      {%- elsif k1 != blank -%}
+        <div class="non-about-kitchen__cell">
+          {% render 'cdn-image', url: k1, alt: section.settings.kitchen_caption,
+             class: 'non-about-kitchen__img', sizes: '(min-width: 860px) 33vw, 100vw' %}
+        </div>
+      {%- endif -%}
+
+      {%- if section.settings.kitchen_image_2 != blank -%}
+        <div class="non-about-kitchen__cell">
+          {{ section.settings.kitchen_image_2 | image_url: width: 900, format: 'webp'
+             | image_tag: loading: 'lazy', widths: '300,600,900',
+               sizes: '(min-width: 860px) 33vw, 100vw',
+               class: 'non-about-kitchen__img',
+               alt: section.settings.kitchen_caption }}
+        </div>
+      {%- elsif section.settings.kitchen_image_url_2 != blank -%}
+        <div class="non-about-kitchen__cell">
+          {% render 'cdn-image', url: section.settings.kitchen_image_url_2, alt: section.settings.kitchen_caption,
+             class: 'non-about-kitchen__img', sizes: '(min-width: 860px) 33vw, 100vw' %}
+        </div>
+      {%- endif -%}
+
+      {%- if section.settings.kitchen_image_3 != blank -%}
+        <div class="non-about-kitchen__cell">
+          {{ section.settings.kitchen_image_3 | image_url: width: 900, format: 'webp'
+             | image_tag: loading: 'lazy', widths: '300,600,900',
+               sizes: '(min-width: 860px) 33vw, 100vw',
+               class: 'non-about-kitchen__img',
+               alt: section.settings.kitchen_caption }}
+        </div>
+      {%- elsif section.settings.kitchen_image_url_3 != blank -%}
+        <div class="non-about-kitchen__cell">
+          {% render 'cdn-image', url: section.settings.kitchen_image_url_3, alt: section.settings.kitchen_caption,
+             class: 'non-about-kitchen__img', sizes: '(min-width: 860px) 33vw, 100vw' %}
+        </div>
+      {%- endif -%}
+    </div>
     {%- if section.settings.kitchen_caption != blank -%}
       <figcaption class="non-about-kitchen__caption">{{ section.settings.kitchen_caption }}</figcaption>
     {%- endif -%}
@@ -546,6 +606,28 @@
       "id": "kitchen_image_url",
       "label": "Kitchen band — image URL",
       "info": "Design: 038A8683. Full-bleed, 420px, caption over the image. Used only when no image is uploaded."
+    },
+    {
+      "type": "image_picker",
+      "id": "kitchen_image_2",
+      "label": "Kitchen image 2"
+    },
+    {
+      "type": "text",
+      "id": "kitchen_image_url_2",
+      "label": "Kitchen image 2 URL",
+      "info": "Used only when no image is uploaded."
+    },
+    {
+      "type": "image_picker",
+      "id": "kitchen_image_3",
+      "label": "Kitchen image 3"
+    },
+    {
+      "type": "text",
+      "id": "kitchen_image_url_3",
+      "label": "Kitchen image 3 URL",
+      "info": "Used only when no image is uploaded."
     },
     {
       "type": "text",
@@ -828,17 +910,37 @@
       "type": "not",
       "name": "What we're not",
       "settings": [
-        { "type": "image_picker", "id": "image", "label": "Picture" },
-        { "type": "text", "id": "image_alt", "label": "Picture alt text" },
+        {
+          "type": "image_picker",
+          "id": "image",
+          "label": "Picture"
+        },
+        {
+          "type": "text",
+          "id": "image_alt",
+          "label": "Picture alt text"
+        },
         {
           "type": "select",
           "id": "icon",
           "label": "Icon",
           "options": [
-            { "value": "none", "label": "None" },
-            { "value": "no-stripped", "label": "Struck bottle (not de-alcoholised)" },
-            { "value": "no-mocktail", "label": "Struck coupe (not a mocktail)" },
-            { "value": "no-imitation", "label": "Struck pair (not an imitation)" }
+            {
+              "value": "none",
+              "label": "None"
+            },
+            {
+              "value": "no-stripped",
+              "label": "Struck bottle (not de-alcoholised)"
+            },
+            {
+              "value": "no-mocktail",
+              "label": "Struck coupe (not a mocktail)"
+            },
+            {
+              "value": "no-imitation",
+              "label": "Struck pair (not an imitation)"
+            }
           ],
           "default": "none",
           "info": "Each draws the object with a single rule through it."
@@ -859,40 +961,93 @@
       "type": "procstep",
       "name": "Process step",
       "settings": [
-        { "type": "image_picker", "id": "image", "label": "Picture" },
-        { "type": "text", "id": "image_alt", "label": "Picture alt text" },
+        {
+          "type": "image_picker",
+          "id": "image",
+          "label": "Picture"
+        },
+        {
+          "type": "text",
+          "id": "image_alt",
+          "label": "Picture alt text"
+        },
         {
           "type": "select",
           "id": "scene",
           "label": "Drawing",
           "options": [
-            { "value": "fruit", "label": "Fruit into the pot" },
-            { "value": "tannin", "label": "Leaf steeping" },
-            { "value": "salinity", "label": "Salt falling" },
-            { "value": "acidity", "label": "Verjus poured" },
-            { "value": "balance", "label": "The balance" }
+            {
+              "value": "fruit",
+              "label": "Fruit into the pot"
+            },
+            {
+              "value": "tannin",
+              "label": "Leaf steeping"
+            },
+            {
+              "value": "salinity",
+              "label": "Salt falling"
+            },
+            {
+              "value": "acidity",
+              "label": "Verjus poured"
+            },
+            {
+              "value": "balance",
+              "label": "The balance"
+            }
           ],
           "default": "fruit"
         },
-        { "type": "text", "id": "label", "label": "Label" },
-        { "type": "text", "id": "title", "label": "Title" },
-        { "type": "textarea", "id": "body", "label": "Body" }
+        {
+          "type": "text",
+          "id": "label",
+          "label": "Label"
+        },
+        {
+          "type": "text",
+          "id": "title",
+          "label": "Title"
+        },
+        {
+          "type": "textarea",
+          "id": "body",
+          "label": "Body"
+        }
       ]
     },
     {
       "type": "procbottle",
       "name": "Process bottle",
       "settings": [
-        { "type": "text", "id": "code", "label": "Code" },
-        { "type": "color", "id": "accent", "label": "Fruit colour", "default": "#E4573F" },
+        {
+          "type": "text",
+          "id": "code",
+          "label": "Code"
+        },
+        {
+          "type": "color",
+          "id": "accent",
+          "label": "Fruit colour",
+          "default": "#E4573F"
+        },
         {
           "type": "select",
           "id": "fruit",
           "label": "Fruit shape",
           "options": [
-            { "value": "berry", "label": "Berry" },
-            { "value": "pear", "label": "Pear" },
-            { "value": "citrus", "label": "Citrus" }
+            {
+              "value": "berry",
+              "label": "Berry"
+            },
+            {
+              "value": "pear",
+              "label": "Pear"
+            },
+            {
+              "value": "citrus",
+              "label": "Citrus"
+            }
           ],
           "default": "berry"
         },
@@ -901,17 +1056,47 @@
           "id": "bot",
           "label": "Botanical shape",
           "options": [
-            { "value": "flower", "label": "Flower" },
-            { "value": "kelp", "label": "Kelp" },
-            { "value": "quill", "label": "Quill" },
-            { "value": "oak", "label": "Oak" },
-            { "value": "bean", "label": "Bean" }
+            {
+              "value": "flower",
+              "label": "Flower"
+            },
+            {
+              "value": "kelp",
+              "label": "Kelp"
+            },
+            {
+              "value": "quill",
+              "label": "Quill"
+            },
+            {
+              "value": "oak",
+              "label": "Oak"
+            },
+            {
+              "value": "bean",
+              "label": "Bean"
+            }
           ],
           "default": "flower"
         },
-        { "type": "textarea", "id": "titles", "label": "Step titles", "info": "One line per step, in order." },
-        { "type": "textarea", "id": "bodies", "label": "Step bodies", "info": "One line per step, in order." },
-        { "type": "textarea", "id": "captions", "label": "Captions", "info": "One line per step, in order." }
+        {
+          "type": "textarea",
+          "id": "titles",
+          "label": "Step titles",
+          "info": "One line per step, in order."
+        },
+        {
+          "type": "textarea",
+          "id": "bodies",
+          "label": "Step bodies",
+          "info": "One line per step, in order."
+        },
+        {
+          "type": "textarea",
+          "id": "captions",
+          "label": "Captions",
+          "info": "One line per step, in order."
+        }
       ]
     },
     {

@@ -1,37 +1,31 @@
 {%- comment -%}
-  Country and language picker, on Shopify's own localization form.
+  Language picker, on Shopify's own localization form.
 
   Params:
     id       (required) — unique suffix, since this renders twice (bar + drawer)
     compact  optional   — the header bar version; the drawer version is stacked
 
-  WHY THIS MATTERS MORE THAN IT LOOKS. The store runs Markets. /en-au, /en-gb,
-  /en-nz, /en-ca and the bare root are DIFFERENT CATALOGUES, not just different
-  currencies — NON Waiter's Friend and the Gift Card exist only in the AU one,
-  so an overseas visitor silently sees a smaller range with no way to
-  understand why. The root also geo-resolves, and in testing it landed on
-  Bermuda. Until this shipped there was no way for anyone to see which market
-  they were in, let alone change it.
+  LANGUAGE ONLY. There was a country/region select here too, and Aaron removed
+  it: pricing and catalogue are native to the market, resolved by geo, so a
+  country control read as a currency converter and invited people to change
+  something that should just be correct.
 
   Native form post to /localization — no app, no client-side URL rewriting, and
-  it keeps the customer on the page they were reading. The country list comes
-  from localization.available_countries, so enabling or disabling a market in
+  it keeps the visitor on the page they were reading. The list comes from
+  localization.available_languages, so publishing or unpublishing a language in
   admin changes this with no theme edit.
 
-  The language block only renders when a second language actually exists.
-  Today only English is published, so it draws nothing rather than a dropdown
-  with one option in it — a selector that cannot select is worse than none.
+  Renders nothing at all when only one language is published. A selector that
+  cannot select is worse than none.
 
-  noscript-safe: it is a real form with a real submit button, so it works with
+  noscript-safe: a real form with a real submit button, so it works with
   JavaScript off. localization.js only hides the button and auto-submits.
 {%- endcomment -%}
 
-{%- assign has_countries = false -%}
-{%- if localization.available_countries.size > 1 -%}{%- assign has_countries = true -%}{%- endif -%}
 {%- assign has_languages = false -%}
 {%- if localization.available_languages.size > 1 -%}{%- assign has_languages = true -%}{%- endif -%}
 
-{%- if has_countries or has_languages -%}
+{%- if has_languages -%}
   <form
     method="post"
     action="{{ routes.root_url }}localization"
@@ -45,34 +39,14 @@
     <input type="hidden" name="_method" value="put">
     <input type="hidden" name="return_to" value="{{ request.path | escape }}">
 
-    {%- if has_countries -%}
-      <label class="visually-hidden" for="loc-country-{{ id }}">
-        {{ 'localization.country_label' | t | default: 'Country/region' }}
-      </label>
-      <select
-        id="loc-country-{{ id }}"
-        class="non-loc__select"
-        name="country_code"
-        data-non-loc-select>
-        {%- for country in localization.available_countries -%}
-          <option
-            value="{{ country.iso_code }}"
-            {% if country.iso_code == localization.country.iso_code %}selected{% endif %}>
-            {{ country.name }} ({{ country.currency.iso_code }} {{ country.currency.symbol }})
-          </option>
-        {%- endfor -%}
-      </select>
-    {%- endif -%}
-
-    {%- if has_languages -%}
-      <label class="visually-hidden" for="loc-language-{{ id }}">
+    <label class="visually-hidden" for="loc-language-{{ id }}">
         {{ 'localization.language_label' | t | default: 'Language' }}
       </label>
-      <select
-        id="loc-language-{{ id }}"
-        class="non-loc__select"
-        name="locale_code"
-        data-non-loc-select>
+    <select
+    id="loc-language-{{ id }}"
+    class="non-loc__select"
+    name="locale_code"
+    data-non-loc-select>
         {%- for language in localization.available_languages -%}
           <option
             value="{{ language.iso_code }}"
@@ -81,8 +55,7 @@
             {{ language.endonym_name | capitalize }}
           </option>
         {%- endfor -%}
-      </select>
-    {%- endif -%}
+    </select>
 
     <button type="submit" class="non-loc__go" data-non-loc-go>
       {{ 'localization.update' | t | default: 'Update' }}

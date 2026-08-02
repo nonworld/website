@@ -3712,3 +3712,31 @@ select:-moz-focusring { color: transparent; text-shadow: 0 0 0 var(--non-fg); }
 .non-somm__dot {
   border-radius: 50%;
 }
+
+/* The hero input, which the earlier rule did not reach.
+
+   The PDP input is `.non-sommbox__ask input`; the hero's is `.non-somm__input`
+   inside `.non-somm__bar`. My redesign styled the first and not the second, so
+   when the hero lost its light panel the input kept dark ink and rendered at
+   1.0 contrast — the same colour as the page behind it.
+
+   Both containers named explicitly, and the colour set literally rather than
+   through --non-somm-fg, so no later token can quietly move it back. */
+.non-somm .non-somm__input,
+.non-somm__bar .non-somm__input,
+.non-sommbox__ask input,
+.non-sommbox__ask .non-somm__input {
+  background: transparent;
+  border: 0;
+  border-bottom: 1px solid #232321;
+  border-radius: 0;
+  color: #EDEDE8;
+  box-shadow: none;
+}
+.non-somm .non-somm__input::placeholder,
+.non-somm__bar .non-somm__input::placeholder,
+.non-sommbox__ask input::placeholder,
+.non-sommbox__ask .non-somm__input::placeholder { color: #8d8d87; }
+
+/* The caret and prompt mark on the hero read as page ink too. */
+.non-somm__caret { color: #8d8d87; }

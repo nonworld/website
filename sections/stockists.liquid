@@ -52,7 +52,6 @@
     <p class="non-stock-hero__lead">{{ section.settings.hero_blurb }}</p>
   {%- endif -%}
 </div>
-{% render 'page-header-image', section: section %}
 
 <div
   class="non-section"
@@ -694,57 +693,6 @@
       "unit": "px",
       "default": 0,
       "info": "0 keeps the section's own spacing."
-    },
-    {
-      "type": "header",
-      "content": "Header image"
-    },
-    {
-      "type": "checkbox",
-      "id": "show_header_image",
-      "label": "Show header image",
-      "default": true,
-      "info": "Draws a placeholder until an image is set, as a reminder to replace it."
-    },
-    {
-      "type": "image_picker",
-      "id": "header_image",
-      "label": "Header image"
-    },
-    {
-      "type": "text",
-      "id": "header_image_url",
-      "label": "Header image URL",
-      "info": "Used only when no image is uploaded."
-    },
-    {
-      "type": "text",
-      "id": "header_image_alt",
-      "label": "Header image alt text"
-    },
-    {
-      "type": "select",
-      "id": "header_image_ratio",
-      "label": "Header image shape",
-      "options": [
-        {
-          "value": "21 / 9",
-          "label": "Letterbox (21:9)"
-        },
-        {
-          "value": "16 / 9",
-          "label": "Wide (16:9)"
-        },
-        {
-          "value": "3 / 1",
-          "label": "Panorama (3:1)"
-        },
-        {
-          "value": "4 / 3",
-          "label": "Landscape (4:3)"
-        }
-      ],
-      "default": "21 / 9"
     }
   ],
   "blocks": [

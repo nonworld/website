@@ -3789,3 +3789,64 @@ select:-moz-focusring { color: transparent; text-shadow: 0 0 0 var(--non-fg); }
 /* The status line gets room for the bigger orb without the text shifting. */
 .non-sommbox__live,
 .non-somm__live { gap: 10px; }
+
+/* ==========================================================================
+   Somm chips and buttons: back to the standard square border, everywhere.
+
+   The 999px pill is reverted. On a chip that wraps to two lines — "How is this
+   different from de-alcoholised wine?" — a full pill radius curves the sides
+   into the text and the box reads as squashed rather than rounded. It only
+   ever looked right on the single-line CTA it was designed for.
+
+   Square with a 1px hairline is the site's standard and is now used on EVERY
+   Somm surface: PDP, homepage, About and Pairing. One border, one radius, one
+   padding — so the same control cannot look like two components on two pages.
+   ========================================================================== */
+.non-somm .non-somm__seed,
+.non-sommbox .non-somm__seed,
+.non-sommbox__seeds button,
+.non-somm__submit,
+.non-sommbox__submit {
+  border-radius: 0;
+}
+
+/* Room to breathe, and a line-height that survives wrapping. The two-line chip
+   was tight because the padding was tuned for one line inside a curve. */
+.non-somm .non-somm__seed,
+.non-sommbox .non-somm__seed,
+.non-sommbox__seeds button {
+  padding: 14px 18px;
+  line-height: 1.4;
+  min-height: 52px;
+  display: flex;
+  align-items: center;
+  text-align: left;
+  border: 1px solid #3a3a37;
+}
+
+.non-somm__submit,
+.non-sommbox__submit {
+  padding: 0 26px;
+  min-height: 52px;
+}
+
+/* The orb, made unmissable. 11px with a 1px ring is still a speck next to
+   26px display type; at 14px with a halo it reads as a live indicator rather
+   than a full stop. position: relative is restated because the rings are
+   absolutely positioned against it. */
+.non-sommbox__dot,
+.non-somm__dot {
+  position: relative;
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  flex: none;
+  box-shadow: 0 0 12px 2px currentColor;
+}
+.non-sommbox__dot::before,
+.non-sommbox__dot::after,
+.non-somm__dot::before,
+.non-somm__dot::after {
+  inset: -9px;
+  border-width: 1.5px;
+}

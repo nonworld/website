@@ -5109,17 +5109,20 @@ select:-moz-focusring { color: transparent; text-shadow: 0 0 0 var(--non-fg); }
   /* Inset to --non-pad so the band lines up with the heading above it. Left
      full-bleed it ran edge to edge while every other element on the page was
      inset 40px, which read as a broken section rather than a design choice. */
-  margin: 28px var(--non-pad) 0;
+  margin: 28px auto 0;
 
   /* Ratio AND a cap. A 21:9 band at full width is 549px tall at 1280 and
      ~860px on a large display — taller than the viewport on a laptop, so the
      page opened on an empty rectangle with the heading scrolled off. The cap
      wins over the ratio, and object-fit: cover keeps the image honest. */
-  /* width MUST be explicit. With width auto the ratio is free to solve for
-     width instead of height, so the cap shrank the band to 887px on a 1200px
-     column — narrower than the heading above it. Pinned at 100% the ratio can
-     only give on height, which is what the cap is for. */
-  width: 100%;
+  /* width MUST be explicit, and it must already account for the gutter.
+
+     With width auto the ratio is free to solve for width instead of height,
+     so capping the height shrank the band to 887px inside a 1200px column.
+     With width:100% plus horizontal margins it overflowed the gutter by the
+     margin on each side. Subtracting the gutter here and centring with auto
+     margins gives a definite width, so the ratio can only give on height. */
+  width: calc(100% - (2 * var(--non-pad)));
   aspect-ratio: var(--non-pagehead-ar, 21 / 9);
   max-height: 380px;
 
@@ -5167,6 +5170,6 @@ select:-moz-focusring { color: transparent; text-shadow: 0 0 0 var(--non-fg); }
 }
 
 @media (max-width: 859px) {
-  .non-pagehead-media { margin: 20px var(--non-pad) 0; aspect-ratio: 16 / 9; max-height: 220px; }
+  .non-pagehead-media { margin: 20px auto 0; aspect-ratio: 16 / 9; max-height: 220px; }
   .non-pagehead-media__phhint { font-size: 12px; }
 }

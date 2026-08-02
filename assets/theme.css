@@ -3470,3 +3470,167 @@ select:-moz-focusring { color: transparent; text-shadow: 0 0 0 var(--non-fg); }
   .non-proc__step .non-proc__art path,
   .non-proc__step .non-proc__art circle { opacity: 1; animation: none; stroke-dashoffset: 0; }
 }
+
+/* ==========================================================================
+   NON Somm — premium redesign (2026-08-02)
+
+   The box goes away. It was a #c9c7c1 grey slab with 14px rounded corners
+   floating on a near-black page: a widget dropped onto the site rather than
+   part of it, and the least premium surface here. What replaces it is an open,
+   near-black surface with a hairline under the input, a breathing orb, and
+   answers that resolve out of blur.
+
+   WHY THIS IS ONE BLOCK AT THE END OF THE FILE, not eight edits upstream:
+   every light-island rule reads --non-somm-fg. Redefining that token on the
+   same selectors, later in the cascade, flips all of them together. The first
+   attempt at this changed three declarations and shipped 1.01, 1.05 and 1.63
+   contrast — invisible text — because the other five kept painting dark ink on
+   a now-dark panel. One token, one place.
+   ========================================================================== */
+
+.non-somm,
+.non-sommbox {
+  /* The island is dark now, so its "foreground" is the page's ink. */
+  --non-somm-fg: #EDEDE8;
+  --non-fg: #EDEDE8;
+  --non-fg-dim: #a9a9a2;
+  --non-fg-mute: #8d8d87;
+  --non-fg-faint: #5f5f5b;
+  --non-line: #232321;
+  --non-line-soft: #232321;
+  --non-line-strong: #3a3a37;
+  color: #EDEDE8;
+}
+
+/* No panel. No border, no fill, no radius, no clipping. */
+.non-sommbox,
+.non-somm__bar {
+  background: transparent;
+  border: 0;
+  border-radius: 0;
+  overflow: visible;
+}
+.non-sommbox__head { border-bottom: 0; padding-bottom: 4px; }
+.non-sommbox:focus-within,
+.non-somm:focus-within { box-shadow: none; }
+
+/* The opening line is the hero of the component, so it is set at display size
+   and carries a slow shimmer — the one thing telling you this is alive before
+   you have typed anything. background-clip: text is what puts the gradient in
+   the letterforms rather than behind them. */
+.non-sommbox__opener {
+  font-size: clamp(20px, 1.9vw, 26px);
+  letter-spacing: -.02em;
+  line-height: 1.35;
+  background: linear-gradient(100deg, #3d3d3a 25%, #EDEDE8 50%, #3d3d3a 75%);
+  background-size: 200% 100%;
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  animation: non-somm-shimmer 6s linear infinite;
+}
+@keyframes non-somm-shimmer { to { background-position: -200% 0; } }
+
+/* The ask: one hairline, centred, no well and no box. */
+.non-sommbox__ask {
+  border-top: 0;
+  padding: 6px 0 0;
+  gap: 14px;
+  align-items: center;
+}
+.non-sommbox__ask input,
+.non-sommbox__ask .non-somm__input {
+  background: transparent;
+  border: 0;
+  border-bottom: 1px solid #232321;
+  border-radius: 0;
+  color: #EDEDE8;
+  font-size: clamp(16px, 1.4vw, 20px);
+  letter-spacing: -.01em;
+  padding: 0 0 12px;
+  box-shadow: none;
+  transition: border-color var(--duration-hover) var(--ease-hover);
+}
+.non-sommbox__ask input::placeholder,
+.non-sommbox__ask .non-somm__input::placeholder { color: #5f5f5b; }
+.non-sommbox__ask input:focus,
+.non-sommbox__ask .non-somm__input:focus {
+  outline: none;
+  border-bottom-color: #8d8d87;
+  box-shadow: none;
+}
+
+/* Commit action: light on dark, and square. The supplied design pills this at
+   999px; NON has no soft corners and the seed chips were explicitly de-pilled
+   for that reason, so the motion is taken and the geometry is not. */
+.non-somm__submit,
+.non-sommbox__submit {
+  background: #EDEDE8;
+  color: #000;
+  border: 0;
+  border-radius: 0;
+}
+.non-somm__submit:hover,
+.non-sommbox__submit:hover { opacity: .85; }
+
+/* Seeds: hairline on the open surface, inheriting ink. */
+.non-somm__seed,
+.non-sommbox__seeds button {
+  background: transparent;
+  color: #a9a9a2;
+  border: 1px solid #3a3a37;
+}
+.non-somm__seed:hover,
+.non-sommbox__seeds button:hover {
+  background: #EDEDE8;
+  color: #000;
+  border-color: #EDEDE8;
+}
+
+/* The live dot becomes an orb that breathes, with three rings expanding out of
+   it on a stagger. This is the "dynamic nature" the flat build lost. */
+.non-sommbox__dot {
+  position: relative;
+  animation: non-somm-breathe 3.2s ease-in-out infinite;
+}
+.non-sommbox__dot::before,
+.non-sommbox__dot::after {
+  content: "";
+  position: absolute;
+  inset: -3px;
+  border-radius: 50%;
+  border: 1px solid currentColor;
+  opacity: 0;
+  animation: non-somm-ring 2.4s cubic-bezier(.2, .7, .2, 1) infinite;
+}
+.non-sommbox__dot::after { animation-delay: .8s; }
+@keyframes non-somm-breathe {
+  0%, 100% { transform: scale(1); opacity: .85; }
+  50% { transform: scale(1.06); opacity: 1; }
+}
+@keyframes non-somm-ring {
+  0% { transform: scale(.72); opacity: .5; }
+  100% { transform: scale(1.45); opacity: 0; }
+}
+
+/* Answers resolve out of blur rather than appearing. */
+.non-sommbox .non-somm__stream,
+.non-somm .non-somm__stream,
+.non-somm__answer:not([hidden]) {
+  color: #EDEDE8;
+  animation: non-somm-line-in var(--duration-reveal, 700ms) var(--ease-standard) both;
+}
+@keyframes non-somm-line-in {
+  from { opacity: 0; transform: translateY(8px); filter: blur(6px); }
+  to { opacity: 1; transform: none; filter: blur(0); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .non-sommbox__opener { animation: none; color: #EDEDE8; background: none; -webkit-text-fill-color: currentColor; }
+  .non-sommbox__dot,
+  .non-sommbox__dot::before,
+  .non-sommbox__dot::after { animation: none; }
+  .non-sommbox .non-somm__stream,
+  .non-somm .non-somm__stream,
+  .non-somm__answer:not([hidden]) { animation: none; }
+}

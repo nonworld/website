@@ -118,6 +118,7 @@
         "sp4"
       ],
       "settings": {
+        "klaviyo_public_key": "U6PhdU",
         "show_somm": true,
         "somm_opener": "I've read the whole spec sheet for this bottle. Ask me anything — pairing, process, sugar, or whether it's right for you."
       }

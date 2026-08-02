@@ -12,51 +12,14 @@
     "main": {
       "type": "contact-main",
       "blocks": {
-        "t1": {
-          "type": "topic",
-          "settings": {
-            "label": "An order"
-          }
-        },
-        "t2": {
-          "type": "topic",
-          "settings": {
-            "label": "Stocking NON"
-          }
-        },
-        "t3": {
-          "type": "topic",
-          "settings": {
-            "label": "Trade or wholesale"
-          }
-        },
-        "t4": {
-          "type": "topic",
-          "settings": {
-            "label": "Press"
-          }
-        },
-        "t5": {
-          "type": "topic",
-          "settings": {
-            "label": "NONHQ"
-          }
-        },
-        "t6": {
-          "type": "topic",
-          "settings": {
-            "label": "Something else"
-          }
-        }
+        "t1": { "type": "topic", "settings": { "label": "An order" } },
+        "t2": { "type": "topic", "settings": { "label": "Stocking NON" } },
+        "t3": { "type": "topic", "settings": { "label": "Trade or wholesale" } },
+        "t4": { "type": "topic", "settings": { "label": "Press" } },
+        "t5": { "type": "topic", "settings": { "label": "NONHQ" } },
+        "t6": { "type": "topic", "settings": { "label": "Something else" } }
       },
-      "block_order": [
-        "t1",
-        "t2",
-        "t3",
-        "t4",
-        "t5",
-        "t6"
-      ],
+      "block_order": ["t1", "t2", "t3", "t4", "t5", "t6"],
       "settings": {
         "heading": "Contact",
         "submit_label": "Send",
@@ -67,7 +30,5 @@
       }
     }
   },
-  "order": [
-    "main"
-  ]
+  "order": ["main"]
 }

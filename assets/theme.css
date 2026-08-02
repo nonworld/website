@@ -4896,3 +4896,29 @@ select:-moz-focusring { color: transparent; text-shadow: 0 0 0 var(--non-fg); }
     mask-image: linear-gradient(to bottom, transparent 0, transparent 260px, #000 380px);
   }
 }
+
+/* Logos: bound BOTH dimensions, so neither shape can dominate.
+
+   Height-only sizing made wide wordmarks (AMAN, Vue de Monde) read enormous
+   while compact circular marks (Atelier Crenn, Alinea, The Fat Duck) read
+   tiny — same cap height, wildly different optical weight, because these
+   artworks carry very different proportions and built-in whitespace.
+
+   Capping width AND height means a wide mark is limited by its width and a
+   compact one by its height, which is much closer to equal visual area. It
+   cannot be perfect in CSS alone — optical balance across mixed logo artwork
+   ultimately needs per-logo tuning, and the Logo marquee block still has a
+   "Maximum height" setting for exactly that if any one still looks off. */
+.non-poured__set img {
+  height: auto;
+  width: auto;
+  max-height: 30px;
+  max-width: 120px;
+  min-width: 0;
+  margin: 0 30px;
+  object-fit: contain;
+  flex: 0 0 auto;
+}
+@media (max-width: 859px) {
+  .non-poured__set img { max-height: 22px; max-width: 88px; margin: 0 18px; }
+}

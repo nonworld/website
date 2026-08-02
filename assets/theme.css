@@ -3850,3 +3850,16 @@ select:-moz-focusring { color: transparent; text-shadow: 0 0 0 var(--non-fg); }
   inset: -9px;
   border-width: 1.5px;
 }
+
+/* The orb's halo and rings must be the orb's colour, not the label's.
+
+   The dot's BACKGROUND is the live green, but its `color` was inherited from
+   .non-sommbox__live (muted grey) — and the glow and both rings are drawn with
+   currentColor. So a green dot sat inside a grey halo with grey rings, which
+   is why it read as a speck rather than a live indicator. Setting color on the
+   dot makes every part of it agree. */
+.non-sommbox__dot,
+.non-somm__dot {
+  color: #4ade80;
+  background: #4ade80;
+}

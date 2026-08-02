@@ -7,28 +7,32 @@
           "type": "pillar",
           "settings": {
             "title": "Fruit",
-            "body": "Cold-steeped, dehydrated, roasted or reduced — whichever method gets the most out of it. Rarely juiced."
+            "body": "Cold-steeped, dehydrated, roasted or reduced — whichever method gets the most out of it. Rarely juiced.",
+            "icon": "fruit"
           }
         },
         "p2": {
           "type": "pillar",
           "settings": {
             "title": "Tannin",
-            "body": "Chamomile, cinnamon, tea, hops, citrus pith. Grip on the finish, so it holds a plate instead of washing through."
+            "body": "Chamomile, cinnamon, tea, hops, citrus pith. Grip on the finish, so it holds a plate instead of washing through.",
+            "icon": "tannin"
           }
         },
         "p3": {
           "type": "pillar",
           "settings": {
             "title": "Salinity",
-            "body": "Murray River salt, kombu. Salt makes food taste more like itself — a lever wine never had."
+            "body": "Murray River salt, kombu. Salt makes food taste more like itself — a lever wine never had.",
+            "icon": "zero"
           }
         },
         "p4": {
           "type": "pillar",
           "settings": {
             "title": "Acidity",
-            "body": "Barossa verjus, citrus, vinegar. Resets the palate between bites, and cools chilli instead of stoking it."
+            "body": "Barossa verjus, citrus, vinegar. Resets the palate between bites, and cools chilli instead of stoking it.",
+            "icon": "scale"
           }
         },
         "n1": {

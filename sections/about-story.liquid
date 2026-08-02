@@ -147,6 +147,7 @@
       {%- for block in pillars -%}
         <div {{ block.shopify_attributes }}>
           <div class="non-step__n">{{ forloop.index | prepend: '0' | slice: -2, 2 }}</div>
+          {% render 'stat-icon', icon: block.settings.icon %}
           <div class="non-step__t">{{ block.settings.title }}</div>
           <p class="non-step__b">{{ block.settings.body }}</p>
         </div>
@@ -634,6 +635,54 @@
       "name": "Pillar",
       "settings": [
         {
+          "type": "select",
+          "id": "icon",
+          "label": "Icon",
+          "default": "none",
+          "options": [
+            {
+              "value": "none",
+              "label": "None"
+            },
+            {
+              "value": "fruit",
+              "label": "Fruit"
+            },
+            {
+              "value": "tannin",
+              "label": "Tannin — leaf in cup"
+            },
+            {
+              "value": "zero",
+              "label": "Salinity / zero — struck glass"
+            },
+            {
+              "value": "scale",
+              "label": "Acidity — balance"
+            },
+            {
+              "value": "water",
+              "label": "Water — droplet"
+            },
+            {
+              "value": "leaf",
+              "label": "Leaf"
+            },
+            {
+              "value": "bottle",
+              "label": "Bottle"
+            },
+            {
+              "value": "star",
+              "label": "Star"
+            },
+            {
+              "value": "table",
+              "label": "The table"
+            }
+          ]
+        },
+        {
           "type": "text",
           "id": "title",
           "label": "Title"
@@ -682,13 +731,34 @@
           "id": "icon",
           "label": "Icon",
           "options": [
-            { "value": "none", "label": "None" },
-            { "value": "water", "label": "Water — droplet" },
-            { "value": "energy", "label": "Energy — bolt" },
-            { "value": "zero", "label": "Zero alcohol — struck glass" },
-            { "value": "leaf", "label": "Growing — leaf" },
-            { "value": "ship", "label": "Shipping — carton" },
-            { "value": "bottle", "label": "The liquid — bottle" }
+            {
+              "value": "none",
+              "label": "None"
+            },
+            {
+              "value": "water",
+              "label": "Water — droplet"
+            },
+            {
+              "value": "energy",
+              "label": "Energy — bolt"
+            },
+            {
+              "value": "zero",
+              "label": "Zero alcohol — struck glass"
+            },
+            {
+              "value": "leaf",
+              "label": "Growing — leaf"
+            },
+            {
+              "value": "ship",
+              "label": "Shipping — carton"
+            },
+            {
+              "value": "bottle",
+              "label": "The liquid — bottle"
+            }
           ],
           "default": "none"
         },

@@ -2553,7 +2553,18 @@ a, button, .non-card, .non-filter, .non-pair__opt, .non-somm__seed,
   animation: rise .4s var(--ease-standard) both;
 }
 .non-pair__verdict[hidden] { display: none; }
-.non-pair__body { margin-top: 14px; }
+
+/* Its own class, NOT .non-pair__q. That one is the fieldset legend and is
+   `display: grid; grid-template-columns: 34px 1fr` so a question number can sit
+   beside the question — so a plain string dropped into it rendered inside a
+   34px column, one word per line down the page. Reusing a class because the
+   text looked similar, without checking what the class actually did. */
+.non-pair__verdictq {
+  font-size: clamp(26px, 2.8vw, 40px);
+  line-height: 1.05; font-weight: 600; letter-spacing: -.025em;
+  max-width: 22ch; text-wrap: balance;
+}
+.non-pair__body { margin-top: 18px; }
 
 /* Why it works for what was ANSWERED. One line per parameter, so the reasoning
    is visibly a consequence of the choices rather than a paragraph that would

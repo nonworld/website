@@ -1426,7 +1426,16 @@ button { font-family: inherit; }
 .non-lotto__copy-k { font-family: var(--non-mono); font-size: 9.5px; letter-spacing: .14em; text-transform: uppercase; color: rgba(35,31,32,.5); }
 .non-lotto__copy-v { font-family: var(--non-mono); font-size: 13px; color: var(--non-ink); }
 .non-lotto__fine { font-size: 11.5px; color: rgba(35,31,32,.68); }
-.non-lotto__foil { position: absolute; inset: 0; width: 100%; height: 100%; display: block; cursor: pointer; }
+/* touch-action: none is required by the pointer handlers, not decoration. The
+   browser's default touch behaviour claims a drag as a scroll and fires
+   pointercancel, which on a phone ends the scratch the moment it starts
+   moving. Declaring that this element handles its own gestures stops the
+   browser competing for them. */
+.non-lotto__foil {
+  position: absolute; inset: 0; width: 100%; height: 100%;
+  display: block; cursor: pointer;
+  touch-action: none;
+}
 .non-lotto__claim { display: flex; gap: 8px; animation: cardIn var(--duration-reveal) var(--ease-standard) both; }
 .non-lotto__claim[hidden] { display: none; }
 .non-lotto__email {

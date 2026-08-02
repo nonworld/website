@@ -395,13 +395,50 @@
 
   /* --- events ------------------------------------------------------------ */
 
-  canvas.addEventListener('mousedown', function (e) { last = null; drawing = true; scratchAt(e, false); e.preventDefault(); });
-  canvas.addEventListener('mousemove', function (e) { if (drawing) scratchAt(e, true); });
-  canvas.addEventListener('mouseup', function () { drawing = false; if (cleared() > REVEAL_AT) clearFoil(); });
-  canvas.addEventListener('mouseleave', function () { drawing = false; });
-  canvas.addEventListener('touchstart', function (e) { last = null; drawing = true; scratchAt(e, false); e.preventDefault(); }, { passive: false });
-  canvas.addEventListener('touchmove', function (e) { if (drawing) scratchAt(e, true); e.preventDefault(); }, { passive: false });
-  canvas.addEventListener('touchend', function () { drawing = false; if (cleared() > REVEAL_AT) clearFoil(); });
+  /* Pointer events with CAPTURE, replacing separate mouse and touch handlers.
+   *
+   * The bug this fixes: mouseleave set drawing = false, and nothing set it back
+   * except a fresh mousedown. So holding the button, drifting off the foil and
+   * coming back left a dead cursor — you had to click again to carry on. On a
+   * small panel you cross that edge constantly, which made the card feel
+   * broken rather than fiddly.
+   *
+   * setPointerCapture retargets every later pointermove and pointerup to this
+   * canvas until release, so the stroke continues off the element and resumes
+   * on the way back in — the same contract a native slider has. It also
+   * collapses mouse, touch and pen into one path instead of two that had to be
+   * kept in step.
+   *
+   * pointercancel matters on touch: the OS takes the pointer away for a
+   * gesture and no pointerup ever arrives, which would otherwise leave drawing
+   * stuck true and the next tap scratching from wherever the last one ended.
+   */
+  canvas.addEventListener('pointerdown', function (e) {
+    last = null;
+    drawing = true;
+    if (canvas.setPointerCapture) {
+      try { canvas.setPointerCapture(e.pointerId); } catch (err) { /* non-fatal */ }
+    }
+    scratchAt(e, false);
+    e.preventDefault();
+  });
+
+  canvas.addEventListener('pointermove', function (e) {
+    if (drawing) scratchAt(e, true);
+  });
+
+  function endStroke(e) {
+    if (!drawing) return;
+    drawing = false;
+    last = null;
+    if (e && e.pointerId != null && canvas.releasePointerCapture) {
+      try { canvas.releasePointerCapture(e.pointerId); } catch (err) { /* already gone */ }
+    }
+    if (cleared() > REVEAL_AT) clearFoil();
+  }
+
+  canvas.addEventListener('pointerup', endStroke);
+  canvas.addEventListener('pointercancel', endStroke);
 
   // Keyboard and pointer-less access: scratching is decorative, so let anyone
   // who can't drag simply open the prize.

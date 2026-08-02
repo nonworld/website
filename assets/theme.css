@@ -2025,6 +2025,12 @@ button { font-family: inherit; }
    The design treats each question as a bold numbered heading. The port had a
    'question 1 of 6' counter and progress dashes, which reads like a survey. */
 .non-pair__axis + .non-pair__axis { margin-top: 34px; }
+
+/* The questions load as you answer, so an unreached or retired question is
+   hidden outright. A fieldset carries a UA display that beats the [hidden]
+   attribute, and the sibling margin above would otherwise leave a gap where
+   the hidden question used to be. */
+.non-pair__axis[hidden] { display: none !important; }
 .non-pair__q {
   display: grid; grid-template-columns: 34px 1fr; align-items: baseline;
   gap: 10px; margin-bottom: 14px; padding: 0;

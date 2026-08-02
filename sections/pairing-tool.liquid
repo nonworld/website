@@ -54,7 +54,8 @@
                   class="non-pair__opt"
                   data-non-pair-opt
                   data-scores="{{ parts[1] | strip | escape }}"
-                  data-trace="{{ parts[2] | default: '' | strip | escape }}">
+                  data-trace="{{ parts[2] | default: '' | strip | escape }}"
+                  data-skip="{{ parts[3] | default: '' | strip | escape }}">
                   {{ parts[0] | strip }}
                 </button>
               {%- endif -%}

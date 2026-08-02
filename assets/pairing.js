@@ -33,7 +33,6 @@
     try { Object.assign(catalogue, JSON.parse(n.textContent)); } catch (e) {}
   });
 
-  var step = 0;
   var scores = {};
   var trace = [];
 
@@ -62,42 +61,98 @@
      it — it simply is not mirrored under the picture any more. */
 
   /**
-   * Every question is visible at once now, per the design's numbered headings —
-   * numbering a sequence you can only see one step of is pointless. So this no
-   * longer hides anything; it marks progress and scrolls the next question into
-   * view, which is the useful half of what stepping did.
+   * The questions are dynamic: they load as you answer, and a question that
+   * your earlier answer made meaningless never appears.
    *
-   * The dots and the "question n of m" counter are gone from the markup, hence
-   * the guards: this has to keep working if either is absent.
+   * All three used to render at once and score independently, so "Dessert &
+   * cheese" sat next to a live "How is it cooked?" offering Raw or cured —
+   * you could tell the tool you were eating a raw cheese board, and it would
+   * score it. An option can now declare which later questions it retires
+   * (4th field, `data-skip`), and anything beyond the question you are on
+   * stays hidden until you get there.
+   *
+   * Everything derives from `chosen` rather than from a step counter, because
+   * changing an earlier answer can retire or restore a later question and a
+   * counter cannot describe that.
    */
-  function showStep(n) {
+
+  function skippedSet() {
+    var out = {};
+    Object.keys(chosen).forEach(function (i) {
+      (chosen[i].skip || []).forEach(function (n) { out[n] = true; });
+    });
+    return out;
+  }
+
+  var lastRevealed = 0;
+
+  function refresh() {
+    var sk = skippedSet();
+
+    // An answer to a question that has since been retired must not keep
+    // scoring. Drop it and clear its pressed state.
     axes.forEach(function (axis, i) {
-      axis.classList.toggle('is-answered', i < n);
-      axis.classList.toggle('is-current', i === n);
+      if (sk[i] && chosen[i]) {
+        removeAxis(i);
+        axis.querySelectorAll('[data-non-pair-opt]').forEach(function (o) {
+          o.setAttribute('aria-pressed', 'false');
+        });
+      }
+    });
+
+    var active = [];
+    axes.forEach(function (a, i) { if (!sk[i]) active.push(i); });
+
+    var firstUnanswered = -1;
+    for (var k = 0; k < active.length; k++) {
+      if (!chosen[active[k]]) { firstUnanswered = k; break; }
+    }
+    var revealUpTo = firstUnanswered === -1 ? active.length - 1 : firstUnanswered;
+
+    axes.forEach(function (axis, i) {
+      var isSkipped = !!sk[i];
+      var pos = active.indexOf(i);
+      axis.hidden = isSkipped || pos > revealUpTo;
+      axis.classList.toggle('is-skipped', isSkipped);
+      axis.classList.toggle('is-answered', !!chosen[i]);
+      axis.classList.toggle('is-current', !axis.hidden && pos === revealUpTo && firstUnanswered !== -1);
+    });
+
+    // Renumber what is actually on screen. Leaving 01 / 03 with 02 retired
+    // reads as a missing question rather than an irrelevant one.
+    var n = 0;
+    axes.forEach(function (axis) {
+      if (axis.hidden) return;
+      n += 1;
+      var el = axis.querySelector('.non-pair__n');
+      if (el) el.textContent = (n < 10 ? '0' : '') + n;
     });
 
     if (dots && dots.length) {
       dots.forEach(function (dot, i) {
         dot.className =
-          'non-pair__dot' + (i < n ? ' non-pair__dot--done' : i === n ? ' non-pair__dot--now' : '');
+          'non-pair__dot' +
+          (i < revealUpTo ? ' non-pair__dot--done' : i === revealUpTo ? ' non-pair__dot--now' : '');
       });
     }
     if (stepEl) {
       stepEl.textContent =
-        n >= axes.length ? 'done' : 'question ' + (n + 1) + ' of ' + axes.length;
+        firstUnanswered === -1 ? 'done' : 'question ' + (revealUpTo + 1) + ' of ' + active.length;
     }
 
-    var next = axes[n];
-    if (next && n > 0) {
-      next.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    if (revealUpTo > lastRevealed && firstUnanswered !== -1) {
+      var next = axes[active[revealUpTo]];
+      if (next) next.scrollIntoView({ behavior: 'smooth', block: 'center' });
     }
+    lastRevealed = revealUpTo;
+
+    if (active.length && firstUnanswered === -1) finish();
   }
 
   function finish() {
     var code = leader();
     // The questions stay on screen. They are the page now, and hiding what was
     // answered to reveal a verdict leaves nothing to change your mind with.
-    axes.forEach(function (a) { a.classList.add('is-answered'); });
     resultEl.hidden = false;
 
     var product = catalogue[code];
@@ -149,8 +204,6 @@
           : '<a class="non-pair__add" href="' + product.url + '">' + addLabel + '</a>');
       buyEl.hidden = false;
     }
-
-    showStep(axes.length);
   }
 
   // What each axis currently contributes, so re-answering REPLACES rather than
@@ -160,15 +213,30 @@
   // one question, silently double-counted.
   var chosen = {};
 
-  function applyAxis(axisIndex, opt) {
+  function removeAxis(axisIndex) {
     var prev = chosen[axisIndex];
-    if (prev) {
-      Object.keys(prev.delta).forEach(function (code) {
-        scores[code] = (scores[code] || 0) - prev.delta[code];
-      });
-      var at = trace.indexOf(prev.line);
-      if (prev.line && at !== -1) trace.splice(at, 1);
-    }
+    if (!prev) return;
+    Object.keys(prev.delta).forEach(function (code) {
+      scores[code] = (scores[code] || 0) - prev.delta[code];
+    });
+    var at = trace.indexOf(prev.line);
+    if (prev.line && at !== -1) trace.splice(at, 1);
+    delete chosen[axisIndex];
+  }
+
+  // Which later questions this answer retires. Authored in the block as a 4th
+  // pipe field of question numbers as displayed ("Dessert & cheese | ... | 2"),
+  // stored 0-based here.
+  function parseSkip(str) {
+    return (str || '')
+      .split(/[,\s]+/)
+      .map(function (s) { return parseInt(s, 10); })
+      .filter(function (n) { return !isNaN(n) && n > 0; })
+      .map(function (n) { return n - 1; });
+  }
+
+  function applyAxis(axisIndex, opt) {
+    removeAxis(axisIndex);
 
     var delta = parseScores(opt.getAttribute('data-scores') || '');
     Object.keys(delta).forEach(function (code) {
@@ -178,7 +246,7 @@
     var line = opt.getAttribute('data-trace');
     if (line) trace.push(line);
 
-    chosen[axisIndex] = { delta: delta, line: line };
+    chosen[axisIndex] = { delta: delta, line: line, skip: parseSkip(opt.getAttribute('data-skip')) };
   }
 
   root.addEventListener('click', function (e) {
@@ -195,18 +263,12 @@
         });
       }
 
-      var isFirstAnswer = !chosen[axisIndex];
       applyAxis(axisIndex, opt);
 
-      // Only advance on a NEW answer. Changing your mind should not skip you
-      // forward past a question you have not reached.
-      if (isFirstAnswer) {
-        step += 1;
-        if (step >= axes.length) finish();
-        else showStep(step);
-      } else if (Object.keys(chosen).length >= axes.length) {
-        finish();
-      }
+      // No step counter to advance. refresh() works out what is now relevant,
+      // what is answered, and whether that leaves anything left to ask —
+      // which is the only thing that can survive an earlier answer changing.
+      refresh();
       return;
     }
 
@@ -215,15 +277,15 @@
       root.querySelectorAll('[data-non-pair-opt]').forEach(function (o) {
         o.setAttribute('aria-pressed', 'false');
       });
-      step = 0;
       scores = {};
       trace = [];
       if (buyEl) { buyEl.hidden = true; buyEl.innerHTML = ''; }
       resultEl.hidden = true;
       if (picksEl) picksEl.hidden = true;
-      showStep(0);
+      lastRevealed = 0;
+      refresh();
     }
   });
 
-  showStep(0);
+  refresh();
 })();

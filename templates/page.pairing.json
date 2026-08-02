@@ -16,7 +16,7 @@
           "type": "axis",
           "settings": {
             "question": "Which course?",
-            "options": "Starters | NON1:2,NON5:1 | Light plates, salinity before weight.\nMains | NON3:2 | The plate has structure, so the glass needs grip.\nDessert & cheese | NON3:1,NON1:1 | Sugar and fat, so bitterness has to survive it.\nJust a glass | NON5:2 | Nothing to match, so it only has to be sharp."
+            "options": "Starters | NON1:2,NON5:1 | Light plates, salinity before weight.\nMains | NON3:2 | The plate has structure, so the glass needs grip.\nDessert & cheese | NON3:1,NON1:1 | Sugar and fat, so bitterness has to survive it. | 2\nJust a glass | NON5:2 | Nothing to match, so it only has to be sharp. | 2 3"
           }
         },
         "a2": {

@@ -1,0 +1,58 @@
+{%- comment -%}
+  Page header image — one component, six pages.
+
+  Params:
+    section  (required) — the calling section, for its settings
+    ratio    optional   — CSS aspect-ratio, defaults to the section setting
+
+  Editable from the theme editor on every page that renders it: upload via
+  Header image, or paste a CDN URL into Header image URL when the asset lives
+  outside the theme's own files. The picker wins if both are set.
+
+  When neither is set it draws a PLACEHOLDER rather than nothing. That is
+  deliberate — Aaron asked for a visible reminder to change it, and an empty
+  header looks finished, which is how a missing image survives to launch. The
+  placeholder names the exact setting to change, so whoever opens the editor
+  does not have to go looking.
+
+  Monochrome, Helvetica and JetBrains Mono only — the placeholder obeys the
+  brand rules like anything else that can end up in front of someone.
+{%- endcomment -%}
+
+{%- liquid
+  assign img = section.settings.header_image
+  assign img_url = section.settings.header_image_url
+  assign alt = section.settings.header_image_alt | default: section.settings.heading | default: page.title
+  assign ar = ratio | default: section.settings.header_image_ratio | default: '21 / 9'
+-%}
+
+{%- if section.settings.show_header_image -%}
+  <div class="non-pagehead-media" style="--non-pagehead-ar: {{ ar }}">
+    {%- if img != blank -%}
+      {{
+        img
+        | image_url: width: 2400, format: 'webp'
+        | image_tag:
+          loading: 'lazy',
+          widths: '600,900,1200,1800,2400',
+          sizes: '100vw',
+          class: 'non-pagehead-media__img',
+          alt: alt
+      }}
+    {%- elsif img_url != blank -%}
+      <img
+        class="non-pagehead-media__img"
+        src="{{ img_url }}"
+        alt="{{ alt | escape }}"
+        loading="lazy">
+    {%- else -%}
+      <div class="non-pagehead-media__ph">
+        <span class="non-mono non-pagehead-media__phlabel">Placeholder — replace before launch</span>
+        <span class="non-pagehead-media__phhint">
+          Theme editor &rarr; {{ section.settings.heading | default: page.title | default: 'this section' }} &rarr; Header image.
+          Landscape, 2400px wide or more.
+        </span>
+      </div>
+    {%- endif -%}
+  </div>
+{%- endif -%}

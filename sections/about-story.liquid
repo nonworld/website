@@ -30,6 +30,7 @@
     <p class="non-about-hero__lead">{{ section.settings.lead }}</p>
   {%- endif -%}
 </div>
+{% render 'page-header-image', section: section %}
 
 {%- assign creds = section.blocks | where: 'type', 'credential' -%}
 {%- if creds.size > 0 -%}
@@ -757,6 +758,57 @@
       "id": "stats_note",
       "label": "Stats note",
       "default": "Made on 100% green energy, shipped carbon neutral."
+    },
+    {
+      "type": "header",
+      "content": "Header image"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_header_image",
+      "label": "Show header image",
+      "default": true,
+      "info": "Draws a placeholder until an image is set, as a reminder to replace it."
+    },
+    {
+      "type": "image_picker",
+      "id": "header_image",
+      "label": "Header image"
+    },
+    {
+      "type": "text",
+      "id": "header_image_url",
+      "label": "Header image URL",
+      "info": "Used only when no image is uploaded."
+    },
+    {
+      "type": "text",
+      "id": "header_image_alt",
+      "label": "Header image alt text"
+    },
+    {
+      "type": "select",
+      "id": "header_image_ratio",
+      "label": "Header image shape",
+      "options": [
+        {
+          "value": "21 / 9",
+          "label": "Letterbox (21:9)"
+        },
+        {
+          "value": "16 / 9",
+          "label": "Wide (16:9)"
+        },
+        {
+          "value": "3 / 1",
+          "label": "Panorama (3:1)"
+        },
+        {
+          "value": "4 / 3",
+          "label": "Landscape (4:3)"
+        }
+      ],
+      "default": "21 / 9"
     }
   ],
   "blocks": [
@@ -828,17 +880,37 @@
       "type": "not",
       "name": "What we're not",
       "settings": [
-        { "type": "image_picker", "id": "image", "label": "Picture" },
-        { "type": "text", "id": "image_alt", "label": "Picture alt text" },
+        {
+          "type": "image_picker",
+          "id": "image",
+          "label": "Picture"
+        },
+        {
+          "type": "text",
+          "id": "image_alt",
+          "label": "Picture alt text"
+        },
         {
           "type": "select",
           "id": "icon",
           "label": "Icon",
           "options": [
-            { "value": "none", "label": "None" },
-            { "value": "no-stripped", "label": "Struck bottle (not de-alcoholised)" },
-            { "value": "no-mocktail", "label": "Struck coupe (not a mocktail)" },
-            { "value": "no-imitation", "label": "Struck pair (not an imitation)" }
+            {
+              "value": "none",
+              "label": "None"
+            },
+            {
+              "value": "no-stripped",
+              "label": "Struck bottle (not de-alcoholised)"
+            },
+            {
+              "value": "no-mocktail",
+              "label": "Struck coupe (not a mocktail)"
+            },
+            {
+              "value": "no-imitation",
+              "label": "Struck pair (not an imitation)"
+            }
           ],
           "default": "none",
           "info": "Each draws the object with a single rule through it."
@@ -859,40 +931,93 @@
       "type": "procstep",
       "name": "Process step",
       "settings": [
-        { "type": "image_picker", "id": "image", "label": "Picture" },
-        { "type": "text", "id": "image_alt", "label": "Picture alt text" },
+        {
+          "type": "image_picker",
+          "id": "image",
+          "label": "Picture"
+        },
+        {
+          "type": "text",
+          "id": "image_alt",
+          "label": "Picture alt text"
+        },
         {
           "type": "select",
           "id": "scene",
           "label": "Drawing",
           "options": [
-            { "value": "fruit", "label": "Fruit into the pot" },
-            { "value": "tannin", "label": "Leaf steeping" },
-            { "value": "salinity", "label": "Salt falling" },
-            { "value": "acidity", "label": "Verjus poured" },
-            { "value": "balance", "label": "The balance" }
+            {
+              "value": "fruit",
+              "label": "Fruit into the pot"
+            },
+            {
+              "value": "tannin",
+              "label": "Leaf steeping"
+            },
+            {
+              "value": "salinity",
+              "label": "Salt falling"
+            },
+            {
+              "value": "acidity",
+              "label": "Verjus poured"
+            },
+            {
+              "value": "balance",
+              "label": "The balance"
+            }
           ],
           "default": "fruit"
         },
-        { "type": "text", "id": "label", "label": "Label" },
-        { "type": "text", "id": "title", "label": "Title" },
-        { "type": "textarea", "id": "body", "label": "Body" }
+        {
+          "type": "text",
+          "id": "label",
+          "label": "Label"
+        },
+        {
+          "type": "text",
+          "id": "title",
+          "label": "Title"
+        },
+        {
+          "type": "textarea",
+          "id": "body",
+          "label": "Body"
+        }
       ]
     },
     {
       "type": "procbottle",
       "name": "Process bottle",
       "settings": [
-        { "type": "text", "id": "code", "label": "Code" },
-        { "type": "color", "id": "accent", "label": "Fruit colour", "default": "#E4573F" },
+        {
+          "type": "text",
+          "id": "code",
+          "label": "Code"
+        },
+        {
+          "type": "color",
+          "id": "accent",
+          "label": "Fruit colour",
+          "default": "#E4573F"
+        },
         {
           "type": "select",
           "id": "fruit",
           "label": "Fruit shape",
           "options": [
-            { "value": "berry", "label": "Berry" },
-            { "value": "pear", "label": "Pear" },
-            { "value": "citrus", "label": "Citrus" }
+            {
+              "value": "berry",
+              "label": "Berry"
+            },
+            {
+              "value": "pear",
+              "label": "Pear"
+            },
+            {
+              "value": "citrus",
+              "label": "Citrus"
+            }
           ],
           "default": "berry"
         },
@@ -901,17 +1026,47 @@
           "id": "bot",
           "label": "Botanical shape",
           "options": [
-            { "value": "flower", "label": "Flower" },
-            { "value": "kelp", "label": "Kelp" },
-            { "value": "quill", "label": "Quill" },
-            { "value": "oak", "label": "Oak" },
-            { "value": "bean", "label": "Bean" }
+            {
+              "value": "flower",
+              "label": "Flower"
+            },
+            {
+              "value": "kelp",
+              "label": "Kelp"
+            },
+            {
+              "value": "quill",
+              "label": "Quill"
+            },
+            {
+              "value": "oak",
+              "label": "Oak"
+            },
+            {
+              "value": "bean",
+              "label": "Bean"
+            }
           ],
           "default": "flower"
         },
-        { "type": "textarea", "id": "titles", "label": "Step titles", "info": "One line per step, in order." },
-        { "type": "textarea", "id": "bodies", "label": "Step bodies", "info": "One line per step, in order." },
-        { "type": "textarea", "id": "captions", "label": "Captions", "info": "One line per step, in order." }
+        {
+          "type": "textarea",
+          "id": "titles",
+          "label": "Step titles",
+          "info": "One line per step, in order."
+        },
+        {
+          "type": "textarea",
+          "id": "bodies",
+          "label": "Step bodies",
+          "info": "One line per step, in order."
+        },
+        {
+          "type": "textarea",
+          "id": "captions",
+          "label": "Captions",
+          "info": "One line per step, in order."
+        }
       ]
     },
     {

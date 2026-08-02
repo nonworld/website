@@ -5096,3 +5096,61 @@ select:-moz-focusring { color: transparent; text-shadow: 0 0 0 var(--non-fg); }
   border-color: var(--non-invert-bg);
   font-weight: 400;
 }
+
+/* ==========================================================================
+   Page header image.
+
+   One band under every page's heading, rendered by snippets/page-header-image.
+   Editable per page from the theme editor; when nothing is set it draws a
+   placeholder that names the setting to change, because an empty header looks
+   finished and that is how a missing image survives to launch.
+   ========================================================================== */
+.non-pagehead-media {
+  margin-top: 28px;
+  aspect-ratio: var(--non-pagehead-ar, 21 / 9);
+  overflow: hidden;
+  background: var(--non-panel);
+}
+.non-pagehead-media__img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* The placeholder. Hatched, monochrome, and unmistakably unfinished — it has
+   to read as a note to self, not as art direction. */
+.non-pagehead-media__ph {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  padding: 24px;
+  text-align: center;
+  border: 1px dashed var(--non-line-strong);
+  background-image: repeating-linear-gradient(
+    45deg,
+    transparent 0 10px,
+    var(--non-line) 10px 11px
+  );
+}
+.non-pagehead-media__phlabel {
+  font-size: var(--t-mono);
+  letter-spacing: .2em;
+  text-transform: uppercase;
+  color: var(--non-fg);
+}
+.non-pagehead-media__phhint {
+  font-family: var(--non-sans);
+  font-size: 13px;
+  line-height: 1.5;
+  color: var(--non-fg-mute);
+  max-width: 46ch;
+}
+
+@media (max-width: 859px) {
+  .non-pagehead-media { margin-top: 20px; aspect-ratio: 16 / 9; }
+}

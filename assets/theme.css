@@ -4380,3 +4380,36 @@ select:-moz-focusring { color: transparent; text-shadow: 0 0 0 var(--non-fg); }
   padding: 10px 14px;
   font-size: 13px;
 }
+
+/* The field surface, at the specificity that wins.
+
+   Third time this pattern has bitten in one session: an earlier rule scoped
+   `.non-somm .non-somm__input` (0,2,0) sets `background: transparent`, and the
+   later single-class rule (0,1,0) lost — so the field kept reading as a
+   caption with a rule under it. Matching the selector exactly rather than
+   reaching for !important; the cascade is behaving correctly and the earlier
+   rule was simply more specific. */
+.non-somm .non-somm__input,
+.non-somm__bar .non-somm__input,
+.non-sommbox__ask input,
+.non-sommbox__ask .non-somm__input {
+  background: rgba(242, 240, 234, .05);
+  border: 1px solid #3d3d38;
+  border-radius: 0;
+  text-align: left;
+  padding: 15px 16px;
+}
+.non-somm .non-somm__input:hover,
+.non-somm__bar .non-somm__input:hover,
+.non-sommbox__ask input:hover,
+.non-sommbox__ask .non-somm__input:hover {
+  background: rgba(242, 240, 234, .08);
+  border-color: #55534e;
+}
+.non-somm .non-somm__input:focus,
+.non-somm__bar .non-somm__input:focus,
+.non-sommbox__ask input:focus,
+.non-sommbox__ask .non-somm__input:focus {
+  background: rgba(242, 240, 234, .1);
+  border-color: #8d8d87;
+}

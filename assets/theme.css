@@ -4795,3 +4795,40 @@ select:-moz-focusring { color: transparent; text-shadow: 0 0 0 var(--non-fg); }
   .non-somm__answer,
   .non-somm__stream { text-align: left; }
 }
+
+/* More room. The two-column block was right but tight: the orb sat close to
+   the field, the component was capped narrow enough to squeeze the input, and
+   the gap between the field row and the suggestions was larger than the gap
+   above it — so the spacing read as uneven rather than generous.
+
+   Wider measure, a bigger gutter between the orb and the conversation, real
+   vertical padding, and one consistent rhythm down the right column. */
+@media (min-width: 700px) {
+  .non-somm,
+  .non-sommbox {
+    grid-template-columns: 96px minmax(0, 1fr);
+    column-gap: 44px;
+    max-width: 880px;
+    padding: 34px 0 30px;
+  }
+  .non-somm::before,
+  .non-sommbox::before { width: 96px; height: 96px; }
+
+  /* One rhythm: every step down the column uses the same interval. */
+  .non-sommbox__head { margin: 0 0 12px; }
+  .non-sommbox__body { margin: 0 0 20px; }
+  .non-somm__bar,
+  .non-sommbox__ask { margin: 0 0 20px; gap: 12px; }
+  .non-somm__seeds,
+  .non-sommbox__seeds { gap: 10px; }
+
+  /* The controls get their height back now there is room for them. */
+  .non-somm .non-somm__input,
+  .non-sommbox__ask input,
+  .non-sommbox__ask .non-somm__input { height: 52px; font-size: 16px; padding: 0 18px; }
+  .non-somm__submit,
+  .non-sommbox__submit { height: 52px; padding: 0 26px; }
+  .non-somm .non-somm__seed,
+  .non-sommbox .non-somm__seed,
+  .non-sommbox__seeds button { padding: 10px 15px; font-size: 13px; }
+}

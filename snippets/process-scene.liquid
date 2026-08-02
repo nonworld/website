@@ -1,0 +1,96 @@
+{%- comment -%}
+  The five scenes of "how it's made", drawn.
+
+  Same conventions as stat-icon: 1px strokes, butt caps, mitre joins, no
+  rounded corners, a 32-unit square viewBox sized in CSS. Two differences,
+  both deliberate:
+
+  1. The FRUIT is painted, everything else is currentColor. That is Aaron's
+     ruling of 2026-08-02 — "the fruit can have colour for once" — and it is
+     the only sanctioned break from the monochrome identity. The colour comes
+     from --non-proc-accent so it changes with the bottle rather than being
+     hardcoded per scene.
+
+  2. Strokes carry pathLength="1" so the draw-on animation in theme.css can use
+     a single dasharray for every path regardless of its real length. Without
+     it each line would need its own measured length and would draw at its own
+     speed.
+
+  params: scene ('fruit' | 'tannin' | 'salinity' | 'acidity' | 'balance')
+{%- endcomment -%}
+
+{%- case scene -%}
+
+  {%- when 'fruit' -%}
+    {%- comment -%} Fruit going into the pot. The fruit is the painted part. {%- endcomment -%}
+    <svg class="non-proc__art" viewBox="0 0 32 32" fill="none" aria-hidden="true" focusable="false">
+      <g stroke="currentColor" stroke-width="1" stroke-linecap="butt" stroke-linejoin="miter">
+        <path pathLength="1" d="M5 16 h22 v7 a5 5 0 0 1-5 5 H10 a5 5 0 0 1-5-5 z"/>
+        <path pathLength="1" d="M3 16 h26"/>
+        <path pathLength="1" d="M11 13 c0-2 1.4-3.4 3-4"/>
+      </g>
+      <g class="non-proc__fruit">
+        <circle cx="16" cy="7" r="3.4" fill="var(--non-proc-accent)"/>
+        <circle cx="22.5" cy="10.5" r="2.1" fill="var(--non-proc-accent)" opacity=".72"/>
+        <circle cx="10" cy="10" r="1.7" fill="var(--non-proc-accent)" opacity=".55"/>
+      </g>
+    </svg>
+
+  {%- when 'tannin' -%}
+    {%- comment -%} A leaf steeping in a cup — tannin is something infused. {%- endcomment -%}
+    <svg class="non-proc__art" viewBox="0 0 32 32" fill="none" aria-hidden="true" focusable="false">
+      <g stroke="currentColor" stroke-width="1" stroke-linecap="butt" stroke-linejoin="miter">
+        <path pathLength="1" d="M6 13 h16 v6 a8 8 0 0 1-16 0 z"/>
+        <path pathLength="1" d="M22 14.4 h2.4 a3.2 3.2 0 0 1 0 6.4 h-.7"/>
+        <path pathLength="1" d="M12 10 c0-2.2 1.6-3.6 3.2-4.2"/>
+        <path pathLength="1" d="M17.6 10 c0-2.2 1.6-3.6 3.2-4.2"/>
+      </g>
+      <path class="non-proc__fruit" d="M13.5 22 c0-2.6 2-4.6 4.6-4.6 c0 2.6-2 4.6-4.6 4.6 z"
+            fill="var(--non-proc-accent)" opacity=".8"/>
+    </svg>
+
+  {%- when 'salinity' -%}
+    {%- comment -%} Salt falling. Crystals stay ink — salt is not the fruit. {%- endcomment -%}
+    <svg class="non-proc__art" viewBox="0 0 32 32" fill="none" aria-hidden="true" focusable="false">
+      <g stroke="currentColor" stroke-width="1" stroke-linecap="butt" stroke-linejoin="miter">
+        <path pathLength="1" d="M11 3 h10 l-1.4 6 h-7.2 z"/>
+        <path pathLength="1" d="M12.4 9 L11 13 h10 l-1.4-4"/>
+        <path pathLength="1" d="M7 26 h18"/>
+      </g>
+      <g class="non-proc__grains" stroke="currentColor" stroke-width="1" stroke-linecap="butt">
+        <path pathLength="1" d="M13 16 v2"/>
+        <path pathLength="1" d="M16 18 v2.4"/>
+        <path pathLength="1" d="M19 15.6 v2"/>
+        <path pathLength="1" d="M15 22.6 v1.6"/>
+      </g>
+    </svg>
+
+  {%- when 'acidity' -%}
+    {%- comment -%} Verjus poured from a jug. The pour is the painted part. {%- endcomment -%}
+    <svg class="non-proc__art" viewBox="0 0 32 32" fill="none" aria-hidden="true" focusable="false">
+      <g stroke="currentColor" stroke-width="1" stroke-linecap="butt" stroke-linejoin="miter">
+        <path pathLength="1" d="M6 5 h11 v9 a5.5 5.5 0 0 1-5.5 5.5 A5.5 5.5 0 0 1 6 14 z"/>
+        <path pathLength="1" d="M17 7.6 h2.6 a2.8 2.8 0 0 1 0 5.6 H19"/>
+        <path pathLength="1" d="M9 27 h14"/>
+      </g>
+      <path class="non-proc__fruit" d="M19.6 13.6 c1.6 3.4 2.4 6.8 2.4 10.4"
+            stroke="var(--non-proc-accent)" stroke-width="1.4" stroke-linecap="butt" fill="none"/>
+    </svg>
+
+  {%- when 'balance' -%}
+    {%- comment -%}
+      A balance coming to rest. The loaded pan carries the accent, because what
+      is being balanced against is the fruit's own sweetness.
+    {%- endcomment -%}
+    <svg class="non-proc__art" viewBox="0 0 32 32" fill="none" aria-hidden="true" focusable="false">
+      <g stroke="currentColor" stroke-width="1" stroke-linecap="butt" stroke-linejoin="miter">
+        <path pathLength="1" d="M16 5 V27"/>
+        <path pathLength="1" d="M9 27 h14"/>
+        <path pathLength="1" d="M5 9 h22"/>
+        <path pathLength="1" d="M5 9 L2 16 a3.4 3.4 0 0 0 6 0 z"/>
+        <path pathLength="1" d="M27 9 L24 16 a3.4 3.4 0 0 0 6 0 z"/>
+      </g>
+      <circle class="non-proc__fruit" cx="27" cy="13.4" r="1.8" fill="var(--non-proc-accent)"/>
+    </svg>
+
+{%- endcase -%}

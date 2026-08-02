@@ -1,0 +1,193 @@
+{% render 'section-style', section: section %}
+{%- comment -%}
+  "How it's made" as a drawn sequence, for About.
+
+  Rebuilt natively rather than embedding the supplied artifact. That file was a
+  bundled React page — 139KB of HTML plus a 69KB support script, pulling React
+  18 from unpkg at runtime and base64-decoding its own assets on load. On a
+  commerce site that is a third-party point of failure, a system-font stack and
+  a palette that is not ours, for a band that is five drawings and some copy.
+  Everything here is Liquid, one small script and CSS on the existing tokens.
+
+  Two block types:
+
+    step     the five stages, in order. Copy is editable; the drawing is chosen
+             from a fixed set because each scene is authored, not generic.
+    bottle   a product chip. Carries the accent and its own five captions, so
+             switching bottles re-colours the fruit and swaps the caption line
+             under each scene without touching the step copy.
+
+  The captions are ONE textarea, one line per step, rather than five fields per
+  bottle. Thirty text inputs in the editor is how a section stops being edited.
+  A short list silently pairs with the first steps and leaves the rest blank —
+  it never shifts a caption onto the wrong scene.
+{%- endcomment -%}
+
+{%- assign steps = section.blocks | where: 'type', 'step' -%}
+{%- assign bottles = section.blocks | where: 'type', 'bottle' -%}
+
+{%- if steps.size > 0 -%}
+  {%- assign first_accent = section.settings.default_accent -%}
+  {%- if bottles.size > 0 and bottles[0].settings.accent != blank -%}
+    {%- assign first_accent = bottles[0].settings.accent -%}
+  {%- endif -%}
+
+  <div class="non-section non-proc" data-non-proc style="--non-proc-accent: {{ first_accent }}">
+    <div class="non-section__head">
+      <h2 class="non-section__title">{{ section.settings.heading }}</h2>
+    </div>
+
+    {%- if section.settings.blurb != blank -%}
+      <p class="non-proc__blurb">{{ section.settings.blurb }}</p>
+    {%- endif -%}
+
+    {%- if bottles.size > 0 -%}
+      <div class="non-proc__bottles" role="tablist" aria-label="{{ section.settings.heading | escape }}">
+        {%- for b in bottles -%}
+          <button
+            type="button"
+            class="non-proc__bottle{% if forloop.first %} is-on{% endif %}"
+            role="tab"
+            aria-selected="{% if forloop.first %}true{% else %}false{% endif %}"
+            data-non-proc-bottle
+            data-accent="{{ b.settings.accent | escape }}"
+            data-caps="{{ b.settings.captions | escape }}"
+            {{ b.shopify_attributes }}>
+            {{ b.settings.code }}
+          </button>
+        {%- endfor -%}
+      </div>
+    {%- endif -%}
+
+    <div class="non-proc__rail">
+      {%- for block in steps -%}
+        <div class="non-proc__step" data-non-proc-step {{ block.shopify_attributes }}>
+          <div class="non-proc__scene">
+            {% render 'process-scene', scene: block.settings.scene %}
+          </div>
+          <div class="non-mono non-proc__n">{{ forloop.index | prepend: '0' | slice: -2, 2 }}</div>
+          <div class="non-mono non-proc__label">{{ block.settings.label }}</div>
+          <div class="non-proc__title">{{ block.settings.title }}</div>
+          <p class="non-proc__body">{{ block.settings.body }}</p>
+          {%- comment -%}
+            Always rendered, even when empty, so swapping bottles cannot change
+            the height of the rail and shift the page under a reader.
+          {%- endcomment -%}
+          <div class="non-mono non-proc__cap" data-non-proc-cap></div>
+        </div>
+      {%- endfor -%}
+    </div>
+  </div>
+
+  <script src="{{ 'process-sequence.js' | asset_url }}" defer></script>
+{%- endif -%}
+
+{% schema %}
+{
+  "name": "How it's made",
+  "settings": [
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Heading",
+      "default": "How it's made — not de-alcoholised"
+    },
+    {
+      "type": "textarea",
+      "id": "blurb",
+      "label": "Intro",
+      "default": "Nothing is fermented and nothing is stripped. Every bottle is cooked — built from zero for the structure alcohol used to provide."
+    },
+    {
+      "type": "color",
+      "id": "default_accent",
+      "label": "Fallback fruit colour",
+      "default": "#E4573F",
+      "info": "Used when no bottles are added. Colour appears on the fruit only — the rest of every drawing stays monochrome."
+    },
+    {
+      "type": "header",
+      "content": "Appearance"
+    },
+    {
+      "type": "color",
+      "id": "bg_color",
+      "label": "Background"
+    },
+    {
+      "type": "color",
+      "id": "text_color",
+      "label": "Text colour"
+    },
+    {
+      "type": "range",
+      "id": "text_scale",
+      "label": "Text size",
+      "min": 70,
+      "max": 150,
+      "step": 5,
+      "unit": "%",
+      "default": 100
+    },
+    {
+      "type": "range",
+      "id": "section_padding",
+      "label": "Vertical padding",
+      "min": 0,
+      "max": 160,
+      "step": 8,
+      "unit": "px",
+      "default": 0
+    }
+  ],
+  "blocks": [
+    {
+      "type": "step",
+      "name": "Step",
+      "settings": [
+        {
+          "type": "select",
+          "id": "scene",
+          "label": "Drawing",
+          "options": [
+            { "value": "fruit", "label": "Fruit into the pot" },
+            { "value": "tannin", "label": "Leaf steeping" },
+            { "value": "salinity", "label": "Salt falling" },
+            { "value": "acidity", "label": "Verjus poured" },
+            { "value": "balance", "label": "The balance" }
+          ],
+          "default": "fruit"
+        },
+        { "type": "text", "id": "label", "label": "Label", "default": "Fruit" },
+        { "type": "text", "id": "title", "label": "Title", "default": "Cold steep" },
+        { "type": "textarea", "id": "body", "label": "Body" }
+      ]
+    },
+    {
+      "type": "bottle",
+      "name": "Bottle",
+      "settings": [
+        { "type": "text", "id": "code", "label": "Code", "default": "NON1" },
+        {
+          "type": "color",
+          "id": "accent",
+          "label": "Fruit colour",
+          "default": "#E4573F"
+        },
+        {
+          "type": "textarea",
+          "id": "captions",
+          "label": "Captions",
+          "info": "One line per step, in order. A short list leaves later captions blank rather than shifting them."
+        }
+      ]
+    }
+  ],
+  "max_blocks": 16,
+  "presets": [
+    {
+      "name": "How it's made"
+    }
+  ]
+}
+{% endschema %}

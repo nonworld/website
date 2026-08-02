@@ -3356,3 +3356,102 @@ select:-moz-focusring { color: transparent; text-shadow: 0 0 0 var(--non-fg); }
 @media (prefers-reduced-motion: reduce) {
   .non-menu { transition: none; transform: none; }
 }
+
+/* --- How it's made: the drawn process sequence ----------------------------
+   Five scenes on one rail. The only colour is the fruit, carried by
+   --non-proc-accent and set per bottle in JS — Aaron's 2026-08-02 ruling that
+   the fruit may have colour, and the single sanctioned break from the
+   monochrome identity. Nothing else here takes a hue. */
+.non-proc { --non-proc-accent: #E4573F; }
+.non-proc__blurb {
+  margin: 18px 0 0; font-size: var(--t-copy); line-height: 1.6;
+  color: var(--non-fg-mute); max-width: 62ch;
+}
+
+/* Bottle chips. Square and hairline, like every other chip on the site — the
+   somm seeds carry the note explaining why NON has no pills. */
+.non-proc__bottles { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 22px; }
+.non-proc__bottle {
+  min-height: 44px; padding: 0 14px;
+  border: 1px solid var(--non-line-strong); background: transparent;
+  color: var(--non-fg-mute);
+  font-family: var(--non-mono); font-size: var(--t-mono);
+  letter-spacing: .14em; text-transform: uppercase; cursor: pointer;
+  transition: color var(--duration-hover) var(--ease-hover),
+              border-color var(--duration-hover) var(--ease-hover);
+}
+.non-proc__bottle:hover { color: var(--non-fg); }
+/* The selected chip is marked by the FRUIT COLOUR, which is the one thing that
+   changes when you pick a bottle. Using ink for selection here would say
+   nothing about what the choice does. */
+.non-proc__bottle.is-on {
+  color: var(--non-fg);
+  border-color: var(--non-proc-accent);
+  box-shadow: inset 0 -2px 0 var(--non-proc-accent);
+}
+
+.non-proc__rail {
+  display: grid; gap: 2px; margin-top: 30px;
+  grid-template-columns: 1fr;
+  background: var(--non-line);
+}
+@media (min-width: 860px) {
+  .non-proc__rail { grid-template-columns: repeat(5, 1fr); }
+}
+.non-proc__step {
+  background: var(--non-bg);
+  padding: 26px 22px 28px;
+  display: flex; flex-direction: column;
+}
+.non-proc__scene { margin-bottom: 18px; }
+.non-proc__art { width: 56px; height: 56px; display: block; color: var(--non-fg-mute); overflow: visible; }
+.non-proc__art path,
+.non-proc__art circle { vector-effect: non-scaling-stroke; }
+
+.non-proc__n { font-size: var(--t-mono); color: var(--non-fg-ghost); letter-spacing: .16em; }
+.non-proc__label {
+  margin-top: 10px; font-size: var(--t-mono); letter-spacing: .16em;
+  text-transform: uppercase; color: var(--non-fg-faint);
+}
+.non-proc__title { margin-top: 6px; font-size: clamp(17px, 1.2vw, 20px); font-weight: 500; }
+.non-proc__body {
+  margin: 8px 0 0; font-size: var(--t-small); line-height: 1.55;
+  color: var(--non-fg-mute);
+}
+/* min-height reserves the caption line so switching bottles cannot reflow the
+   rail under someone mid-read. */
+.non-proc__cap {
+  margin-top: auto; padding-top: 16px;
+  font-size: var(--t-mono); letter-spacing: .14em; text-transform: uppercase;
+  color: var(--non-proc-accent); min-height: 1.4em;
+}
+
+/* The draw-on. pathLength="1" in the markup is what lets one dasharray drive
+   every path — otherwise each line needs its own measured length and they all
+   draw at different speeds. */
+.non-proc__step .non-proc__art path,
+.non-proc__step .non-proc__art circle { opacity: 0; }
+.non-proc__step.is-in .non-proc__art path[pathLength] {
+  opacity: 1;
+  stroke-dasharray: 1;
+  stroke-dashoffset: 1;
+  animation: non-proc-draw var(--duration-reveal, 700ms) var(--ease-standard) forwards;
+  animation-delay: var(--non-proc-delay, 0ms);
+}
+.non-proc__step.is-in .non-proc__fruit,
+.non-proc__step.is-in .non-proc__fruit path,
+.non-proc__step.is-in .non-proc__fruit circle,
+.non-proc__step.is-in .non-proc__art circle:not([pathLength]) {
+  opacity: 1;
+  animation: non-proc-in var(--duration-reveal, 700ms) var(--ease-standard) forwards;
+  /* The fruit lands after the vessel it goes into is drawn. */
+  animation-delay: calc(var(--non-proc-delay, 0ms) + 220ms);
+}
+@keyframes non-proc-draw { to { stroke-dashoffset: 0; } }
+@keyframes non-proc-in { from { opacity: 0; transform: translateY(-6px); } to { opacity: 1; transform: none; } }
+
+/* Reduced motion gets the finished drawing, not a blank box. */
+@media (prefers-reduced-motion: reduce) {
+  .non-proc__step .non-proc__art path,
+  .non-proc__step .non-proc__art circle { opacity: 1; animation: none; stroke-dashoffset: 0; }
+}

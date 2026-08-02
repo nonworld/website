@@ -217,9 +217,126 @@
         "process_meta": "Six stages / 01—06",
         "process_note": "Made in Melbourne"
       }
+    },
+    "process": {
+      "type": "about-process",
+      "blocks": {
+        "s1": {
+          "type": "step",
+          "settings": {
+            "scene": "fruit",
+            "label": "Fruit",
+            "title": "Cooked, not fermented",
+            "body": "Whole fruit is steeped, roasted or dehydrated until the flavour concentrates. Nothing ferments and nothing is stripped out later."
+          }
+        },
+        "s2": {
+          "type": "step",
+          "settings": {
+            "scene": "tannin",
+            "label": "Tannin",
+            "title": "Grip, from leaves and skins",
+            "body": "Tea, chamomile, hops or skins go in for tannin — the drying grip that makes a drink feel like wine rather than juice."
+          }
+        },
+        "s3": {
+          "type": "step",
+          "settings": {
+            "scene": "salinity",
+            "label": "Salinity",
+            "title": "A pinch of salt",
+            "body": "Salt for salinity: the thing that makes a sip ask for the next one, and the reason these sit beside food."
+          }
+        },
+        "s4": {
+          "type": "step",
+          "settings": {
+            "scene": "acidity",
+            "label": "Acidity",
+            "title": "Verjus, not vinegar",
+            "body": "Unripe Semillon grapes from the Barossa, pressed into verjus. Acidity with none of the sharpness vinegar would bring."
+          }
+        },
+        "s5": {
+          "type": "step",
+          "settings": {
+            "scene": "balance",
+            "label": "Balance",
+            "title": "Tasted to level",
+            "body": "Sugar goes in last and only as far as the fruit needs. Balance is judged in the kitchen, by tasting."
+          }
+        },
+        "b1": {
+          "type": "bottle",
+          "settings": {
+            "code": "NON1",
+            "accent": "#E4573F",
+            "captions": "48 HOURS · COLD\nCHAMOMILE · TANNIN\nMURRAY RIVER SALT\nSEMILLON · VERJUS\nSUGAR TO TASTE"
+          }
+        },
+        "b2": {
+          "type": "bottle",
+          "settings": {
+            "code": "NON2",
+            "accent": "#C69A57",
+            "captions": "PEARS · CARAMELISED\nBLACK TEA · SPICE\nKOMBU · OLIVE BRINE\nSEMILLON · VERJUS\nAGAVE · VANILLA"
+          }
+        },
+        "b3": {
+          "type": "bottle",
+          "settings": {
+            "code": "NON3",
+            "accent": "#D97A3C",
+            "captions": "ORANGE · YUZU\nCINNAMON · TOASTED\nSALT\nSEMILLON · VERJUS\nSUGAR TO TASTE"
+          }
+        },
+        "b4": {
+          "type": "bottle",
+          "settings": {
+            "code": "NON5",
+            "accent": "#CDBB4E",
+            "captions": "LEMON · MARMALADE\nHIBISCUS · LIQUORICE\nSALT · HOPS\nSEMILLON · VERJUS\nSUGAR TO TASTE"
+          }
+        },
+        "b5": {
+          "type": "bottle",
+          "settings": {
+            "code": "NON7",
+            "accent": "#A63C4C",
+            "captions": "CHERRIES · STEWED\nARABICA · GARAM MASALA\nSALT · PINK PEPPER\nSEMILLON · VERJUS\nTASTED BACK"
+          }
+        },
+        "b6": {
+          "type": "bottle",
+          "settings": {
+            "code": "NON9",
+            "accent": "#7A5289",
+            "captions": "PLUM · BLACKBERRY\nFRENCH OAK · PINE\nTAMARI · SALT\nSEMILLON · VERJUS\nSUGAR · ANCHO"
+          }
+        }
+      },
+      "block_order": [
+        "s1",
+        "s2",
+        "s3",
+        "s4",
+        "s5",
+        "b1",
+        "b2",
+        "b3",
+        "b4",
+        "b5",
+        "b6"
+      ],
+      "settings": {
+        "heading": "How it's made — not de-alcoholised",
+        "blurb": "Nothing here is fermented and nothing is de-alcoholised. Every bottle is cooked — built from zero for the structure alcohol used to provide.",
+        "default_accent": "#E4573F"
+      }
     }
   },
   "order": [
-    "main"
+    "main",
+    "process"
   ]
 }

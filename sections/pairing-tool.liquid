@@ -256,6 +256,18 @@
   }
 </script>
 
+{%- comment -%}
+  somm.js, not just pairing.js.
+
+  This section renders the full somm component — [data-non-somm] with an
+  input and [data-non-somm-seed] dish chips — but only ever loaded pairing.js,
+  which has no seed handling in it at all. The binder lives in somm.js:
+  it initialises on [data-non-somm] and binds the chips. hero-somm.liquid and
+  main-product.liquid both load it; this section was the one that did not, so
+  the chips rendered, focused and did nothing on this page while working
+  everywhere else. Nothing was wrong with the markup or with data-answer.
+{%- endcomment -%}
+<script src="{{ 'somm.js' | asset_url }}" defer></script>
 <script src="{{ 'pairing.js' | asset_url }}" defer></script>
 
 {% schema %}

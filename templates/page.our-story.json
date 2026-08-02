@@ -38,6 +38,7 @@
         "n1": {
           "type": "not",
           "settings": {
+            "icon": "no-stripped",
             "title": "Not de-alcoholised",
             "body": "No wine is made and then stripped. Nothing here has ever been fermented."
           }
@@ -45,6 +46,7 @@
         "n2": {
           "type": "not",
           "settings": {
+            "icon": "no-mocktail",
             "title": "Not a mocktail",
             "body": "Mocktails are mixed to order and usually sweet. This is cooked in a facility and bottled dry."
           }
@@ -120,6 +122,7 @@
         "n3": {
           "type": "not",
           "settings": {
+            "icon": "no-imitation",
             "title": "Not an imitation",
             "body": "It takes the seat wine had at the table. It doesn't try to taste like the thing that sat there."
           }

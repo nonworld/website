@@ -702,6 +702,19 @@
       "name": "What we're not",
       "settings": [
         {
+          "type": "select",
+          "id": "icon",
+          "label": "Icon",
+          "options": [
+            { "value": "none", "label": "None" },
+            { "value": "no-stripped", "label": "Struck bottle (not de-alcoholised)" },
+            { "value": "no-mocktail", "label": "Struck coupe (not a mocktail)" },
+            { "value": "no-imitation", "label": "Struck pair (not an imitation)" }
+          ],
+          "default": "none",
+          "info": "Each draws the object with a single rule through it."
+        },
+        {
           "type": "text",
           "id": "title",
           "label": "Title"

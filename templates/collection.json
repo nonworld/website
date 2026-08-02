@@ -169,11 +169,25 @@
           "settings": {
             "product": "non-waiters-friend"
           }
+        },
+        "p3": {
+          "type": "pick",
+          "settings": {
+            "product": "non-dad-cap"
+          }
+        },
+        "p4": {
+          "type": "pick",
+          "settings": {
+            "product": "non-dad-cap-1"
+          }
         }
       },
       "block_order": [
         "p1",
-        "p2"
+        "p2",
+        "p3",
+        "p4"
       ],
       "settings": {
         "heading": "Not drinks",

@@ -51,9 +51,14 @@ const PRODUCTS = [
     dominantFlavours: ['raspberry', 'chamomile', 'floral', 'red fruit', 'salt'],
     bestWith: {
       // Antipasti is NON1's plate per the core range deck: the raw and cured
-      // end. Cooked seafood belongs to NON3. Oysters stay here — they are raw,
-      // and salt against brine is the bottle's whole argument.
-      proteins: ['shellfish', 'raw fish', 'oyster', 'cured meat', 'goat cheese', 'hard cheese'],
+      // end. Seafood — raw included — belongs to NON3.
+      //
+      // Oysters used to live here, on the argument that raw brine wants salt
+      // against it. Aaron overruled it 2026-08-03: NON3 lists "fresh seafood"
+      // as its food pairing in the catalogue and NON1 lists none at all, so the
+      // engine was contradicting the product data. NON1 keeps cured meat and
+      // cheese, and still scores on raw plates through cookingStyle.
+      proteins: ['cured meat', 'goat cheese', 'hard cheese'],
       fatLevel: [0, 3],
       cookingStyle: ['raw', 'cured', 'lightly cooked'],
       dishAcid: [2, 5],
@@ -133,11 +138,16 @@ const PRODUCTS = [
     dominantFlavours: ['cinnamon', 'yuzu', 'orange', 'bitter pith', 'spice'],
     bestWith: {
       // Seafood is NON3's headline pairing per the core range deck — yuzu is
-      // the squeeze of citrus, already in the glass. Cooked fish sits here;
-      // raw and cured sits with NON1.
-      proteins: ['white fish', 'shellfish', 'poultry', 'mushroom', 'vegetable', 'hard cheese'],
-      fatLevel: [1, 4],
-      cookingStyle: ['grilled', 'steamed', 'poached', 'roasted', 'charred'],
+      // the squeeze of citrus, already in the glass. ALL seafood sits here now,
+      // raw included: oysters and raw fish moved across 2026-08-03 so the
+      // engine agrees with the catalogue, where NON3 lists "fresh seafood" and
+      // NON1 lists none.
+      proteins: ['white fish', 'shellfish', 'oyster', 'raw fish', 'poultry', 'mushroom', 'vegetable', 'hard cheese'],
+      fatLevel: [0, 4],
+      // 'raw' added with the seafood. Taking oysters without taking raw left
+      // NON3 holding the protein but losing the cooking style, so it came
+      // third on its own headline pairing.
+      cookingStyle: ['raw', 'grilled', 'steamed', 'poached', 'roasted', 'charred'],
       dishAcid: [1, 5],
     },
     // Verified against the store's own custom.nutritional_panel and

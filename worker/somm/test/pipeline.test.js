@@ -39,7 +39,9 @@ const CASES = [
   { name: 'poached salmon', expect: 'NON3',
     dish: { proteins: ['white fish'], fatLevel: 2, cookingStyle: ['poached'], dishAcid: 2, weight: 2, heat: 0, flavourNotes: ['delicate'] } },
 
-  { name: 'a dozen oysters', expect: 'NON1',
+  // NON3, not NON1: Aaron's call 2026-08-03, and it matches the catalogue,
+  // where NON3 lists fresh seafood as a pairing and NON1 lists none.
+  { name: 'a dozen oysters', expect: 'NON3',
     dish: { proteins: ['oyster', 'shellfish'], fatLevel: 0, cookingStyle: ['raw'], dishAcid: 4, weight: 1, heat: 0, flavourNotes: ['brine'] } },
 ];
 

@@ -48,6 +48,20 @@
   </div>
 </div>
 
+{%- comment -%}
+  React and ReactDOM served from the THEME, not unpkg.
+
+  dc-support's loadReactUmd() short-circuits on `if (w.React && w.ReactDOM)`,
+  so loading them first from our own assets means it never reaches its CDN
+  branch and the page carries no third-party runtime dependency. No patching
+  of the vendored runtime required — it simply finds React already there.
+
+  defer preserves document order, so React is guaranteed to be defined before
+  dc-support runs. Babel is never fetched: the artifact's script contains no
+  JSX, so that branch is dead here and its 2.5MB never loads.
+{%- endcomment -%}
+<script src="{{ 'vendor-react.js' | asset_url }}" defer></script>
+<script src="{{ 'vendor-react-dom.js' | asset_url }}" defer></script>
 <script src="{{ 'dc-support.js' | asset_url }}" defer></script>
 
 {% schema %}

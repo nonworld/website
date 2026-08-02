@@ -196,6 +196,45 @@
         {%- endif -%}
       </button>
 
+      {%- comment -%}
+        Back in stock. A disabled button is a dead end — the Cap and the Beanie
+        are both at zero with a DENY policy, so every visitor who wants one
+        currently leaves with nothing to show for it.
+
+        Klaviyo's CLIENT endpoint, keyed on the public site ID. That key is
+        public by design (it is the same one the onsite script exposes), so it
+        belongs in a theme setting rather than in a Worker — there is no secret
+        here to protect and no server round trip to add.
+
+        Rendered only when the variant cannot be bought, and the whole block is
+        omitted if no key is set, so an unconfigured store shows the plain
+        sold-out button it shows today rather than a form that silently fails.
+      {%- endcomment -%}
+      {%- if product.available == false and section.settings.klaviyo_public_key != blank -%}
+        <form
+          class="non-bis"
+          data-non-bis
+          data-bis-key="{{ section.settings.klaviyo_public_key | escape }}"
+          data-bis-variant="{{ product.selected_or_first_available_variant.id }}">
+          <div class="non-bis__label non-mono">{{ section.settings.bis_heading }}</div>
+          <div class="non-bis__row">
+            <label class="visually-hidden" for="bis-{{ section.id }}">{{ section.settings.bis_placeholder }}</label>
+            <input
+              id="bis-{{ section.id }}"
+              class="non-bis__input"
+              type="email"
+              name="email"
+              required
+              autocomplete="email"
+              placeholder="{{ section.settings.bis_placeholder | escape }}"
+              data-non-bis-input>
+            <button type="submit" class="non-bis__submit">{{ section.settings.bis_cta }}</button>
+          </div>
+          <p class="non-bis__msg" data-non-bis-msg role="status" aria-live="polite" hidden></p>
+        </form>
+        <script src="{{ 'back-in-stock.js' | asset_url }}" defer></script>
+      {%- endif -%}
+
       {%- comment -%} The reassurance row from the design, under the button. {%- endcomment -%}
       <div class="non-buy__trust">
         {%- for block in section.blocks -%}
@@ -587,6 +626,35 @@
       "id": "add_label",
       "label": "Add to cart label",
       "default": "Add"
+    },
+    {
+      "type": "header",
+      "content": "Back in stock"
+    },
+    {
+      "type": "text",
+      "id": "klaviyo_public_key",
+      "label": "Klaviyo public API key",
+      "default": "U6PhdU",
+      "info": "The PUBLIC site id, not the private key. Empty hides the form and leaves a plain sold-out button."
+    },
+    {
+      "type": "text",
+      "id": "bis_heading",
+      "label": "Back-in-stock heading",
+      "default": "Tell me when it's back"
+    },
+    {
+      "type": "text",
+      "id": "bis_placeholder",
+      "label": "Back-in-stock placeholder",
+      "default": "Your email"
+    },
+    {
+      "type": "text",
+      "id": "bis_cta",
+      "label": "Back-in-stock button",
+      "default": "Notify me"
     },
     {
       "type": "text",

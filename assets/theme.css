@@ -898,6 +898,33 @@ button { font-family: inherit; }
    would make the strip a third taller for decoration. 15px is the mono
    label's own cap height, so the icon reads as part of the word rather than
    as a bullet beside it, and it inherits the label's muted ink. */
+/* Back in stock. Sits under the dead Add button and inherits the buy column's
+   ink, so it works on the dark page without a scoped override — the Somm panel
+   needed one only because it is a light island. */
+.non-bis { margin-top: 14px; }
+.non-bis__label {
+  font-size: var(--t-mono); letter-spacing: .16em; text-transform: uppercase;
+  color: var(--non-fg-faint); margin-bottom: 8px;
+}
+.non-bis__row { display: grid; grid-template-columns: 1fr auto; gap: 8px; }
+.non-bis__input {
+  border: 1px solid var(--non-line-strong); background: transparent;
+  color: var(--non-fg); padding: 12px 14px; font: inherit; font-size: var(--t-small);
+  min-width: 0;
+}
+.non-bis__input::placeholder { color: var(--non-fg-ghost); }
+.non-bis__submit {
+  border: 1px solid var(--non-line-strong); background: var(--non-fg); color: var(--non-bg);
+  padding: 12px 18px; font-family: var(--non-mono); font-size: var(--t-mono);
+  letter-spacing: .14em; text-transform: uppercase; cursor: pointer;
+  transition: opacity var(--duration-hover) var(--ease-hover);
+}
+.non-bis__submit:hover { opacity: .82; }
+.non-bis__submit:disabled { opacity: .5; cursor: default; }
+.non-bis__msg { margin: 10px 0 0; font-size: var(--t-small); color: var(--non-fg-mute); }
+.non-bis__msg.is-bad { color: var(--non-fg); }
+.non-bis.is-done .non-bis__row { display: none; }
+
 .non-spec__k--icon { display: flex; align-items: center; gap: 8px; }
 .non-spec__k--icon .non-stat__icon { width: 15px; height: 15px; margin: 0; flex: none; color: inherit; }
 .non-spec__k {
@@ -955,6 +982,13 @@ button { font-family: inherit; }
   width: auto; height: 100%;
   aspect-ratio: 16 / 9;
   min-width: 100%; min-height: 100%;
+  /* max-width: none is the whole fix, not a tidy-up. The global
+     `img, iframe, svg, video { max-width: 100% }` reset capped this iframe at
+     the box width, so a 3/4 box got a 640x853 iframe and YouTube letterboxed
+     the 16:9 film INSIDE its own viewport — black bars above and below, which
+     looked like the cover CSS failing when the cover CSS had never been
+     allowed to run. To crop an iframe it must be permitted to overflow. */
+  max-width: none;
   border: 0;
   pointer-events: none;
 }

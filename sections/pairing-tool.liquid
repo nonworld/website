@@ -217,7 +217,11 @@
         {%- endif -%}
       </div>
 
-      <div class="non-pair__trace" data-non-pair-trace>{{ section.settings.verdict_note }}</div>
+      {%- comment -%}
+        No trace panel under the photograph. It repeated the answered lines
+        that the verdict column already lists, so the same three reasons
+        appeared twice, either side of one result.
+      {%- endcomment -%}
       <div class="non-somm__picks" data-non-somm-picks hidden style="margin-top:18px"></div>
     </aside>
   </div>

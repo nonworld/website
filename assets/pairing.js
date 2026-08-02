@@ -2,8 +2,9 @@
    NON — pairing tool (food → bottle)
 
    Each answer contributes scores per bottle code; the running total picks a
-   winner. The trace panel shows why, which is the point of the tool — the
-   design deliberately exposed the reasoning rather than just the result.
+   winner. The verdict shows why, which is the point of the tool — the design
+   deliberately exposed the reasoning rather than just the result. That
+   reasoning is listed once, in the verdict column.
    ========================================================================== */
 (function () {
   'use strict';
@@ -13,7 +14,6 @@
 
   var axes = root.querySelectorAll('[data-non-pair-axis]');
   var dots = root.querySelectorAll('.non-pair__dot');
-  var traceEl = root.querySelector('[data-non-pair-trace]');
   var resultEl = root.querySelector('[data-non-pair-result]');
   var titleEl = root.querySelector('[data-non-pair-title]');
   var bodyEl = root.querySelector('[data-non-pair-body]');
@@ -54,11 +54,12 @@
     return best;
   }
 
-  function renderTrace() {
-    traceEl.innerHTML = trace
-      .map(function (line) { return '<div>— ' + line + '</div>'; })
-      .join('');
-  }
+  /* The trace panel under the photograph is gone.
+     It printed the answered lines a second time, as "— line" divs, while the
+     verdict column already lists the identical lines as .non-pair__why. Two
+     copies of the same reasoning either side of one result reads as a bug, not
+     as emphasis. `trace` is still collected — the verdict column is built from
+     it — it simply is not mirrored under the picture any more. */
 
   /**
    * Every question is visible at once now, per the design's numbered headings —
@@ -196,7 +197,6 @@
 
       var isFirstAnswer = !chosen[axisIndex];
       applyAxis(axisIndex, opt);
-      renderTrace();
 
       // Only advance on a NEW answer. Changing your mind should not skip you
       // forward past a question you have not reached.
@@ -221,7 +221,6 @@
       if (buyEl) { buyEl.hidden = true; buyEl.innerHTML = ''; }
       resultEl.hidden = true;
       if (picksEl) picksEl.hidden = true;
-      traceEl.textContent = 'Answer the questions and the somm will show its working.';
       showStep(0);
     }
   });

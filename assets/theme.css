@@ -4648,3 +4648,10 @@ select:-moz-focusring { color: transparent; text-shadow: 0 0 0 var(--non-fg); }
   0%, 100% { transform: scale(.9); opacity: .42; }
   50% { transform: scale(1.12); opacity: 1; }
 }
+
+/* The clip is .non-shell, which is deliberately overflow-hidden (it is what
+   keeps the full-bleed bands and the marquee from causing sideways scroll).
+   So the orb gets headroom INSIDE the boundary rather than the boundary being
+   opened up — the blur needs roughly its own radius again above the element. */
+.non-somm,
+.non-sommbox { padding-top: 30px; }

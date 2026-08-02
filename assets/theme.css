@@ -1004,37 +1004,24 @@ button { font-family: inherit; }
    agree with the steps column, so the band had a seam. Stretching to the grid
    row means the two columns end together by construction at every width, and
    the crop is only ever as tight as the copy makes it. */
-/* A film gets the full width and its own shape, ABOVE the steps.
+/* The film stays BESIDE the steps and keeps its own shape.
 
-   Side by side, this could not be uncropped. The media column has to be as
-   tall as the copy beside it, and an uncropped 16:9 that is 586px tall needs
-   to be 1042px wide — which leaves 238px for five steps of process copy. The
-   two requirements are mutually exclusive at any split, which is why widening
-   the column kept improving the crop (42 → 52 → 60 → 69%) without ever
-   reaching it. Stacking removes the constraint instead of negotiating with it:
-   the band goes one column, the film takes the whole width at its own 16/9,
-   and nothing is cropped at all.
+   Three constraints were in play and only two can hold at once if the video
+   fills its column: steps on the side, nothing cropped, and a film that is not
+   enormous. Stretching the box to the copy's height forced a crop; stacking it
+   full width removed the crop but made it 1280 wide.
 
-   Only when there IS a video — a still photograph still sits beside the copy,
-   because an image can be cropped to a column without losing the subject. */
-.non-process:has(.non-process__media--yt) {
-  grid-template-columns: 1fr;
-}
-.non-process:has(.non-process__media--yt) .non-process__copy {
-  border-right: 0;
-  /* The film is above the copy, so the hairline between them is the copy's
-     TOP edge. border-right was the divider for the side-by-side layout. */
-  border-top: 1px solid var(--non-line);
-}
+   So the box is no longer stretched at all. It takes 16/9 from its own width
+   and sits centred in the column, which leaves a little page above and below
+   it — that gap is the point, not a flaw. The film reads as a film placed in
+   the band rather than a slab filling it, it is uncropped because the box
+   matches its shape exactly, and the steps keep their column. */
 .non-process__media--yt {
   overflow: hidden;
   min-height: 0;
   height: auto;
   aspect-ratio: 16 / 9;
-  /* Above the copy. The markup order is copy-then-media because that is the
-     reading order when they sit side by side; order flips it for the stack
-     without moving the source. */
-  order: -1;
+  align-self: center;
 }
 .non-process__yt {
   position: absolute; top: 50%; left: 50%;

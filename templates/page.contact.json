@@ -10,7 +10,7 @@
 {
   "sections": {
     "main": {
-      "type": "contact-form",
+      "type": "contact-main",
       "blocks": {
         "t1": {
           "type": "topic",

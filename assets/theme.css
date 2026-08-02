@@ -633,6 +633,7 @@ button { font-family: inherit; }
 /* Stretches to the row so the shot can take its height from it. */
 .non-gallery { display: flex; flex-direction: column; gap: 18px; padding: 20px var(--non-pad); min-height: 0; }
 @media (min-width: 860px) { .non-product { align-items: stretch; } }
+}
 @media (min-width: 860px) { .non-gallery { padding: 28px 0 28px var(--non-pad); } }
 
 /* 4/5 is the design's ratio and stays. The cap is on WIDTH, not height —

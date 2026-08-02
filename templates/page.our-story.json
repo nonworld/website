@@ -3,38 +3,6 @@
     "main": {
       "type": "about-story",
       "blocks": {
-        "p1": {
-          "type": "pillar",
-          "settings": {
-            "title": "Fruit",
-            "body": "Cold-steeped, dehydrated, roasted or reduced — whichever method gets the most out of it. Rarely juiced.",
-            "icon": "fruit"
-          }
-        },
-        "p2": {
-          "type": "pillar",
-          "settings": {
-            "title": "Tannin",
-            "body": "Chamomile, cinnamon, tea, hops, citrus pith. Grip on the finish, so it holds a plate instead of washing through.",
-            "icon": "tannin"
-          }
-        },
-        "p3": {
-          "type": "pillar",
-          "settings": {
-            "title": "Salinity",
-            "body": "Murray River salt, kombu. Salt makes food taste more like itself — a lever wine never had.",
-            "icon": "zero"
-          }
-        },
-        "p4": {
-          "type": "pillar",
-          "settings": {
-            "title": "Acidity",
-            "body": "Barossa verjus, citrus, vinegar. Resets the palate between bites, and cools chilli instead of stoking it.",
-            "icon": "scale"
-          }
-        },
         "n1": {
           "type": "not",
           "settings": {
@@ -171,10 +139,6 @@
         }
       },
       "block_order": [
-        "p1",
-        "p2",
-        "p3",
-        "p4",
         "n1",
         "n2",
         "n3",
@@ -329,9 +293,10 @@
         "b6"
       ],
       "settings": {
-        "heading": "How it's made — not de-alcoholised",
+        "heading": "What we actually do",
         "blurb": "Nothing here is fermented and nothing is de-alcoholised. Every bottle is cooked — built from zero for the structure alcohol used to provide.",
-        "default_accent": "#E4573F"
+        "default_accent": "#E4573F",
+        "note": "Every glass is built from five things"
       }
     }
   },

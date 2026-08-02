@@ -35,6 +35,9 @@
   <div class="non-section non-proc" data-non-proc style="--non-proc-accent: {{ first_accent }}">
     <div class="non-section__head">
       <h2 class="non-section__title">{{ section.settings.heading }}</h2>
+      {%- if section.settings.note != blank -%}
+        <span class="non-section__more">{{ section.settings.note }}</span>
+      {%- endif -%}
     </div>
 
     {%- if section.settings.blurb != blank -%}
@@ -91,6 +94,12 @@
       "id": "heading",
       "label": "Heading",
       "default": "How it's made — not de-alcoholised"
+    },
+    {
+      "type": "text",
+      "id": "note",
+      "label": "Note",
+      "info": "Sits opposite the heading, as on the other About bands."
     },
     {
       "type": "textarea",

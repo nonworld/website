@@ -3427,9 +3427,12 @@ select:-moz-focusring { color: transparent; text-shadow: 0 0 0 var(--non-fg); }
   margin-top: 10px; font-size: var(--t-mono); letter-spacing: .16em;
   text-transform: uppercase; color: var(--non-fg-faint);
 }
-.non-proc__title { margin-top: 6px; font-size: clamp(17px, 1.2vw, 20px); font-weight: 500; }
+/* Same scale as .non-step__t / .non-step__b, not a second one. This band sits
+   directly below other About bands using those classes, and two heading sizes
+   a few hundred pixels apart reads as two templates rather than one page. */
+.non-proc__title { margin-top: 6px; font-size: clamp(16px, 1.15vw, 19px); font-weight: 500; }
 .non-proc__body {
-  margin: 8px 0 0; font-size: var(--t-small); line-height: 1.55;
+  margin: 5px 0 0; font-size: var(--t-small); line-height: 1.55;
   color: var(--non-fg-mute);
 }
 /* min-height reserves the caption line so switching bottles cannot reflow the

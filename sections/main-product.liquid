@@ -23,9 +23,25 @@
   assign calories = calories | strip
   assign sugars = sugars | strip
 
+  # Resolved once here rather than only in the buy box, because EVERY bottle
+  # assumption below has to answer to it. The Cap shipped reading
+  # "NON DAD CAP - 0.0% ABV - 750ML", with a somm offering to discuss its
+  # pairing and sugar, TASTES showing "NON Cap" and SERVE telling a customer to
+  # chill a hat in a wine glass. None of that is a design gap; it is a page
+  # stating things that are not true, because one template renders a 750ml
+  # sparkling and a piece of headwear.
+  assign not_drink = m.not_a_drink | metafield_text
+
   assign tastes = m.profile | metafield_text | default: m.tastes | metafield_text
   assign sits = m.sits | metafield_text
-  assign serve = m.serve | metafield_text | default: 'Chilled, wine glass'
+
+  # 'Chilled, wine glass' is a hardcoded house default for a field that is null
+  # on every product, so it was never this bottle's instruction - and on an
+  # accessory it is simply wrong. Accessories get nothing rather than a guess.
+  assign serve = m.serve | metafield_text
+  if serve == blank and not_drink == blank
+    assign serve = 'Chilled, wine glass'
+  endif
   assign ingredients = m.ingredients | metafield_text
   assign style = m.style | metafield_text
 
@@ -328,7 +344,14 @@
     {%- endif -%}
 
     {%- comment -%} ── somm, as a panel ────────────────────────────────── {%- endcomment -%}
-    {%- if section.settings.show_somm -%}
+    {%- comment -%}
+      The somm is briefed on a bottle - its opener promises "I've read the
+      whole spec sheet for this bottle" and its seeded questions are about
+      sweetness and de-alcoholisation. Pointed at a stopper or a cap it will
+      still answer confidently, and be wrong. Off for anything not a drink
+      until it has a brief for one.
+    {%- endcomment -%}
+    {%- if section.settings.show_somm and not_drink == blank -%}
       <div class="non-sommbox" style="{% if section.settings.somm_dot_colour != blank %}--non-somm-dot: {{ section.settings.somm_dot_colour }};{% endif %}{% if section.settings.somm_bg != blank %}--non-somm-bg: {{ section.settings.somm_bg }};{% endif %}{% if section.settings.somm_border != blank %}--non-somm-border: {{ section.settings.somm_border }};{% endif %}">
         {%- comment -%}
           One label, not two. The head printed the locale string "NON Somm" and
@@ -438,7 +461,13 @@
         assign val = ''
         case block.settings.source
           when 'tastes'
-            assign val = tastes | default: product.title
+            # NOT `default: product.title`. An empty tastes field fell back to
+            # the product's own name, so the Cap's TASTES cell read "NON Cap" -
+            # a label presented as a flavour note. custom.profile and
+            # custom.tastes are null on every product today, so this fallback
+            # was firing on the whole catalogue, not just accessories. Blank
+            # means the cell does not render.
+            assign val = tastes
           when 'sits'
             assign val = sits
           when 'nutrition'
@@ -493,7 +522,7 @@
   <div class="non-specstrip non-specstrip--{{ spec_count }}">
     <div class="non-specstrip__cell">
       <div class="non-spec__k">{{ section.settings.spec_tastes }}</div>
-      <div class="non-specstrip__v">{{ tastes | default: product.title }}</div>
+      <div class="non-specstrip__v">{{ tastes }}</div>
     </div>
 
     {%- if sits != blank -%}

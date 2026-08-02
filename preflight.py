@@ -50,6 +50,37 @@ for f in liquid_files():
         if o != c:
             errors.append(f"{f.relative_to(root)}: {tag}/end{tag} unbalanced ({o} vs {c})")
 
+# 3b. a setting default must never be an empty string.
+#     Shopify rejects the WHOLE file with "default can't be blank", which is
+#     what silently blocked process-animation.liquid for a full day. Omit the
+#     key instead of setting it to "".
+for f in liquid_files():
+    s = f.read_text(encoding='utf-8')
+    m = re.search(r'\{%-?\s*schema\s*-?%\}(.*?)\{%-?\s*endschema\s*-?%\}', s, re.S)
+    if not m:
+        continue
+    try:
+        d = json.loads(m.group(1))
+    except Exception:
+        continue
+    groups = [d.get('settings') or []]
+    for b in d.get('blocks', []):
+        groups.append(b.get('settings') or [])
+    for g in groups:
+        for x in g:
+            if x.get('default') != '' or 'default' not in x:
+                continue
+            t = x.get('type')
+            # A select may legitimately default to "" when "" is one of its
+            # option values — that is how "Theme default" is expressed. Only
+            # free-text types are rejected outright.
+            if t == 'select':
+                if any(o.get('value') == '' for o in x.get('options', [])):
+                    continue
+            elif t not in ('text', 'textarea', 'html', 'liquid', 'url', 'video_url'):
+                continue
+            errors.append(f"{f.relative_to(root)}: {t} setting '{x.get('id')}' has an empty default; omit the key")
+
 # 4. every template setting id must exist in the section's schema
 schemas = {}
 for f in (root / 'sections').glob('*.liquid'):

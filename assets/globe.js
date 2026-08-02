@@ -94,6 +94,17 @@
     // The globe is authored in a 100x100 box and scaled, so every offset in
     // the geometry below is in those same units and never has to be rewritten
     // for a different display size.
+    // Sized to whichever is smaller: the chosen size, or the box it is standing
+    // in. data-size was applied unconditionally, so a 420-unit globe rendered a
+    // 420px stage inside a 331px column on a phone and overflow: hidden sliced
+    // 89px off it — the globe looked cropped rather than small. Re-run on
+    // resize because the crop only appears at widths the first paint may not
+    // have been at (rotation, or a desktop window dragged narrow).
+    function fitStage() {
+      var avail = root.clientWidth || size;
+      var s = Math.min(size, avail);
+      stage.style.transform = 'scale(' + (s / 100).toFixed(3) + ')';
+    }
     stage.style.transform = 'scale(' + (size / 100).toFixed(3) + ')';
 
     var glow = document.createElement('div');
@@ -152,6 +163,8 @@
     }
 
     root.appendChild(stage);
+    fitStage();
+    window.addEventListener('resize', fitStage);
 
     var ctx = canvas.getContext('2d');
     var visited = {};

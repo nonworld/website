@@ -903,13 +903,24 @@ button { font-family: inherit; }
    customers actively look for, and it is now a block of the page rather than
    a footnote to the method. The rule above it does the same job the process
    column's border-top did: separates it from the pictures without boxing it. */
-.non-ingr { margin-top: 26px; padding-top: 18px; border-top: 1px solid var(--non-line); }
+/* align-content: start is what puts this under the PICTURE rather than at the
+   bottom of the column. .non-product stretches the gallery to the buy column's
+   height, and a grid with auto rows and the default normal/stretch alignment
+   spends that spare height by growing its ROWS — the image row went 480 to
+   624 and the ingredients landed 182px below the photograph with nothing in
+   between. Starting the rows collects the slack at the foot of the column,
+   where it is invisible, instead of between two things that belong together. */
+.non-gallery { align-content: start; }
+.non-ingr { margin-top: 18px; padding-top: 16px; border-top: 1px solid var(--non-line); }
 .non-ingr__list {
-  margin: 10px 0 0;
-  font-size: var(--t-copy);
-  line-height: 1.6;
-  color: var(--non-fg-mute);
-  max-width: 54ch;
+  margin: 9px 0 0;
+  /* Bigger, and set like a sentence rather than a data field: the mono label
+     above already does the labelling, so this can just read. */
+  font-size: clamp(17px, 1.3vw, 20px);
+  line-height: 1.5;
+  letter-spacing: -.005em;
+  color: var(--non-fg-dim);
+  max-width: 44ch;
 }
 
 /* Back in stock. Sits under the dead Add button and inherits the buy column's

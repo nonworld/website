@@ -5269,3 +5269,19 @@ select:-moz-focusring { color: transparent; text-shadow: 0 0 0 var(--non-fg); }
   border-top: 1px solid var(--non-line);
 }
 .non-menu .non-loc__select { flex: 1 1 auto; }
+
+/* The somm's opening line is a standfirst, not part of the conversation.
+
+   It sat above the answer and stayed there, so once you asked something the
+   panel read "I've read the whole spec sheet for this bottle. Ask me
+   anything" immediately followed by the answer to the thing you had just
+   asked. The invitation is spent the moment it is accepted.
+
+   Driven off the stream's own hidden attribute, which somm.js already toggles
+   when a reply starts arriving — no extra state, and no JS change. Browsers
+   without :has simply keep the opener, which is the old behaviour rather than
+   a broken one. */
+.non-sommbox__body:has(.non-somm__stream:not([hidden])) .non-sommbox__opener,
+.non-somm__answer:has(.non-somm__stream:not([hidden])) .non-sommbox__opener {
+  display: none;
+}

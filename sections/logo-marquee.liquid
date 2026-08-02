@@ -12,8 +12,7 @@
                 | image_url: width: 300, format: 'webp'
                 | image_tag:
                   loading: 'lazy',
-                  alt: block.settings.name,
-                  style: 'max-height:' | append: block.settings.max_height | append: 'px'
+                  alt: block.settings.name
               }}
             {%- elsif block.settings.image_url != blank -%}
               <img

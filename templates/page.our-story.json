@@ -322,9 +322,18 @@
         "proc_blurb": "Nothing here is fermented and nothing is de-alcoholised. Every bottle is cooked — built from zero for the structure alcohol used to provide.",
         "proc_accent": "#D9576E"
       }
+    },
+    "process_animation": {
+      "type": "process-animation",
+      "settings": {
+        "eyebrow": "How it's made",
+        "heading": "",
+        "section_padding": 0
+      }
     }
   },
   "order": [
-    "main"
+    "main",
+    "process_animation"
   ]
 }

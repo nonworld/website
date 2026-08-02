@@ -1,0 +1,146 @@
+{% render 'section-style', section: section %}
+{%- comment -%}
+  Contact.
+
+  The page body is empty on the live store — the old theme carried the form in
+  its own section, so a template that only prints page.content renders nothing.
+  This supplies the form.
+
+  Posts through Shopify's native contact form, which emails the store contact
+  address (hello@non.world) with the customer's address as reply-to. No app, no
+  endpoint, nothing to keep alive.
+{%- endcomment -%}
+
+{%- comment -%}
+  The dash field is the section's background, not a panel inside it. It was a
+  bordered box in the aside column, which read as a widget sitting on the page
+  rather than as the page. Absolutely positioned behind everything, no border,
+  no background of its own — the section's own colour shows through and the
+  field is drawn over it.
+
+  The envelope is offset rather than centred: at 50% it sat under the form
+  column. envelope_x moves it into the empty right-hand half where there is
+  nothing to compete with.
+
+  aria-hidden and pointer-events: none — it is decoration, it must not
+  intercept a click meant for the form or announce itself to a screen reader.
+{%- endcomment -%}
+<div class="non-section non-contact-section">
+  {%- if section.settings.show_field -%}
+    <div
+      class="non-contact-field"
+      data-non-contact-field
+      data-density="{{ section.settings.field_density }}"
+      data-ink="{{ section.settings.field_ink | default: '242,240,234' }}"
+      data-envelope-x="{{ section.settings.field_envelope_x | divided_by: 100.0 }}"
+      data-envelope-scale="{{ section.settings.field_envelope_scale | divided_by: 100.0 }}"
+      aria-hidden="true">
+      <canvas></canvas>
+    </div>
+    <script src="{{ 'contact-field.js' | asset_url }}" defer></script>
+  {%- endif -%}
+
+  {%- comment -%}
+    The same page header every other page has: mono eyebrow, display heading,
+    supporting line to the right. Contact was the odd one out — it opened with
+    an 11px uppercase .non-section__title, which is the label used INSIDE a
+    section, so the page had no header at all by the standard the rest of the
+    site sets. Reuses the Stockists/Pairing hero rules rather than a third copy.
+  {%- endcomment -%}
+  <div class="non-contact-hero">
+    <div>
+      {%- if section.settings.eyebrow != blank -%}
+        <div class="non-mono non-eyebrow">{{ section.settings.eyebrow }}</div>
+      {%- endif -%}
+      <h1 class="non-contact-hero__title">{{ page.title | default: section.settings.heading }}</h1>
+    </div>
+    {%- if section.settings.lead != blank or settings.contact_email != blank -%}
+      <p class="non-contact-hero__lead">
+        {{ section.settings.lead }}
+        {%- if settings.contact_email != blank -%}
+          {% if section.settings.lead != blank %} {% endif %}<a href="mailto:{{ settings.contact_email }}">{{ settings.contact_email }}</a>
+        {%- endif -%}
+      </p>
+    {%- endif -%}
+  </div>
+
+  {%- if page.content != blank -%}
+    <div class="non-rte" style="margin-top:26px">{{ page.content }}</div>
+  {%- elsif section.settings.intro != blank -%}
+    <p class="non-hero__blurb" style="margin-top:22px">{{ section.settings.intro }}</p>
+  {%- endif -%}
+
+  <div class="non-stockists" style="margin-top:34px">
+    <div>
+      {%- form 'contact' -%}
+        {%- if form.posted_successfully? -%}
+          <p class="non-note">{{ section.settings.success_message }}</p>
+        {%- else -%}
+          {%- if form.errors -%}
+            <p class="non-error">{{ form.errors | default_errors }}</p>
+          {%- endif -%}
+
+          <div style="display:grid;grid-template-columns:1fr;gap:18px;max-width:560px">
+            <div>
+              <label class="non-label" for="c-name">Name</label>
+              <input class="non-field" type="text" id="c-name" name="contact[name]" required>
+            </div>
+
+            <div>
+              <label class="non-label" for="c-email">Email</label>
+              <input class="non-field" type="email" id="c-email" name="contact[email]" required>
+            </div>
+
+            <div>
+              <label class="non-label" for="c-topic">What's it about</label>
+              <select class="non-field" id="c-topic" name="contact[topic]">
+                {%- for block in section.blocks -%}
+                  <option value="{{ block.settings.label | escape }}">{{ block.settings.label }}</option>
+                {%- endfor -%}
+              </select>
+            </div>
+
+            <div>
+              <label class="non-label" for="c-body">Message</label>
+              <textarea class="non-field" id="c-body" name="contact[body]" rows="6" required></textarea>
+            </div>
+          </div>
+
+          <button type="submit" class="non-btn" style="margin-top:22px">
+            {{ section.settings.submit_label }}
+          </button>
+
+          <p class="non-mono non-eyebrow" style="margin-top:14px;letter-spacing:.12em">
+            Goes to {{ settings.contact_email | default: 'hello@non.world' }}
+          </p>
+        {%- endif -%}
+      {%- endform -%}
+    </div>
+
+    <aside>
+      {%- if section.settings.image != blank -%}
+        {{
+          section.settings.image
+          | image_url: width: 900, format: 'webp'
+          | image_tag: loading: 'lazy', widths: '420,640,900', alt: page.title | default: 'NON'
+        }}
+      {%- endif -%}
+
+      {%- if section.settings.aside_heading != blank -%}
+        <div class="non-mono non-eyebrow" style="margin-top:22px">{{ section.settings.aside_heading }}</div>
+        <div class="non-rte" style="margin-top:12px;font-size:var(--t-copy)">
+          {{ section.settings.aside_text }}
+        </div>
+      {%- endif -%}
+    </aside>
+  </div>
+</div>
+
+{% schema %}
+{ "name": "CB", "settings": [
+ { "type": "text", "id": "heading", "label": "H", "default": "Contact" },
+ { "type": "text", "id": "eyebrow", "label": "E", "default": "Contact" },
+ { "type": "textarea", "id": "lead", "label": "L", "default": "Lead" },
+ { "type": "text", "id": "submit_label", "label": "S", "default": "Send" } ],
+  "blocks": [ { "type": "topic", "name": "Topic", "settings": [ { "type": "text", "id": "label", "label": "Label", "default": "General" } ] } ] }
+{% endschema %}

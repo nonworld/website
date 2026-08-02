@@ -4832,3 +4832,28 @@ select:-moz-focusring { color: transparent; text-shadow: 0 0 0 var(--non-fg); }
   .non-sommbox .non-somm__seed,
   .non-sommbox__seeds button { padding: 10px 15px; font-size: 13px; }
 }
+
+/* Thinking dots: no tile, no border, sitting where the answer will appear.
+
+   .non-think__tile was drawn as a real 34px tile with a panel fill and a
+   hairline — correct when the Somm was a light grey box, because the identity
+   doc says the mark needs a tile to sit in. On the open dark surface that tile
+   has nothing to sit against, so it reads as a stray bordered square floating
+   above the reply.
+
+   The dots keep their geometry (baseline-left, one stem-width in, 22.5% of the
+   tile) — the tile is now implied rather than drawn, which is what the doc
+   describes anyway. Left-aligned so they appear exactly where the answer text
+   lands, not centred over it. */
+.non-think {
+  justify-content: flex-start;
+  margin: 0 0 10px;
+  min-height: 34px;
+  padding: 0;
+}
+.non-think__tile {
+  background: transparent;
+  border: 0;
+  --tile: 34px;
+}
+.non-think__dot { background: #EDEDE8; }

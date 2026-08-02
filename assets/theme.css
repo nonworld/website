@@ -1919,7 +1919,11 @@ button { font-family: inherit; }
 /* Answered questions dim rather than disappear — you can still see what you
    told it, and change your mind, which is the point of showing all six. */
 .non-pair__axis.is-answered .non-pair__q { opacity: .55; }
-.non-pair__axis.is-current .non-pair__n { color: var(--non-fg); }
+/* The current step's numeral used to jump to full --non-fg while every other
+   numeral sat at --non-fg-faint, so 01 read as a different colour to 02 and 03
+   on a page where nothing had been answered yet — it looked like an
+   inconsistency rather than a position marker. The numerals are one set now.
+   Progress is still legible: answered steps dim their question above. */
 
 /* --- stockists hero + closing offers -------------------------------------- */
 .non-contact-hero,

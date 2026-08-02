@@ -3672,3 +3672,43 @@ select:-moz-focusring { color: transparent; text-shadow: 0 0 0 var(--non-fg); }
 
    Same component, three surfaces: they have to move together. */
 .non-somm { background: transparent; }
+
+/* Pills, per Aaron 2026-08-02: "this needs circles, make sure the
+   buttons/pills are all nice."
+
+   This reverses the earlier square-chip decision for the Somm specifically.
+   The supplied redesign pills its CTA at 999px and Aaron has confirmed he
+   wants that geometry, so the Somm now follows the design rather than the
+   older no-soft-corners note. Scoped to the Somm — nothing else on the site
+   changes, so the rule still holds everywhere it was not overruled.
+
+   999px, not a fixed radius: a pill has to stay a pill when the chip wraps to
+   two lines, which a fixed value stops doing the moment the height changes. */
+.non-somm .non-somm__seed,
+.non-sommbox .non-somm__seed,
+.non-sommbox__seeds button,
+.non-somm__submit,
+.non-sommbox__submit {
+  border-radius: 999px;
+}
+
+/* The submit gets real horizontal room — a pill with square-button padding
+   reads as a mistake rather than a shape. */
+.non-somm__submit,
+.non-sommbox__submit {
+  padding: 13px 28px;
+  min-height: 44px;
+}
+
+/* Chips breathe a little more inside a curve than inside a corner. */
+.non-somm .non-somm__seed,
+.non-sommbox .non-somm__seed,
+.non-sommbox__seeds button {
+  padding: 11px 20px;
+}
+
+/* The live dot is a true circle with a ring around it, as in the design. */
+.non-sommbox__dot,
+.non-somm__dot {
+  border-radius: 50%;
+}

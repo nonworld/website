@@ -301,7 +301,7 @@
     }
   },
   "order": [
-    "main",
-    "process"
+    "process",
+    "main"
   ]
 }

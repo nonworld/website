@@ -70,11 +70,22 @@
     return;
   }
 
+  /* Replays. The first version called io.disconnect() after one pass, so the
+     sequence drew itself once per page load and never again — scroll past it
+     and back and you got five finished drawings with no animation, which reads
+     as "the animation is broken" rather than "you already saw it".
+
+     Now the band resets when it leaves the viewport and draws again on the way
+     back in. The class is removed rather than the animation restarted, because
+     a CSS animation only re-runs when the element re-enters the matching
+     state. */
   var io = new IntersectionObserver(function (entries) {
     entries.forEach(function (entry) {
-      if (!entry.isIntersecting) return;
-      reveal();
-      io.disconnect();
+      if (entry.isIntersecting) {
+        reveal();
+      } else {
+        steps.forEach(function (step) { step.classList.remove('is-in'); });
+      }
     });
   }, { rootMargin: '0px 0px -12% 0px' });
 

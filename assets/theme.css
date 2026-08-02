@@ -4413,3 +4413,205 @@ select:-moz-focusring { color: transparent; text-shadow: 0 0 0 var(--non-fg); }
   background: rgba(242, 240, 234, .1);
   border-color: #8d8d87;
 }
+
+/* ==========================================================================
+   NON SOMM — FINAL, CONSOLIDATED.
+
+   This block is authoritative. Everything above it that touches the Somm was
+   written incrementally across one long session, and the result was a
+   component with three alignment systems and a stack of rules beating each
+   other on specificity — the field surface alone lost the cascade three times.
+
+   Rather than append a fourth correction, every decision is restated here in
+   one place at a specificity that wins, so there is a single spot to read and
+   a single spot to change. If the Somm needs work later, work here.
+
+   The shape: a centred column at one measure. Orb, then who is speaking, then
+   what it says, then the field, then the suggestions. Nothing is centred that
+   a reader has to scan (the field text is left), and nothing is left-aligned
+   that is decorative (the orb and the labels are centred).
+   ========================================================================== */
+
+.non-somm,
+.non-sommbox {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0;
+  width: 100%;
+  max-width: 640px;
+  margin-inline: auto;
+  padding: 0;
+  background: transparent;
+  border: 0;
+  border-radius: 0;
+  box-shadow: none;
+  text-align: center;
+  color: #EDEDE8;
+}
+
+/* 1. The orb. Sized so it is present without dominating, and sitting close
+      enough to the words to belong to them. */
+.non-somm::before,
+.non-sommbox::before {
+  content: "";
+  flex: none;
+  display: block;
+  width: 84px;
+  height: 84px;
+  border-radius: 50%;
+  margin: 0 0 14px;
+  background:
+    radial-gradient(circle at 40% 34%,
+      rgba(242, 240, 234, .92) 0%,
+      rgba(242, 240, 234, .55) 34%,
+      rgba(242, 240, 234, .18) 58%,
+      rgba(242, 240, 234, .05) 74%,
+      transparent 84%);
+  filter: blur(7px);
+  animation: non-somm-orb 5s ease-in-out infinite;
+  pointer-events: none;
+}
+
+/* 2. Who is speaking. One quiet line, centred, with the live dot inline. */
+.non-sommbox__head {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  width: auto;
+  margin: 0 0 14px;
+  padding: 0;
+  border: 0;
+}
+.non-sommbox__live { gap: 8px; }
+.non-sommbox__dot,
+.non-somm__dot {
+  position: relative;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  flex: none;
+  background: #4ade80;
+  color: #4ade80;
+  box-shadow: 0 0 8px 1px currentColor;
+  animation: non-somm-breathe 3.6s ease-in-out infinite;
+}
+.non-sommbox__dot::before,
+.non-sommbox__dot::after { display: none; }
+
+/* 3. What it says. Display size, held to a readable measure. */
+.non-sommbox__body { padding: 0; margin: 0 0 22px; max-height: none; overflow: visible; }
+.non-sommbox__opener {
+  font-size: clamp(19px, 1.7vw, 24px);
+  line-height: 1.35;
+  letter-spacing: -.015em;
+  max-width: 30ch;
+  margin: 0 auto;
+}
+
+/* 4. The field. One row, one baseline, a real surface. */
+.non-somm__bar,
+.non-sommbox__ask {
+  display: flex;
+  flex-wrap: nowrap;
+  align-items: stretch;
+  justify-content: center;
+  gap: 10px;
+  width: 100%;
+  margin: 0 0 14px;
+  padding: 0;
+  border: 0;
+  background: transparent;
+}
+.non-somm .non-somm__input,
+.non-somm__bar .non-somm__input,
+.non-sommbox__ask input,
+.non-sommbox__ask .non-somm__input {
+  flex: 1 1 auto;
+  min-width: 0;
+  height: 52px;
+  padding: 0 16px;
+  text-align: left;
+  font-size: 16px;
+  color: #EDEDE8;
+  background: rgba(242, 240, 234, .05);
+  border: 1px solid #3d3d38;
+  border-radius: 0;
+  box-shadow: none;
+  transition: background .18s ease, border-color .18s ease;
+}
+.non-somm .non-somm__input::placeholder,
+.non-sommbox__ask input::placeholder,
+.non-sommbox__ask .non-somm__input::placeholder { color: #7d7b74; }
+.non-somm .non-somm__input:focus,
+.non-sommbox__ask input:focus,
+.non-sommbox__ask .non-somm__input:focus {
+  outline: none;
+  background: rgba(242, 240, 234, .09);
+  border-color: #8d8d87;
+}
+.non-somm__submit,
+.non-sommbox__submit {
+  flex: 0 0 auto;
+  height: 52px;
+  min-height: 0;
+  padding: 0 26px;
+  background: #EDEDE8;
+  color: #000;
+  border: 0;
+  border-radius: 0;
+  font-family: var(--non-mono);
+  font-size: var(--t-mono);
+  letter-spacing: .14em;
+  text-transform: uppercase;
+  cursor: pointer;
+}
+.non-somm__submit:hover,
+.non-sommbox__submit:hover { opacity: .85; }
+.non-somm__caret { display: none; }
+
+/* 5. Suggestions. Even, square, quiet — they are a menu, not a call to action. */
+.non-somm__seeds,
+.non-sommbox__seeds {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 8px;
+  width: 100%;
+  margin: 0;
+  padding: 0;
+}
+.non-somm .non-somm__seed,
+.non-sommbox .non-somm__seed,
+.non-sommbox__seeds button {
+  flex: 0 1 auto;
+  min-height: 0;
+  padding: 10px 14px;
+  font-size: 13px;
+  line-height: 1.35;
+  text-align: center;
+  color: #a9a9a2;
+  background: transparent;
+  border: 1px solid #3a3a37;
+  border-radius: 0;
+  cursor: pointer;
+  transition: color .18s ease, border-color .18s ease;
+}
+.non-somm .non-somm__seed:hover,
+.non-sommbox .non-somm__seed:hover,
+.non-sommbox__seeds button:hover {
+  color: #EDEDE8;
+  border-color: #8d8d87;
+  background: transparent;
+}
+
+/* 6. The answer, when it comes. */
+.non-somm__answer,
+.non-somm__stream { width: 100%; text-align: left; }
+
+@media (max-width: 859px) {
+  .non-somm, .non-sommbox { max-width: 100%; }
+  .non-somm::before, .non-sommbox::before { width: 66px; height: 66px; }
+  .non-somm__submit, .non-sommbox__submit { padding: 0 18px; }
+}

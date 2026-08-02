@@ -58,9 +58,22 @@
     {%- comment -%}
       Descendants that paint their own background would otherwise punch holes
       in a custom one. Only neutralised when a background is actually set.
+
+      The direct-child rule is the important one. Naming .non-section and
+      .non-shell only covered the sections that happen to use those wrappers —
+      but most paint their OWN root instead: .non-poured carries
+      var(--non-invert-bg), and every hero carries the page colour. Setting a
+      background in the editor did nothing on those, because the thing sitting
+      on top of it was still opaque.
+
+      Direct children only, so genuine inner panels — a verdict box, a product
+      card, a drawer — keep their fills. And background-color rather than the
+      background shorthand, so a section with an image or a gradient does not
+      lose it to a colour swatch it never set.
     {%- endcomment -%}
     {%- if bg != blank and bg != 'rgba(0,0,0,0)' -%}
-      {{ sel }} .non-section, {{ sel }} .non-shell { background: transparent; }
+      {{ sel }} > * { background-color: transparent; }
+      {{ sel }} .non-section, {{ sel }} .non-shell { background-color: transparent; }
     {%- endif -%}
   </style>
 {%- endif -%}

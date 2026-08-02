@@ -27,6 +27,9 @@
     {%- for link in section.settings.menu.links -%}
       <a href="{{ link.url }}" {% if link.active %}aria-current="page"{% endif %}>{{ link.title }}</a>
     {%- endfor -%}
+    {%- if section.settings.show_localization -%}
+      {% render 'localization-picker', id: 'hdr', compact: true %}
+    {%- endif -%}
   </nav>
 
   {%- comment -%}
@@ -66,8 +69,14 @@
       <a href="{{ link.url }}" {% if link.active %}aria-current="page"{% endif %}>{{ link.title }}</a>
     {%- endfor -%}
   </nav>
+  {%- if section.settings.show_localization -%}
+    {% render 'localization-picker', id: 'drawer' %}
+  {%- endif -%}
 </div>
 <script src="{{ 'menu.js' | asset_url }}" defer></script>
+{%- if section.settings.show_localization -%}
+  <script src="{{ 'localization.js' | asset_url }}" defer></script>
+{%- endif -%}
 
 {% schema %}
 {
@@ -146,6 +155,13 @@
       "unit": "px",
       "default": 0,
       "info": "0 keeps the section's own spacing."
+    },
+    {
+      "type": "checkbox",
+      "id": "show_localization",
+      "label": "Show country/region picker",
+      "default": true,
+      "info": "Posts to Shopify's own localization endpoint. The language list only appears once a second language is published."
     }
   ]
 }

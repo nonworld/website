@@ -5191,3 +5191,81 @@ select:-moz-focusring { color: transparent; text-shadow: 0 0 0 var(--non-fg); }
   .non-poured__set { gap: 40px; padding-left: 40px; }
   .non-poured__set img { --non-logo-h: 32px; max-width: 150px; }
 }
+
+/* ==========================================================================
+   Country/region picker, in the header bar and the mobile drawer.
+
+   Styled as a chip so it belongs to the same family as everything else that
+   is pressable — same 44px target, same type, same monochrome treatment. The
+   native select is kept rather than rebuilt as a custom dropdown: it is
+   keyboard accessible, screen-reader correct and uses the platform's own
+   picker on a phone, which no hand-rolled listbox matches.
+   ========================================================================== */
+.non-loc { display: inline-flex; align-items: center; gap: 8px; }
+
+.non-loc__select {
+  -webkit-appearance: none;
+  appearance: none;
+  min-height: 44px;
+  padding: 0 30px 0 12px;
+  border: 1px solid var(--non-line-strong);
+  border-radius: 0;
+  background-color: transparent;
+  color: var(--non-fg);
+  font-family: var(--non-sans);
+  font-size: 13px;
+  line-height: 1.2;
+  cursor: pointer;
+  /* the caret, drawn rather than imported */
+  background-image:
+    linear-gradient(45deg, transparent 50%, currentColor 50%),
+    linear-gradient(135deg, currentColor 50%, transparent 50%);
+  background-position: right 14px center, right 9px center;
+  background-size: 5px 5px, 5px 5px;
+  background-repeat: no-repeat;
+  transition: border-color var(--duration-hover) var(--ease-hover);
+}
+.non-loc__select:hover { border-color: var(--non-fg); }
+
+/* The options list is drawn by the OS, which does not inherit the page's dark
+   surface on every platform. Set both so it is never white-on-white. */
+.non-loc__select option { background: var(--non-bg); color: var(--non-fg); }
+
+.non-loc__go {
+  min-height: 44px;
+  padding: 0 14px;
+  border: 1px solid var(--non-line-strong);
+  background: transparent;
+  color: var(--non-fg);
+  font-family: var(--non-sans);
+  font-size: 13px;
+  cursor: pointer;
+}
+.non-loc__go[hidden] { display: none; }
+
+/* In the bar it sits alongside the nav links and has to stay compact. */
+.non-loc--compact .non-loc__select {
+  min-height: 34px;
+  padding: 0 26px 0 10px;
+  font-family: var(--non-mono);
+  font-size: var(--t-mono);
+  border-color: transparent;
+  background-position: right 10px center, right 5px center;
+}
+.non-loc--compact .non-loc__select:hover { border-color: var(--non-line-strong); }
+
+/* Below the mobile breakpoint the bar version is dropped entirely — the
+   drawer carries it, at full size. Two pickers in one viewport is one too
+   many, and the bar has no room beside the logo and the cart. */
+@media (max-width: 859px) {
+  .non-header__nav .non-loc { display: none; }
+}
+
+.non-menu .non-loc {
+  display: flex;
+  width: 100%;
+  margin-top: 22px;
+  padding-top: 22px;
+  border-top: 1px solid var(--non-line);
+}
+.non-menu .non-loc__select { flex: 1 1 auto; }

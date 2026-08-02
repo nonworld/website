@@ -70,8 +70,8 @@
           </div>
           <div class="non-mono non-proc__n">{{ forloop.index | prepend: '0' | slice: -2, 2 }}</div>
           <div class="non-mono non-proc__label">{{ block.settings.label }}</div>
-          <div class="non-proc__title">{{ block.settings.title }}</div>
-          <p class="non-proc__body">{{ block.settings.body }}</p>
+          <div class="non-step__t non-proc__title">{{ block.settings.title }}</div>
+          <p class="non-step__b non-proc__body">{{ block.settings.body }}</p>
           {%- comment -%}
             Always rendered, even when empty, so swapping bottles cannot change
             the height of the rail and shift the page under a reader.

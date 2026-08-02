@@ -3427,14 +3427,12 @@ select:-moz-focusring { color: transparent; text-shadow: 0 0 0 var(--non-fg); }
   margin-top: 10px; font-size: var(--t-mono); letter-spacing: .16em;
   text-transform: uppercase; color: var(--non-fg-faint);
 }
-/* Same scale as .non-step__t / .non-step__b, not a second one. This band sits
-   directly below other About bands using those classes, and two heading sizes
-   a few hundred pixels apart reads as two templates rather than one page. */
-.non-proc__title { margin-top: 6px; font-size: clamp(16px, 1.15vw, 19px); font-weight: 500; }
-.non-proc__body {
-  margin: 5px 0 0; font-size: var(--t-small); line-height: 1.55;
-  color: var(--non-fg-mute);
-}
+/* The markup carries .non-step__t / .non-step__b, so the type comes from the
+   house rules rather than being restated here. Restating it is exactly how
+   this band ended up at 16px beside a neighbour at 24.32px — a copy of a value
+   that had since moved. Only spacing is set locally. */
+.non-proc__title { margin-top: 6px; }
+.non-proc__body { margin: 5px 0 0; max-width: 34ch; }
 /* min-height reserves the caption line so switching bottles cannot reflow the
    rail under someone mid-read. */
 .non-proc__cap {

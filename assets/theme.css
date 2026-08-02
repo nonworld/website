@@ -4140,3 +4140,32 @@ select:-moz-focusring { color: transparent; text-shadow: 0 0 0 var(--non-fg); }
    subject of the surface rather than a control on it. The PDP keeps it. */
 .non-somm__bar::before { content: none; display: none; }
 .non-somm__bar { display: flex; flex-wrap: nowrap; justify-content: flex-start; }
+
+/* Logo marquee: an even rhythm, regardless of each mark's proportions.
+
+   Every logo carried an inline max-height from its own block — 44px on some,
+   70px on others — and nothing capped how WIDE the artwork ran. So a tall
+   narrow crest and a wide short wordmark occupied completely different
+   footprints, and what read as broken gaps was just leftover space beside the
+   narrow ones. Sizing by height alone cannot produce an even row out of marks
+   drawn to different proportions.
+
+   Each logo now gets an identical slot and is contained inside it. The
+   artwork keeps its own aspect ratio; the SPACING stops depending on it. The
+   per-block height setting is no longer emitted — it was the thing fighting
+   this. */
+.non-poured__set { gap: 0; padding-left: 0; }
+.non-poured__set img {
+  flex: 0 0 auto;
+  width: 168px;
+  height: 52px;
+  max-width: none;
+  max-height: none;
+  object-fit: contain;
+  object-position: center;
+  padding: 0 26px;
+  box-sizing: content-box;
+}
+@media (max-width: 859px) {
+  .non-poured__set img { width: 116px; height: 42px; padding: 0 16px; }
+}

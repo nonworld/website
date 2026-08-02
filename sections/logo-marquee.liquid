@@ -13,14 +13,13 @@
                 | image_tag:
                   loading: 'lazy',
                   alt: block.settings.name,
-                  style: 'max-height:' | append: block.settings.max_height | append: 'px'
               }}
             {%- elsif block.settings.image_url != blank -%}
               <img
                 src="{{ block.settings.image_url }}"
                 alt="{{ block.settings.name | escape }}"
                 loading="lazy"
-                style="max-height:{{ block.settings.max_height }}px">
+>
             {%- endif -%}
           {%- endfor -%}
         </div>

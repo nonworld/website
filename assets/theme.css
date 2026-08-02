@@ -1227,8 +1227,13 @@ button { font-family: inherit; }
   padding: 16px 0;
   border-bottom: 1px solid var(--non-line);
 }
+/* The middle column is a FIXED width, not `auto`. Sizing it to content meant
+   every row's kind/pours block started at a different x — "Middle Eastern
+   restaurant" pushed its row left while "Bar" sat far right — so the column
+   never lined up down the list. A table only reads as a table if the columns
+   hold still. */
 @media (min-width: 620px) {
-  .non-venue { grid-template-columns: minmax(0, 1fr) minmax(0, auto) 64px; align-items: baseline; }
+  .non-venue { grid-template-columns: minmax(0, 1fr) 210px 64px; align-items: baseline; }
   .non-venue__dist { text-align: right; }
 }
 .non-venue__id, .non-venue__what { display: flex; flex-direction: column; gap: 4px; min-width: 0; }
@@ -1258,8 +1263,14 @@ button { font-family: inherit; }
 .non-stock-all__body { font-size: var(--t-small); color: var(--non-fg-mute); }
 .non-stock-all__go { font-size: var(--t-mono); color: var(--non-fg-faint); white-space: nowrap; }
 
-/* "On the list at" — cards across, below the panel. */
-.non-stock-listat { padding: 40px var(--non-pad) 0; }
+/* The closing band: credentials and "can't find it nearby" side by side, so the
+   map column's overhang no longer leaves a dead rectangle beside it. */
+/* Full width again — nominate went back under the map where the design has it,
+   so this band carries the credential row alone. */
+.non-stock-close { padding: 40px var(--non-pad) 0; }
+
+/* "On the list at" — cards across. */
+.non-stock-listat { padding: 0; }
 .non-stock-listat__row {
   display: grid; gap: 2px; margin-top: 18px;
   grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
@@ -1292,8 +1303,14 @@ button { font-family: inherit; }
 }
 .non-map {
   width: 100%;
-  height: min(72vh, 760px);
-  min-height: 380px;
+  /* Shorter than the list pane on purpose. The list is capped at min(72vh,
+     760px); the map sits in a column that also carries "Can't find it nearby?"
+     beneath it, so a map of equal height makes that column overhang the list by
+     the height of the nominate block — which is the dead rectangle that showed
+     up beside it. Map plus nominate now lands at roughly the list's height, and
+     the two columns finish together. */
+  height: min(54vh, 560px);
+  min-height: 340px;
   border: 1px solid var(--non-line);
   background: var(--non-panel-alt);
 }
@@ -2522,10 +2539,16 @@ a, button, .non-card, .non-filter, .non-pair__opt, .non-somm__seed,
 
 /* Image sits above the eyebrow, per the design, and is edge-to-edge inside the
    card's padding rather than inset again. */
+/* 16/9, NOT --non-image-ratio. That token is 1 (square), and these two cards
+   sit side by side across the full page — a square each means ~750x750 of
+   photography on a 1500px screen, which is why they read as wallpaper. The
+   paired cards elsewhere (About's CTA pair, split-feature) run 330–420px tall;
+   16/9 lands in that band at every width and keeps them consistent with the
+   rest of the site. */
 .non-stock-offer__media {
   align-self: stretch;
   margin: -26px -26px 22px;
-  aspect-ratio: var(--non-image-ratio);
+  aspect-ratio: 16 / 9;
   overflow: hidden;
 }
 .non-stock-offer__media > img {

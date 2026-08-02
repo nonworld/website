@@ -176,10 +176,12 @@
     </div>
 
     {%- comment -%}
-      Map column: the map, then "Can't find it nearby?" directly beneath it, as
-      the design has them. The nominate block used to sit full-width below the
-      whole panel, which stranded it a long way from the empty result that
-      prompts it.
+      Map, then "Can't find it nearby?" directly beneath it — as the design has
+      them, and back here after a detour. I briefly moved nominate into a
+      closing band because the map column overhung the results column and left
+      dead space beside it. Wrong fix: the overhang is a HEIGHT problem, solved
+      by giving the map a bounded height so the two columns end together, not by
+      relocating a block the design deliberately puts under the map.
     {%- endcomment -%}
     <div class="non-stockists__aside">
       {%- if section.settings.show_map -%}
@@ -206,21 +208,31 @@
   </div>
 
   {%- comment -%}
-    "On the list at" — the credential row, BELOW the panel where the design puts
-    it. Cards across, not a list stacked above the search results.
+    ONE closing band: the credentials and "Can't find it nearby?" side by side.
+
+    Nominate used to hang off the bottom of the map column. The map column is
+    taller than the results column, so it ran on past where the list ended and
+    left a large empty rectangle to its left — a lot of dead page for one short
+    paragraph. Pairing it with the credential row fills that space and makes
+    both read as the page's close rather than two loose offcuts.
   {%- endcomment -%}
   {%- assign venues = section.blocks | where: 'type', 'venue' -%}
-  {%- if venues.size > 0 -%}
-    <div class="non-stock-listat">
-      <div class="non-mono non-eyebrow">{{ section.settings.featured_heading }}</div>
-      <div class="non-stock-listat__row">
-        {%- for block in venues -%}
-          <div class="non-stock-listat__card" {{ block.shopify_attributes }}>
-            <div class="non-stock-listat__name">{{ block.settings.name }}</div>
-            <div class="non-stock-listat__where">{{ block.settings.address }}</div>
+  {%- if venues.size > 0 or section.settings.nominate_heading != blank -%}
+    <div class="non-stock-close">
+      {%- if venues.size > 0 -%}
+        <div class="non-stock-listat">
+          <div class="non-mono non-eyebrow">{{ section.settings.featured_heading }}</div>
+          <div class="non-stock-listat__row">
+            {%- for block in venues -%}
+              <div class="non-stock-listat__card" {{ block.shopify_attributes }}>
+                <div class="non-stock-listat__name">{{ block.settings.name }}</div>
+                <div class="non-stock-listat__where">{{ block.settings.address }}</div>
+              </div>
+            {%- endfor -%}
           </div>
-        {%- endfor -%}
-      </div>
+        </div>
+      {%- endif -%}
+
     </div>
   {%- endif -%}
 

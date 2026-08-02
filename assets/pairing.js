@@ -20,6 +20,7 @@
   var picksEl = root.querySelector('[data-non-somm-picks]');
   var stepEl = document.querySelector('[data-non-pair-step]');
   var resetBtn = root.querySelector('[data-non-pair-reset]');
+  var buyEl = root.querySelector('[data-non-pair-buy]');
 
   var reasons = {};
   var catalogue = {};
@@ -100,18 +101,52 @@
 
     var product = catalogue[code];
     titleEl.textContent = product ? product.title + ' is your bottle.' : 'Here is your bottle.';
-    bodyEl.textContent = reasons[code] || '';
 
-    if (product && picksEl) {
-      picksEl.innerHTML =
-        '<a class="non-somm__pick" href="' + product.url + '">' +
+    // WHY IT WORKS FOR WHAT WAS ANSWERED — not the bottle's general blurb.
+    //
+    // Every option already carries its own line explaining what that answer
+    // implies ("Light plates, salinity before weight", "Caramelised meets
+    // caramelised"). That IS the reasoning, and it was only ever shown in the
+    // trace panel off to the side, while the verdict printed a static
+    // per-bottle paragraph that would have read identically whatever you
+    // clicked. The generic line still runs, but last and as context.
+    bodyEl.innerHTML = '';
+    if (trace.length) {
+      var ul = document.createElement('ul');
+      ul.className = 'non-pair__why';
+      trace.forEach(function (line) {
+        var li = document.createElement('li');
+        li.textContent = line;
+        ul.appendChild(li);
+      });
+      bodyEl.appendChild(ul);
+    }
+    if (reasons[code]) {
+      var gen = document.createElement('p');
+      gen.className = 'non-pair__whygen';
+      gen.textContent = reasons[code];
+      bodyEl.appendChild(gen);
+    }
+
+    // The bottle, with a real add to cart, sitting IN the verdict rather than
+    // under the photograph in the side column. Someone who has just been told
+    // which bottle to buy should not have to go looking for it.
+    if (product && buyEl) {
+      var addLabel = buyEl.getAttribute('data-add-label') || 'Add';
+      buyEl.innerHTML =
+        '<a class="non-pair__buyimg" href="' + product.url + '">' +
         (product.image ? '<img src="' + product.image + '" alt="" loading="lazy">' : '') +
-        '<span class="non-somm__pick-meta">' +
-        '<span class="non-somm__pick-code">' + code + '</span>' +
-        '<span class="non-somm__pick-name">' + product.title + '</span>' +
-        '<span class="non-somm__pick-note">' + product.price + '</span>' +
-        '</span></a>';
-      picksEl.hidden = false;
+        '</a>' +
+        '<span class="non-pair__buymeta">' +
+        '<span class="non-mono non-pair__buycode">' + code + '</span>' +
+        '<a class="non-pair__buyname" href="' + product.url + '">' + product.title + '</a>' +
+        '<span class="non-pair__buyprice">' + product.price + '</span>' +
+        '</span>' +
+        (product.variantId
+          ? '<button type="button" class="non-pair__add" data-non-add data-variant-id="' +
+            product.variantId + '">' + addLabel + '</button>'
+          : '<a class="non-pair__add" href="' + product.url + '">' + addLabel + '</a>');
+      buyEl.hidden = false;
     }
 
     showStep(axes.length);
@@ -183,6 +218,7 @@
       step = 0;
       scores = {};
       trace = [];
+      if (buyEl) { buyEl.hidden = true; buyEl.innerHTML = ''; }
       resultEl.hidden = true;
       if (picksEl) picksEl.hidden = true;
       traceEl.textContent = 'Answer the questions and the somm will show its working.';

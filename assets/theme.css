@@ -1244,12 +1244,32 @@ button { font-family: inherit; }
 .non-venue__dir { font-size: var(--t-small); color: var(--non-fg-mute); text-decoration: underline; }
 .non-venue__dist { font-family: var(--non-mono); font-size: var(--t-mono); color: var(--non-fg-faint); white-space: nowrap; }
 
-/* The tool's own column: search, filters, results, see-all. */
+/* The tool's own column: search, filters, results, see-all.
+
+   flex: none on the fixed furniture. The column is a flex container with a
+   max-height and overflow-y: auto, which makes every child shrinkable — and the
+   search bar duly collapsed to a 1px line, so the page rendered with no search
+   field at all. Only the results list is allowed to give up height. */
 .non-stockists__list { display: flex; flex-direction: column; gap: 18px; min-width: 0; }
+.non-stockists__list > * { flex: none; }
+.non-stockists__list > [data-non-venues] { flex: 1 1 auto; }
 .non-stockists__aside { display: flex; flex-direction: column; gap: 0; min-width: 0; }
 .non-stock-search { margin-top: 0; }
 .non-stock-filters { display: flex; flex-direction: column; gap: 10px; }
-.non-stock-filters .non-filters { margin-top: 0; }
+.non-stock-filters .non-filters { margin-top: 0; gap: 9px; }
+/* Same chip as the Somm seeds and the recipe pickers — white, square, #c6c2b8
+   hairline, sans. .non-filter's own styling is mono on a transparent fill,
+   which made these the one control on the site that looked different. */
+.non-stock-filters .non-filter {
+  background: #ffffff; color: #141412; border: 1px solid #c6c2b8;
+  border-radius: 0; font-family: var(--non-sans); font-size: 13.5px;
+  letter-spacing: 0; text-transform: none; padding: 11px 16px; min-height: 44px;
+  transition: border-color var(--duration-hover) var(--ease-hover);
+}
+.non-stock-filters .non-filter:hover { border-color: #141412; }
+.non-stock-filters .non-filter[aria-pressed="true"] {
+  background: #0c0c0c; color: #ffffff; border-color: #0c0c0c;
+}
 
 /* The full-directory card closing the results column. */
 .non-stock-all {
@@ -1314,8 +1334,16 @@ button { font-family: inherit; }
   border: 1px solid var(--non-line);
   background: var(--non-panel-alt);
 }
-/* Leaflet paints its panes on top of the border otherwise. */
-.non-map .leaflet-container { background: var(--non-panel-alt); }
+/* Leaflet paints its panes on top of the border otherwise.
+
+   !important because Leaflet's own stylesheet is loaded from its CDN AFTER
+   theme.css, so its `.leaflet-container { background: #ddd }` wins on source
+   order at equal specificity. That #ddd is the pale band showing above and
+   below the world — there are no tiles beyond ±85° latitude, so at a
+   world-fitting zoom in a portrait box the container itself is what you see.
+   Painting it the panel colour makes that dead area read as part of the panel
+   instead of as a half-loaded map. */
+.non-map .leaflet-container { background: var(--non-panel-alt) !important; }
 
 /* --- forms -------------------------------------------------------------- */
 
@@ -1788,23 +1816,27 @@ button { font-family: inherit; }
 .non-pair__axis.is-current .non-pair__n { color: var(--non-fg); }
 
 /* --- stockists hero + closing offers -------------------------------------- */
+.non-contact-hero,
 .non-stock-hero {
   display: grid; grid-template-columns: 1fr; gap: 20px;
   padding: 46px var(--non-pad) 34px;
   border-bottom: 1px solid var(--non-line);
 }
 @media (min-width: 860px) {
+  .non-contact-hero,
   .non-stock-hero {
     grid-template-columns: 1fr minmax(0, 38%);
     align-items: end; gap: 48px; padding: 66px var(--non-pad) 46px;
   }
 }
+.non-contact-hero__title,
 .non-stock-hero__title {
   margin: 14px 0 0;
   font-size: clamp(34px, 4.7vw, 68px);
   line-height: .95; font-weight: 600; letter-spacing: -.03em;
   max-width: 13ch; text-wrap: balance;
 }
+.non-contact-hero__lead,
 .non-stock-hero__lead {
   margin: 0; max-width: 44ch; font-size: var(--t-copy);
   line-height: 1.55; color: var(--non-fg-dim); text-wrap: pretty;
@@ -2511,6 +2543,53 @@ a, button, .non-card, .non-filter, .non-pair__opt, .non-somm__seed,
 .non-somm .non-somm__input { color: #0c0c0c; }
 .non-somm .non-somm__input::placeholder { color: #6b6862; }
 .non-somm .non-somm__caret { color: #6b6862; }
+
+/* --- Pairing: the verdict -------------------------------------------------
+   Sits above the free-text panel and pushes it down, so the answer lands where
+   you were looking rather than below the route you already declined. */
+.non-pair__verdict {
+  margin-top: 34px; padding-top: 26px;
+  border-top: 1px solid var(--non-line);
+  animation: rise .4s var(--ease-standard) both;
+}
+.non-pair__verdict[hidden] { display: none; }
+.non-pair__body { margin-top: 14px; }
+
+/* Why it works for what was ANSWERED. One line per parameter, so the reasoning
+   is visibly a consequence of the choices rather than a paragraph that would
+   have appeared regardless. */
+.non-pair__why { margin: 0; padding: 0; list-style: none; display: flex; flex-direction: column; gap: 8px; }
+.non-pair__why li {
+  position: relative; padding-left: 18px;
+  font-size: var(--t-copy); line-height: 1.55; color: var(--non-fg); max-width: 56ch;
+}
+.non-pair__why li::before {
+  content: '—'; position: absolute; left: 0; color: var(--non-fg-faint);
+}
+.non-pair__whygen {
+  margin: 14px 0 0; font-size: var(--t-small); line-height: 1.6;
+  color: var(--non-fg-mute); max-width: 56ch;
+}
+
+/* The bottle, in the verdict, with a real add to cart. */
+.non-pair__buy {
+  display: flex; align-items: center; gap: 16px; flex-wrap: wrap;
+  margin-top: 22px; padding: 16px; border: 1px solid var(--non-line-strong);
+}
+.non-pair__buy[hidden] { display: none; }
+.non-pair__buyimg { flex: none; width: 64px; height: 64px; background: var(--non-photo-bed); }
+.non-pair__buyimg img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.non-pair__buymeta { display: flex; flex-direction: column; gap: 3px; min-width: 0; flex: 1; }
+.non-pair__buycode { font-size: var(--t-mono); letter-spacing: .14em; color: var(--non-fg-faint); }
+.non-pair__buyname { font-size: var(--t-body); font-weight: 600; }
+.non-pair__buyprice { font-size: var(--t-small); color: var(--non-fg-mute); }
+.non-pair__add {
+  flex: none; border: 0; cursor: pointer; min-height: 44px; padding: 12px 22px;
+  background: var(--non-invert-bg); color: var(--non-invert-fg);
+  font-family: var(--non-sans); font-size: var(--t-mono); font-weight: 700;
+  letter-spacing: .14em; text-transform: uppercase; text-align: center;
+}
+.non-pair__again { margin-top: 18px; }
 
 /* --- Pairing: the free-text route ----------------------------------------- */
 .non-pair__freetext {

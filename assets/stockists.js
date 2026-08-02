@@ -160,6 +160,14 @@
     var heroCount = document.querySelector('[data-non-hero-count]');
     if (heroCount && all.length) {
       var base = heroCount.getAttribute('data-base') || heroCount.textContent.trim();
+      // Strip any count already written into the setting before appending the
+      // live one. The stored eyebrow read "Stockists · 1,400+ venues", so the
+      // page rendered "Stockists · 1,400+ venues · 2,191 venues" — the live
+      // figure arriving next to a stale hardcoded one, which is worse than
+      // either alone because it invites the reader to work out which is true.
+      // Done here rather than only in the setting so a merchandiser typing a
+      // count back in cannot resurrect it.
+      base = base.replace(/\s*[·|,-]\s*[\d,.]+\+?\s*venues?\s*$/i, '').trim();
       heroCount.setAttribute('data-base', base);
       heroCount.textContent = base + ' · ' + all.length.toLocaleString() + ' venues';
     }

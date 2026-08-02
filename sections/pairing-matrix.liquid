@@ -70,6 +70,7 @@
     <div class="non-grid non-grid--3" style="margin-top:28px">
       {%- for note in notes -%}
         <div {{ note.shopify_attributes }}>
+          {% render 'stat-icon', icon: note.settings.icon %}
           <div class="non-step__t">{{ note.settings.title }}</div>
           <p class="non-step__b">{{ note.settings.body }}</p>
         </div>
@@ -196,6 +197,42 @@
       "type": "note",
       "name": "Why it works",
       "settings": [
+        {
+          "type": "select",
+          "id": "icon",
+          "label": "Icon",
+          "default": "none",
+          "options": [
+            {
+              "value": "none",
+              "label": "None"
+            },
+            {
+              "value": "star",
+              "label": "Michelin — star"
+            },
+            {
+              "value": "table",
+              "label": "The table — plate & glass"
+            },
+            {
+              "value": "scale",
+              "label": "Structure — balance"
+            },
+            {
+              "value": "leaf",
+              "label": "Growing — leaf"
+            },
+            {
+              "value": "zero",
+              "label": "Zero alcohol — struck glass"
+            },
+            {
+              "value": "bottle",
+              "label": "The liquid — bottle"
+            }
+          ]
+        },
         {
           "type": "text",
           "id": "title",

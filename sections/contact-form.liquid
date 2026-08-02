@@ -40,12 +40,27 @@
     <script src="{{ 'contact-field.js' | asset_url }}" defer></script>
   {%- endif -%}
 
-  <div class="non-section__head">
-    <h1 class="non-section__title">{{ page.title | default: section.settings.heading }}</h1>
-    {%- if settings.contact_email != blank -%}
-      <a class="non-section__more" href="mailto:{{ settings.contact_email }}">
-        {{ settings.contact_email }}
-      </a>
+  {%- comment -%}
+    The same page header every other page has: mono eyebrow, display heading,
+    supporting line to the right. Contact was the odd one out — it opened with
+    an 11px uppercase .non-section__title, which is the label used INSIDE a
+    section, so the page had no header at all by the standard the rest of the
+    site sets. Reuses the Stockists/Pairing hero rules rather than a third copy.
+  {%- endcomment -%}
+  <div class="non-contact-hero">
+    <div>
+      {%- if section.settings.eyebrow != blank -%}
+        <div class="non-mono non-eyebrow">{{ section.settings.eyebrow }}</div>
+      {%- endif -%}
+      <h1 class="non-contact-hero__title">{{ page.title | default: section.settings.heading }}</h1>
+    </div>
+    {%- if section.settings.lead != blank or settings.contact_email != blank -%}
+      <p class="non-contact-hero__lead">
+        {{ section.settings.lead }}
+        {%- if settings.contact_email != blank -%}
+          {% if section.settings.lead != blank %} {% endif %}<a href="mailto:{{ settings.contact_email }}">{{ settings.contact_email }}</a>
+        {%- endif -%}
+      </p>
     {%- endif -%}
   </div>
 
@@ -159,7 +174,7 @@
       "type": "text",
       "id": "aside_heading",
       "label": "Aside heading",
-      "default": "Also"
+      "default": ""
     },
     {
       "type": "richtext",
@@ -211,6 +226,18 @@
       "label": "Ink (R,G,B)",
       "default": "242,240,234",
       "info": "Comma-separated RGB, no rgb() wrapper. Defaults to the theme's ink."
+    },
+    {
+      "type": "text",
+      "id": "eyebrow",
+      "label": "Eyebrow",
+      "default": "Contact"
+    },
+    {
+      "type": "textarea",
+      "id": "lead",
+      "label": "Lead",
+      "default": "Trade enquiries, press, stockists or a question about a bottle — this reaches a person."
     },
     {
       "type": "header",

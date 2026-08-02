@@ -159,21 +159,24 @@
           "type": "note",
           "settings": {
             "title": "Michelin DNA",
-            "body": "The idea came out of Michelin-starred rooms in London in 2017 — where the non-drinker was handed something built by hand, considered, complex, matched to the plate. That standard is still the brief every bottle is written to."
+            "body": "The idea came out of Michelin-starred rooms in London in 2017 — where the non-drinker was handed something built by hand, considered, complex, matched to the plate. That standard is still the brief every bottle is written to.",
+            "icon": "star"
           }
         },
         "n2": {
           "type": "note",
           "settings": {
-            "title": "Built by food, for food",
-            "body": "Every bottle starts as ingredients cooked in a kitchen — roasted, reduced, salted, acidified — not as a drink with the alcohol taken out. It sits beside a plate because that is the only place it was ever designed to sit."
+            "title": "Built for the table",
+            "body": "Every bottle starts as ingredients cooked in a kitchen — roasted, reduced, salted, acidified — not as a drink with the alcohol taken out. It is built to sit beside a plate, because that is the only place it was ever designed to sit.",
+            "icon": "table"
           }
         },
         "n3": {
           "type": "note",
           "settings": {
             "title": "Structure, not sweetness",
-            "body": "Tannin from tea, skins and pith. Salinity from Murray River salt and kombu. Acid from Barossa verjus and citrus. The three levers wine uses to meet food, built from zero rather than left behind."
+            "body": "Tannin from tea, skins and pith. Salinity from Murray River salt and kombu. Acid from Barossa verjus and citrus. The three levers wine uses to meet food, built from zero rather than left behind.",
+            "icon": "scale"
           }
         }
       },
@@ -193,11 +196,46 @@
         "subheading": "Course × bottle",
         "why_heading": "Why it works with food"
       }
+    },
+    "closers": {
+      "type": "split-feature",
+      "blocks": {
+        "out": {
+          "type": "cell",
+          "settings": {
+            "image_url": "https://cdn.shopify.com/s/files/1/0371/5874/8205/files/non-story-038A8614.jpg?v=1785541727&width=1400",
+            "image_alt": "NON poured at a restaurant table",
+            "title": "Can't be bothered cooking?",
+            "text": "Someone else is already pouring it. Find the restaurants, bars and retailers near you with NON on the list.",
+            "link_label": "Find a stockist",
+            "link": "/pages/store-locator"
+          }
+        },
+        "bottle": {
+          "type": "cell",
+          "settings": {
+            "image_url": "https://cdn.shopify.com/s/files/1/0371/5874/8205/files/non-story-038A8683.jpg?v=1785541727&width=1400",
+            "image_alt": "The NON range",
+            "title": "Skip the questions?",
+            "text": "If you already know what you are after, the whole range is one click away — nine bottles, sets and the stopper.",
+            "link_label": "Shop the range",
+            "link": "/collections/the-range"
+          }
+        }
+      },
+      "block_order": [
+        "out",
+        "bottle"
+      ],
+      "settings": {
+        "max_height": 0
+      }
     }
   },
   "order": [
     "main",
     "recipes",
-    "matrix"
+    "matrix",
+    "closers"
   ]
 }

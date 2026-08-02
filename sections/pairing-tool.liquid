@@ -75,6 +75,33 @@
         needs no new JS. Context 'pairing' so the Worker knows where it came
         from.
       {%- endcomment -%}
+      {%- comment -%}
+        THE VERDICT, ABOVE the free-text box rather than below it.
+
+        It used to render underneath, so answering three questions pushed the
+        answer off the bottom while the grey "or just name the dish" panel — the
+        alternative route you had already declined by answering — kept the prime
+        position. Now the recommendation appears in place and pushes the grey box
+        down, which is what a result should do.
+
+        The bottle and its add to cart live in here too, not under the
+        photograph in the side column.
+      {%- endcomment -%}
+      <div class="non-pair__verdict" data-non-pair-result hidden>
+        <div class="non-pair__q" data-non-pair-title></div>
+        <div class="non-pair__body" data-non-pair-body></div>
+
+        <div
+          class="non-pair__buy"
+          data-non-pair-buy
+          data-add-label="{{ section.settings.add_label | escape }}"
+          hidden></div>
+
+        <button type="button" class="non-btn non-btn--ghost non-pair__again" data-non-pair-reset>
+          {{ section.settings.reset_label }}
+        </button>
+      </div>
+
       {%- assign dishes = section.blocks | where: 'type', 'dish' -%}
       {%- if section.settings.freetext_label != blank -%}
         <div class="non-pair__freetext">
@@ -149,13 +176,6 @@
         </div>
       {%- endif -%}
 
-      <div data-non-pair-result hidden style="animation:rise .4s ease both">
-        <div class="non-pair__q" data-non-pair-title></div>
-        <p class="non-note" data-non-pair-body style="max-width:52ch"></p>
-        <button type="button" class="non-btn non-btn--ghost" data-non-pair-reset style="margin-top:18px">
-          Start again
-        </button>
-      </div>
     </div>
 
     {%- comment -%}
@@ -323,6 +343,18 @@
       "id": "freetext_answer_label",
       "label": "Answer label",
       "default": "The somm says"
+    },
+    {
+      "type": "text",
+      "id": "add_label",
+      "label": "Add button",
+      "default": "Add to cart"
+    },
+    {
+      "type": "text",
+      "id": "reset_label",
+      "label": "Start again",
+      "default": "Start again"
     },
     {
       "type": "header",

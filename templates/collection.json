@@ -25,7 +25,10 @@
         "promo_eyebrow": "Cheapest way in",
         "promo_cta": "Add the mixed six",
         "promo_show_price": true,
-        "card_max": 380
+        "card_max": 380,
+        "show_field": true,
+        "field_density": 34,
+        "field_envelope_scale": 0
       },
       "blocks": {
         "chip-raw": {
@@ -175,7 +178,6 @@
       "settings": {
         "heading": "Not drinks",
         "blurb": "The things around the bottle — for opening it, keeping it, and wearing the name.",
-        "columns": "4",
         "card_max": 380,
         "image_ratio": "square",
         "show_add": true
@@ -189,4 +191,3 @@
     "closers"
   ]
 }
-

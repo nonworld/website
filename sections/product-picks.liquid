@@ -30,18 +30,32 @@
       <p class="non-hero__blurb" style="margin-top:16px;max-width:52ch">{{ section.settings.blurb }}</p>
     {%- endif -%}
 
-    <div
-      class="non-grid non-grid--{{ section.settings.columns }} non-grid--ratio-{{ section.settings.image_ratio }}"
-      style="margin-top:26px;--non-card-max: {{ section.settings.card_max }}px">
-      {%- for block in picks -%}
-        {%- assign item = block.settings.product -%}
-        {%- if item != blank -%}
-          <div {{ block.shopify_attributes }}>
+    {%- comment -%}
+      The SAME row component as the sets band, not a fixed-column grid.
+
+      This used .non-grid — repeat(4, 1fr) capped at card_max — while the sets
+      row uses featured-collection's `row` layout, grid-auto-columns:
+      minmax(--non-card-min, --non-card-max). Same 380 cap, different geometry,
+      so the cards came out different sizes and no amount of tuning the number
+      would have matched them. Two things that will not line up are usually two
+      components, not one bad value.
+    {%- endcomment -%}
+    <div class="non-row-wrap" data-non-row-wrap>
+      <button type="button" class="non-row-arrow non-row-arrow--prev" data-non-row-prev aria-label="{{ section.settings.prev_label | escape }}">&#8592;</button>
+      <div
+        class="non-row non-grid--ratio-{{ section.settings.image_ratio }}"
+        data-non-row
+        style="--non-card-max: {{ section.settings.card_max }}px">
+        {%- for block in picks -%}
+          {%- assign item = block.settings.product -%}
+          {%- if item != blank -%}
             {% render 'product-card', product: item, show_add: section.settings.show_add %}
-          </div>
-        {%- endif -%}
-      {%- endfor -%}
+          {%- endif -%}
+        {%- endfor -%}
+      </div>
+      <button type="button" class="non-row-arrow non-row-arrow--next" data-non-row-next aria-label="{{ section.settings.next_label | escape }}">&#8594;</button>
     </div>
+    <script src="{{ 'row-scroller.js' | asset_url }}" defer></script>
   </div>
 {%- endif -%}
 
@@ -72,16 +86,16 @@
       "label": "Link URL"
     },
     {
-      "type": "select",
-      "id": "columns",
-      "label": "Columns",
-      "options": [
-        { "value": "2", "label": "2" },
-        { "value": "3", "label": "3" },
-        { "value": "4", "label": "4" },
-        { "value": "5", "label": "5" }
-      ],
-      "default": "4"
+      "type": "text",
+      "id": "prev_label",
+      "label": "Scroll back label",
+      "default": "Previous"
+    },
+    {
+      "type": "text",
+      "id": "next_label",
+      "label": "Scroll forward label",
+      "default": "Next"
     },
     {
       "type": "range",

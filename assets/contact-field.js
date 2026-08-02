@@ -30,9 +30,15 @@
 (function () {
   'use strict';
 
-  var wrap = document.querySelector('[data-non-contact-field]');
-  if (!wrap) return;
+  // Every instance on the page, not just the first. The field started life
+  // bound to the one on Contact; putting it behind the Shop grid as well means
+  // more than one can exist, and a single querySelector would silently animate
+  // whichever happened to come first in the document.
+  var fields = document.querySelectorAll('[data-non-contact-field]');
+  if (!fields.length) return;
+  Array.prototype.forEach.call(fields, Field);
 
+  function Field(wrap) {
   var cv = wrap.querySelector('canvas');
   if (!cv || !cv.getContext) return;
 
@@ -186,4 +192,5 @@
   size();
   // Reduced motion gets one frame and nothing further.
   if (reduced) draw(0);
+  }
 })();

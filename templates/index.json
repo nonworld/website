@@ -292,8 +292,8 @@
         "link_label": "All sets",
         "link_url": "/collections/non-sets",
         "rows": 1,
-        "card_max": 640,
-        "layout": "grid"
+        "card_max": 380,
+        "layout": "row"
       }
     }
   },

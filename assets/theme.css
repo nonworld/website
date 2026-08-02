@@ -633,6 +633,30 @@ button { font-family: inherit; }
 /* Stretches to the row so the shot can take its height from it. */
 .non-gallery { display: flex; flex-direction: column; gap: 18px; padding: 20px var(--non-pad); min-height: 0; }
 @media (min-width: 860px) { .non-product { align-items: stretch; } }
+
+/* SIDE-MOUNTED THUMBS on desktop — a narrow strip beside the shot rather than a
+   row beneath it, so the thumbs cost the column no height and the photograph
+   stays uncovered. Grid, not flex: a flex row grows the image on the main axis
+   and overrides aspect-ratio, which is what produced a 114x429 "square".
+
+   Below 860px they return to a horizontal row under the shot — a phone has
+   width to spare and height it does not. */
+@media (min-width: 860px) {
+  .non-gallery {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 68px;
+    align-items: start;
+    gap: 12px;
+  }
+  .non-gallery__thumbs {
+    display: grid;
+    grid-auto-rows: 68px;
+    grid-template-columns: 68px;
+    gap: 12px;
+    width: 68px; max-width: none; margin: 0;
+  }
+  .non-gallery__main { margin-inline: 0; max-width: none; }
+}
 }
 @media (min-width: 860px) { .non-gallery { padding: 28px 0 28px var(--non-pad); } }
 
@@ -649,21 +673,13 @@ button { font-family: inherit; }
    The width cap stays: that is what actually holds the size at any viewport,
    and it is why the shell needs no max-width. */
 .non-gallery__main {
-  /* HEIGHT-DRIVEN, not width-driven. The shot must be exactly as tall as the
-     buy column beside it and still be square, so the height comes from the grid
-     row and the width is derived from it by aspect-ratio — the reverse of every
-     other image on the site. width:auto is what lets aspect-ratio compute from
-     the height instead of the other way round; without it the width wins and
-     the square dictates the height again.
-
-     min-height:0 because a flex item defaults to min-height:auto and will not
-     shrink below its content, which would push the column taller than the row
-     and defeat the whole thing. */
-  flex: 1 1 auto;
-  min-height: 0;
-  height: 100%;
-  width: auto;
-  max-width: 100%;
+  /* WIDTH-DRIVEN square. The previous pass made this height-driven so it could
+     match the buy column, which worked until the thumbs moved beside it — in a
+     flex row `flex: 1 1 auto` grows the width and fights aspect-ratio, and the
+     shot came out 114x429. Square is the requirement that matters, and width
+     is the axis that can guarantee it at every viewport. */
+  width: 100%;
+  height: auto;
   aspect-ratio: 1 / 1;
   object-fit: cover;
   background: #f2f0ea;

@@ -640,7 +640,18 @@ button { font-family: inherit; }
 .non-gallery__main {
   width: 100%; max-width: 560px; margin-inline: auto;
   aspect-ratio: 1/1;
-  object-fit: cover; background: var(--non-photo-bed); display: block;
+  /* CONTAIN, not cover. Square + cover crops roughly a fifth off the height of
+     a tall bottle shot — it takes the cap or the base off NON1 and NON3, which
+     is fine on a 350px card where the bottle is an icon and ruinous on the
+     560px hero shot where it IS the product.
+
+     The bed is the paper cream rather than --non-photo-bed (#17171a): the
+     product photography is shot on cream, so a light bed reads as the edge of
+     the photograph, while the dark bed would frame every bottle in two black
+     bands. Cards keep cover — they crop to a consistent square on purpose. */
+  object-fit: contain;
+  background: #f2f0ea;
+  display: block;
 }
 .non-gallery__thumbs { display: flex; gap: 10px; flex-wrap: wrap; }
 /* Square, matching the main shot and the cards. Edited in place rather than

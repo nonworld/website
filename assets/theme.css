@@ -3058,3 +3058,30 @@ select:-moz-focusring { color: transparent; text-shadow: 0 0 0 var(--non-fg); }
   margin: 8px 0 0; font-size: var(--t-small); line-height: 1.55;
   color: var(--non-fg-mute); max-width: 34ch;
 }
+
+/* --- Mobile: header and globe --------------------------------------------
+   The nav wrapped onto three lines on a phone — SHOP…NONHQ, then CONTACT,
+   then Cart — because .non-header and .non-header__nav both wrap. Six links
+   will never fit a 390px row at this tracking, so instead of wrapping they
+   scroll sideways on one line: the header stays one bar tall and every link
+   stays reachable. Cart is pinned out of the scroller so it never scrolls
+   away from the thumb. */
+@media (max-width: 859px) {
+  .non-header { flex-wrap: nowrap; gap: 10px; }
+  .non-header__nav {
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    scrollbar-width: none;
+    -webkit-overflow-scrolling: touch;
+    min-width: 0;
+    padding-bottom: 2px;
+  }
+  .non-header__nav::-webkit-scrollbar { display: none; }
+  .non-header__nav > * { white-space: nowrap; flex: none; }
+  .non-header__cart { flex: none; }
+
+  /* The globe was a 420px minimum on a screen barely twice that tall, so it
+     ate most of a scroll. It is decoration behind the press quotes, not the
+     content. */
+  .non-globe { min-height: var(--non-globe-box, 260px); }
+}

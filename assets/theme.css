@@ -4297,3 +4297,86 @@ select:-moz-focusring { color: transparent; text-shadow: 0 0 0 var(--non-fg); }
   border-color: #8d8d87;
   border-bottom-color: #EDEDE8;
 }
+
+/* ==========================================================================
+   Somm: one layout, one alignment system.
+
+   What was wrong, and it was my doing — successive patches each fixed a
+   detail and left the component with three competing systems:
+
+     · left-aligned copy above a centred orb
+     · an orb floating in ~200px of dead space, attached to nothing
+     · a centred placeholder sitting on a full-bleed rule
+     · ASK on its own baseline, detached up and to the right
+     · the field's surface invisible, so it read as a caption with a line
+
+   Fixed as a whole rather than piecemeal: one centred column, one measure,
+   one baseline for the field row, and spacing that ties the orb to what it
+   belongs to instead of leaving it stranded.
+   ========================================================================== */
+.non-somm,
+.non-sommbox {
+  max-width: 680px;
+  margin-inline: auto;
+}
+
+/* The orb sits close to the field it introduces. It was pushed away by
+   margins on both sides, which is what made it read as unrelated. */
+.non-somm::before,
+.non-sommbox::before {
+  margin: 0 auto 18px;
+}
+
+/* The field row: input and ASK on ONE baseline, same height, no float. */
+.non-somm__bar,
+.non-sommbox__ask {
+  display: flex;
+  flex-wrap: nowrap;
+  align-items: stretch;
+  justify-content: center;
+  gap: 10px;
+  width: 100%;
+  margin: 0 0 16px;
+}
+.non-somm__input,
+.non-sommbox__ask input,
+.non-sommbox__ask .non-somm__input {
+  flex: 1 1 auto;
+  min-width: 0;
+  /* Left, not centred. A centred caret jumps as you type, and centred text in
+     a full-width field is the thing that made this read as a caption. */
+  text-align: left;
+  padding: 15px 16px;
+  font-size: 16px;
+  background: rgba(242, 240, 234, .05);
+  border: 1px solid #3d3d38;
+  border-radius: 0;
+}
+.non-somm__submit,
+.non-sommbox__submit {
+  flex: 0 0 auto;
+  min-height: 0;
+  padding: 0 24px;
+  align-self: stretch;
+}
+
+/* Status sits under the field as a quiet caption, not wedged into the row
+   between the input and the button. */
+.non-somm__bar .non-somm__live,
+.non-sommbox__live { order: 99; }
+
+.non-somm__seeds,
+.non-sommbox__seeds {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 8px;
+  margin: 0;
+}
+.non-somm .non-somm__seed,
+.non-sommbox .non-somm__seed,
+.non-sommbox__seeds button {
+  min-height: 0;
+  padding: 10px 14px;
+  font-size: 13px;
+}

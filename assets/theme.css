@@ -3634,3 +3634,30 @@ select:-moz-focusring { color: transparent; text-shadow: 0 0 0 var(--non-fg); }
   .non-somm .non-somm__stream,
   .non-somm__answer:not([hidden]) { animation: none; }
 }
+
+/* The seed chips, at the specificity that actually wins.
+
+   The light-island rule for these is
+   `.non-somm .non-somm__seed, .non-sommbox .non-somm__seed, .non-sommbox__seeds button`
+   — (0,2,0). The override above was (0,1,1) and lost, so the chips stayed
+   white-filled on the open dark surface: five small boxes on a component whose
+   whole redesign was about removing the box. Measured before fixing:
+   background rgb(255,255,255) with 2px radius, on a transparent panel.
+
+   Matching the selector exactly rather than reaching for !important — the
+   cascade is doing its job, the earlier rule was simply more specific. */
+.non-somm .non-somm__seed,
+.non-sommbox .non-somm__seed,
+.non-sommbox__seeds button {
+  background: transparent;
+  color: #a9a9a2;
+  border: 1px solid #3a3a37;
+  border-radius: 0;
+}
+.non-somm .non-somm__seed:hover,
+.non-sommbox .non-somm__seed:hover,
+.non-sommbox__seeds button:hover {
+  background: #EDEDE8;
+  color: #000;
+  border-color: #EDEDE8;
+}

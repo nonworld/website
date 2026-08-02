@@ -359,6 +359,48 @@ contrast ratios of 1.01, 1.05 and 1.63 — invisible. **Unwind all eight, then
 verify by computed contrast in the browser, not by eye.** Anything under 4.5:1
 is a fail.
 
+## REDO PROPERLY — the process animation conversion is wrong
+
+Aaron: "Animation hasn't been converted right - needs to be redone from
+original file." He is right, and the reason is structural rather than cosmetic.
+
+The source (`Process animation sequence.zip`, Desktop) drives everything from a
+`PRODUCTS` array. **It has been extracted verbatim to
+`docs/process-animation-source.json`** so this is now an implementation job,
+not a research one.
+
+What the source actually does, and what the current build does instead:
+
+| | Source | Current build |
+|---|---|---|
+| Step titles | **Per bottle** ("Cold steep", "Caramelised") | One generic set for all |
+| Step bodies | **Per bottle**, naming that bottle's ingredients | One generic set |
+| Fruit drawing | `berry` / `pear` / `citrus` per bottle | One fixed drawing |
+| Botanical drawing | `flower` / `kelp` / `quill` / `oak` / `bean` | Not implemented |
+| Captions | Per bottle | Per bottle (this part is right) |
+
+So switching bottles currently changes the accent and the caption line only.
+In the source it changes the whole scene AND the copy — NON2 reads "Pears
+cooked until their sugars darken", NON1 reads "48 hours of freeze-dried
+Tasmanian raspberries". That is the difference being felt.
+
+**The build needed:**
+1. Move step title/body onto the BOTTLE blocks, not the step blocks — five
+   titles and five bodies per bottle. `docs/process-animation-source.json` has
+   all six bottles' copy ready to load.
+2. Draw the three fruit shapes and five botanical shapes in
+   `snippets/process-scene.liquid`, selected per bottle.
+3. Swap copy and shapes together when a chip is pressed, in
+   `assets/process-sequence.js`.
+
+**Do not re-approximate the drawings.** The current scenes are my own
+invention, which is exactly why the conversion reads wrong. The source SVG
+lives inside the bundled React in the zip; extract it rather than redraw.
+
+The motion vocabulary is already correct and working (`non-proc-fall`,
+`non-proc-grain`, `non-proc-tilt`, all verified looping on the live page) —
+keep it. It is the artwork and the copy model that need redoing.
+
 ## Three traps from the 2026-08-02 evening session
 
 **1. The storefront needs the `/en-au/` locale prefix.** Two products appeared

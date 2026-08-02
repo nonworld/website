@@ -5342,3 +5342,41 @@ select:-moz-focusring { color: transparent; text-shadow: 0 0 0 var(--non-fg); }
 @media (max-width: 859px) {
   .non-about-kitchen__grid { grid-template-columns: 1fr; gap: 14px; }
 }
+
+/* ==========================================================================
+   Process animation — fit the phone without redrawing it.
+
+   The artifact was authored at a 900x420 stage and its inner layout settles at
+   about 512px wide. On a 375px screen that overflowed by 137px, and because
+   nothing scrolled it was CLIPPED — the fruit and botanical drawings, the
+   whole right-hand half, simply gone. A visitor on a phone saw text and an
+   empty margin.
+
+   Scaled rather than reflowed, deliberately. Aaron asked for the animation
+   as-is; rearranging its columns would be redrawing it. zoom is used because
+   it reflows the surrounding layout — a transform would leave the section's
+   original height behind as dead space under a shrunken animation.
+
+   overflow-x is the fallback: anywhere zoom is not honoured the stage becomes
+   swipeable instead of cropped, which is worse than scaling but far better
+   than losing half the artwork.
+   ========================================================================== */
+.non-process-anim__stage { overflow-x: auto; }
+
+@media (max-width: 859px) {
+  .non-process-anim__stage { zoom: 0.78; overflow-x: auto; }
+}
+@media (max-width: 560px) {
+  .non-process-anim__stage { zoom: 0.68; }
+}
+@media (max-width: 400px) {
+  .non-process-anim__stage { zoom: 0.60; }
+}
+
+/* The eyebrow was ellipsising to "HO…" — it is a full sentence, not a label,
+   so let it wrap rather than truncate. */
+.non-process-anim__stage [style*="text-overflow"] {
+  overflow: visible !important;
+  text-overflow: clip !important;
+  white-space: normal !important;
+}

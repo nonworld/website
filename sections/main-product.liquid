@@ -211,7 +211,20 @@
         sold-out button it shows today rather than a form that silently fails.
       {%- endcomment -%}
       {%- if product.available == false and section.settings.klaviyo_public_key != blank -%}
-        <form
+        {%- comment -%}
+          A DIV, not a form, and that is not a style choice.
+
+          This sits inside the product's own <form>. HTML forbids nested forms,
+          so the parser DROPS the inner start tag and keeps its children — the
+          markup is present in the source and `[data-non-bis]` does not exist
+          in the DOM, so the script binds to nothing and the field is inert
+          while looking perfectly correct. Verified on the Cap PDP: the class
+          string was in outerHTML and querySelector returned null.
+
+          Submission is a button click plus Enter on the input, handled in
+          back-in-stock.js.
+        {%- endcomment -%}
+        <div
           class="non-bis"
           data-non-bis
           data-bis-key="{{ section.settings.klaviyo_public_key | escape }}"
@@ -228,10 +241,10 @@
               autocomplete="email"
               placeholder="{{ section.settings.bis_placeholder | escape }}"
               data-non-bis-input>
-            <button type="submit" class="non-bis__submit">{{ section.settings.bis_cta }}</button>
+            <button type="button" class="non-bis__submit" data-non-bis-submit>{{ section.settings.bis_cta }}</button>
           </div>
           <p class="non-bis__msg" data-non-bis-msg role="status" aria-live="polite" hidden></p>
-        </form>
+        </div>
         <script src="{{ 'back-in-stock.js' | asset_url }}" defer></script>
       {%- endif -%}
 

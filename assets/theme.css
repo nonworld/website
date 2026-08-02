@@ -939,8 +939,19 @@ button { font-family: inherit; }
 .non-specstrip__v { font-size: var(--t-lead); margin-top: 8px; line-height: 1.35; }
 
 /* process: steps beside a full-bleed image */
+/* Not 50/50. The copy is five short steps and an ingredients line; the media
+   is a 16:9 film that has to be cropped to fit whatever column it gets. An
+   even split spent half the band on a column that could not fill it and
+   starved the one that could — the video lost 58% of its width to the crop
+   while the text sat on 46ch inside a 640px cell with air to its right.
+
+   43/57 gives the film ~190px more at 1280 and takes the copy down to a
+   measure it already wanted. One rule, so every page using this band moves
+   together: the PDP process rail and NONHQ both read from here. */
 .non-process { display: grid; grid-template-columns: 1fr; }
-@media (min-width: 860px) { .non-process { grid-template-columns: repeat(2, 1fr); } }
+@media (min-width: 860px) {
+  .non-process { grid-template-columns: minmax(0, 0.86fr) minmax(0, 1.14fr); }
+}
 .non-process__copy {
   padding: 56px var(--non-pad); display: flex; flex-direction: column; gap: 26px;
   border-right: 1px solid var(--non-line);

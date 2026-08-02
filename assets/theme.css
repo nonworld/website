@@ -4857,3 +4857,12 @@ select:-moz-focusring { color: transparent; text-shadow: 0 0 0 var(--non-fg); }
   --tile: 34px;
 }
 .non-think__dot { background: #EDEDE8; }
+
+/* The auto-playing step. Each scene re-draws as the cycle reaches it, and the
+   accent lifts so the eye knows which stage is currently running. */
+.non-proc__step.is-playing .non-proc__art path[pathLength] {
+  animation: non-proc-draw 900ms var(--ease-standard) forwards;
+  animation-delay: 0ms;
+}
+.non-proc__step.is-playing .non-proc__cap { opacity: 1; }
+.non-proc__step .non-proc__cap { opacity: .55; transition: opacity .4s ease; }

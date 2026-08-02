@@ -63,6 +63,47 @@
       step.style.setProperty('--non-proc-delay', (i * 140) + 'ms');
       step.classList.add('is-in');
     });
+    startCycle();
+  }
+
+  /* Auto-play.
+   *
+   * The rail drew itself once and then sat still, which is a diagram that
+   * animated rather than an animation. This walks the five steps on a loop:
+   * each one is re-triggered in turn, so the sequence reads as a process
+   * running rather than five finished pictures.
+   *
+   * The class is removed and re-added on the next frame because a CSS
+   * animation only restarts when the element re-enters the matching state —
+   * simply leaving the class on does nothing the second time round.
+   */
+  var cycleTimer = null;
+  var cursor = 0;
+
+  function replayStep(step) {
+    if (!step) return;
+    step.classList.remove('is-playing');
+    // Force a reflow so the browser sees the class actually leave.
+    void step.offsetWidth;
+    step.classList.add('is-playing');
+  }
+
+  function startCycle() {
+    if (cycleTimer) return;
+    if (window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+    replayStep(steps[0]);
+    cycleTimer = setInterval(function () {
+      cursor = (cursor + 1) % steps.length;
+      replayStep(steps[cursor]);
+    }, 1600);
+  }
+
+  function stopCycle() {
+    if (!cycleTimer) return;
+    clearInterval(cycleTimer);
+    cycleTimer = null;
+    cursor = 0;
+    steps.forEach(function (s) { s.classList.remove('is-playing'); });
   }
 
   if (!('IntersectionObserver' in window)) {
@@ -85,6 +126,7 @@
         reveal();
       } else {
         steps.forEach(function (step) { step.classList.remove('is-in'); });
+        stopCycle();
       }
     });
   }, { rootMargin: '0px 0px -12% 0px' });

@@ -111,6 +111,69 @@ It now computes the track from a column count the way `.non-grid` does
 card and a peek fill a phone). Every product card on the shop page is now
 224×224 — verified grid, Sets and Not drinks together.
 
+### Four traps found on 2026-08-02, all of the same family
+
+Each one rendered markup that was PRESENT and INERT — the thing looked right in
+the source and did nothing in the page. Grep for the symptom before re-deriving.
+
+**1. A nested `<form>` is deleted by the parser.** The back-in-stock block was a
+`<form>` inside the product's add-to-cart `<form>`. HTML forbids that, so the
+parser drops the inner start tag and keeps its children: `outerHTML` contained
+`non-bis`, and `querySelector('[data-non-bis]')` returned null. The script bound
+to nothing. It is a `<div>` with a plain button now, and Enter on the field is
+caught by hand — otherwise Enter submits the CART form and adds a sold-out
+product instead of subscribing.
+
+**2. A schema default does not reach a section already placed in a JSON
+template.** `klaviyo_public_key` had `"default": "U6PhdU"` and rendered blank,
+so the form's own `!= blank` guard hid it. Stored template settings win; the
+default only applies when the section is newly added. Fix: write the value into
+`templates/*.json` explicitly. Same family as "a default nobody chose" — here it
+is a default nobody stored.
+
+**3. `max-width: 100%` cannot be inherited away.** The global
+`img, iframe, svg, video { max-width: 100% }` reset capped the YouTube iframe at
+its box, so YouTube letterboxed the 16:9 film inside its own viewport. Cover CSS
+looked broken; it had never been allowed to run. To crop an iframe it must be
+permitted to overflow — `max-width: none`.
+
+**4. A stretched grid spends spare height on its ROWS.** `.non-product`
+stretches the gallery column to the buy column's height; `.non-gallery` had auto
+rows and default alignment, so the image row grew 480 to 624 and Ingredients
+landed 182px below the photograph with nothing between them. `align-content:
+start` collects the slack at the foot of the column instead. This was NOT a
+margin, and tuning the margin would never have found it.
+
+### The process film: three constraints, only two can hold
+
+Steps on the side, nothing cropped, and a film that is not enormous. Side by
+side, the media column must match the copy's height — an uncropped 16:9 at 586px
+tall needs to be 1042px wide, leaving 238px for five steps. Widening the column
+kept improving the crop (42 → 52 → 60 → 69% of frame kept) and could never reach
+it. Settled: the box takes 16/9 from its own WIDTH and centres in the column, so
+it is uncropped at 730x410 with page showing above and below. That gap is the
+design, not a bug — do not "fix" it by stretching the box again.
+
+YouTube specifics: `loop=1` does nothing alone, the API only loops a PLAYLIST,
+so a single video must name itself via `playlist=<id>`. `controls=0` removes the
+bar; the title card and share buttons are drawn on hover regardless of any
+parameter, which is why the iframe carries `pointer-events: none`. End screens
+cannot be disabled by parameter at all — they are set per video in YouTube
+Studio. `modestbranding` is ignored by YouTube now; `rel=0` has only limited
+suggestions to the same channel since 2018.
+
+**Self-hosting removes all of it with no code change.** The section already
+branches to a native `<video>` when the URL is not a YouTube link — upload the
+mp4s to Shopify Files and paste the URLs over the YouTube ones in
+`custom.process_video_url`. Aaron was shown this and had not actioned it.
+
+### The globe was cropped, not small
+
+`globe.js` scaled the stage from a `data-size` attribute with no reference to its
+container: a 420-unit stage in a 331px column on a phone, with `overflow:
+hidden` slicing 89px off it. It now takes `min(size, root.clientWidth)` and
+re-runs on resize.
+
 ### The silent rejection that cost an evening (2026-08-01)
 
 `sections/pairing-recipes.liquid` sat frozen on its 31 July version while four
@@ -285,6 +348,15 @@ product the storefront is refusing to serve.
   "27 calories, 5.1 g sugar". The spec strip is built from an alternating
   label/value rich-text run with no keys, so a typo anywhere in it silently
   deletes a cell rather than erroring.
+- **`custom.not_a_drink` is now SET** on the Cap, Beanie, Stopper, Waiter's
+  Friend and Gift Card (2026-08-02), which is what finally switched off the
+  bottle claims on those PDPs: no ABV/volume eyebrow, no somm, no invented
+  serve. Two of those fixes were catalogue-wide, not accessory-only — TASTES
+  used to fall back to `product.title` (so the Cap's flavour note was "NON
+  Cap"), and SERVE hardcoded "Chilled, wine glass" for a field that is null on
+  every product. Bottles keep the serve default; accessories get nothing.
+- **`custom.process_video_url` is set on NON1, 3, 5, 7 and 9** with YouTube
+  links, per bottle. NON2 has none yet.
 - **`custom.tastes` and `custom.profile` are null on every product**, so the
   TASTES cell renders its label over nothing. Same class of failure, still open.
 - `custom.serve` is null on every product and the Liquid supplies a hardcoded
@@ -318,6 +390,33 @@ already been bitten by a fake `custom.serve` fallback once.
 A set also needs a different shape to a single: what is IN it, why those three,
 and what it costs per bottle versus buying them separately. That is new copy,
 and it is Aaron's to write or approve.
+
+## NEXT UP — "How it's made" animation, native rebuild (approved 2026-08-02)
+
+Aaron supplied `Process animation sequence.zip` (on his Desktop) and asked if it
+could go on the Shop page. Agreed instead: **rebuild it natively as a theme
+section, and put it on About, not Shop.** Aaron approved this.
+
+Why not the zip as-is: it is a bundled React artifact — 139KB HTML plus a 69KB
+support script — that pulls **React 18 from unpkg** at runtime and base64-decodes
+its assets on load. Shop is the highest-intent page and the one where LCP matters
+most; a heavy decorative animation above the grid pushes the shelf down. About is
+editorial and can carry a set piece, and it is where "how it's made" belongs
+without competing with the PDP process band and the five films.
+
+**Brand ruling from Aaron, and it is an exception to the monochrome rule:**
+
+> "I do think the fruit can have colour for once, but agree with the fonts etc."
+
+So: **the fruit may be in colour** — this is the one sanctioned break from the
+strictly-monochrome identity. Everything else holds. No `-apple-system`, no
+system fonts: NONHelvetica and JetBrains Mono only. No CDN dependency, no React.
+Use the existing house conventions — 1px strokes, butt caps, mitre joins,
+`currentColor` for anything that is not the fruit, and the four motion tokens in
+`:root`. `snippets/stat-icon.liquid` is the reference for how NON draws.
+
+The zip's own palette (`#faf9f5` ground, `#E4573F` stroke) is NOT approved as
+such — colour on the fruit is approved, that specific orange was never discussed.
 
 ## Outstanding after 2026-08-01 — nothing started, no half-built work
 

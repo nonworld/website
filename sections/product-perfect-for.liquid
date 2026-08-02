@@ -76,6 +76,9 @@
           {%- if block.settings.caption != blank -%}
             <div class="non-trip__cap">
               <div class="non-trip__title">{{ block.settings.caption }}</div>
+              {%- if block.settings.subtitle != blank -%}
+                <div class="non-trip__sub">{{ block.settings.subtitle }}</div>
+              {%- endif -%}
               {%- if block.settings.subcaption != blank -%}
                 <div class="non-trip__sub">{{ block.settings.subcaption }}</div>
               {%- endif -%}
@@ -223,6 +226,12 @@
           "type": "text",
           "id": "subcaption",
           "label": "Sub-caption"
+        },
+        {
+          "type": "text",
+          "id": "subtitle",
+          "label": "Sub-line",
+          "info": "The mono line under the caption, as on the homepage Made for band."
         }
       ]
     }

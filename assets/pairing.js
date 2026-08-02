@@ -146,7 +146,16 @@
     }
     lastRevealed = revealUpTo;
 
-    if (active.length && firstUnanswered === -1) finish();
+    if (active.length && firstUnanswered === -1) {
+      finish();
+    } else {
+      // Changing an earlier answer can reopen a question, and the verdict from
+      // the previous run must not sit there looking current while it is being
+      // re-asked. Nothing is shown again until there is a complete answer.
+      resultEl.hidden = true;
+      if (buyEl) buyEl.hidden = true;
+      if (picksEl) picksEl.hidden = true;
+    }
   }
 
   function finish() {

@@ -3039,3 +3039,22 @@ select:-moz-focusring { color: transparent; text-shadow: 0 0 0 var(--non-fg); }
   pointer-events: none;
 }
 .non-contact-field canvas { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
+
+/* --- PDP: features & benefits ---------------------------------------------
+   Per-product copy from custom.benefits, so an accessory can argue its own
+   case instead of inheriting a bottle's. Two columns on desktop, one on a
+   phone; hairline between rows rather than boxes, so it reads as spec rather
+   than as marketing tiles. */
+.non-benefits { margin-top: 30px; padding-top: 24px; border-top: 1px solid var(--non-line); }
+.non-benefits__list {
+  display: grid; grid-template-columns: 1fr; gap: 2px;
+  margin-top: 16px; background: var(--non-line);
+  border: 1px solid var(--non-line);
+}
+@media (min-width: 720px) { .non-benefits__list { grid-template-columns: 1fr 1fr; } }
+.non-benefit { background: var(--non-bg); padding: 18px 20px; }
+.non-benefit__t { font-size: var(--t-body); font-weight: 600; letter-spacing: -.01em; }
+.non-benefit__b {
+  margin: 8px 0 0; font-size: var(--t-small); line-height: 1.55;
+  color: var(--non-fg-mute); max-width: 34ch;
+}

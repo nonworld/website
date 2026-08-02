@@ -86,7 +86,24 @@
       <div class="non-mono non-eyebrow">
         {{ code }}
         {%- if style != blank %} &middot; {{ style }}{% endif -%}
-        {%- if section.settings.eyebrow_suffix != blank %} &middot; {{ section.settings.eyebrow_suffix }}{% endif -%}
+        {%- comment -%}
+          The suffix is a SECTION setting — one string for every product — so
+          "0.0% ABV · 750ml" was printed on the Stopper and the Waiter's Friend
+          too. A metal bottle stopper does not have an ABV or a volume, and
+          stating one is a factual error on a product page, not a cosmetic one.
+
+          Per-product override first (custom.spec_line), then the section
+          default, and nothing at all when the product carries
+          custom.not_a_drink. An accessory gets its code and its style and stops
+          there.
+        {%- endcomment -%}
+        {%- assign not_drink = product.metafields.custom.not_a_drink | metafield_text -%}
+        {%- assign spec_line = product.metafields.custom.spec_line | metafield_text -%}
+        {%- if spec_line != blank -%}
+          &middot; {{ spec_line }}
+        {%- elsif not_drink == blank and section.settings.eyebrow_suffix != blank -%}
+          &middot; {{ section.settings.eyebrow_suffix }}
+        {%- endif -%}
       </div>
 
       <h1 class="non-buy__name">{{ product.title | remove: code | strip }}</h1>
@@ -190,6 +207,56 @@
 
       <p class="non-error" data-non-form-error></p>
     </form>
+
+    {%- comment -%}
+      FEATURES & BENEFITS, per product.
+
+      Reads custom.benefits — one per line, "Title | Body" — so every product
+      carries its own and nothing is hardcoded to the bottles. The Stopper's
+      case for existing is nothing like NON1's, and a shared section setting
+      would print one of them on the other, which is exactly the mistake the ABV
+      eyebrow was making one element up.
+
+      Falls back to the section's blocks when a product has no metafield, so a
+      merchandiser can fill this in from the theme editor before the data
+      exists. Renders nothing when neither is present — an empty band is worse
+      than no band.
+    {%- endcomment -%}
+    {%- assign benefits_raw = product.metafields.custom.benefits | metafield_text -%}
+    {%- assign benefit_blocks = section.blocks | where: 'type', 'benefit' -%}
+    {%- if benefits_raw != blank or benefit_blocks.size > 0 -%}
+      <div class="non-benefits">
+        {%- if section.settings.benefits_label != blank -%}
+          <div class="non-mono non-eyebrow">{{ section.settings.benefits_label }}</div>
+        {%- endif -%}
+        <div class="non-benefits__list">
+          {%- if benefits_raw != blank -%}
+            {%- assign rows = benefits_raw | newline_to_br | split: '<br />' -%}
+            {%- for row in rows -%}
+              {%- assign clean = row | strip -%}
+              {%- if clean != blank -%}
+                {%- assign bits = clean | split: '|' -%}
+                <div class="non-benefit">
+                  <div class="non-benefit__t">{{ bits[0] | strip }}</div>
+                  {%- if bits.size > 1 -%}
+                    <p class="non-benefit__b">{{ bits[1] | strip }}</p>
+                  {%- endif -%}
+                </div>
+              {%- endif -%}
+            {%- endfor -%}
+          {%- else -%}
+            {%- for block in benefit_blocks -%}
+              <div class="non-benefit" {{ block.shopify_attributes }}>
+                <div class="non-benefit__t">{{ block.settings.title }}</div>
+                {%- if block.settings.body != blank -%}
+                  <p class="non-benefit__b">{{ block.settings.body }}</p>
+                {%- endif -%}
+              </div>
+            {%- endfor -%}
+          {%- endif -%}
+        </div>
+      </div>
+    {%- endif -%}
 
     {%- comment -%} ── somm, as a panel ────────────────────────────────── {%- endcomment -%}
     {%- if section.settings.show_somm -%}
@@ -479,6 +546,13 @@
     },
     {
       "type": "text",
+      "id": "benefits_label",
+      "label": "Benefits label",
+      "default": "Why it earns its place",
+      "info": "Per-product copy comes from the custom.benefits metafield - one per line, \"Title | Body\". Blocks below are the fallback."
+    },
+    {
+      "type": "text",
       "id": "eyebrow_suffix",
       "label": "Eyebrow suffix",
       "default": "0.0% ABV · 750ml",
@@ -678,6 +752,22 @@
           "id": "custom_value",
           "label": "Custom text",
           "info": "Used only when Value from is set to Custom text."
+        }
+      ]
+    },
+    {
+      "type": "benefit",
+      "name": "Benefit (fallback)",
+      "settings": [
+        {
+          "type": "text",
+          "id": "title",
+          "label": "Title"
+        },
+        {
+          "type": "textarea",
+          "id": "body",
+          "label": "Body"
         }
       ]
     }

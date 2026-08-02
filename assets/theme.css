@@ -4702,3 +4702,81 @@ select:-moz-focusring { color: transparent; text-shadow: 0 0 0 var(--non-fg); }
 @media (max-width: 859px) {
   .non-poured__set img { min-width: 70px; height: 26px; }
 }
+
+/* ==========================================================================
+   Somm: two columns. Orb left, conversation right.
+
+   The stacked version put the orb above everything, so at full pulse it
+   crowded the words underneath and the whole component ran tall. Side by side
+   it reads as one compact object: a presence on the left, what it says and how
+   you talk to it on the right.
+
+   Grid, not flex — the orb has to sit beside a COLUMN of siblings (head,
+   opener, field, chips), and flex would lay those out as four more columns.
+   Grid lets the orb hold column 1 across every row while everything else
+   stacks in column 2.
+
+   The orb's box stays 84px whatever the pulse does: transform: scale() does
+   not affect layout, so it can grow into its own padding without moving a
+   single word. That is why it can pulse harder here than it could stacked.
+   ========================================================================== */
+@media (min-width: 700px) {
+  .non-somm,
+  .non-sommbox {
+    display: grid;
+    grid-template-columns: 84px minmax(0, 1fr);
+    column-gap: 28px;
+    align-items: start;
+    text-align: left;
+    max-width: 720px;
+    padding: 18px 0;
+  }
+
+  /* Column 1, spanning every row, vertically centred against the stack. */
+  .non-somm::before,
+  .non-sommbox::before {
+    grid-column: 1;
+    grid-row: 1 / -1;
+    align-self: center;
+    margin: 0;
+    width: 84px;
+    height: 84px;
+  }
+
+  /* Everything else stacks in column 2. */
+  .non-somm > *,
+  .non-sommbox > * { grid-column: 2; }
+
+  /* Left-aligned and tightened — this is the compact version. */
+  .non-sommbox__head {
+    justify-content: flex-start;
+    margin: 0 0 8px;
+  }
+  .non-sommbox__body { margin: 0 0 14px; }
+  .non-sommbox__opener {
+    margin: 0;
+    max-width: 46ch;
+    font-size: clamp(16px, 1.25vw, 19px);
+    line-height: 1.4;
+  }
+  .non-somm__bar,
+  .non-sommbox__ask { margin: 0 0 10px; justify-content: flex-start; }
+  .non-somm__seeds,
+  .non-sommbox__seeds { justify-content: flex-start; }
+
+  /* Shorter controls suit the tighter block. */
+  .non-somm .non-somm__input,
+  .non-sommbox__ask input,
+  .non-sommbox__ask .non-somm__input { height: 46px; font-size: 15px; }
+  .non-somm__submit,
+  .non-sommbox__submit { height: 46px; padding: 0 22px; }
+  .non-somm .non-somm__seed,
+  .non-sommbox .non-somm__seed,
+  .non-sommbox__seeds button { padding: 8px 12px; font-size: 12.5px; }
+}
+
+/* Below 700 it stacks again — two columns at 84px plus a field is not a phone
+   layout, and the orb centred above reads fine when there is no room beside. */
+@media (max-width: 699px) {
+  .non-somm, .non-sommbox { display: flex; flex-direction: column; align-items: center; text-align: center; }
+}

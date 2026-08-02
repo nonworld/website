@@ -4061,3 +4061,69 @@ select:-moz-focusring { color: transparent; text-shadow: 0 0 0 var(--non-fg); }
   0%, 100% { transform: scale(1); opacity: .62; }
   50% { transform: scale(1.04); opacity: .78; }
 }
+
+/* ==========================================================================
+   Somm: ask row, hero parity, and a pulse you can actually read.
+   ========================================================================== */
+
+/* 1. The ASK button was overlapping the chips.
+
+   Centring the ask row left the input as a flex item with no width and the
+   button with a 52px min-height, so the row collapsed to the input's own
+   height and the taller button spilled over the seeds beneath it. The row
+   needs to own its height and clear what follows. */
+.non-sommbox__ask {
+  display: flex;
+  flex-wrap: nowrap;
+  align-items: flex-end;
+  gap: 16px;
+  width: 100%;
+  margin: 0 0 22px;
+}
+.non-sommbox__ask input,
+.non-sommbox__ask .non-somm__input {
+  flex: 1 1 auto;
+  min-width: 0;
+}
+.non-sommbox__ask .non-sommbox__submit,
+.non-sommbox__ask .non-somm__submit {
+  flex: 0 0 auto;
+  align-self: flex-end;
+}
+.non-sommbox__seeds { margin-top: 0; }
+
+/* 2. The hero gets the same orb, so the component reads as one thing across
+   the site rather than two designs sharing a name. The hero bar is a single
+   row, so the orb sits above it and the row stays intact underneath. */
+.non-somm__bar { display: flex; flex-wrap: wrap; justify-content: center; }
+.non-somm__bar::before {
+  content: "";
+  display: block;
+  flex: 0 0 100%;
+  width: clamp(72px, 7vw, 96px);
+  aspect-ratio: 1 / 1;
+  margin: 4px auto 20px;
+  border-radius: 50%;
+  background:
+    radial-gradient(circle at 40% 34%,
+      rgba(242, 240, 234, .92) 0%,
+      rgba(242, 240, 234, .55) 34%,
+      rgba(242, 240, 234, .18) 58%,
+      rgba(242, 240, 234, .05) 74%,
+      transparent 84%);
+  filter: blur(7px);
+  animation: non-somm-orb 5s ease-in-out infinite;
+  pointer-events: none;
+}
+
+/* 3. A pulse you can read.
+
+   .62 → .78 over eight seconds is below the threshold most people notice at
+   all — it measured as animating and looked static. Widening the opacity swing
+   does more work here than scale, because a blurred form has no edge to track;
+   brightness is the only cue the eye gets. */
+@keyframes non-somm-orb {
+  0%, 100% { transform: scale(.94); opacity: .45; }
+  50% { transform: scale(1.06); opacity: .95; }
+}
+.non-sommbox::before { animation-duration: 5s; opacity: 1; }

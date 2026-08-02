@@ -158,22 +158,22 @@
         "n1": {
           "type": "note",
           "settings": {
-            "title": "Tannin",
-            "body": "Chamomile, cinnamon, tea, hops and citrus pith give grip on the finish, so the glass holds a plate instead of washing through it."
+            "title": "Michelin DNA",
+            "body": "The idea came out of Michelin-starred rooms in London in 2017 — where the non-drinker was handed something built by hand, considered, complex, matched to the plate. That standard is still the brief every bottle is written to."
           }
         },
         "n2": {
           "type": "note",
           "settings": {
-            "title": "Salinity",
-            "body": "Murray River salt and kombu make food taste more like itself. It is a lever wine never had."
+            "title": "Built by food, for food",
+            "body": "Every bottle starts as ingredients cooked in a kitchen — roasted, reduced, salted, acidified — not as a drink with the alcohol taken out. It sits beside a plate because that is the only place it was ever designed to sit."
           }
         },
         "n3": {
           "type": "note",
           "settings": {
-            "title": "Acid",
-            "body": "Barossa verjus, citrus and vinegar reset the palate between bites, and cool chilli rather than stoking it."
+            "title": "Structure, not sweetness",
+            "body": "Tannin from tea, skins and pith. Salinity from Murray River salt and kombu. Acid from Barossa verjus and citrus. The three levers wine uses to meet food, built from zero rather than left behind."
           }
         }
       },
@@ -191,7 +191,7 @@
       "settings": {
         "heading": "The whole table, at a glance",
         "subheading": "Course × bottle",
-        "why_heading": "Why any of this works without alcohol"
+        "why_heading": "Why it works with food"
       }
     }
   },

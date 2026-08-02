@@ -359,6 +359,52 @@ contrast ratios of 1.01, 1.05 and 1.63 — invisible. **Unwind all eight, then
 verify by computed contrast in the browser, not by eye.** Anything under 4.5:1
 is a fail.
 
+## Three traps from the 2026-08-02 evening session
+
+**1. The storefront needs the `/en-au/` locale prefix.** Two products appeared
+to 404 for hours and four theories were chased and disproven — channel
+publication, market catalog, URL redirects, stale publication records — before
+the real answer surfaced. Shopify reports the canonical URL as:
+
+```
+https://www.non.world/en-au/products/non-gift-card
+```
+
+`/products/non-gift-card.js` returns **404**; `/en-au/products/non-gift-card.js`
+returns **200**. Nothing was ever wrong with those products. Aaron said
+"Shopify changed prefix" early on and it was misread as being about the Lotto's
+store domain.
+
+**Outstanding work:** internal links and section pickers that use a bare
+`/products/...` path need the prefix. The Not drinks row on the shop page is the
+known case. **Before diagnosing any "missing product", test the prefixed URL
+first.**
+
+**2. Never give a pseudo-element `flex: 0 0 100%`.** The Somm orb was
+`width: clamp(72px,7vw,96px)` with `aspect-ratio: 1/1`, and it rendered ~1100px
+wide, swallowing the homepage hero. flex-basis overrides width, and the aspect
+ratio then matched the height to it. Set an explicit width AND height with
+`flex: none` on anything decorative in a flex container.
+
+**3. The Somm stylesheet has an accumulated specificity problem.** Rules scoped
+`.non-somm .non-somm__input` (0,2,0) beat later single-class rules (0,1,0), so
+three separate fixes shipped looking correct and did nothing: the seed chips
+stayed white-filled, the hero input kept dark ink on a dark panel (1.0
+contrast), and the field surface stayed transparent.
+
+There is now a block at the END of theme.css commented **"NON SOMM — FINAL,
+CONSOLIDATED"**. It is authoritative and everything above it touching the Somm
+is superseded. **Work there, not above it**, and match the existing selector
+specificity rather than reaching for `!important`.
+
+**The lesson underneath all three:** every one shipped looking right and was
+wrong. Verify by computed value in the browser — contrast ratios, box
+geometry, matched CSS rules — not by reading the diff.
+
+### Known loose end
+The Somm's field-to-chips gap measures 44px against the 20px set in the
+consolidated block; something upstream still adds margin. Cosmetic, unchased.
+
 ## NON Lotto returns "closed" — narrowed to the Worker's own token (2026-08-02)
 
 Aaron scratched, entered an email, and got "NON Lotto is closed right now."

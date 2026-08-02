@@ -16,28 +16,28 @@
           "type": "seed",
           "settings": {
             "label": "What does it replace?",
-            "answer": "Tell me the seat you're filling — rosé, white or red — and I'll tell you which bottle takes it. Each one is built for the structure alcohol used to provide, not for imitating a grape."
+            "answer": ""
           }
         },
         "seed-2": {
           "type": "seed",
           "settings": {
             "label": "Is it sweet?",
-            "answer": "Less than you'd expect. The sugar figure is on the spec above, and most of it comes from the fruit concentrating as it cooks rather than from anything added. Salt and verjus pull hard against it, so it reads balanced."
+            "answer": ""
           }
         },
         "seed-3": {
           "type": "seed",
           "settings": {
             "label": "How is this different from de-alcoholised wine?",
-            "answer": "De-alcoholised wine is made as wine, then stripped — which takes the aroma and body with it, so sugar usually goes back in.\n\nThis was never wine. It's cooked to be 0.0% from the start."
+            "answer": ""
           }
         },
         "seed-4": {
           "type": "seed",
           "settings": {
             "label": "I'm buying it as a gift",
-            "answer": "Then go six. It arrives as a case, the per-bottle price drops against a single, and a mixed set is the least intimidating way in for someone who hasn't tried the range."
+            "answer": ""
           }
         },
         "t1": {

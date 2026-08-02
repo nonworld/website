@@ -658,19 +658,28 @@ button { font-family: inherit; }
    left and sat off the picture's axis. The same cap and the same auto margins
    put them back under it; the gap goes up to match the air the square shot
    gained. */
+/* A GRID of equal cells, not a wrapping flex row. Flex lets each button size to
+   its own content, so a thumb whose image reports a different intrinsic size
+   comes out a different width to its neighbours and the row stops reading as a
+   set. Fixed 68px tracks make every cell identical by construction.
+
+   Same 560px cap and auto margins as the main shot, so the row sits under the
+   picture rather than starting at the column edge. */
 .non-gallery__thumbs {
-  display: flex; gap: 12px; flex-wrap: wrap;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, 68px);
+  gap: 12px;
   width: 100%; max-width: 560px; margin-inline: auto;
 }
 /* Square, matching the main shot and the cards. Edited in place rather than
    overridden above — an override written earlier in the file loses to this
    rule, and a "fix" that renders identically to the bug is worse than none. */
 .non-gallery__thumb {
-  width: 64px; height: 64px; padding: 0; cursor: pointer;
+  width: 100%; aspect-ratio: 1; padding: 0; cursor: pointer;
   border: 1px solid transparent; background: var(--non-photo-bed);
   opacity: .55; transition: opacity var(--duration-hover) var(--ease-hover), border-color var(--duration-hover) var(--ease-hover);
 }
-@media (min-width: 860px) { .non-gallery__thumb { width: 68px; height: 68px; } }
+/* Size comes from the grid track now, so the cell cannot vary per item. */
 .non-gallery__thumb img { width: 100%; height: 100%; object-fit: cover; display: block; }
 .non-gallery__thumb[aria-current="true"] { border-color: var(--non-fg); opacity: 1; }
 .non-gallery__thumb:hover { opacity: .85; }
@@ -1587,11 +1596,17 @@ button { font-family: inherit; }
 .non-hero__media,
 .non-trip__cell,
 .non-split__cell,
+/* .non-gallery__main is NOT in this list. It sets its own cream bed, because it
+   is the one image on the site using object-fit: contain — so its background is
+   visible letterboxing rather than a bed that never shows. This rule sits after
+   that one and was silently winning, which put a near-black slab around a
+   bottle shot photographed on cream. Third time tonight a later rule quietly
+   beat an earlier fix: grep for the selector before assuming a declaration is
+   the only one. */
 .non-card__media,
 .non-process__media,
 .non-about__band,
 .non-upsell__img,
-.non-gallery__main,
 .non-gallery__thumb {
   background: var(--non-photo-bed);
 }

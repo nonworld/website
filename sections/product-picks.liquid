@@ -45,7 +45,7 @@
       <div
         class="non-row non-grid--ratio-{{ section.settings.image_ratio }}"
         data-non-row
-        style="--non-card-max: {{ section.settings.card_max }}px">
+        style="--non-row-cols-lg: {{ section.settings.columns | default: 5 }}; --non-card-max: {{ section.settings.card_max }}px">
         {%- for block in picks -%}
           {%- assign item = block.settings.product -%}
           {%- if item != blank -%}
@@ -106,7 +106,20 @@
       "step": 20,
       "unit": "px",
       "default": 380,
-      "info": "380 matches the shop grid and the homepage row."
+      "info": "A cap, not a target. The row divides its width by Columns below and never exceeds this."
+    },
+    {
+      "type": "select",
+      "id": "columns",
+      "label": "Columns",
+      "options": [
+        { "value": "3", "label": "3" },
+        { "value": "4", "label": "4" },
+        { "value": "5", "label": "5" },
+        { "value": "6", "label": "6" }
+      ],
+      "default": "5",
+      "info": "Match the shop grid above so every card on the page is the same size."
     },
     {
       "type": "select",

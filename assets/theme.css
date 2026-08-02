@@ -483,10 +483,31 @@ button { font-family: inherit; }
 /* One line holding the whole collection, scrolling sideways when it overruns.
    Distinct from the grid: a grid must wrap, a row must not. */
 .non-row-wrap { position: relative; margin-top: 24px; }
+/* Track width is COMPUTED from a column count, not negotiated from free space.
+
+   It used to be minmax(--non-card-min 200px, --non-card-max 380px), which
+   makes the card size depend on how many products are in the row rather than
+   on any setting. Three items fit inside the container, so free space was
+   distributed and every track grew to its 380px max. Seven items overflowed,
+   so there was no free space and every track fell to its 200px min. Measured
+   on one page at 1280: Not drinks 380, Sets 200, and the main grid — a real
+   5-column grid — 224. Three sizes, three different mechanisms, and the
+   card_max: 380 that all three sections set was reached by exactly one of
+   them. Tuning that number could never have matched them.
+
+   Now the row divides its own width by a column count the same way .non-grid
+   does, so a row of 3 and a row of 7 render identical cards, and setting the
+   row to the same column count as the grid makes the whole page line up.
+   --non-card-max stays a genuine cap for narrow rows on wide screens. */
 .non-row {
   display: grid;
   grid-auto-flow: column;
-  grid-auto-columns: minmax(var(--non-card-min, 200px), var(--non-card-max, 1fr));
+  --non-row-cols: 1.35;
+  --non-row-gap: 20px;
+  grid-auto-columns: min(
+    var(--non-card-max, 380px),
+    calc((100% - (var(--non-row-cols) - 1) * var(--non-row-gap)) / var(--non-row-cols))
+  );
   gap: 20px;
   overflow-x: auto;
   scroll-behavior: smooth;
@@ -496,6 +517,17 @@ button { font-family: inherit; }
 }
 .non-row::-webkit-scrollbar { display: none; }
 .non-row > * { scroll-snap-align: start; }
+/* Below 860 the grid drops to two columns and the row had no mobile rule at
+   all, so a long row showed 200px cards on a 390px screen — small pictures
+   AND no clue the thing scrolls. 1.35 columns is deliberate: one full card
+   with the next one cut off at the edge, which is what tells a thumb to swipe.
+   The desktop count comes from the section's Columns setting. */
+@media (min-width: 860px) {
+  .non-row { --non-row-cols: var(--non-row-cols-lg, 4); }
+}
+@media (max-width: 859px) {
+  .non-row { gap: 14px; --non-row-gap: 14px; }
+}
 .non-row-arrow {
   position: absolute;
   top: calc(50% - 60px);
@@ -534,6 +566,16 @@ button { font-family: inherit; }
   font-family: var(--non-mono); font-size: 9.5px; letter-spacing: .14em;
   text-transform: uppercase; padding: 5px 9px;
 }
+/* Sold out reads as state, not as a promotion. "The pick" is an invitation and
+   is painted in the inverted brand pair; this is the same badge stepped back
+   to a hairline outline so it labels the card without competing with the ones
+   that can actually be bought. */
+.non-card__flag--out {
+  background: transparent;
+  color: var(--non-fg-mute);
+  border: 1px solid var(--non-line-strong);
+  backdrop-filter: blur(6px);
+}
 .non-card__why { font-size: var(--t-small); line-height: 1.5; color: var(--non-fg-dim); border-left: 1px solid var(--non-line-strong); padding-left: 10px; }
 .non-card__add {
   border: 1px solid var(--non-line-strong); background: transparent; color: var(--non-fg);
@@ -560,9 +602,22 @@ button { font-family: inherit; }
    selector alone: image_tag writes its own width/height attributes, and with
    three photos of different intrinsic shapes the tiles ended up different
    heights — two of them short, with the caption stranded over black. Every
-   tile is now the same shape, set from the section's Image shape setting. */
+   tile is now the same shape, set from the section's Image shape setting.
+
+   `height: auto` is what actually makes that true, and its absence is why the
+   class alone never fixed it. image_tag writes BOTH width and height as HTML
+   attributes, which map to presentational hints — real CSS declarations that
+   author rules must override one by one. `width: 100%` beat the width hint;
+   nothing beat the height hint, so height stayed DEFINITE at the photograph's
+   intrinsic pixel height and `aspect-ratio` was ignored outright — a ratio
+   only sizes a box whose height is auto. Measured on the NON1 PDP: three
+   tiles 392px wide rendering 1500px, 2133px and 1500px tall, while
+   getComputedStyle reported aspect-ratio "1 / 1" the whole time. The property
+   was applied and inert, which is exactly what made it look like a
+   specificity problem. */
 .non-trip__img {
   width: 100%;
+  height: auto;
   aspect-ratio: var(--non-trip-ratio, var(--non-image-ratio));
   object-fit: cover;
   object-position: center;
@@ -1196,22 +1251,16 @@ button { font-family: inherit; }
    work", because a scratch card is the one control nobody reads instructions
    for. The exchange is now the other way round: scratch, then claim. */
 
-/* The nudge on the foil. Hidden by JS on the first scratch, and it never blocks
-   a pointer — the whole panel has to stay scratchable through it. */
-.non-lotto__hint {
-  position: absolute; left: 0; right: 0; bottom: 14px; z-index: 2;
-  text-align: center; pointer-events: none;
-  font-family: var(--non-mono); font-size: 10px; letter-spacing: .18em;
-  text-transform: uppercase; color: rgba(35, 31, 32, .55);
-  animation: blink 2.4s steps(1) infinite;
-}
-.non-lotto__hint[hidden] { display: none; }
+/* The blinking on-foil nudge was removed with its markup — a label that
+   flashes forever is the loudest thing on the page and it was pointed at a
+   control nobody needs instructions for. lotto.js still queries
+   [data-non-lotto-hint] and every use of it is null-guarded, so the element
+   being absent is a no-op rather than a thrown handler. */
 
 /* Once the foil is off there is nothing left to scratch, so stop offering. */
 .non-lotto__foil.is-off { cursor: default; }
 
 @media (prefers-reduced-motion: reduce) {
-  .non-lotto__hint { animation: none; }
   .non-lotto__gate { animation: none; }
 }
 
@@ -1862,7 +1911,7 @@ button { font-family: inherit; }
   font-family: var(--non-mono); font-size: var(--t-mono); color: var(--non-fg-mute);
 }
 .non-verdict__media { background: var(--non-photo-bed); overflow: hidden; }
-.non-verdict__img { width: 100%; aspect-ratio: var(--non-image-ratio); object-fit: cover; display: block; }
+.non-verdict__img { width: 100%; height: auto; aspect-ratio: var(--non-image-ratio); object-fit: cover; display: block; }
 .non-verdict .non-pair__trace { margin-top: 14px; }
 
 /* Answered questions dim rather than disappear — you can still see what you
@@ -2058,7 +2107,7 @@ button { font-family: inherit; }
 .non-hq-rooms { display: grid; grid-template-columns: 1fr; gap: 2px; background: var(--non-line); }
 @media (min-width: 720px) { .non-hq-rooms { grid-template-columns: repeat(3, 1fr); } }
 .non-hq-room { position: relative; background: var(--non-photo-bed); }
-.non-hq-room__img { width: 100%; aspect-ratio: var(--non-image-ratio); object-fit: cover; display: block; }
+.non-hq-room__img { width: 100%; height: auto; aspect-ratio: var(--non-image-ratio); object-fit: cover; display: block; }
 .non-hq-room__cap {
   position: absolute; left: 0; right: 0; bottom: 0; padding: 18px 20px;
   background: linear-gradient(to top, var(--non-scrim), transparent);

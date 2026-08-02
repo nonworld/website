@@ -76,13 +76,16 @@
       <canvas class="non-lotto__foil" data-non-lotto-foil aria-label="{{ section.settings.scratch_label | escape }}"></canvas>
 
       {%- comment -%}
-        The nudge. It sits on the foil and fades the moment a scratch starts —
-        a scratch card that has to explain itself has failed, but one line for
-        the first two seconds costs nothing.
+        The blinking "SCRATCH HERE" nudge is gone. It was a mono line on the
+        foil running a 2.4s blink, and a flashing label is the one thing on the
+        page that never stops asking for attention.
+
+        The instruction is not lost: the label still rides the canvas as its
+        aria-label above, so it is announced to a screen reader, and the foil
+        keeps cursor: pointer. The setting stays in the schema because that
+        aria-label reads from it — deleting the setting would strip the
+        accessible name too.
       {%- endcomment -%}
-      <div class="non-lotto__hint" data-non-lotto-hint aria-hidden="true">
-        {{ section.settings.scratch_label }}
-      </div>
     </div>
 
     {%- comment -%}

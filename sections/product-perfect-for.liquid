@@ -8,8 +8,9 @@
      This is the editable path and it wins whenever any block exists.
 
   2. The product metafields, used when no blocks are added:
-       custom.perfect_for_images   list.file_reference
-       custom.perfect_for_captions list.single_line_text
+       custom.perfect_for_images       list.file_reference
+       custom.perfect_for_captions     list.single_line_text
+       custom.perfect_for_subcaptions  list.single_line_text
      They are positional — image[i] belongs to caption[i] — and nothing links
      them beyond order, so a mismatched count silently pairs the wrong caption
      to the wrong plate. The head still reports a mismatch rather than hiding
@@ -23,6 +24,7 @@
 {%- liquid
   assign images = product.metafields.custom.perfect_for_images.value
   assign captions = product.metafields.custom.perfect_for_captions.value
+  assign subcaptions = product.metafields.custom.perfect_for_subcaptions.value
 
   assign use_blocks = false
   if section.blocks.size > 0
@@ -99,9 +101,22 @@
               alt: captions[forloop.index0] | default: product.title
           }}
           {%- assign caption = captions[forloop.index0] -%}
+          {%- assign subcaption = subcaptions[forloop.index0] -%}
           {%- if caption != blank -%}
             <div class="non-trip__cap">
               <div class="non-trip__title">{{ caption }}</div>
+              {%- comment -%}
+                The mono sub-line the homepage band carries ("oysters,
+                radicchio, cured fish"). It was added to the block path only,
+                so a product filling this band from metafields — which is
+                every product, since no PDP has tiles — could not render one
+                and the two bands still did not match. Positional, like the
+                captions: subcaption[i] belongs to image[i]. Absent means
+                nothing renders, never an invented line.
+              {%- endcomment -%}
+              {%- if subcaption != blank -%}
+                <div class="non-trip__sub">{{ subcaption }}</div>
+              {%- endif -%}
             </div>
           {%- endif -%}
         </div>

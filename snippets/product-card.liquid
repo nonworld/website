@@ -29,8 +29,21 @@
   class="non-card{% if dim %} non-card--dim{% endif %}"
   data-non-code="{{ code | escape }}"
   {% if score %}data-score="{{ score }}"{% endif %}>
+  {%- comment -%}
+    Sold out has to be legible from the shelf, not only from the button.
+
+    A sold-out card already rendered a disabled "Sold out" button, but that is
+    the last line of a card and it only appears when show_add is on — so the
+    Cap and the Beanie, both at 0 with inventory policy DENY, read as ordinary
+    products until you got to the bottom of them. The badge sits on the
+    photograph where "The pick" sits, so the state is carried by the card
+    itself. "The pick" wins if a card is somehow both, since a sold-out pick
+    is not a pick.
+  {%- endcomment -%}
   {%- if is_pick -%}
     <span class="non-card__flag">The pick</span>
+  {%- elsif product.available == false -%}
+    <span class="non-card__flag non-card__flag--out">{{ 'products.product.sold_out' | t }}</span>
   {%- endif -%}
 
   <a href="{{ product.url }}" class="non-card__media" aria-label="{{ product.title | escape }}">

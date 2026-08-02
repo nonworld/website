@@ -45,7 +45,7 @@
         <div
           class="non-row non-grid--ratio-{{ section.settings.image_ratio | default: 'square' }}"
           data-non-row
-         {% if card_max > 0 %} style="--non-card-max: {{ card_max }}px"{% endif %}>
+          style="--non-row-cols-lg: {{ section.settings.columns | default: 4 }}{% if card_max > 0 %}; --non-card-max: {{ card_max }}px{% endif %}">
           {%- for product in coll.products limit: limit -%}
             {% render 'product-card', product: product, show_add: section.settings.show_add %}
           {%- endfor -%}

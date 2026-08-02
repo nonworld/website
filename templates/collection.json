@@ -112,7 +112,7 @@
       "settings": {
         "heading": "Sets",
         "collection": "non-sets",
-        "columns": "4",
+        "columns": "5",
         "rows": 1,
         "show_add": true,
         "link_label": "All sets",
@@ -181,13 +181,20 @@
           "settings": {
             "product": "non-dad-cap-1"
           }
+        },
+        "p5": {
+          "type": "pick",
+          "settings": {
+            "product": "non-gift-card"
+          }
         }
       },
       "block_order": [
         "p1",
         "p2",
         "p3",
-        "p4"
+        "p4",
+        "p5"
       ],
       "settings": {
         "heading": "Not drinks",

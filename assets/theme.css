@@ -502,7 +502,7 @@ button { font-family: inherit; }
 .non-row {
   display: grid;
   grid-auto-flow: column;
-  --non-row-cols: 1.35;
+  --non-row-cols: 2.2;
   --non-row-gap: 20px;
   grid-auto-columns: min(
     var(--non-card-max, 380px),
@@ -519,8 +519,10 @@ button { font-family: inherit; }
 .non-row > * { scroll-snap-align: start; }
 /* Below 860 the grid drops to two columns and the row had no mobile rule at
    all, so a long row showed 200px cards on a 390px screen — small pictures
-   AND no clue the thing scrolls. 1.35 columns is deliberate: one full card
-   with the next one cut off at the edge, which is what tells a thumb to swipe.
+   AND no clue the thing scrolls. 2.2 columns is deliberate: it matches the
+   two-column grid this page also runs, so a card in a row and a card in a
+   grid are the same size on a phone, and the .2 leaves the next card cut off
+   at the edge — which is what tells a thumb to swipe.
    The desktop count comes from the section's Columns setting. */
 @media (min-width: 860px) {
   .non-row { --non-row-cols: var(--non-row-cols-lg, 4); }

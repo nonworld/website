@@ -78,6 +78,23 @@
     {%- else -%}
       {{ 'product-1' | placeholder_svg_tag: 'non-gallery__main' }}
     {%- endif -%}
+
+    {%- comment -%}
+      Ingredients, under the pictures. It used to close the process band's copy
+      column, where it made that column taller and cost the film beside it
+      picture — the media is cropped to the copy's height. Here it fills the
+      space under the gallery that the buy column was already leaving empty,
+      and it reads where a customer looks for it: with the bottle, not with
+      the method. Set larger than it was, because it is now a section of the
+      page rather than a footnote to one.
+    {%- endcomment -%}
+    {%- assign ingredients_list = m.ingredients | metafield_text -%}
+    {%- if ingredients_list != blank -%}
+      <div class="non-ingr">
+        <div class="non-spec__k">{{ section.settings.ingredients_label }}</div>
+        <p class="non-ingr__list">{{ ingredients_list }}</p>
+      </div>
+    {%- endif -%}
   </div>
 
   {%- comment -%} ── buy box ───────────────────────────────────────────── {%- endcomment -%}
@@ -639,6 +656,12 @@
       "id": "add_label",
       "label": "Add to cart label",
       "default": "Add"
+    },
+    {
+      "type": "text",
+      "id": "ingredients_label",
+      "label": "Ingredients label",
+      "default": "Ingredients"
     },
     {
       "type": "header",

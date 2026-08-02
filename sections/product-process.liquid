@@ -217,12 +217,15 @@
         {%- endif -%}
       </div>
 
-      {%- if ingredients != blank -%}
-        <div style="border-top:1px solid var(--non-line);padding-top:18px">
-          <div class="non-spec__k">{{ section.settings.ingredients_label }}</div>
-          <div class="non-step__b" style="margin-top:8px;max-width:46ch">{{ ingredients }}</div>
-        </div>
-      {%- endif -%}
+      {%- comment -%}
+        Ingredients moved OUT of this column and under the gallery, in
+        main-product. It is a label on a bottle, not a step in the method, and
+        sitting it at the foot of the steps made the copy column taller — which
+        this band pays for directly, because the film beside it is cropped to
+        whatever height the copy sets. The ingredients_label setting stays here
+        for now so an existing template value is not silently dropped; the
+        heading itself is rendered by main-product.
+      {%- endcomment -%}
     </div>
 
     <div class="non-process__media non-process__media--{{ media_ratio }}{% if yt_id != blank %} non-process__media--yt{% endif %}">

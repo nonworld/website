@@ -898,6 +898,20 @@ button { font-family: inherit; }
    would make the strip a third taller for decoration. 15px is the mono
    label's own cap height, so the icon reads as part of the word rather than
    as a bullet beside it, and it inherits the label's muted ink. */
+/* Ingredients, under the gallery. Set at body size rather than the small
+   grey it had at the foot of the process column — it is a legal-ish fact
+   customers actively look for, and it is now a block of the page rather than
+   a footnote to the method. The rule above it does the same job the process
+   column's border-top did: separates it from the pictures without boxing it. */
+.non-ingr { margin-top: 26px; padding-top: 18px; border-top: 1px solid var(--non-line); }
+.non-ingr__list {
+  margin: 10px 0 0;
+  font-size: var(--t-copy);
+  line-height: 1.6;
+  color: var(--non-fg-mute);
+  max-width: 54ch;
+}
+
 /* Back in stock. Sits under the dead Add button and inherits the buy column's
    ink, so it works on the dark page without a scoped override — the Somm panel
    needed one only because it is a light island. */

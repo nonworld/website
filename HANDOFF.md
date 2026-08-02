@@ -313,6 +313,61 @@ Note the stray "ALSO" is gone regardless — `templates/page.contact.json` had
 `aside_heading: "Also"` and that IS cleared and deployed. The rejection only
 blocks the new header.
 
+## NON Lotto returns "closed" — narrowed to the Worker's own token (2026-08-02)
+
+Aaron scratched, entered an email, and got "NON Lotto is closed right now."
+Five code paths return `closed`. Four are now eliminated by measurement:
+
+- `/health` returns `{"ok":true,"prizes":6,"missing":[]}` — the pool loads and
+  all four config vars are present, so it is not the pool and not missing env.
+- **All six pool codes read ACTIVE** through the Admin API using the EXACT query
+  `codeIsLive` runs (`codeDiscountNodeByCode`). So it is not the codes.
+
+That leaves the Worker's Shopify call itself failing. The most likely cause is
+its `SHOPIFY_ADMIN_TOKEN` lacking the **`read_discounts`** scope.
+
+**Important distinction this file previously blurred.** Blocker 1 says "the
+token is fine, do not re-raise" — but the evidence for that was Admin API calls
+succeeding through a DIFFERENT credential (the MCP/Admin connection), not the
+Worker's `SHOPIFY_ADMIN_TOKEN` secret. Those are two separate tokens. The
+earlier note is still right that the *store's* Admin access works; it never
+tested the Worker's secret, and nothing else can now explain the closed state.
+
+**A real defect was found and fixed while narrowing this** (`0a69dab`, committed
+NOT deployed): `codeIsLive` checked `res.ok` and then read the data, but never
+checked `data.errors`. Shopify answers a missing scope with **HTTP 200** plus an
+errors array and `data: null` — which passed the ok check, produced an undefined
+node, and returned `false`. A permissions failure was therefore indistinguishable
+from "this code is inactive": all six got skipped and the customer saw "closed".
+It now throws, so the reason appears in `wrangler tail`.
+
+**The Worker does NOT deploy with the theme.** The theme ships through Shopify's
+GitHub integration; the Worker needs `wrangler deploy` from `worker/lotto`. The
+fix above is in git and is not live until someone runs that.
+
+### How to test it
+
+```
+cd worker/lotto && npx wrangler tail
+```
+
+Then scratch a card. The branch that fires names itself:
+
+- `[lotto] shopify graphql: <message>` — the new line. Scope or query problem.
+- `[lotto] shopify check failed: shopify 401/403` — token rejected outright.
+- `[lotto] skipping inactive code: X` then `closed-no-live-code` — genuinely
+  inactive codes.
+- `[lotto] refusing to draw, missing config: ...` — an env var is absent.
+
+Check the scope directly with:
+
+```
+npx wrangler secret list
+```
+
+and confirm the token behind `SHOPIFY_ADMIN_TOKEN` has `read_discounts` in the
+Shopify admin app's API scopes.
+
 ## BLOCKED — two products 404 on the storefront (found 2026-08-02)
 
 `NON Waiter's Friend` (`non-waiters-friend`) and `NON Gift Card`

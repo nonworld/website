@@ -1970,15 +1970,21 @@ a, button, .non-card, .non-filter, .non-pair__opt, .non-somm__seed,
 .non-somm__input::placeholder,
 .non-sommbox__ask input::placeholder { color: var(--non-fg-mute); opacity: 1; }
 
-/* Suggested questions look pressable rather than printed. */
+/* Suggested questions look pressable rather than printed.
+
+   SQUARE, not pills. These were border-radius: 999px while the recipe
+   generator's pickers — the same interaction, one page over — are square with a
+   1px hairline. Two rounding languages for "press this to fill the field"
+   reads as two components by different hands. NON has no soft corners
+   anywhere; the pill was the odd one out, so it goes rather than the other. */
 .non-somm__seed,
 .non-sommbox__seeds button {
-  border-radius: 999px;
-  /* 44, not 34. I set 34 when making these pills and it walks back the mobile
+  border-radius: 0;
+  /* 44, not 34. I set 34 when making these and it walks back the mobile
      audit's own finding — these chips were flagged at 26x18 and the fix was a
      44px minimum. A suggestion chip is a primary interaction, not a label. */
   min-height: 44px;
-  padding: 0 16px;
+  padding: 11px 16px;
   border: 1px solid var(--non-line-strong);
   background: var(--non-panel-alt);
 }
@@ -2377,26 +2383,42 @@ a, button, .non-card, .non-filter, .non-pair__opt, .non-somm__seed,
 
    Contrast: #f4f2ec on #0c0c0c is ~17:1, well past AA for the 13px mono these
    are set in. The border carries the shape at rest; hover still inverts. */
+/* One chip, everywhere. These now carry exactly the values the recipe
+   generator's pickers use — #ffffff on #c6c2b8, NONHelvetica at 13.5px — so the
+   hero, the product panel, the pairing box and the recipe band are visibly the
+   same control rather than four dialects of it.
+
+   Sans rather than mono: mono reads as a data label, and these are things you
+   press. The recipe pickers made that call first; this brings the rest across.
+
+   Contrast: #141412 on #ffffff is ~17.9:1. The border still carries the shape —
+   the fill is only ~1.6:1 against the grey panel, so #c6c2b8 at 1px is what
+   defines the edge, and it clears the 3:1 WCAG 1.4.11 needs for a control
+   boundary. */
 .non-somm .non-somm__seed,
 .non-sommbox .non-somm__seed,
 .non-sommbox__seeds button {
-  background: #f4f2ec;
-  color: #0c0c0c;
-  /* #6b6862 is the lightest border that clears 3:1 against the #c9c7c1 panel,
-     which WCAG 1.4.11 requires for a control's boundary. The chip's own fill is
-     only 1.51:1 against the panel, so the border is what defines the shape —
-     lighter values looked cleaner and left the pill edge indistinct. */
-  border-color: #6b6862;
+  background: #ffffff;
+  color: #141412;
+  border-color: #c6c2b8;
+  font-family: var(--non-sans);
+  font-size: 13.5px;
+  letter-spacing: 0;
+  text-transform: none;
 }
+/* Hover darkens the border and leaves the fill alone, exactly as the recipe
+   pickers do. The full black invert these used to run is the recipe band's
+   SELECTED state — using it for hover here made a chip you were merely pointing
+   at look chosen. */
 .non-somm .non-somm__seed:hover,
 .non-somm .non-somm__seed:focus-visible,
 .non-sommbox .non-somm__seed:hover,
 .non-sommbox .non-somm__seed:focus-visible,
 .non-sommbox__seeds button:hover,
 .non-sommbox__seeds button:focus-visible {
-  background: #0c0c0c;
-  color: #f4f2ec;
-  border-color: #0c0c0c;
+  background: #ffffff;
+  color: #141412;
+  border-color: #141412;
 }
 
 /* The input well sat on --non-bg, a dark field on a light panel. Consistent

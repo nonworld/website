@@ -4866,3 +4866,33 @@ select:-moz-focusring { color: transparent; text-shadow: 0 0 0 var(--non-fg); }
 }
 .non-proc__step.is-playing .non-proc__cap { opacity: 1; }
 .non-proc__step .non-proc__cap { opacity: .55; transition: opacity .4s ease; }
+
+/* The dash field fades IN below the header and hero, rather than being covered.
+
+   Making .non-contact-hero opaque only hid the field behind the hero's own
+   box — the field is inset: 0 across the whole section, so it still ran the
+   full width beside the heading and up behind the header. Painting over it
+   was never going to work; the field has to not be drawn there.
+
+   A mask does that without touching layout or the canvas: fully transparent
+   through the header and hero, fading in across 140px so there is no hard
+   edge, then solid for the form and the envelope below. The fade is the point
+   — a straight cut would read as a seam across the page. */
+.non-contact-field {
+  -webkit-mask-image: linear-gradient(to bottom,
+    transparent 0,
+    transparent 360px,
+    rgba(0, 0, 0, .55) 440px,
+    #000 500px);
+  mask-image: linear-gradient(to bottom,
+    transparent 0,
+    transparent 360px,
+    rgba(0, 0, 0, .55) 440px,
+    #000 500px);
+}
+@media (max-width: 859px) {
+  .non-contact-field {
+    -webkit-mask-image: linear-gradient(to bottom, transparent 0, transparent 260px, #000 380px);
+    mask-image: linear-gradient(to bottom, transparent 0, transparent 260px, #000 380px);
+  }
+}

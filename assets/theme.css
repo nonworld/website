@@ -5013,3 +5013,86 @@ select:-moz-focusring { color: transparent; text-shadow: 0 0 0 var(--non-fg); }
   justify-content: space-around;
   flex: none;
 }
+
+/* ==========================================================================
+   ONE chip.
+
+   Three families had grown independently — .non-filter (shop occasion
+   filters), .non-pair__opt (pairing answers) and .non-somm__seed (somm
+   suggestions) — each with several competing blocks scattered through this
+   file, so whichever happened to sit last won. On the pairing page alone the
+   two families sitting one above the other disagreed on text colour
+   (#f2f0ea vs #a9a9a2), border colour, padding and min-height: 44px against
+   none. Same page, same gesture, two different controls.
+
+   This is the single definition. It is last in the file deliberately, and it
+   sets geometry, type and interaction only.
+
+   Colour is deliberately NOT set for every family here. .non-filter appears on
+   light surfaces too (.non-recipes, .non-stock-filters), where those
+   context rules are more specific and still win — a white-filled chip on a
+   white band is correct there, not a bug. The colour block below is scoped to
+   the dark surfaces, which is where the disagreement actually showed.
+
+   44px minimum is the mobile audit's own finding, restated: a suggestion chip
+   is a primary interaction, not a label.
+   ========================================================================== */
+.non-filter,
+.non-pair__opt,
+.non-somm__seed,
+.non-sommbox__seeds button,
+.non-somm .non-somm__seed,
+.non-sommbox .non-somm__seed {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 44px;
+  padding: 0 16px;
+  border-width: 1px;
+  border-style: solid;
+  border-radius: 0;
+  font-family: var(--non-sans);
+  font-size: 13px;
+  font-weight: 400;
+  line-height: 1.2;
+  letter-spacing: normal;
+  text-transform: none;
+  text-align: center;
+  cursor: pointer;
+  transition:
+    background var(--duration-hover) var(--ease-hover),
+    color var(--duration-hover) var(--ease-hover),
+    border-color var(--duration-hover) var(--ease-hover);
+}
+
+/* The dark-surface resting state, shared. */
+.non-pair__opt,
+.non-somm__seed,
+.non-somm .non-somm__seed,
+.non-sommbox .non-somm__seed {
+  background: transparent;
+  color: var(--non-fg);
+  border-color: var(--non-line-strong);
+}
+
+/* Hover states the border only. The full invert is the SELECTED state, and
+   using it for hover made a chip you were merely pointing at look chosen. */
+.non-filter:hover,
+.non-pair__opt:hover,
+.non-somm__seed:hover,
+.non-somm .non-somm__seed:hover,
+.non-sommbox .non-somm__seed:hover {
+  border-color: var(--non-fg);
+  color: var(--non-fg);
+  background: transparent;
+}
+
+/* Chosen. No font-weight change — bolding on select reflows the row and the
+   chips visibly jump as you answer. */
+.non-filter[aria-pressed="true"],
+.non-pair__opt[aria-pressed="true"] {
+  background: var(--non-invert-bg);
+  color: var(--non-invert-fg);
+  border-color: var(--non-invert-bg);
+  font-weight: 400;
+}

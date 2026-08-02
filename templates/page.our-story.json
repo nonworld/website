@@ -349,16 +349,9 @@
         "stats_label": "Leave it better",
         "stats_note": "Made on 100% green energy, shipped carbon neutral."
       }
-    },
-    "process_animation": {
-      "type": "process-animation",
-      "settings": {
-        "eyebrow": "How it's made"
-      }
     }
   },
   "order": [
-    "main",
-    "process_animation"
+    "main"
   ]
 }

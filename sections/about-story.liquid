@@ -147,78 +147,50 @@
   Same classes and data attributes as before, so process-sequence.js binds to
   it unchanged.
 {%- endcomment -%}
-{%- assign psteps = section.blocks | where: 'type', 'procstep' -%}
-{%- assign pbottles = section.blocks | where: 'type', 'procbottle' -%}
-{%- if psteps.size > 0 -%}
-  {%- assign pfirst = section.settings.proc_accent -%}
-  {%- if pbottles.size > 0 and pbottles[0].settings.accent != blank -%}
-    {%- assign pfirst = pbottles[0].settings.accent -%}
-  {%- endif -%}
-  <div class="non-section non-proc" data-non-proc style="border-top:1px solid var(--non-line);--non-proc-accent: {{ pfirst }}">
-    <div class="non-section__head">
-      <h2 class="non-section__title">{{ section.settings.proc_heading }}</h2>
-      {%- if section.settings.proc_note != blank -%}
-        <span class="non-section__more">{{ section.settings.proc_note }}</span>
-      {%- endif -%}
-    </div>
+{%- comment -%}
+  THE ANIMATION, not the static rail.
 
-    {%- if section.settings.proc_blurb != blank -%}
-      <p class="non-proc__blurb">{{ section.settings.proc_blurb }}</p>
+  This position held a five-step rail headed "What we actually do" — the same
+  five steps, the same copy, drawn once and sitting still. The animation is
+  that content alive: it cycles the steps, draws each fruit and botanical, and
+  switches per bottle. Two versions of one idea on one page is one too many,
+  and the still one was the weaker.
+
+  Rendered INLINE rather than as its own section, for the reason the static
+  rail was inlined in the first place: Shopify can only order a section wholly
+  above or below this one, and everything a reader thinks of as the middle of
+  About is inside here. There is no mid-page slot to give it.
+
+  The four snippets are the artifact split to get under whatever the GitHub
+  sync chokes on; Liquid concatenates their output so the HTML is identical to
+  the single file. React is served from the theme, so nothing is fetched from
+  unpkg — dc-support's loader short-circuits on window.React.
+
+  The procstep and procbottle blocks are left in the schema deliberately. They
+  are what the static rail read, and deleting them would drop the content from
+  the theme editor with no way back if this is ever reversed.
+{%- endcomment -%}
+<div class="non-section non-process-anim" style="border-top:1px solid var(--non-line)">
+  <div class="non-section__head">
+    <h2 class="non-section__title">{{ section.settings.proc_heading }}</h2>
+    {%- if section.settings.proc_note != blank -%}
+      <span class="non-section__more">{{ section.settings.proc_note }}</span>
     {%- endif -%}
-
-    {%- if pbottles.size > 0 -%}
-      <div class="non-proc__bottles" role="tablist" aria-label="{{ section.settings.proc_heading | escape }}">
-        {%- for b in pbottles -%}
-          <button
-            type="button"
-            class="non-proc__bottle{% if forloop.first %} is-on{% endif %}"
-            role="tab"
-            aria-selected="{% if forloop.first %}true{% else %}false{% endif %}"
-            data-non-proc-bottle
-            data-accent="{{ b.settings.accent | escape }}"
-            data-fruit="{{ b.settings.fruit | escape }}"
-            data-bot="{{ b.settings.bot | escape }}"
-            data-titles="{{ b.settings.titles | escape }}"
-            data-bodies="{{ b.settings.bodies | escape }}"
-            data-caps="{{ b.settings.captions | escape }}"
-            {{ b.shopify_attributes }}>
-            {{ b.settings.code }}
-          </button>
-        {%- endfor -%}
-      </div>
-    {%- endif -%}
-
-    <div class="non-proc__rail">
-      {%- for block in psteps -%}
-        <div class="non-proc__step" data-non-proc-step {{ block.shopify_attributes }}>
-          {%- if block.settings.image != blank -%}
-            <div class="non-bandimg">
-              {{
-                block.settings.image
-                | image_url: width: 1200, format: 'webp'
-                | image_tag:
-                  loading: 'lazy',
-                  widths: '400,700,1000,1200',
-                  class: 'non-bandimg__img',
-                  alt: block.settings.image_alt | default: block.settings.title
-              }}
-            </div>
-          {%- else -%}
-            <div class="non-proc__scene">
-              {% render 'process-scene', scene: block.settings.scene %}
-            </div>
-          {%- endif -%}
-          <div class="non-mono non-proc__n">{{ forloop.index | prepend: '0' | slice: -2, 2 }}</div>
-          <div class="non-mono non-proc__label">{{ block.settings.label }}</div>
-          <div class="non-step__t non-proc__title" data-non-proc-title>{{ block.settings.title }}</div>
-          <p class="non-step__b non-proc__body" data-non-proc-body>{{ block.settings.body }}</p>
-          <div class="non-mono non-proc__cap" data-non-proc-cap></div>
-        </div>
-      {%- endfor -%}
-    </div>
   </div>
-  <script src="{{ 'process-sequence.js' | asset_url }}" defer></script>
-{%- endif -%}
+  {%- if section.settings.proc_blurb != blank -%}
+    <p class="non-hero__blurb" style="margin-top:16px;max-width:52ch">{{ section.settings.proc_blurb }}</p>
+  {%- endif -%}
+
+  <div class="non-process-anim__stage">
+    {% render 'process-anim-1' %}
+    {% render 'process-anim-2' %}
+    {% render 'process-anim-3' %}
+    {% render 'process-anim-4' %}
+  </div>
+</div>
+<script src="{{ 'vendor-react.js' | asset_url }}" defer></script>
+<script src="{{ 'vendor-react-dom.js' | asset_url }}" defer></script>
+<script src="{{ 'dc-support.js' | asset_url }}" defer></script>
 
 {%- comment -%} ── the four pillars ──────────────────────────────────────── {%- endcomment -%}
 {%- assign pillars = section.blocks | where: 'type', 'pillar' -%}

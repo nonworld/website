@@ -622,7 +622,7 @@ button { font-family: inherit; }
 .non-product { display: grid; grid-template-columns: 1fr; }
 @media (min-width: 860px) { .non-product { grid-template-columns: repeat(2, 1fr); } }
 
-.non-gallery { display: flex; flex-direction: column; gap: 12px; padding: 20px var(--non-pad); }
+.non-gallery { display: flex; flex-direction: column; gap: 18px; padding: 20px var(--non-pad); }
 @media (min-width: 860px) { .non-gallery { padding: 28px 0 28px var(--non-pad); } }
 
 /* 4/5 is the design's ratio and stays. The cap is on WIDTH, not height —
@@ -653,7 +653,15 @@ button { font-family: inherit; }
   background: #f2f0ea;
   display: block;
 }
-.non-gallery__thumbs { display: flex; gap: 10px; flex-wrap: wrap; }
+/* Aligned UNDER the main shot, not against the column edge. The main image is
+   capped at 560px and centred, so a full-width flex row of thumbs began to its
+   left and sat off the picture's axis. The same cap and the same auto margins
+   put them back under it; the gap goes up to match the air the square shot
+   gained. */
+.non-gallery__thumbs {
+  display: flex; gap: 12px; flex-wrap: wrap;
+  width: 100%; max-width: 560px; margin-inline: auto;
+}
 /* Square, matching the main shot and the cards. Edited in place rather than
    overridden above — an override written earlier in the file loses to this
    rule, and a "fix" that renders identically to the bug is worse than none. */

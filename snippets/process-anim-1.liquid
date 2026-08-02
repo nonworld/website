@@ -1,0 +1,76 @@
+{% raw %}<x-dc>
+<helmet>
+<style>
+@keyframes dcDraw { from { stroke-dashoffset: 1 } to { stroke-dashoffset: 0 } }
+@keyframes dcFall { 0% { transform: translateY(-46px); opacity: 0 } 18% { opacity: 1 } 78% { transform: translateY(52px); opacity: 1 } 100% { transform: translateY(64px); opacity: 0 } }
+@keyframes dcFade { from { opacity: 0 } to { opacity: 1 } }
+@keyframes dcSceneIn { from { opacity: 0; transform: translateY(8px) } to { opacity: 1; transform: translateY(0) } }
+@keyframes dcSteam { 0% { opacity: 0; transform: translateY(8px) } 45% { opacity: .85 } 100% { opacity: 0; transform: translateY(-16px) } }
+@keyframes dcSpin { from { transform: rotate(0deg) } to { transform: rotate(360deg) } }
+@keyframes dcTilt { 0% { transform: rotate(-10deg) } 55% { transform: rotate(7deg) } 100% { transform: rotate(0deg) } }
+@keyframes dcBar { from { transform: scaleX(0) } to { transform: scaleX(1) } }
+@keyframes dcBob { 0%,100% { transform: translateY(0) } 50% { transform: translateY(-5px) } }
+body { margin: 0; background: #0A0A0A; }
+a { color: #EDE8E0; text-decoration: none; }
+a:hover { color: #9A968E; }
+</style>
+</helmet>
+<div style="background:#0A0A0A;color:#EDE8E0;font-family:var(--non-sans);padding:24px 28px 18px;box-sizing:border-box;display:flex;flex-direction:column;gap:16px">
+
+  <div style="display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:nowrap;border-bottom:1px solid #232320;padding-bottom:10px">
+    <div style="font-family:var(--non-mono);font-size:10px;letter-spacing:0.16em;color:#807D76;text-transform:uppercase;white-space:nowrap;flex:0 1 auto;overflow:hidden;text-overflow:ellipsis">How it's made — not de-alcoholised</div>
+    <div style="display:flex;gap:5px;flex:0 0 auto;flex-wrap:nowrap">
+      <div onClick="{{ p0 }}" style="font-family:var(--non-mono);font-size:10px;letter-spacing:0.08em;padding:5px 7px;border:1px solid {{ b0 }};background:{{ g0 }};color:{{ c0 }};cursor:pointer">NON1</div>
+      <div onClick="{{ p1 }}" style="font-family:var(--non-mono);font-size:10px;letter-spacing:0.08em;padding:5px 7px;border:1px solid {{ b1 }};background:{{ g1 }};color:{{ c1 }};cursor:pointer">NON2</div>
+      <div onClick="{{ p2 }}" style="font-family:var(--non-mono);font-size:10px;letter-spacing:0.08em;padding:5px 7px;border:1px solid {{ b2 }};background:{{ g2 }};color:{{ c2 }};cursor:pointer">NON3</div>
+      <div onClick="{{ p3 }}" style="font-family:var(--non-mono);font-size:10px;letter-spacing:0.08em;padding:5px 7px;border:1px solid {{ b3 }};background:{{ g3 }};color:{{ c3 }};cursor:pointer">NON5</div>
+      <div onClick="{{ p4 }}" style="font-family:var(--non-mono);font-size:10px;letter-spacing:0.08em;padding:5px 7px;border:1px solid {{ b4 }};background:{{ g4 }};color:{{ c4 }};cursor:pointer">NON7</div>
+      <div onClick="{{ p5 }}" style="font-family:var(--non-mono);font-size:10px;letter-spacing:0.08em;padding:5px 7px;border:1px solid {{ b5 }};background:{{ g5 }};color:{{ c5 }};cursor:pointer">NON9</div>
+    </div>
+  </div>
+
+  <div style="display:grid;grid-template-columns:minmax(230px,1fr) minmax(230px,0.8fr);gap:24px;align-items:center">
+
+    <div style="display:flex;flex-direction:column;gap:10px;min-height:150px">
+      <div style="font-family:var(--non-mono);font-size:11px;letter-spacing:0.16em;color:#8F8B83">{{ productName }}</div>
+      <div style="display:flex;flex-direction:column;gap:9px;animation:dcSceneIn .45s ease both">
+        <div style="font-family:var(--non-mono);font-size:11px;letter-spacing:0.16em;color:#807D76">{{ stepLabel }}</div>
+        <div style="font-size:30px;line-height:1;letter-spacing:-0.02em">{{ stepTitle }}</div>
+        <div style="font-size:15px;line-height:1.4;color:#B4AFA6;max-width:36ch;text-wrap:pretty">{{ stepBody }}</div>
+      </div>
+    </div>
+
+    <div style="position:relative;width:100%;aspect-ratio:4/3;max-height:230px">
+
+      <sc-if value="{{ s1 }}" hint-placeholder-val="{{ true }}">
+        <svg viewBox="0 0 400 300" style="position:absolute;inset:0;width:100%;height:100%;overflow:visible">
+          <g style="fill:none;stroke:#EDE8E0;stroke-width:2;stroke-linecap:round;stroke-linejoin:round">
+            <path pathLength="1" d="M130 118 h140 l-10 150 a12 12 0 0 1 -12 11 h-96 a12 12 0 0 1 -12 -11 z" style="stroke-dasharray:1;stroke-dashoffset:1;animation:dcDraw 1s ease forwards"></path>
+            <path pathLength="1" d="M124 118 h152" style="stroke-dasharray:1;stroke-dashoffset:1;animation:dcDraw .5s ease .9s forwards"></path>
+            <path pathLength="1" d="M139 205 q16 -9 30 0 t30 0 t30 0 t26 -1" style="stroke:{{ accent }};stroke-dasharray:1;stroke-dashoffset:1;animation:dcDraw .8s ease 2.2s forwards"></path>
+            <path pathLength="1" d="M143 232 q16 -8 30 0 t30 0 t30 0 t22 -1" style="stroke:{{ accent }};stroke-dasharray:1;stroke-dashoffset:1;animation:dcDraw .8s ease 2.5s forwards"></path>
+            <g style="animation:dcFall 1.7s ease-in .9s infinite">
+              <sc-if value="{{ gBerry }}" hint-placeholder-val="{{ true }}">
+                <g style="stroke:{{ accent }}">
+                  <circle pathLength="1" cx="200" cy="70" r="9" style="animation:dcFade .3s ease both"></circle>
+                  <circle pathLength="1" cx="186" cy="82" r="8" style="animation:dcFade .3s ease both"></circle>
+                  <circle pathLength="1" cx="214" cy="82" r="8" style="animation:dcFade .3s ease both"></circle>
+                  <circle pathLength="1" cx="200" cy="92" r="8" style="animation:dcFade .3s ease both"></circle>
+                </g>
+                <path pathLength="1" d="M200 61 q6 -12 16 -14" style="animation:dcFade .3s ease both"></path>
+              </sc-if>
+              <sc-if value="{{ gPear }}" hint-placeholder-val="{{ false }}">
+                <path pathLength="1" d="M200 58 q-12 12 -6 22 q-16 12 -8 26 q8 14 28 6 q14 -8 6 -24 q-4 -12 -14 -18 q-4 -6 -6 -12" style="stroke:{{ accent }};animation:dcFade .3s ease both"></path>
+                <path pathLength="1" d="M200 58 q10 -8 18 -6" style="animation:dcFade .3s ease both"></path>
+              </sc-if>
+              <sc-if value="{{ gCitrus }}" hint-placeholder-val="{{ false }}">
+                <g style="stroke:{{ accent }}">
+                  <circle pathLength="1" cx="200" cy="80" r="20" style="animation:dcFade .3s ease both"></circle>
+                  <path pathLength="1" d="M200 60 v40 M180 80 h40 M186 66 l28 28 M214 66 l-28 28" style="animation:dcFade .3s ease both"></path>
+                </g>
+                <path pathLength="1" d="M200 60 q8 -10 18 -8" style="animation:dcFade .3s ease both"></path>
+              </sc-if>
+            </g>
+            <g style="stroke:#5C5A55">
+              <path pathLength="1" d="M78 76 v20 M68 86 h20 M71 79 l14 14 M85 79 l-14 14" style="stroke-dasharray:1;stroke-dashoffset:1;animation:dcDraw .6s ease 1.4s forwards"></path>
+              <path pathLength="1" d="M330 130 v16 M322 138 h16 M324 132 l12 12 M336 132 l-12 12" style="stroke-dasharray:1;stroke-dashoffset:1;animation:dcDraw .6s ease 1.7s forwards"></path>{% endraw %}

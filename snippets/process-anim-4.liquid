@@ -1,0 +1,122 @@
+{% raw %}    </div>
+  </div>
+</div>
+
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;:{&quot;width&quot;:900,&quot;height&quot;:420},&quot;sceneSeconds&quot;:{&quot;editor&quot;:&quot;range&quot;,&quot;default&quot;:6,&quot;min&quot;:3,&quot;max&quot;:12,&quot;step&quot;:0.5,&quot;unit&quot;:&quot;s&quot;,&quot;tsType&quot;:&quot;number&quot;,&quot;section&quot;:&quot;Timing&quot;}}">
+const PRODUCTS = [
+  {
+    code: "NON1", name: "NON1 — SALTED RASPBERRY & CHAMOMILE", accent: "#F1967E",
+    fruit: "berry", bot: "flower",
+    caps: ["48 HOURS · COLD", "CHAMOMILE · TANNIN", "MURRAY RIVER SALT", "SEMILLON · VERJUS", "SUGAR TO TASTE"],
+    steps: [
+      ["Cold steep", "48 hours of freeze-dried Tasmanian raspberries steeping cold. Freeze drying pulls 85% of the water out and leaves the flavour behind."],
+      ["Chamomile in", "Chamomile carries the tannin and the creamy, floral finish. Raspberry skins add a little grip of their own."],
+      ["A pinch of salt", "Murray River salt for salinity — the thing that makes a sip ask for the next one."],
+      ["Verjus pressed", "Unripe Semillon grapes from the Barossa Valley, pressed into verjus. Acidity without vinegar."],
+      ["Tasted to level", "Sugar goes in last, only as much as the raspberries need."]
+    ]
+  },
+  {
+    code: "NON2", name: "NON2 — CARAMELISED PEAR & KOMBU", accent: "#D57534",
+    fruit: "pear", bot: "kelp",
+    caps: ["PEARS · CARAMELISED", "BLACK TEA · SPICE", "KOMBU · OLIVE BRINE", "SEMILLON · VERJUS", "AGAVE · VANILLA"],
+    steps: [
+      ["Caramelised", "Pears cooked until their sugars darken, then steeped. Buttery body, no butter."],
+      ["Tea & spice", "Black tea for structure, with clove, cardamom, star anise, ginger and peppercorn riding behind it."],
+      ["Sea minerality", "Kombu and olive brine instead of a straight salt hit — savoury, oceanic depth."],
+      ["Verjus pressed", "Verjus cuts the caramel so the body stays bright rather than syrupy."],
+      ["Tasted to level", "Agave and vanilla land it, tasted back against the spice."]
+    ]
+  },
+  {
+    code: "NON3", name: "NON3 — TOASTED CINNAMON & YUZU", accent: "#ECDEAC",
+    fruit: "citrus", bot: "quill",
+    caps: ["ORANGE · YUZU", "CINNAMON · TOASTED", "SALT", "SEMILLON · VERJUS", "SUGAR TO TASTE"],
+    steps: [
+      ["Citrus in", "Oranges and yuzu, juiced and zested — the aromatic lift the whole drink is built around."],
+      ["Toasted cinnamon", "Cinnamon is toasted before it goes in. Warmth, and a dry savoury edge underneath the fruit."],
+      ["A pinch of salt", "Salt holds the citrus down so it reads as a drink, not as juice."],
+      ["Verjus pressed", "Verjus sits behind the yuzu — tart, never sharp."],
+      ["Tasted to level", "Sugar to level, tasted against how sweet the oranges came in."]
+    ]
+  },
+  {
+    code: "NON5", name: "NON5 — LEMON MARMALADE & HIBISCUS", accent: "#E0463E",
+    fruit: "citrus", bot: "flower",
+    caps: ["LEMON · MARMALADE", "HIBISCUS · LIQUORICE", "SALT · HOPS", "SEMILLON · VERJUS", "SUGAR TO TASTE"],
+    steps: [
+      ["Cooked down", "Lemon cooked marmalade-style, then layered with lemon verbena, lemongrass and lemon myrtle."],
+      ["Hibiscus in", "Hibiscus for colour and grip; liquorice root and peppermint carry the menthol finish."],
+      ["Salt & hops", "Salt for salinity, with a whisper of hops for bitterness."],
+      ["Verjus pressed", "Verjus keeps the citrus taut instead of round."],
+      ["Tasted to level", "Sugar last, kept low so the florals stay dry."]
+    ]
+  },
+  {
+    code: "NON7", name: "NON7 — STEWED CHERRY & COFFEE", accent: "#BE2D36",
+    fruit: "berry", bot: "bean",
+    caps: ["CHERRIES · STEWED", "ARABICA · GARAM MASALA", "SALT · PINK PEPPER", "SEMILLON · VERJUS", "TASTED BACK"],
+    steps: [
+      ["Stewed slowly", "Cherries stewed down until they turn dark and jammy — the base note of the whole bottle."],
+      ["Coffee in", "Arabica coffee for tannin and depth, with garam masala, allspice and nutmeg behind it."],
+      ["Salt & pepper", "Salt and pink peppercorn sharpen the dark fruit and stop it going sweet."],
+      ["Verjus pressed", "Verjus lifts the stewed fruit back off the palate."],
+      ["Tasted to level", "Barely any sugar — the fruit already brought it."]
+    ]
+  },
+  {
+    code: "NON9", name: "NON9 — OAKED BLACKBERRY & PLUM", accent: "#A43D70",
+    fruit: "berry", bot: "oak",
+    caps: ["PLUM · BLACKBERRY", "FRENCH OAK · PINE", "TAMARI · SALT", "SEMILLON · VERJUS", "SUGAR · ANCHO"],
+    steps: [
+      ["Dark fruit", "Stanley plum, blackberry and Shiraz grape skin, with beetroot for earth and colour."],
+      ["Oak & skin", "French oak and grape skin build firm tannin; fir pine sits on the nose as forest floor."],
+      ["Tamari & salt", "Tamari for savoury depth alongside the salt — umami rather than seasoning."],
+      ["Verjus pressed", "Verjus holds the dark fruit in line so it doesn't turn jammy."],
+      ["Tasted to level", "Sugar and ancho chilli finish it: spice first, then length."]
+    ]
+  }
+];
+
+class Component extends DCLogic {
+  state = { p: 0, i: 0, blank: false };
+  componentDidMount() { this.start(); }
+  componentWillUnmount() { clearInterval(this.t); clearTimeout(this.b); }
+  start() {
+    clearInterval(this.t);
+    const dur = (this.props.sceneSeconds ?? 6) * 1000;
+    this.t = setInterval(() => this.setState(s => ({ i: (s.i + 1) % 5 })), dur);
+  }
+  go(n) { this.setState({ i: n }); this.start(); }
+  pick(n) {
+    clearTimeout(this.b);
+    this.setState({ p: n, i: 0, blank: true });
+    this.b = setTimeout(() => this.setState({ blank: false }), 40);
+    this.start();
+  }
+  renderVals() {
+    const { p, i, blank } = this.state;
+    const prod = PRODUCTS[p];
+    const step = prod.steps[i];
+    const v = {
+      accent: prod.accent,
+      productName: prod.name,
+      stepLabel: ["01 — FRUIT", "02 — TANNIN", "03 — SALINITY", "04 — ACIDITY", "05 — BALANCE"][i],
+      stepTitle: step[0],
+      stepBody: step[1],
+      gBerry: prod.fruit === "berry", gPear: prod.fruit === "pear", gCitrus: prod.fruit === "citrus",
+      gFlower: prod.bot === "flower", gKelp: prod.bot === "kelp", gQuill: prod.bot === "quill",
+      gBean: prod.bot === "bean", gOak: prod.bot === "oak"
+    };
+    for (let n = 0; n < 5; n++) { v["s" + (n + 1)] = !blank && i === n; v["cap" + (n + 1)] = prod.caps[n]; v["go" + n] = () => this.go(n); }
+    PRODUCTS.forEach((pr, n) => {
+      v["p" + n] = () => this.pick(n);
+      v["c" + n] = n === p ? "#0A0A0A" : "#8F8B83";
+      v["b" + n] = n === p ? "#EDEDE8" : "#2E2C29";
+      v["g" + n] = n === p ? "#EDEDE8" : "transparent";
+    });
+    return v;
+  }
+}
+</script>{% endraw %}

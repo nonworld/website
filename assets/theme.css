@@ -3240,6 +3240,20 @@ select:-moz-focusring { color: transparent; text-shadow: 0 0 0 var(--non-fg); }
 }
 .non-contact-field canvas { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
 
+/* The header sits on the plain page, not on the field.
+
+   The field is inset: 0 across the whole section, so it necessarily ran behind
+   the display heading — which is the bleed Aaron flagged. The field itself is
+   wanted, and the envelope with it; only the overlap with the header is not.
+   Giving the hero the page's own background makes it opaque to the canvas
+   behind it, so the field visually begins at the hero's lower edge with no
+   change to the canvas, its density, or the envelope. */
+.non-contact-section .non-contact-hero {
+  position: relative;
+  z-index: 1;
+  background: var(--non-bg);
+}
+
 /* --- PDP: features & benefits ---------------------------------------------
    Per-product copy from custom.benefits, so an accessory can argue its own
    case instead of inheriting a bottle's. Two columns on desktop, one on a

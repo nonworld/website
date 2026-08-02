@@ -75,6 +75,42 @@ so does the PDP process band — whose CSS sets `grid-template-columns: repeat(2
 1fr)`. Renamed to `.non-prail`. **Before adding a new component class, grep
 `assets/theme.css` for the name.** Nothing automated will catch a collision.
 
+### image_tag's height attribute beats aspect-ratio (2026-08-02)
+
+The PDP "Made for" tiles rendered 392×1500 and 392×2133 while
+`getComputedStyle` reported `aspect-ratio: 1 / 1`. The property was applied
+and **inert**.
+
+`image_tag` writes BOTH `width` and `height` as HTML attributes. Those map to
+presentational hints — real CSS declarations author rules must override one by
+one. `.non-trip__img` set `width: 100%`, which beat the width hint. Nothing
+beat the height hint, so height stayed DEFINITE at the photograph's intrinsic
+pixel height, and **`aspect-ratio` only sizes a box whose height is `auto`**.
+
+The fix is `height: auto`. Note the CSS comment above that rule had blamed the
+class for three sessions — the class was always there and always lost.
+
+**Rule: any `aspect-ratio` on an `<img>` needs `height: auto` beside it.**
+Audited: `.non-trip__img` was broken; `.non-verdict__img` and
+`.non-hq-room__img` carried the same latent bug and were fixed with it.
+`.non-card__media` and `.non-recipe__media` are safe because the ratio sits on
+a wrapper and the img inside is `height: 100%`.
+
+### A row that sized itself by item count (2026-08-02)
+
+Three product rows on one page measured 380 / 200 / 224 at 1280 while all
+three had `card_max: 380`. `.non-row` used
+`grid-auto-columns: minmax(200px, 380px)`: 3 items fit, so free space was
+distributed and every track grew to its max; 7 items overflowed, so there was
+no free space and every track fell to its min. **Card size was decided by how
+many products were in the row, and the setting all three shared was reached by
+exactly one of them.** Tuning the number could never have matched them.
+
+It now computes the track from a column count the way `.non-grid` does
+(`--non-row-cols-lg` from each section's Columns setting, 2.2 below 860px so a
+card and a peek fill a phone). Every product card on the shop page is now
+224×224 — verified grid, Sets and Not drinks together.
+
 ### The silent rejection that cost an evening (2026-08-01)
 
 `sections/pairing-recipes.liquid` sat frozen on its 31 July version while four
@@ -213,6 +249,48 @@ single bad line in three pushes.
 Note the stray "ALSO" is gone regardless — `templates/page.contact.json` had
 `aside_heading: "Also"` and that IS cleared and deployed. The rejection only
 blocks the new header.
+
+## BLOCKED — two products 404 on the storefront (found 2026-08-02)
+
+`NON Waiter's Friend` (`non-waiters-friend`) and `NON Gift Card`
+(`non-gift-card`) are both picked in the Not drinks row and **neither
+renders**. They are not missing from the template — they are missing from the
+storefront:
+
+```
+/products/non-waiters-friend  → 404
+/products/non-gift-card       → 404
+```
+
+Both read ACTIVE in the Admin API with stock (20 on the Waiter's Friend) and
+`resourcePublications` reporting `isPublished: true` for Online Store. So the
+Admin says published and the storefront says gone — which means they are
+excluded from the **market's catalog**, not unpublished. `block.settings.product`
+correctly resolves to nil for a product the storefront cannot see, and the
+section correctly renders nothing.
+
+Needs Aaron: add both to the AU market catalog (Settings → Markets → Catalog,
+or the product's market availability). Nothing in this repo can fix it, and
+the picks are already in place, so they will appear the moment the store does.
+
+**Do not "fix" this in Liquid.** A theme-side fallback would be inventing a
+product the storefront is refusing to serve.
+
+## Known DATA gaps found by measuring, not reading (2026-08-02)
+
+- **NON2's nutrition label was misspelt `Calroes per serve`.** `non-nutrition`
+  matches the label exactly, so it returned blank, so `nutrition` was blank, so
+  the whole NUTRITION cell dropped off the NON2 PDP only. **Fixed in Shopify**
+  (`custom.nutritional_panel`, 2026-08-02) — NON2 now reads
+  "27 calories, 5.1 g sugar". The spec strip is built from an alternating
+  label/value rich-text run with no keys, so a typo anywhere in it silently
+  deletes a cell rather than erroring.
+- **`custom.tastes` and `custom.profile` are null on every product**, so the
+  TASTES cell renders its label over nothing. Same class of failure, still open.
+- `custom.serve` is null on every product and the Liquid supplies a hardcoded
+  `'Chilled, wine glass'`. That is invented copy on a live page.
+- `custom.not_a_drink` is null on **every** product, so the accessory
+  suppression written for it is currently inert.
 
 ## NEXT UP — Sets and the Stopper PDPs (raised 2026-08-02, not started)
 

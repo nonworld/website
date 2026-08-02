@@ -4655,3 +4655,30 @@ select:-moz-focusring { color: transparent; text-shadow: 0 0 0 var(--non-fg); }
    opened up — the blur needs roughly its own radius again above the element. */
 .non-somm,
 .non-sommbox { padding-top: 30px; }
+
+/* Logo marquee: one cap height, width follows the artwork.
+
+   The fixed 168x52 slot was the problem, not the fix. object-fit: contain
+   scales a mark to whichever dimension binds first, so a wide wordmark like
+   AMAN filled the width and shrank to a few px tall, while a compact crest
+   filled the height and sat narrow — same box, wildly different optical
+   weight.
+
+   Constraining HEIGHT only is what normalises them: every logo is scaled to
+   the same cap height and takes whatever width its own proportions need. Wide
+   marks are simply wider, which is correct and what a real logo bar does. The
+   margin does the spacing, so the rhythm stays even. max-width is a safety
+   rail for an extremely wide asset, not a sizing rule. */
+.non-poured__set img {
+  width: auto;
+  height: 34px;
+  max-height: 34px;
+  max-width: 190px;
+  padding: 0;
+  margin: 0 34px;
+  object-fit: contain;
+  flex: none;
+}
+@media (max-width: 859px) {
+  .non-poured__set img { height: 26px; max-height: 26px; max-width: 140px; margin: 0 20px; }
+}

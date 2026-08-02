@@ -972,10 +972,20 @@ button { font-family: inherit; }
    and this band is a texture behind copy — there is nothing to click, so
    nothing may be hovered. It also means a stray tap cannot navigate a
    customer off the product page to youtube.com. */
-.non-process__media--yt { overflow: hidden; }
-.non-process__media--yt.non-process__media--square { aspect-ratio: 1/1; }
-.non-process__media--yt.non-process__media--tall { aspect-ratio: 4/5; }
-.non-process__media--yt.non-process__media--portrait { aspect-ratio: 3/4; }
+/* The video box takes its height from the COPY beside it, not from a ratio.
+
+   Forcing the section's 3/4 portrait shape on a 16:9 film made a 640x853 box
+   that threw away 877px of frame — 58% of the picture — and still did not
+   agree with the steps column, so the band had a seam. Stretching to the grid
+   row means the two columns end together by construction at every width, and
+   the crop is only ever as tight as the copy makes it. */
+.non-process__media--yt {
+  overflow: hidden;
+  min-height: 0;
+  height: 100%;
+  align-self: stretch;
+  aspect-ratio: auto;
+}
 .non-process__yt {
   position: absolute; top: 50%; left: 50%;
   translate: -50% -50%;
@@ -991,6 +1001,11 @@ button { font-family: inherit; }
   max-width: none;
   border: 0;
   pointer-events: none;
+  /* A hair beyond cover. Sub-pixel rounding on the centring translate can
+     leave a 1px page-coloured sliver down an edge at some widths, and on a
+     near-black page against a dark film that reads as a rendering fault
+     rather than as a seam. 1.02 is under half a percent of visible frame. */
+  scale: 1.02;
 }
 
 /* Cap removed for the same reason as .non-trip__img: it overrode whichever
@@ -998,11 +1013,17 @@ button { font-family: inherit; }
    untouched — it keeps the panel's 420px min-height on purpose, which is what
    filling the band means. */
 
-.non-steps { display: flex; flex-direction: column; gap: 22px; }
+/* Sized down deliberately. Five steps of process copy set the height of the
+   whole band, and the film beside it is cropped to whatever that height is —
+   so every line of type here costs frame. Trimming the body a step and
+   tightening the leading and the gaps takes ~90px off the column, which the
+   video gets back as picture rather than as crop. The copy is a caption to a
+   process, not the page's argument; the h1 and the spec strip carry that. */
+.non-steps { display: flex; flex-direction: column; gap: 18px; }
 .non-step { display: grid; grid-template-columns: 44px 1fr; gap: 18px; align-items: start; }
-.non-step__n { font-family: var(--non-mono); font-size: var(--t-mono); color: var(--non-fg-ghost); padding-top: 5px; }
-.non-step__t { font-size: clamp(17px, 1.3vw, 21px); font-weight: 500; }
-.non-step__b { margin: 6px 0 0; font-size: var(--t-copy); line-height: 1.6; color: var(--non-fg-mute); max-width: 42ch; }
+.non-step__n { font-family: var(--non-mono); font-size: var(--t-mono); color: var(--non-fg-ghost); padding-top: 4px; }
+.non-step__t { font-size: clamp(16px, 1.15vw, 19px); font-weight: 500; }
+.non-step__b { margin: 5px 0 0; font-size: var(--t-small); line-height: 1.55; color: var(--non-fg-mute); max-width: 46ch; }
 
 /* pour it with */
 .non-pairs { display: grid; grid-template-columns: 1fr; gap: 20px; margin-top: 22px; }

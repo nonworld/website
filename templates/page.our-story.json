@@ -12,9 +12,132 @@
     "main": {
       "type": "about-story",
       "blocks": {
+        "p_s1": {
+          "type": "procstep",
+          "settings": {
+            "image_alt": "",
+            "scene": "fruit",
+            "label": "Fruit",
+            "title": "Cooked, not fermented",
+            "body": "Whole fruit is steeped, roasted or dehydrated until the flavour concentrates. Nothing ferments and nothing is stripped out later."
+          }
+        },
+        "p_s2": {
+          "type": "procstep",
+          "settings": {
+            "image_alt": "",
+            "scene": "tannin",
+            "label": "Tannin",
+            "title": "Grip, from leaves and skins",
+            "body": "Tea, chamomile, hops or skins go in for tannin — the drying grip that makes a drink feel like wine rather than juice."
+          }
+        },
+        "p_s3": {
+          "type": "procstep",
+          "settings": {
+            "image_alt": "",
+            "scene": "salinity",
+            "label": "Salinity",
+            "title": "A pinch of salt",
+            "body": "Salt for salinity: the thing that makes a sip ask for the next one, and the reason these sit beside food."
+          }
+        },
+        "p_s4": {
+          "type": "procstep",
+          "settings": {
+            "image_alt": "",
+            "scene": "acidity",
+            "label": "Acidity",
+            "title": "Verjus, not vinegar",
+            "body": "Unripe Semillon grapes from the Barossa, pressed into verjus. Acidity with none of the sharpness vinegar would bring."
+          }
+        },
+        "p_s5": {
+          "type": "procstep",
+          "settings": {
+            "image_alt": "",
+            "scene": "balance",
+            "label": "Balance",
+            "title": "Tasted to level",
+            "body": "Sugar goes in last and only as far as the fruit needs. Balance is judged in the kitchen, by tasting."
+          }
+        },
+        "p_b1": {
+          "type": "procbottle",
+          "settings": {
+            "code": "NON1",
+            "accent": "#d9576e",
+            "fruit": "berry",
+            "bot": "flower",
+            "titles": "Cold steep\nChamomile in\nA pinch of salt\nVerjus pressed\nTasted to level",
+            "bodies": "48 hours of freeze-dried Tasmanian raspberries steeping cold. Freeze drying pulls 85% of the water out and leaves the flavour behind.\nChamomile carries the tannin and the creamy, floral finish. Raspberry skins add a little grip of their own.\nMurray River salt for salinity — the thing that makes a sip ask for the next one.\nUnripe Semillon grapes from the Barossa Valley, pressed into verjus. Acidity without vinegar.\nSugar goes in last, only as much as the raspberries need.",
+            "captions": "48 HOURS · COLD\nCHAMOMILE · TANNIN\nMURRAY RIVER SALT\nSEMILLON · VERJUS\nSUGAR TO TASTE"
+          }
+        },
+        "p_b2": {
+          "type": "procbottle",
+          "settings": {
+            "code": "NON2",
+            "accent": "#c8813a",
+            "fruit": "pear",
+            "bot": "kelp",
+            "titles": "Caramelised\nTea & spice\nSea minerality\nVerjus pressed\nTasted to level",
+            "bodies": "Pears cooked until their sugars darken, then steeped. Buttery body, no butter.\nBlack tea for structure, with clove, cardamom, star anise, ginger and peppercorn riding behind it.\nKombu and olive brine instead of a straight salt hit — savoury, oceanic depth.\nVerjus cuts the caramel so the body stays bright rather than syrupy.\nAgave and vanilla land it, tasted back against the spice.",
+            "captions": "PEARS · CARAMELISED\nBLACK TEA · SPICE\nKOMBU · OLIVE BRINE\nSEMILLON · VERJUS\nAGAVE · VANILLA"
+          }
+        },
+        "p_b3": {
+          "type": "procbottle",
+          "settings": {
+            "code": "NON3",
+            "accent": "#d8c25a",
+            "fruit": "citrus",
+            "bot": "quill",
+            "titles": "Citrus in\nToasted cinnamon\nA pinch of salt\nVerjus pressed\nTasted to level",
+            "bodies": "Oranges and yuzu, juiced and zested — the aromatic lift the whole drink is built around.\nCinnamon is toasted before it goes in. Warmth, and a dry savoury edge underneath the fruit.\nSalt holds the citrus down so it reads as a drink, not as juice.\nVerjus sits behind the yuzu — tart, never sharp.\nSugar to level, tasted against how sweet the oranges came in.",
+            "captions": "ORANGE · YUZU\nCINNAMON · TOASTED\nSALT\nSEMILLON · VERJUS\nSUGAR TO TASTE"
+          }
+        },
+        "p_b4": {
+          "type": "procbottle",
+          "settings": {
+            "code": "NON5",
+            "accent": "#c4455c",
+            "fruit": "citrus",
+            "bot": "flower",
+            "titles": "Cooked down\nHibiscus in\nSalt & hops\nVerjus pressed\nTasted to level",
+            "bodies": "Lemon cooked marmalade-style, then layered with lemon verbena, lemongrass and lemon myrtle.\nHibiscus for colour and grip; liquorice root and peppermint carry the menthol finish.\nSalt for salinity, with a whisper of hops for bitterness.\nVerjus keeps the citrus taut instead of round.\nSugar last, kept low so the florals stay dry.",
+            "captions": "LEMON · MARMALADE\nHIBISCUS · LIQUORICE\nSALT · HOPS\nSEMILLON · VERJUS\nSUGAR TO TASTE"
+          }
+        },
+        "p_b5": {
+          "type": "procbottle",
+          "settings": {
+            "code": "NON7",
+            "accent": "#8e2f3f",
+            "fruit": "berry",
+            "bot": "bean",
+            "titles": "Stewed slowly\nCoffee in\nSalt & pepper\nVerjus pressed\nTasted to level",
+            "bodies": "Cherries stewed down until they turn dark and jammy — the base note of the whole bottle.\nArabica coffee for tannin and depth, with garam masala, allspice and nutmeg behind it.\nSalt and pink peppercorn sharpen the dark fruit and stop it going sweet.\nVerjus lifts the stewed fruit back off the palate.\nBarely any sugar — the fruit already brought it.",
+            "captions": "CHERRIES · STEWED\nARABICA · GARAM MASALA\nSALT · PINK PEPPER\nSEMILLON · VERJUS\nTASTED BACK"
+          }
+        },
+        "p_b6": {
+          "type": "procbottle",
+          "settings": {
+            "code": "NON9",
+            "accent": "#6b4a82",
+            "fruit": "berry",
+            "bot": "oak",
+            "titles": "Dark fruit\nOak & skin\nTamari & salt\nVerjus pressed\nTasted to level",
+            "bodies": "Stanley plum, blackberry and Shiraz grape skin, with beetroot for earth and colour.\nFrench oak and grape skin build firm tannin; fir pine sits on the nose as forest floor.\nTamari for savoury depth alongside the salt — umami rather than seasoning.\nVerjus holds the dark fruit in line so it doesn't turn jammy.\nSugar and ancho chilli finish it: spice first, then length.",
+            "captions": "PLUM · BLACKBERRY\nFRENCH OAK · PINE\nTAMARI · SALT\nSEMILLON · VERJUS\nSUGAR · ANCHO"
+          }
+        },
         "n1": {
           "type": "not",
           "settings": {
+            "image_alt": "",
             "icon": "no-stripped",
             "title": "Not de-alcoholised",
             "body": "No wine is made and then stripped. Nothing here has ever been fermented."
@@ -23,9 +146,19 @@
         "n2": {
           "type": "not",
           "settings": {
+            "image_alt": "",
             "icon": "no-mocktail",
             "title": "Not a mocktail",
             "body": "Mocktails are mixed to order and usually sweet. This is cooked in a facility and bottled dry."
+          }
+        },
+        "n3": {
+          "type": "not",
+          "settings": {
+            "image_alt": "",
+            "icon": "no-imitation",
+            "title": "Not an imitation",
+            "body": "It takes the seat wine had at the table. It doesn't try to taste like the thing that sat there."
           }
         },
         "cred-1": {
@@ -50,58 +183,6 @@
           "type": "credential",
           "settings": {
             "text": "never de-alcoholised"
-          }
-        },
-        "stat-water": {
-          "type": "stat",
-          "settings": {
-            "value": "75%",
-            "body": "Less water wasted than conventional beverage manufacturing.",
-            "icon": "water"
-          }
-        },
-        "stat-green": {
-          "type": "stat",
-          "settings": {
-            "value": "100%",
-            "body": "Green energy across production, with carbon-neutral shipping.",
-            "icon": "energy"
-          }
-        },
-        "stat-abv": {
-          "type": "stat",
-          "settings": {
-            "value": "0.0%",
-            "body": "Alcohol, in every bottle, from the first step to the last.",
-            "icon": "zero"
-          }
-        },
-        "cta-hq": {
-          "type": "cta",
-          "settings": {
-            "title": "Come and see it",
-            "body": "NONHQ is the world's first non-alcoholic cellar door. Taste the ingredients separately, then the bottles.",
-            "label": "Book a tasting",
-            "url": "/pages/visit-us",
-            "image_url": "https://cdn.shopify.com/s/files/1/0371/5874/8205/files/non-story-038A8469.jpg?v=1785541727&width=1400"
-          }
-        },
-        "cta-somm": {
-          "type": "cta",
-          "settings": {
-            "title": "Or start with a glass",
-            "body": "Tell the somm what you're eating and it will pick the bottle. That's the fastest version of everything on this page.",
-            "label": "Find your pairing",
-            "url": "/pages/pairing",
-            "image_url": "https://cdn.shopify.com/s/files/1/0371/5874/8205/files/non-story-038A8736.jpg?v=1785541727&width=1400"
-          }
-        },
-        "n3": {
-          "type": "not",
-          "settings": {
-            "icon": "no-imitation",
-            "title": "Not an imitation",
-            "body": "It takes the seat wine had at the table. It doesn't try to taste like the thing that sat there."
           }
         },
         "proc-1": {
@@ -146,121 +227,48 @@
             "body": "The finished liquid is sent out for bottling."
           }
         },
-        "p_s1": {
-          "type": "procstep",
+        "stat-water": {
+          "type": "stat",
           "settings": {
-            "scene": "fruit",
-            "label": "Fruit",
-            "title": "Cooked, not fermented",
-            "body": "Whole fruit is steeped, roasted or dehydrated until the flavour concentrates. Nothing ferments and nothing is stripped out later."
+            "icon": "water",
+            "value": "75%",
+            "body": "Less water wasted than conventional beverage manufacturing."
           }
         },
-        "p_s2": {
-          "type": "procstep",
+        "stat-green": {
+          "type": "stat",
           "settings": {
-            "scene": "tannin",
-            "label": "Tannin",
-            "title": "Grip, from leaves and skins",
-            "body": "Tea, chamomile, hops or skins go in for tannin — the drying grip that makes a drink feel like wine rather than juice."
+            "icon": "energy",
+            "value": "100%",
+            "body": "Green energy across production, with carbon-neutral shipping."
           }
         },
-        "p_s3": {
-          "type": "procstep",
+        "stat-abv": {
+          "type": "stat",
           "settings": {
-            "scene": "salinity",
-            "label": "Salinity",
-            "title": "A pinch of salt",
-            "body": "Salt for salinity: the thing that makes a sip ask for the next one, and the reason these sit beside food."
+            "icon": "zero",
+            "value": "0.0%",
+            "body": "Alcohol, in every bottle, from the first step to the last."
           }
         },
-        "p_s4": {
-          "type": "procstep",
+        "cta-hq": {
+          "type": "cta",
           "settings": {
-            "scene": "acidity",
-            "label": "Acidity",
-            "title": "Verjus, not vinegar",
-            "body": "Unripe Semillon grapes from the Barossa, pressed into verjus. Acidity with none of the sharpness vinegar would bring."
+            "title": "Come and see it",
+            "body": "NONHQ is the world's first non-alcoholic cellar door. Taste the ingredients separately, then the bottles.",
+            "label": "Book a tasting",
+            "url": "/pages/visit-us",
+            "image_url": "https://cdn.shopify.com/s/files/1/0371/5874/8205/files/non-story-038A8469.jpg?v=1785541727&width=1400"
           }
         },
-        "p_s5": {
-          "type": "procstep",
+        "cta-somm": {
+          "type": "cta",
           "settings": {
-            "scene": "balance",
-            "label": "Balance",
-            "title": "Tasted to level",
-            "body": "Sugar goes in last and only as far as the fruit needs. Balance is judged in the kitchen, by tasting."
-          }
-        },
-        "p_b1": {
-          "type": "procbottle",
-          "settings": {
-            "code": "NON1",
-            "accent": "#D9576E",
-            "captions": "48 HOURS · COLD\nCHAMOMILE · TANNIN\nMURRAY RIVER SALT\nSEMILLON · VERJUS\nSUGAR TO TASTE",
-            "fruit": "berry",
-            "bot": "flower",
-            "titles": "Cold steep\nChamomile in\nA pinch of salt\nVerjus pressed\nTasted to level",
-            "bodies": "48 hours of freeze-dried Tasmanian raspberries steeping cold. Freeze drying pulls 85% of the water out and leaves the flavour behind.\nChamomile carries the tannin and the creamy, floral finish. Raspberry skins add a little grip of their own.\nMurray River salt for salinity — the thing that makes a sip ask for the next one.\nUnripe Semillon grapes from the Barossa Valley, pressed into verjus. Acidity without vinegar.\nSugar goes in last, only as much as the raspberries need."
-          }
-        },
-        "p_b2": {
-          "type": "procbottle",
-          "settings": {
-            "code": "NON2",
-            "accent": "#C8813A",
-            "captions": "PEARS · CARAMELISED\nBLACK TEA · SPICE\nKOMBU · OLIVE BRINE\nSEMILLON · VERJUS\nAGAVE · VANILLA",
-            "fruit": "pear",
-            "bot": "kelp",
-            "titles": "Caramelised\nTea & spice\nSea minerality\nVerjus pressed\nTasted to level",
-            "bodies": "Pears cooked until their sugars darken, then steeped. Buttery body, no butter.\nBlack tea for structure, with clove, cardamom, star anise, ginger and peppercorn riding behind it.\nKombu and olive brine instead of a straight salt hit — savoury, oceanic depth.\nVerjus cuts the caramel so the body stays bright rather than syrupy.\nAgave and vanilla land it, tasted back against the spice."
-          }
-        },
-        "p_b3": {
-          "type": "procbottle",
-          "settings": {
-            "code": "NON3",
-            "accent": "#D8C25A",
-            "captions": "ORANGE · YUZU\nCINNAMON · TOASTED\nSALT\nSEMILLON · VERJUS\nSUGAR TO TASTE",
-            "fruit": "citrus",
-            "bot": "quill",
-            "titles": "Citrus in\nToasted cinnamon\nA pinch of salt\nVerjus pressed\nTasted to level",
-            "bodies": "Oranges and yuzu, juiced and zested — the aromatic lift the whole drink is built around.\nCinnamon is toasted before it goes in. Warmth, and a dry savoury edge underneath the fruit.\nSalt holds the citrus down so it reads as a drink, not as juice.\nVerjus sits behind the yuzu — tart, never sharp.\nSugar to level, tasted against how sweet the oranges came in."
-          }
-        },
-        "p_b4": {
-          "type": "procbottle",
-          "settings": {
-            "code": "NON5",
-            "accent": "#C4455C",
-            "captions": "LEMON · MARMALADE\nHIBISCUS · LIQUORICE\nSALT · HOPS\nSEMILLON · VERJUS\nSUGAR TO TASTE",
-            "fruit": "citrus",
-            "bot": "flower",
-            "titles": "Cooked down\nHibiscus in\nSalt & hops\nVerjus pressed\nTasted to level",
-            "bodies": "Lemon cooked marmalade-style, then layered with lemon verbena, lemongrass and lemon myrtle.\nHibiscus for colour and grip; liquorice root and peppermint carry the menthol finish.\nSalt for salinity, with a whisper of hops for bitterness.\nVerjus keeps the citrus taut instead of round.\nSugar last, kept low so the florals stay dry."
-          }
-        },
-        "p_b5": {
-          "type": "procbottle",
-          "settings": {
-            "code": "NON7",
-            "accent": "#8E2F3F",
-            "captions": "CHERRIES · STEWED\nARABICA · GARAM MASALA\nSALT · PINK PEPPER\nSEMILLON · VERJUS\nTASTED BACK",
-            "fruit": "berry",
-            "bot": "bean",
-            "titles": "Stewed slowly\nCoffee in\nSalt & pepper\nVerjus pressed\nTasted to level",
-            "bodies": "Cherries stewed down until they turn dark and jammy — the base note of the whole bottle.\nArabica coffee for tannin and depth, with garam masala, allspice and nutmeg behind it.\nSalt and pink peppercorn sharpen the dark fruit and stop it going sweet.\nVerjus lifts the stewed fruit back off the palate.\nBarely any sugar — the fruit already brought it."
-          }
-        },
-        "p_b6": {
-          "type": "procbottle",
-          "settings": {
-            "code": "NON9",
-            "accent": "#6B4A82",
-            "captions": "PLUM · BLACKBERRY\nFRENCH OAK · PINE\nTAMARI · SALT\nSEMILLON · VERJUS\nSUGAR · ANCHO",
-            "fruit": "berry",
-            "bot": "oak",
-            "titles": "Dark fruit\nOak & skin\nTamari & salt\nVerjus pressed\nTasted to level",
-            "bodies": "Stanley plum, blackberry and Shiraz grape skin, with beetroot for earth and colour.\nFrench oak and grape skin build firm tannin; fir pine sits on the nose as forest floor.\nTamari for savoury depth alongside the salt — umami rather than seasoning.\nVerjus holds the dark fruit in line so it doesn't turn jammy.\nSugar and ancho chilli finish it: spice first, then length."
+            "title": "Or start with a glass",
+            "body": "Tell the somm what you're eating and it will pick the bottle. That's the fastest version of everything on this page.",
+            "label": "Find your pairing",
+            "url": "/pages/pairing",
+            "image_url": "https://cdn.shopify.com/s/files/1/0371/5874/8205/files/non-story-038A8736.jpg?v=1785541727&width=1400"
           }
         }
       },
@@ -299,28 +307,47 @@
         "eyebrow": "About",
         "heading": "We don't mimic wine. We make something else.",
         "lead": "A chef-led drinks company in Melbourne, building wine alternatives out of real produce — fruit, tannin, salinity, acidity — and nothing that has ever been fermented.",
-        "origin_label": "The origin",
-        "origin_heading": "A drinks pairing in London that never left the restaurant.",
-        "origin_body": "<p>In 2017 Aaron Trotman was eating through Michelin-starred rooms in London. He took the alcohol pairing; the non-drinker at the table was handed something sweet and forgettable.</p><p>He had no background in drinks. He came from cosmetics chemistry, which turned out to matter more than a wine list would have. NON launched in 2019.</p>",
-        "quote": "I thought it was a real shame that these drinks lived and died in fancy restaurants.",
-        "quote_cite": "Aaron Trotman, founder",
-        "pillars_label": "What we actually do",
-        "pillars_heading": "Every glass is built from four things",
-        "nots_label": "What we're not",
         "origin_feature_image_url": "https://cdn.shopify.com/s/files/1/0371/5874/8205/files/non-story-038A8388.jpg?v=1785541727&width=1600",
         "origin_feature_alt": "Dehydrated oranges lowered into the steep tank at NONHQ",
         "portrait_image_url": "https://cdn.shopify.com/s/files/1/0371/5874/8205/files/non-aaron-headshots-colour_019.jpg?v=1785541727&width=396",
         "hard_image_url": "https://cdn.shopify.com/s/files/1/0371/5874/8205/files/non-story-038A8614.jpg?v=1785541727&width=1600",
         "hard_image_alt": "Spicing cherries by hand in the NON kitchen",
+        "kitchen_image": "shopify://shop_images/Screenshot_2025-02-13_at_11.58.55_am_35779fd6-0905-4dc5-843d-a52f54507064.png",
         "kitchen_image_url": "https://cdn.shopify.com/s/files/1/0371/5874/8205/files/non-story-038A8683.jpg?v=1785541727&width=2000",
+        "kitchen_image_2": "shopify://shop_images/Screenshot_2025-02-13_at_11.59.01_am.png",
+        "kitchen_image_url_2": "",
+        "kitchen_image_3": "shopify://shop_images/NONHQ-KITCHEN2.jpg",
+        "kitchen_image_url_3": "",
         "kitchen_caption": "Every ingredient is processed on its own before anything is blended.",
-        "process_label": "The Process",
-        "process_meta": "Six stages / 01—06",
-        "process_note": "Made in Melbourne",
+        "origin_label": "The origin",
+        "origin_heading": "A drinks pairing in London that never left the restaurant.",
+        "origin_body": "<p>In 2017 Aaron Trotman was eating through Michelin-starred rooms in London. He took the alcohol pairing; the non-drinker at the table was handed something sweet and forgettable.</p><p>He had no background in drinks. He came from cosmetics chemistry, which turned out to matter more than a wine list would have. NON launched in 2019.</p>",
+        "quote": "I thought it was a real shame that these drinks lived and died in fancy restaurants.",
+        "quote_cite": "Aaron Trotman, founder",
         "proc_heading": "What we actually do",
         "proc_note": "Every glass is built from five things",
         "proc_blurb": "Nothing here is fermented and nothing is de-alcoholised. Every bottle is cooked — built from zero for the structure alcohol used to provide.",
-        "proc_accent": "#D9576E"
+        "proc_accent": "#d9576e",
+        "pillars_label": "What we actually do",
+        "pillars_heading": "Every glass is built from four things",
+        "nots_label": "What we're not",
+        "process_label": "The Process",
+        "process_meta": "Six stages / 01—06",
+        "process_note": "Made in Melbourne",
+        "bg_color": "",
+        "text_color": "",
+        "font_family": "",
+        "text_scale": 100,
+        "section_padding": 0,
+        "hard_label": "The difficult part",
+        "hard_heading": "Water doesn't carry flavour the way alcohol does.",
+        "hard_body": "So every ingredient is processed on its own before anything is blended: cooked, steeped, sous-vide, roasted, dehydrated. It's slow, and it's the entire difference.",
+        "who_label": "Who makes it",
+        "who_body": "Chefs, food scientists, bartenders and winemakers — in-house.",
+        "where_label": "Where",
+        "where_body": "A purpose-built kitchen in Cheltenham, Melbourne.",
+        "stats_label": "Leave it better",
+        "stats_note": "Made on 100% green energy, shipped carbon neutral."
       }
     },
     "process_animation": {

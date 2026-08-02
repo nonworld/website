@@ -11,87 +11,77 @@
   "sections": {
     "main": {
       "type": "main-collection",
-      "settings": {
-        "show_filters": true,
-        "show_add": true,
-        "columns": "5",
-        "dim_non_matches": true,
-        "dim_level": 34,
-        "eyebrow": "The range",
-        "heading": "Sorted by what you're eating.",
-        "blurb": "Not by price. Not by colour. Tell the shelf what's on the table and it reorders itself — strongest match first, with the reason attached.",
-        "filter_label": "Eating",
-        "promo_product": "mixed-6-pack",
-        "promo_eyebrow": "Cheapest way in",
-        "promo_cta": "Add the mixed six",
-        "promo_show_price": true,
-        "card_max": 380,
-        "show_field": false,
-        "field_density": 34,
-        "field_envelope_scale": 0
-      },
       "blocks": {
         "chip-raw": {
           "type": "occasion",
           "settings": {
             "key": "raw",
-            "label": "Raw or cured"
+            "label": "Raw or cured",
+            "somm_line": ""
           }
         },
         "chip-seafood": {
           "type": "occasion",
           "settings": {
             "key": "seafood",
-            "label": "Seafood"
+            "label": "Seafood",
+            "somm_line": ""
           }
         },
         "chip-veg": {
           "type": "occasion",
           "settings": {
             "key": "veg",
-            "label": "Vegetables"
+            "label": "Vegetables",
+            "somm_line": ""
           }
         },
         "chip-charred": {
           "type": "occasion",
           "settings": {
             "key": "charred",
-            "label": "Charred or roasted"
+            "label": "Charred or roasted",
+            "somm_line": ""
           }
         },
         "chip-braise": {
           "type": "occasion",
           "settings": {
             "key": "braise",
-            "label": "Braised"
+            "label": "Braised",
+            "somm_line": ""
           }
         },
         "chip-spice": {
           "type": "occasion",
           "settings": {
             "key": "spice",
-            "label": "Spice and heat"
+            "label": "Spice and heat",
+            "somm_line": ""
           }
         },
         "chip-cheese": {
           "type": "occasion",
           "settings": {
             "key": "cheese",
-            "label": "Cheese"
+            "label": "Cheese",
+            "somm_line": ""
           }
         },
         "chip-sweet": {
           "type": "occasion",
           "settings": {
             "key": "sweet",
-            "label": "Dessert"
+            "label": "Dessert",
+            "somm_line": ""
           }
         },
         "chip-aperitif": {
           "type": "occasion",
           "settings": {
             "key": "aperitif",
-            "label": "No food, just a glass"
+            "label": "No food, just a glass",
+            "somm_line": ""
           }
         }
       },
@@ -105,54 +95,55 @@
         "chip-cheese",
         "chip-sweet",
         "chip-aperitif"
-      ]
+      ],
+      "settings": {
+        "eyebrow": "The range",
+        "heading": "Sorted by what you're eating.",
+        "blurb": "Not by price. Not by colour. Tell the shelf what's on the table and it reorders itself — strongest match first, with the reason attached.",
+        "filter_label": "Eating",
+        "promo_product": "mixed-6-pack",
+        "promo_eyebrow": "Cheapest way in",
+        "promo_heading": "",
+        "promo_show_price": true,
+        "promo_body": "",
+        "promo_cta": "Add the mixed six",
+        "show_filters": true,
+        "image_ratio": "square",
+        "show_add": true,
+        "card_max": 380,
+        "columns": "5",
+        "dim_non_matches": true,
+        "dim_level": 34,
+        "show_field": false,
+        "field_density": 34,
+        "field_envelope_x": 70,
+        "field_envelope_scale": 0,
+        "field_ink": "242,240,234",
+        "bg_color": "#000000",
+        "text_color": "",
+        "font_family": "",
+        "text_scale": 100,
+        "section_padding": 0
+      }
     },
     "sets": {
       "type": "featured-collection",
       "settings": {
         "heading": "Sets",
+        "layout": "row",
         "collection": "non-sets",
-        "columns": "5",
         "rows": 1,
+        "card_max": 380,
+        "columns": "5",
+        "image_ratio": "square",
         "show_add": true,
         "link_label": "All sets",
         "link_url": "/collections/non-sets",
-        "card_max": 380,
-        "layout": "row"
-      }
-    },
-    "closers": {
-      "type": "split-feature",
-      "blocks": {
-        "need": {
-          "type": "cell",
-          "settings": {
-            "image_url": "https://cdn.shopify.com/s/files/1/0371/5874/8205/files/non-story-038A8614.jpg?v=1785541727&width=1400",
-            "image_alt": "A NON bottle poured at a venue",
-            "title": "Need it now?",
-            "text": "Find the nearest venue or retailer pouring NON — restaurants, bars and bottle shops, updated weekly.",
-            "link_label": "Find a stockist",
-            "link": "/pages/store-locator"
-          }
-        },
-        "guests": {
-          "type": "cell",
-          "settings": {
-            "image_url": "https://cdn.shopify.com/s/files/1/0371/5874/8205/files/non-story-038A8683.jpg?v=1785541727&width=1400",
-            "image_alt": "A dish being plated in the NON kitchen",
-            "title": "People coming over?",
-            "text": "Tell the somm what you're cooking and it picks the bottle — or start from the bottle and let it write the dish.",
-            "link_label": "Pair it with dinner",
-            "link": "/pages/pairing"
-          }
-        }
-      },
-      "block_order": [
-        "need",
-        "guests"
-      ],
-      "settings": {
-        "max_height": 0
+        "bg_color": "",
+        "text_color": "",
+        "font_family": "",
+        "text_scale": 100,
+        "section_padding": 0
       }
     },
     "notdrinks": {
@@ -199,9 +190,58 @@
       "settings": {
         "heading": "Not drinks",
         "blurb": "The things around the bottle — for opening it, keeping it, and wearing the name.",
+        "link_label": "",
+        "link_url": "",
+        "prev_label": "Previous",
+        "next_label": "Next",
         "card_max": 380,
+        "columns": "5",
         "image_ratio": "square",
-        "show_add": true
+        "show_add": true,
+        "bg_color": "",
+        "text_color": "",
+        "font_family": "",
+        "text_scale": 100,
+        "section_padding": 0
+      }
+    },
+    "closers": {
+      "type": "split-feature",
+      "blocks": {
+        "need": {
+          "type": "cell",
+          "settings": {
+            "image_url": "https://cdn.shopify.com/s/files/1/0371/5874/8205/files/non-story-038A8614.jpg?v=1785541727&width=1400",
+            "image_alt": "A NON bottle poured at a venue",
+            "title": "Need it now?",
+            "text": "Find the nearest venue or retailer pouring NON — restaurants, bars and bottle shops, updated weekly.",
+            "link_label": "Find a stockist",
+            "link": "/pages/store-locator"
+          }
+        },
+        "guests": {
+          "type": "cell",
+          "settings": {
+            "image_url": "https://cdn.shopify.com/s/files/1/0371/5874/8205/files/non-story-038A8683.jpg?v=1785541727&width=1400",
+            "image_alt": "A dish being plated in the NON kitchen",
+            "title": "People coming over?",
+            "text": "Tell the somm what you're cooking and it picks the bottle — or start from the bottle and let it write the dish.",
+            "link_label": "Pair it with dinner",
+            "link": "/pages/pairing"
+          }
+        }
+      },
+      "block_order": [
+        "need",
+        "guests"
+      ],
+      "settings": {
+        "max_height": 0,
+        "bg_color": "",
+        "text_color": "",
+        "font_family": "",
+        "text_scale": 100,
+        "section_padding": 0
       }
     }
   },

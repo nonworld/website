@@ -4682,3 +4682,23 @@ select:-moz-focusring { color: transparent; text-shadow: 0 0 0 var(--non-fg); }
 @media (max-width: 859px) {
   .non-poured__set img { height: 26px; max-height: 26px; max-width: 140px; margin: 0 20px; }
 }
+
+/* Guard against the collapse the previous rule caused.
+
+   `width: auto` with `flex: none` resolves to the image's CONTENT width, and
+   an img that has not decoded yet reports zero — so all seven logos measured
+   0px wide with a 34px height. Auto width in a flex row needs an explicit
+   basis to fall back on.
+
+   flex-basis auto plus a min-width means the slot can never collapse, while
+   the height still does the optical normalising: every mark is scaled to the
+   same cap height and takes whatever width it needs above that floor. */
+.non-poured__set img {
+  flex: 0 0 auto;
+  width: auto;
+  min-width: 96px;
+  height: 34px;
+}
+@media (max-width: 859px) {
+  .non-poured__set img { min-width: 70px; height: 26px; }
+}

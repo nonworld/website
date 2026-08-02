@@ -28,14 +28,8 @@
      the product-page box, the pairing tool and the stockists search all share
      .non-somm. It used to fall back to --non-panel, so the Somm only looked
      like the Somm where a section had been told to set somm_bg by hand. */
-  /* The Somm was a #c9c7c1 grey slab with 14px rounded corners floating on a
-     near-black page — a widget dropped onto the site rather than part of it,
-     and the single least premium surface here. It is now the page's own panel
-     tone with a hairline, so it reads as an inset area of the page. The ink
-     flips with it: a light-island foreground on a dark panel would have been
-     invisible. */
-  --non-somm-bg: #131311;
-  --non-somm-fg: #f2f0ea;
+  --non-somm-bg: #c9c7c1;
+  --non-somm-fg: #0c0c0c;
   --non-panel-alt: #161614;
   --non-invert-bg: #ffffff;
   --non-invert-fg: #000000;
@@ -859,7 +853,7 @@ button { font-family: inherit; }
 /* Tightening the box: the head was 13px of padding against a 16px body, the
    ask row another 12, so nothing lined up down the left edge and the panel
    read as three stacked strips rather than one object. One gutter throughout. */
-.non-sommbox { border-radius: 0; }
+.non-sommbox { border-radius: 2px; }
 .non-sommbox__head { padding: 12px 16px; }
 .non-sommbox__body { padding: 16px; gap: 14px; }
 .non-sommbox__ask { padding: 12px 16px; gap: 12px; }
@@ -2324,18 +2318,14 @@ a, button, .non-card, .non-filter, .non-pair__opt, .non-somm__seed,
    that lifts the whole box rather than just the border, so typing feels like
    you are addressing it. */
 .non-somm,
-/* Square. The seed chips below carry a comment explaining that NON has no soft
-   corners anywhere and that the pill was the odd one out — while the PANEL
-   holding them sat at 14px. Fixing the chips and leaving the box was half the
-   job. */
 .non-sommbox {
-  border-radius: 0;
+  border-radius: 14px;
   overflow: hidden;
 }
 .non-somm { background: var(--non-somm-bg, var(--non-panel)); }
 
 .non-somm__bar {
-  border-radius: 0;
+  border-radius: 14px;
   background: var(--non-somm-bg, var(--non-panel));
 }
 /* The well the input actually sits in. */
@@ -2350,7 +2340,7 @@ a, button, .non-card, .non-filter, .non-pair__opt, .non-somm__seed,
 }
 .non-somm__input,
 .non-sommbox__ask input {
-  border-radius: 0;
+  border-radius: 10px;
 }
 /* The caret is the invitation. Brighter, and it blinks — the one thing on the
    page that says a cursor belongs here. */
@@ -2380,10 +2370,7 @@ a, button, .non-card, .non-filter, .non-pair__opt, .non-somm__seed,
   min-height: 44px;
   padding: 11px 16px;
   border: 1px solid var(--non-line-strong);
-  /* Transparent on the panel now that the panel is dark. A filled tile on a
-     filled panel was the box-in-a-box that made this look like a form. */
-  background: transparent;
-  color: inherit;
+  background: var(--non-panel-alt);
 }
 .non-somm__seed:hover,
 .non-sommbox__seeds button:hover {

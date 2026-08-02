@@ -4026,3 +4026,38 @@ select:-moz-focusring { color: transparent; text-shadow: 0 0 0 var(--non-fg); }
 @media (prefers-reduced-motion: reduce) {
   .non-sommbox::before { animation: none; }
 }
+
+/* ==========================================================================
+   The orb, minimal.
+
+   The first pass was a 190px cool-blue sphere under 12px of blur — a lot of
+   object for a brand whose whole argument is restraint. NON is monochrome ink
+   on near-black; a glowing blue ball is the loudest thing on any page it
+   appears on, which is the opposite of premium here.
+
+   What stays is the idea: one soft, lit, breathing form. What goes is the
+   volume. Smaller, monochrome, less blur, slower, quieter. The highlight stays
+   off-centre — that is what makes it a sphere rather than a disc, and it costs
+   nothing.
+   ========================================================================== */
+.non-sommbox::before {
+  width: clamp(72px, 7vw, 96px);
+  margin: 4px auto 20px;
+  background:
+    radial-gradient(circle at 40% 34%,
+      rgba(242, 240, 234, .92) 0%,
+      rgba(242, 240, 234, .55) 34%,
+      rgba(242, 240, 234, .18) 58%,
+      rgba(242, 240, 234, .05) 74%,
+      transparent 84%);
+  filter: blur(7px);
+  opacity: .7;
+  animation: non-somm-orb 8s ease-in-out infinite;
+}
+
+/* Barely there. A 4% swing over eight seconds reads as breathing rather than
+   pulsing — you notice it only if you stay. */
+@keyframes non-somm-orb {
+  0%, 100% { transform: scale(1); opacity: .62; }
+  50% { transform: scale(1.04); opacity: .78; }
+}

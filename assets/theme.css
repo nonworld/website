@@ -4255,3 +4255,45 @@ select:-moz-focusring { color: transparent; text-shadow: 0 0 0 var(--non-fg); }
 @media (prefers-reduced-motion: reduce) {
   .non-somm::before { animation: none; }
 }
+
+/* The ask field, made obviously a field.
+
+   A transparent box with a #232321 hairline under it is nearly invisible on a
+   #0c0c0c page — the contrast between rule and background is about 1.3:1, so
+   the only thing marking the input was its placeholder, which reads as body
+   copy rather than as somewhere to type.
+
+   Three cues instead of one: a faint surface so the field has an area, a
+   hairline bright enough to see, and a focus state that lifts both. Still
+   square, still monochrome, no radius — it reads as an input because of
+   contrast, not decoration. */
+.non-somm__input,
+.non-sommbox__ask input,
+.non-sommbox__ask .non-somm__input {
+  background: rgba(242, 240, 234, .035);
+  border: 1px solid #34342f;
+  border-bottom-color: #55534e;
+  padding: 16px 18px;
+  transition:
+    background var(--duration-hover) var(--ease-hover),
+    border-color var(--duration-hover) var(--ease-hover);
+}
+.non-somm__input::placeholder,
+.non-sommbox__ask input::placeholder,
+.non-sommbox__ask .non-somm__input::placeholder {
+  color: #7d7b74;
+}
+.non-somm__input:hover,
+.non-sommbox__ask input:hover,
+.non-sommbox__ask .non-somm__input:hover {
+  background: rgba(242, 240, 234, .06);
+  border-color: #4a4a44;
+}
+.non-somm__input:focus,
+.non-sommbox__ask input:focus,
+.non-sommbox__ask .non-somm__input:focus {
+  outline: none;
+  background: rgba(242, 240, 234, .085);
+  border-color: #8d8d87;
+  border-bottom-color: #EDEDE8;
+}

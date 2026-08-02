@@ -162,6 +162,26 @@ async function codeIsLive(env, code) {
   if (!res.ok) throw new Error(`shopify ${res.status}`);
 
   const data = await res.json();
+
+  /* A GraphQL error is NOT "the code is inactive", and conflating the two is
+     how this fails silently.
+
+     Shopify answers a missing access scope with HTTP 200 and an `errors`
+     array, with `data: null`. That sails past the res.ok check above; `node`
+     then comes back undefined and the old code returned false — so a token
+     without read_discounts reported every prize as dead, the draw skipped all
+     six, and the customer was told the Lotto was closed. Verified 2026-08-02:
+     all six pool codes read ACTIVE through the Admin API while the widget was
+     returning closed.
+
+     Throwing instead pushes it into the caller's catch, which logs the reason
+     and still shows the honest closed state — same customer experience, but
+     the cause appears in `wrangler tail` rather than being invisible. */
+  if (data?.errors?.length) {
+    const detail = data.errors.map((e) => e.message).join('; ');
+    throw new Error(`shopify graphql: ${detail}`);
+  }
+
   const node = data?.data?.codeDiscountNodeByCode;
   return node?.codeDiscount?.status === 'ACTIVE';
 }

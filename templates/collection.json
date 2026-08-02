@@ -151,11 +151,41 @@
       "settings": {
         "max_height": 0
       }
+    },
+    "notdrinks": {
+      "type": "product-picks",
+      "blocks": {
+        "p1": {
+          "type": "pick",
+          "settings": {
+            "product": "nonstopper"
+          }
+        },
+        "p2": {
+          "type": "pick",
+          "settings": {
+            "product": "non-waiters-friend"
+          }
+        }
+      },
+      "block_order": [
+        "p1",
+        "p2"
+      ],
+      "settings": {
+        "heading": "Not drinks",
+        "blurb": "The things around the bottle — for opening it, keeping it, and wearing the name.",
+        "columns": "4",
+        "card_max": 380,
+        "image_ratio": "square",
+        "show_add": true
+      }
     }
   },
   "order": [
     "main",
     "sets",
+    "notdrinks",
     "closers"
   ]
 }

@@ -1,0 +1,182 @@
+{% render 'section-style', section: section %}
+{%- comment -%}
+  A hand-picked row of products — "Not drinks": the stopper, the waiter's
+  friend, the hat.
+
+  Blocks rather than a collection, deliberately. These three have nothing in
+  common in the catalogue: the stopper is "Bottle Stoppers & Savers", the
+  waiter's friend has no product type at all, and the hat is apparel. Grouping
+  them needs either a new Shopify collection — a store change, and one more
+  thing to keep in sync — or an explicit list. This is the explicit list.
+
+  Uses the shared product-card, so it is the same square card as the shop grid,
+  the homepage row and the PDP's related band. A block whose product is empty or
+  unavailable renders nothing rather than a gap.
+{%- endcomment -%}
+
+{%- assign picks = section.blocks | where: 'type', 'pick' -%}
+{%- if picks.size > 0 -%}
+  <div class="non-section" style="border-top:1px solid var(--non-line)">
+    <div class="non-section__head">
+      <h2 class="non-section__title">{{ section.settings.heading }}</h2>
+      {%- if section.settings.link_label != blank -%}
+        <a class="non-section__more" href="{{ section.settings.link_url | default: '/collections/all' }}">
+          {{ section.settings.link_label }} &rarr;
+        </a>
+      {%- endif -%}
+    </div>
+
+    {%- if section.settings.blurb != blank -%}
+      <p class="non-hero__blurb" style="margin-top:16px;max-width:52ch">{{ section.settings.blurb }}</p>
+    {%- endif -%}
+
+    <div
+      class="non-grid non-grid--{{ section.settings.columns }} non-grid--ratio-{{ section.settings.image_ratio }}"
+      style="margin-top:26px;--non-card-max: {{ section.settings.card_max }}px">
+      {%- for block in picks -%}
+        {%- assign item = block.settings.product -%}
+        {%- if item != blank -%}
+          <div {{ block.shopify_attributes }}>
+            {% render 'product-card', product: item, show_add: section.settings.show_add %}
+          </div>
+        {%- endif -%}
+      {%- endfor -%}
+    </div>
+  </div>
+{%- endif -%}
+
+{% schema %}
+{
+  "name": "Product picks",
+  "settings": [
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Heading",
+      "default": "Not drinks"
+    },
+    {
+      "type": "textarea",
+      "id": "blurb",
+      "label": "Blurb",
+      "default": "The things around the bottle — for opening it, keeping it, and wearing the name."
+    },
+    {
+      "type": "text",
+      "id": "link_label",
+      "label": "Link label"
+    },
+    {
+      "type": "url",
+      "id": "link_url",
+      "label": "Link URL"
+    },
+    {
+      "type": "select",
+      "id": "columns",
+      "label": "Columns",
+      "options": [
+        { "value": "2", "label": "2" },
+        { "value": "3", "label": "3" },
+        { "value": "4", "label": "4" },
+        { "value": "5", "label": "5" }
+      ],
+      "default": "4"
+    },
+    {
+      "type": "range",
+      "id": "card_max",
+      "label": "Card width",
+      "min": 120,
+      "max": 640,
+      "step": 20,
+      "unit": "px",
+      "default": 380,
+      "info": "380 matches the shop grid and the homepage row."
+    },
+    {
+      "type": "select",
+      "id": "image_ratio",
+      "label": "Image shape",
+      "options": [
+        { "value": "square", "label": "Square (1:1)" },
+        { "value": "portrait", "label": "Portrait (3:4)" },
+        { "value": "tall", "label": "Tall (4:5)" },
+        { "value": "landscape", "label": "Landscape (4:3)" }
+      ],
+      "default": "square"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_add",
+      "label": "Show add button",
+      "default": true
+    },
+    {
+      "type": "header",
+      "content": "Appearance"
+    },
+    {
+      "type": "color",
+      "id": "bg_color",
+      "label": "Background"
+    },
+    {
+      "type": "color",
+      "id": "text_color",
+      "label": "Text colour"
+    },
+    {
+      "type": "select",
+      "id": "font_family",
+      "label": "Font",
+      "options": [
+        { "value": "", "label": "Theme default" },
+        { "value": "sans", "label": "Helvetica (all text)" },
+        { "value": "mono", "label": "JetBrains Mono (all text)" }
+      ],
+      "default": ""
+    },
+    {
+      "type": "range",
+      "id": "text_scale",
+      "label": "Text size",
+      "min": 70,
+      "max": 150,
+      "step": 5,
+      "unit": "%",
+      "default": 100
+    },
+    {
+      "type": "range",
+      "id": "section_padding",
+      "label": "Vertical padding",
+      "min": 0,
+      "max": 160,
+      "step": 8,
+      "unit": "px",
+      "default": 0,
+      "info": "0 keeps the section's own spacing."
+    }
+  ],
+  "blocks": [
+    {
+      "type": "pick",
+      "name": "Product",
+      "settings": [
+        {
+          "type": "product",
+          "id": "product",
+          "label": "Product"
+        }
+      ]
+    }
+  ],
+  "max_blocks": 12,
+  "presets": [
+    {
+      "name": "Product picks"
+    }
+  ]
+}
+{% endschema %}

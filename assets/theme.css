@@ -714,7 +714,6 @@ button { font-family: inherit; }
   }
   .non-gallery__main { margin-inline: 0; max-width: none; }
 }
-}
 @media (min-width: 860px) { .non-gallery { padding: 28px 0 28px var(--non-pad); } }
 
 /* 4/5 is the design's ratio and stays. The cap is on WIDTH, not height —

@@ -4185,3 +4185,73 @@ select:-moz-focusring { color: transparent; text-shadow: 0 0 0 var(--non-fg); }
   object-position: center;
   display: block;
 }
+
+/* ==========================================================================
+   Homepage Somm takes the PDP's shape: orb on top, centred stack.
+
+   NOTE ON THE ORB BOX — this is the bug that blew it to ~1100px last time.
+   `flex: 0 0 100%` set the flex-BASIS to the container width, which overrides
+   `width`, and `aspect-ratio: 1/1` then matched the height to it. Here the orb
+   is `flex: none` with an explicit width AND height, so neither flex nor the
+   aspect ratio can resolve it against the parent.
+   ========================================================================== */
+.non-somm {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  padding: 8px 0 0;
+}
+.non-somm::before {
+  content: "";
+  flex: none;
+  display: block;
+  width: 90px;
+  height: 90px;
+  border-radius: 50%;
+  margin: 4px auto 20px;
+  background:
+    radial-gradient(circle at 40% 34%,
+      rgba(242, 240, 234, .92) 0%,
+      rgba(242, 240, 234, .55) 34%,
+      rgba(242, 240, 234, .18) 58%,
+      rgba(242, 240, 234, .05) 74%,
+      transparent 84%);
+  filter: blur(7px);
+  animation: non-somm-orb 5s ease-in-out infinite;
+  pointer-events: none;
+}
+
+/* The bar loses its box and becomes the same hairline-under-the-input the PDP
+   uses, so the two surfaces read as one component. */
+.non-somm__bar {
+  display: flex;
+  flex-wrap: nowrap;
+  align-items: flex-end;
+  justify-content: center;
+  gap: 16px;
+  width: 100%;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  padding: 0;
+  margin-bottom: 22px;
+}
+.non-somm__input {
+  flex: 1 1 auto;
+  min-width: 0;
+  text-align: center;
+  border: 0;
+  border-bottom: 1px solid #232321;
+  border-radius: 0;
+  background: transparent;
+}
+.non-somm__seeds { justify-content: center; }
+.non-somm__caret { display: none; }
+
+@media (prefers-reduced-motion: reduce) {
+  .non-somm::before { animation: none; }
+}

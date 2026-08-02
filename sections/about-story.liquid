@@ -176,6 +176,10 @@
             aria-selected="{% if forloop.first %}true{% else %}false{% endif %}"
             data-non-proc-bottle
             data-accent="{{ b.settings.accent | escape }}"
+            data-fruit="{{ b.settings.fruit | escape }}"
+            data-bot="{{ b.settings.bot | escape }}"
+            data-titles="{{ b.settings.titles | escape }}"
+            data-bodies="{{ b.settings.bodies | escape }}"
             data-caps="{{ b.settings.captions | escape }}"
             {{ b.shopify_attributes }}>
             {{ b.settings.code }}
@@ -206,8 +210,8 @@
           {%- endif -%}
           <div class="non-mono non-proc__n">{{ forloop.index | prepend: '0' | slice: -2, 2 }}</div>
           <div class="non-mono non-proc__label">{{ block.settings.label }}</div>
-          <div class="non-step__t non-proc__title">{{ block.settings.title }}</div>
-          <p class="non-step__b non-proc__body">{{ block.settings.body }}</p>
+          <div class="non-step__t non-proc__title" data-non-proc-title>{{ block.settings.title }}</div>
+          <p class="non-step__b non-proc__body" data-non-proc-body>{{ block.settings.body }}</p>
           <div class="non-mono non-proc__cap" data-non-proc-cap></div>
         </div>
       {%- endfor -%}
@@ -881,6 +885,32 @@
       "settings": [
         { "type": "text", "id": "code", "label": "Code" },
         { "type": "color", "id": "accent", "label": "Fruit colour", "default": "#E4573F" },
+        {
+          "type": "select",
+          "id": "fruit",
+          "label": "Fruit shape",
+          "options": [
+            { "value": "berry", "label": "Berry" },
+            { "value": "pear", "label": "Pear" },
+            { "value": "citrus", "label": "Citrus" }
+          ],
+          "default": "berry"
+        },
+        {
+          "type": "select",
+          "id": "bot",
+          "label": "Botanical shape",
+          "options": [
+            { "value": "flower", "label": "Flower" },
+            { "value": "kelp", "label": "Kelp" },
+            { "value": "quill", "label": "Quill" },
+            { "value": "oak", "label": "Oak" },
+            { "value": "bean", "label": "Bean" }
+          ],
+          "default": "flower"
+        },
+        { "type": "textarea", "id": "titles", "label": "Step titles", "info": "One line per step, in order." },
+        { "type": "textarea", "id": "bodies", "label": "Step bodies", "info": "One line per step, in order." },
         { "type": "textarea", "id": "captions", "label": "Captions", "info": "One line per step, in order." }
       ]
     },

@@ -28,13 +28,37 @@
     /* Split on newlines, then pair POSITIONALLY with the steps. A caption list
        shorter than the rail leaves the tail blank rather than sliding a line
        onto a scene it does not describe. */
-    var lines = (btn.getAttribute('data-caps') || '')
-      .split('\n')
-      .map(function (l) { return l.trim(); });
+    /* Copy AND shapes swap together — this is the whole point of the chips.
+     *
+     * The first build only swapped the accent and the caption, so pressing
+     * NON2 left NON1's step copy on screen. The source drives titles, bodies,
+     * captions and both scene shapes per bottle, so all of it moves at once:
+     * NON2 reads "Pears cooked until their sugars darken", NON1 reads
+     * "48 hours of freeze-dried Tasmanian raspberries".
+     *
+     * Every list is positional and read defensively — a short list leaves the
+     * tail blank rather than sliding a line onto the wrong step. */
+    var split = function (attr) {
+      return (btn.getAttribute(attr) || '').split('\n').map(function (l) { return l.trim(); });
+    };
+    var lines = split('data-caps');
+    var titles = split('data-titles');
+    var bodies = split('data-bodies');
 
-    caps.forEach(function (cap, i) {
-      cap.textContent = lines[i] || '';
+    caps.forEach(function (cap, i) { cap.textContent = lines[i] || ''; });
+    steps.forEach(function (step, i) {
+      var t = step.querySelector('[data-non-proc-title]');
+      var b = step.querySelector('[data-non-proc-body]');
+      if (t && titles[i]) t.textContent = titles[i];
+      if (b && bodies[i]) b.textContent = bodies[i];
     });
+
+    /* The scene shapes are drawn in the SVG and selected by these attributes,
+       so switching a bottle changes the drawing without touching the DOM. */
+    var fruit = btn.getAttribute('data-fruit');
+    var bot = btn.getAttribute('data-bot');
+    if (fruit) root.setAttribute('data-fruit-shape', fruit);
+    if (bot) root.setAttribute('data-bot-shape', bot);
 
     bottles.forEach(function (b) {
       var on = b === btn;

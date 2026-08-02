@@ -187,7 +187,11 @@
           "settings": {
             "code": "NON1",
             "accent": "#D9576E",
-            "captions": "48 HOURS · COLD\nCHAMOMILE · TANNIN\nMURRAY RIVER SALT\nSEMILLON · VERJUS\nSUGAR TO TASTE"
+            "captions": "48 HOURS · COLD\\nCHAMOMILE · TANNIN\\nMURRAY RIVER SALT\\nSEMILLON · VERJUS\\nSUGAR TO TASTE",
+            "fruit": "berry",
+            "bot": "flower",
+            "titles": "Cold steep\\nChamomile in\\nA pinch of salt\\nVerjus pressed\\nTasted to level",
+            "bodies": "48 hours of freeze-dried Tasmanian raspberries steeping cold. Freeze drying pulls 85% of the water out and leaves the flavour behind.\\nChamomile carries the tannin and the creamy, floral finish. Raspberry skins add a little grip of their own.\\nMurray River salt for salinity — the thing that makes a sip ask for the next one.\\nUnripe Semillon grapes from the Barossa Valley, pressed into verjus. Acidity without vinegar.\\nSugar goes in last, only as much as the raspberries need."
           }
         },
         "p_b2": {
@@ -195,7 +199,11 @@
           "settings": {
             "code": "NON2",
             "accent": "#C8813A",
-            "captions": "PEARS · CARAMELISED\nBLACK TEA · SPICE\nKOMBU · OLIVE BRINE\nSEMILLON · VERJUS\nAGAVE · VANILLA"
+            "captions": "PEARS · CARAMELISED\\nBLACK TEA · SPICE\\nKOMBU · OLIVE BRINE\\nSEMILLON · VERJUS\\nAGAVE · VANILLA",
+            "fruit": "pear",
+            "bot": "kelp",
+            "titles": "Caramelised\\nTea & spice\\nSea minerality\\nVerjus pressed\\nTasted to level",
+            "bodies": "Pears cooked until their sugars darken, then steeped. Buttery body, no butter.\\nBlack tea for structure, with clove, cardamom, star anise, ginger and peppercorn riding behind it.\\nKombu and olive brine instead of a straight salt hit — savoury, oceanic depth.\\nVerjus cuts the caramel so the body stays bright rather than syrupy.\\nAgave and vanilla land it, tasted back against the spice."
           }
         },
         "p_b3": {
@@ -203,7 +211,11 @@
           "settings": {
             "code": "NON3",
             "accent": "#D8C25A",
-            "captions": "ORANGE · YUZU\nCINNAMON · TOASTED\nSALT\nSEMILLON · VERJUS\nSUGAR TO TASTE"
+            "captions": "ORANGE · YUZU\\nCINNAMON · TOASTED\\nSALT\\nSEMILLON · VERJUS\\nSUGAR TO TASTE",
+            "fruit": "citrus",
+            "bot": "quill",
+            "titles": "Citrus in\\nToasted cinnamon\\nA pinch of salt\\nVerjus pressed\\nTasted to level",
+            "bodies": "Oranges and yuzu, juiced and zested — the aromatic lift the whole drink is built around.\\nCinnamon is toasted before it goes in. Warmth, and a dry savoury edge underneath the fruit.\\nSalt holds the citrus down so it reads as a drink, not as juice.\\nVerjus sits behind the yuzu — tart, never sharp.\\nSugar to level, tasted against how sweet the oranges came in."
           }
         },
         "p_b4": {
@@ -211,7 +223,11 @@
           "settings": {
             "code": "NON5",
             "accent": "#C4455C",
-            "captions": "LEMON · MARMALADE\nHIBISCUS · LIQUORICE\nSALT · HOPS\nSEMILLON · VERJUS\nSUGAR TO TASTE"
+            "captions": "LEMON · MARMALADE\\nHIBISCUS · LIQUORICE\\nSALT · HOPS\\nSEMILLON · VERJUS\\nSUGAR TO TASTE",
+            "fruit": "citrus",
+            "bot": "flower",
+            "titles": "Cooked down\\nHibiscus in\\nSalt & hops\\nVerjus pressed\\nTasted to level",
+            "bodies": "Lemon cooked marmalade-style, then layered with lemon verbena, lemongrass and lemon myrtle.\\nHibiscus for colour and grip; liquorice root and peppermint carry the menthol finish.\\nSalt for salinity, with a whisper of hops for bitterness.\\nVerjus keeps the citrus taut instead of round.\\nSugar last, kept low so the florals stay dry."
           }
         },
         "p_b5": {
@@ -219,7 +235,11 @@
           "settings": {
             "code": "NON7",
             "accent": "#8E2F3F",
-            "captions": "CHERRIES · STEWED\nARABICA · GARAM MASALA\nSALT · PINK PEPPER\nSEMILLON · VERJUS\nTASTED BACK"
+            "captions": "CHERRIES · STEWED\\nARABICA · GARAM MASALA\\nSALT · PINK PEPPER\\nSEMILLON · VERJUS\\nTASTED BACK",
+            "fruit": "berry",
+            "bot": "bean",
+            "titles": "Stewed slowly\\nCoffee in\\nSalt & pepper\\nVerjus pressed\\nTasted to level",
+            "bodies": "Cherries stewed down until they turn dark and jammy — the base note of the whole bottle.\\nArabica coffee for tannin and depth, with garam masala, allspice and nutmeg behind it.\\nSalt and pink peppercorn sharpen the dark fruit and stop it going sweet.\\nVerjus lifts the stewed fruit back off the palate.\\nBarely any sugar — the fruit already brought it."
           }
         },
         "p_b6": {
@@ -227,7 +247,11 @@
           "settings": {
             "code": "NON9",
             "accent": "#6B4A82",
-            "captions": "PLUM · BLACKBERRY\nFRENCH OAK · PINE\nTAMARI · SALT\nSEMILLON · VERJUS\nSUGAR · ANCHO"
+            "captions": "PLUM · BLACKBERRY\\nFRENCH OAK · PINE\\nTAMARI · SALT\\nSEMILLON · VERJUS\\nSUGAR · ANCHO",
+            "fruit": "berry",
+            "bot": "oak",
+            "titles": "Dark fruit\\nOak & skin\\nTamari & salt\\nVerjus pressed\\nTasted to level",
+            "bodies": "Stanley plum, blackberry and Shiraz grape skin, with beetroot for earth and colour.\\nFrench oak and grape skin build firm tannin; fir pine sits on the nose as forest floor.\\nTamari for savoury depth alongside the salt — umami rather than seasoning.\\nVerjus holds the dark fruit in line so it doesn't turn jammy.\\nSugar and ancho chilli finish it: spice first, then length."
           }
         }
       },

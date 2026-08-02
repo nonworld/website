@@ -59,73 +59,57 @@
   data-endpoint="{{ endpoint }}"
   data-default-region="{{ section.settings.default_region }}"
   data-list-limit="{{ section.settings.list_limit }}">
-  <div class="non-section__head">
-    {%- comment -%}
-      h2, not h1. The page hero above carries the h1 — this is the tool's own
-      label, and two h1 elements on a page is the exact bug flagged on Pairing.
-    {%- endcomment -%}
-    <h2 class="non-section__title">{{ section.settings.heading }}</h2>
-    <span class="non-section__more" data-non-venue-count>Loading…</span>
-  </div>
+  {%- comment -%}
+    THE PANEL. design-reference puts the search, the filters, the results and
+    the "see all" card in ONE left column with the map beside it — the tool is a
+    single instrument you work top to bottom while the map answers alongside.
 
-  {%- if section.settings.intro != blank -%}
-    <p class="non-hero__blurb" style="margin-top:20px">{{ section.settings.intro }}</p>
-  {%- endif -%}
+    The build had the search and filters full width ABOVE, the list and map in a
+    separate row below, and the credentials wedged into the top of the list
+    column. That is why the page read nothing like the design despite having
+    almost every piece: the parts were all present and none of them were where
+    the design puts them.
 
-  <form class="non-somm" style="margin-top:26px;max-width:520px" data-non-venue-search>
-    <div class="non-somm__bar">
-      <span class="non-somm__caret" aria-hidden="true">&gt;</span>
-      <label class="visually-hidden" for="venue-q-{{ section.id }}">Search stockists</label>
-      <input
-        id="venue-q-{{ section.id }}"
-        class="non-somm__input"
-        type="search"
-        autocomplete="off"
-        data-non-venue-query
-        placeholder="{{ section.settings.search_placeholder | escape }}">
-      <button type="submit" class="non-somm__submit">Search</button>
-    </div>
-  </form>
-
-  <div class="non-filters" role="group" aria-label="Venue type">
-    <button type="button" class="non-filter" data-non-venue-filter="all" aria-pressed="true">Everything</button>
-    <button type="button" class="non-filter" data-non-venue-filter="restaurant" aria-pressed="false">Restaurants</button>
-    <button type="button" class="non-filter" data-non-venue-filter="bar" aria-pressed="false">Bars &amp; pubs</button>
-    <button type="button" class="non-filter" data-non-venue-filter="retail" aria-pressed="false">Retail</button>
-  </div>
-
-  <div class="non-filters" style="margin-top:10px" role="group" aria-label="Region">
-    <button type="button" class="non-filter" data-non-venue-region="all" aria-pressed="true">Worldwide</button>
-    <button type="button" class="non-filter" data-non-venue-region="AU" aria-pressed="false">Australia</button>
-    <button type="button" class="non-filter" data-non-venue-region="UK" aria-pressed="false">UK</button>
-    <button type="button" class="non-filter" data-non-venue-region="US" aria-pressed="false">US</button>
-  </div>
-
-  <div class="non-stockists" style="margin-top:26px">
+    Also gone: the region filter row. The design has one filter axis, Type. Two
+    rows of chips in a narrow column reads as a database query form, and region
+    is already implicit in a suburb search.
+  {%- endcomment -%}
+  <div class="non-stockists">
     <div class="non-stockists__list">
-      {%- comment -%}
-        Filtered by type, not `section.blocks`. The credential strip above uses
-        blocks too, and an unfiltered loop rendered them here as venues with no
-        address — the exact failure the `where` filter exists to prevent.
-      {%- endcomment -%}
-      {%- assign venues = section.blocks | where: 'type', 'venue' -%}
-      {%- if venues.size > 0 -%}
-        <div class="non-mono non-eyebrow">{{ section.settings.featured_heading }}</div>
-        <div style="margin-bottom:26px">
-          {%- for block in venues -%}
-            <div class="non-venue" {{ block.shopify_attributes }}>
-              <div class="non-venue__name">{{ block.settings.name }}</div>
-              <div class="non-venue__addr">{{ block.settings.address }}</div>
-              {%- if block.settings.pours != blank -%}
-                <div class="non-venue__pours">{{ block.settings.pours }}</div>
-              {%- endif -%}
-            </div>
-          {%- endfor -%}
+      <form class="non-somm non-stock-search" data-non-venue-search>
+        <div class="non-somm__bar">
+          <span class="non-somm__caret" aria-hidden="true">&gt;</span>
+          <label class="visually-hidden" for="venue-q-{{ section.id }}">{{ section.settings.search_label }}</label>
+          <input
+            id="venue-q-{{ section.id }}"
+            class="non-somm__input"
+            type="search"
+            autocomplete="off"
+            data-non-venue-query
+            placeholder="{{ section.settings.search_placeholder | escape }}">
+          <button type="submit" class="non-somm__submit">{{ section.settings.search_cta }}</button>
         </div>
-      {%- endif -%}
+      </form>
 
+      <div class="non-stock-filters">
+        <span class="non-mono non-eyebrow">{{ section.settings.filter_label }}</span>
+        <div class="non-filters" role="group" aria-label="{{ section.settings.filter_label | escape }}">
+          <button type="button" class="non-filter" data-non-venue-filter="all" aria-pressed="true">{{ section.settings.filter_all }}</button>
+          <button type="button" class="non-filter" data-non-venue-filter="restaurant" aria-pressed="false">{{ section.settings.filter_restaurant }}</button>
+          <button type="button" class="non-filter" data-non-venue-filter="bar" aria-pressed="false">{{ section.settings.filter_bar }}</button>
+          <button type="button" class="non-filter" data-non-venue-filter="retail" aria-pressed="false">{{ section.settings.filter_retail }}</button>
+        </div>
+      </div>
+
+      {%- comment -%}
+        The featured venues ("On the list at") used to sit HERE, at the top of
+        the results column, which put four Michelin names between the customer
+        and the search results they came for. The design runs them as a row of
+        cards BELOW the whole panel — a credential, not a filter step. Moved
+        there; see after the panel closes.
+      {%- endcomment -%}
       <div class="non-stock-listhead">
-        <div class="non-mono non-eyebrow" data-non-venue-list-heading>Stockists</div>
+        <div class="non-mono non-eyebrow" data-non-venue-list-heading>{{ section.settings.results_label }}</div>
         {%- if section.settings.sort_note != blank -%}
           <span class="non-mono non-eyebrow non-stock-sort" data-non-venue-sort hidden>
             {{ section.settings.sort_note }}
@@ -174,36 +158,69 @@
       </button>
 
       <p class="non-error" data-non-venue-error hidden></p>
+
+      {%- comment -%}
+        The design closes the results column with a card pointing at the full
+        directory — the honest admission that this page is a preview of 1,400+
+        venues, not the whole list. It was missing entirely.
+      {%- endcomment -%}
+      {%- if section.settings.all_heading != blank -%}
+        <a class="non-stock-all" href="{{ section.settings.all_url | default: 'https://find.non.world' }}">
+          <span class="non-stock-all__copy">
+            <span class="non-stock-all__title">{{ section.settings.all_heading }}</span>
+            <span class="non-stock-all__body">{{ section.settings.all_body }}</span>
+          </span>
+          <span class="non-mono non-stock-all__go">{{ section.settings.all_cta }} &rarr;</span>
+        </a>
+      {%- endif -%}
     </div>
 
-    {%- if section.settings.show_map -%}
-      <div class="non-map" data-non-map></div>
-    {%- endif -%}
+    {%- comment -%}
+      Map column: the map, then "Can't find it nearby?" directly beneath it, as
+      the design has them. The nominate block used to sit full-width below the
+      whole panel, which stranded it a long way from the empty result that
+      prompts it.
+    {%- endcomment -%}
+    <div class="non-stockists__aside">
+      {%- if section.settings.show_map -%}
+        <div class="non-map" data-non-map></div>
+      {%- endif -%}
+
+      {%- if section.settings.nominate_heading != blank -%}
+        <div class="non-stock-nominate">
+          {%- if section.settings.nominate_label != blank -%}
+            <div class="non-mono non-eyebrow">{{ section.settings.nominate_label }}</div>
+          {%- endif -%}
+          <div class="non-stock-nominate__title">{{ section.settings.nominate_heading }}</div>
+          {%- if section.settings.nominate_body != blank -%}
+            <p class="non-stock-nominate__body">{{ section.settings.nominate_body }}</p>
+          {%- endif -%}
+          {%- if section.settings.nominate_cta != blank -%}
+            <a class="non-btn" href="{{ section.settings.nominate_url | default: '/pages/trade' }}">
+              {{ section.settings.nominate_cta }}
+            </a>
+          {%- endif -%}
+        </div>
+      {%- endif -%}
+    </div>
   </div>
 
   {%- comment -%}
-    Defaulted here rather than in the schema: Shopify's `url` setting type
-    rejects a "default" key outright, and rejects the whole file with it.
+    "On the list at" — the credential row, BELOW the panel where the design puts
+    it. Cards across, not a list stacked above the search results.
   {%- endcomment -%}
-  {%- comment -%}
-    "Can't find it nearby?" — the design's answer to a search that came back
-    thin: ask the customer to nominate their local rather than leaving them with
-    nothing to do. Sits between the results and the two offers, as in the design.
-  {%- endcomment -%}
-  {%- if section.settings.nominate_heading != blank -%}
-    <div class="non-stock-nominate">
-      {%- if section.settings.nominate_label != blank -%}
-        <div class="non-mono non-eyebrow">{{ section.settings.nominate_label }}</div>
-      {%- endif -%}
-      <div class="non-stock-nominate__title">{{ section.settings.nominate_heading }}</div>
-      {%- if section.settings.nominate_body != blank -%}
-        <p class="non-stock-nominate__body">{{ section.settings.nominate_body }}</p>
-      {%- endif -%}
-      {%- if section.settings.nominate_cta != blank -%}
-        <a class="non-btn" href="{{ section.settings.nominate_url | default: '/pages/trade' }}">
-          {{ section.settings.nominate_cta }}
-        </a>
-      {%- endif -%}
+  {%- assign venues = section.blocks | where: 'type', 'venue' -%}
+  {%- if venues.size > 0 -%}
+    <div class="non-stock-listat">
+      <div class="non-mono non-eyebrow">{{ section.settings.featured_heading }}</div>
+      <div class="non-stock-listat__row">
+        {%- for block in venues -%}
+          <div class="non-stock-listat__card" {{ block.shopify_attributes }}>
+            <div class="non-stock-listat__name">{{ block.settings.name }}</div>
+            <div class="non-stock-listat__where">{{ block.settings.address }}</div>
+          </div>
+        {%- endfor -%}
+      </div>
     </div>
   {%- endif -%}
 
@@ -537,6 +554,77 @@
       "id": "direct_image_url",
       "label": "Direct card image URL",
       "info": "Design: Mixed-6. Used only when no image is uploaded."
+    },
+    {
+      "type": "text",
+      "id": "search_label",
+      "label": "Search label",
+      "default": "Search stockists"
+    },
+    {
+      "type": "text",
+      "id": "search_cta",
+      "label": "Search button",
+      "default": "Search"
+    },
+    {
+      "type": "text",
+      "id": "filter_label",
+      "label": "Filter label",
+      "default": "Type"
+    },
+    {
+      "type": "text",
+      "id": "filter_all",
+      "label": "Filter: all",
+      "default": "Everything"
+    },
+    {
+      "type": "text",
+      "id": "filter_restaurant",
+      "label": "Filter: restaurants",
+      "default": "Restaurants"
+    },
+    {
+      "type": "text",
+      "id": "filter_bar",
+      "label": "Filter: bars",
+      "default": "Bars & pubs"
+    },
+    {
+      "type": "text",
+      "id": "filter_retail",
+      "label": "Filter: retail",
+      "default": "Retail"
+    },
+    {
+      "type": "text",
+      "id": "results_label",
+      "label": "Results label",
+      "default": "Stockists"
+    },
+    {
+      "type": "text",
+      "id": "all_heading",
+      "label": "See-all title",
+      "default": "See all 1,400+ venues"
+    },
+    {
+      "type": "text",
+      "id": "all_body",
+      "label": "See-all body",
+      "default": "Live map, opening hours and which bottles each venue pours."
+    },
+    {
+      "type": "text",
+      "id": "all_cta",
+      "label": "See-all link",
+      "default": "find.non.world"
+    },
+    {
+      "type": "url",
+      "id": "all_url",
+      "label": "See-all link URL"
     },
     {
       "type": "header",

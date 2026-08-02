@@ -96,15 +96,25 @@
       'https://www.google.com/maps/dir/?api=1&destination=' +
       encodeURIComponent(v.lat + ',' + v.lng);
 
+    // Three parts across, per design-reference: identity on the left, what kind
+    // of venue and what it pours in the middle, distance hard right. The build
+    // stacked everything in one column, which is why the directory read as a
+    // list of addresses rather than a table you can scan down.
     el.innerHTML =
-      '<div class="non-venue__name">' + escapeHTML(v.name) + '</div>' +
-      '<div class="non-venue__addr">' +
+      '<span class="non-venue__id">' +
+      '<span class="non-venue__name">' + escapeHTML(v.name) + '</span>' +
+      '<span class="non-venue__addr">' +
       escapeHTML(v.suburb || '') +
       (v.region ? ' &middot; ' + escapeHTML(v.region) : '') +
-      '</div>' +
-      (v.type ? '<div class="non-venue__pours">' + escapeHTML(v.type) + '</div>' : '') +
-      '<a class="non-venue__pours" style="text-decoration:underline;display:inline-block;margin-top:6px" ' +
-      'href="' + directions + '" target="_blank" rel="noopener">Directions</a>';
+      '</span></span>' +
+      '<span class="non-venue__what">' +
+      (v.type ? '<span class="non-venue__kind">' + escapeHTML(v.type) + '</span>' : '') +
+      (v.pours ? '<span class="non-venue__pours">' + escapeHTML(v.pours) + '</span>' : '') +
+      '<a class="non-venue__dir" href="' + directions + '" target="_blank" rel="noopener">Directions</a>' +
+      '</span>' +
+      '<span class="non-venue__dist">' +
+      (v.distance ? escapeHTML(String(v.distance)) : '') +
+      '</span>';
 
     el.addEventListener('click', function () {
       if (map) map.setView([v.lat, v.lng], 15);

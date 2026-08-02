@@ -1211,11 +1211,64 @@ button { font-family: inherit; }
 /* --- stockists ---------------------------------------------------------- */
 
 .non-stockists { display: grid; grid-template-columns: 1fr; gap: 24px; }
-@media (min-width: 860px) { .non-stockists { grid-template-columns: minmax(0, 420px) minmax(0, 1fr); } }
-.non-venue { padding: 16px 0; border-bottom: 1px solid var(--non-line); }
+/* List wide, map pinned — design-reference gives the directory roughly 60% and
+   the map the rest. It was the other way round (420px list, map taking every
+   remaining pixel), so the thing customers actually read was the narrow column
+   and the decoration got the page. */
+@media (min-width: 860px) { .non-stockists { grid-template-columns: minmax(0, 1fr) minmax(0, 420px); gap: 34px; } }
+/* A result row is a THREE-PART line, per design-reference: who and where on the
+   left, what kind and what it pours in the middle, distance hard right. It used
+   to stack all of it in one column, which made the directory a list of
+   addresses rather than a table you can scan down. */
+.non-venue {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 6px 16px;
+  padding: 16px 0;
+  border-bottom: 1px solid var(--non-line);
+}
+@media (min-width: 620px) {
+  .non-venue { grid-template-columns: minmax(0, 1fr) minmax(0, auto) 64px; align-items: baseline; }
+  .non-venue__dist { text-align: right; }
+}
+.non-venue__id, .non-venue__what { display: flex; flex-direction: column; gap: 4px; min-width: 0; }
 .non-venue__name { font-size: var(--t-body); font-weight: 600; }
-.non-venue__addr { font-size: var(--t-small); color: var(--non-fg-mute); margin-top: 4px; }
-.non-venue__pours { font-family: var(--non-mono); font-size: var(--t-mono); color: var(--non-fg-faint); margin-top: 6px; letter-spacing: .12em; text-transform: uppercase; }
+.non-venue__addr { font-size: var(--t-small); color: var(--non-fg-mute); }
+.non-venue__kind,
+.non-venue__pours { font-family: var(--non-mono); font-size: var(--t-mono); color: var(--non-fg-faint); letter-spacing: .12em; text-transform: uppercase; }
+.non-venue__dir { font-size: var(--t-small); color: var(--non-fg-mute); text-decoration: underline; }
+.non-venue__dist { font-family: var(--non-mono); font-size: var(--t-mono); color: var(--non-fg-faint); white-space: nowrap; }
+
+/* The tool's own column: search, filters, results, see-all. */
+.non-stockists__list { display: flex; flex-direction: column; gap: 18px; min-width: 0; }
+.non-stockists__aside { display: flex; flex-direction: column; gap: 0; min-width: 0; }
+.non-stock-search { margin-top: 0; }
+.non-stock-filters { display: flex; flex-direction: column; gap: 10px; }
+.non-stock-filters .non-filters { margin-top: 0; }
+
+/* The full-directory card closing the results column. */
+.non-stock-all {
+  display: flex; align-items: center; justify-content: space-between; gap: 18px;
+  padding: 20px; border: 1px solid var(--non-line-strong);
+  transition: border-color var(--duration-hover) var(--ease-hover);
+}
+.non-stock-all:hover { border-color: var(--non-fg); opacity: 1; }
+.non-stock-all__copy { display: flex; flex-direction: column; gap: 6px; min-width: 0; }
+.non-stock-all__title { font-size: var(--t-body); font-weight: 600; }
+.non-stock-all__body { font-size: var(--t-small); color: var(--non-fg-mute); }
+.non-stock-all__go { font-size: var(--t-mono); color: var(--non-fg-faint); white-space: nowrap; }
+
+/* "On the list at" — cards across, below the panel. */
+.non-stock-listat { padding: 40px var(--non-pad) 0; }
+.non-stock-listat__row {
+  display: grid; gap: 2px; margin-top: 18px;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  background: var(--non-line);
+  border: 1px solid var(--non-line);
+}
+.non-stock-listat__card { background: var(--non-bg); padding: 22px; }
+.non-stock-listat__name { font-size: var(--t-body); font-weight: 600; }
+.non-stock-listat__where { margin-top: 6px; font-size: var(--t-small); color: var(--non-fg-mute); }
 /* The list scrolls in its own pane and the map holds still beside it.
    Previously the list ran the full length of the page, so 2,201 venues pushed
    the map metres above the fold and reading the list meant scrolling away from
@@ -2204,7 +2257,9 @@ a, button, .non-card, .non-filter, .non-pair__opt, .non-somm__seed,
 .non-stock-empty__body { margin: 12px 0 0; font-size: var(--t-copy); line-height: 1.6; color: var(--non-fg-dim); max-width: 52ch; }
 .non-stock-empty__acts { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 18px; }
 
-.non-stock-nominate { padding: 40px var(--non-pad); border-top: 1px solid var(--non-line); }
+/* Sits directly under the map now, inside the panel's right column, so no page
+   gutter and no full-width rule — it is part of the map, not a band. */
+.non-stock-nominate { padding: 22px 0 0; border-top: 1px solid var(--non-line); margin-top: 22px; }
 .non-stock-nominate__title { font-size: clamp(20px, 1.9vw, 30px); letter-spacing: -.015em; margin-top: 10px; }
 .non-stock-nominate__body { margin: 12px 0 18px; font-size: var(--t-copy); line-height: 1.6; color: var(--non-fg-dim); max-width: 54ch; }
 

@@ -4780,3 +4780,18 @@ select:-moz-focusring { color: transparent; text-shadow: 0 0 0 var(--non-fg); }
 @media (max-width: 699px) {
   .non-somm, .non-sommbox { display: flex; flex-direction: column; align-items: center; text-align: center; }
 }
+
+/* Left-align the children explicitly in the two-column layout.
+
+   Setting text-align on the container is not enough: .non-sommbox__body and
+   .non-sommbox__head carry their own `text-align: center` from the stacked
+   version, and a child's own declaration beats an inherited one regardless of
+   source order. Centred copy in a left column is the last thing making this
+   read as stacked. */
+@media (min-width: 700px) {
+  .non-sommbox__head,
+  .non-sommbox__body,
+  .non-sommbox__opener,
+  .non-somm__answer,
+  .non-somm__stream { text-align: left; }
+}

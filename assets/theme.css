@@ -4921,3 +4921,60 @@ select:-moz-focusring { color: transparent; text-shadow: 0 0 0 var(--non-fg); }
 @media (max-width: 859px) {
   .non-poured__set img { max-height: 22px; max-width: 88px; margin: 0 18px; }
 }
+
+/* ==========================================================================
+   Process scenes: the continuous motion, at a specificity that actually wins.
+
+   Measured on the live page: the fruit circles were running `non-proc-in` and
+   the salt grains `non-proc-draw` — the one-shot reveal — not the looping
+   `non-proc-fall` / `non-proc-grain` written for them. The looping rules were
+   present and losing.
+
+   The earlier reveal rule matches these elements through
+   `.non-proc__step.is-in .non-proc__art circle:not([pathLength])`, which
+   scores (0,4,2) — the :not() attribute test counts. The motion rules were
+   (0,3,1). Adding the rail and art classes puts these at (0,5,1), above both.
+
+   Fourth time this exact collision has bitten in one session. If a Somm or
+   process rule appears to do nothing, check the computed animationName before
+   assuming the rule is wrong — it is usually being outscored.
+   ========================================================================== */
+
+/* FRUIT — falls into the pot on a loop. */
+.non-proc__rail .non-proc__step.is-in .non-proc__art .non-proc__fruit circle {
+  opacity: 1;
+  animation: non-proc-fall 3.6s cubic-bezier(.4, 0, .7, 1) infinite;
+}
+.non-proc__rail .non-proc__step.is-in .non-proc__art .non-proc__fruit circle:nth-of-type(2) { animation-delay: .6s; }
+.non-proc__rail .non-proc__step.is-in .non-proc__art .non-proc__fruit circle:nth-of-type(3) { animation-delay: 1.2s; }
+
+/* TANNIN — the steeping leaf drifts. */
+.non-proc__rail .non-proc__step.is-in .non-proc__art .non-proc__fruit path {
+  opacity: 1;
+  animation: non-proc-bob 4.2s ease-in-out infinite;
+}
+
+/* SALINITY — grains fall in sequence. */
+.non-proc__rail .non-proc__step.is-in .non-proc__art .non-proc__grains path {
+  animation: non-proc-grain 2.8s ease-in infinite;
+  transform-origin: center;
+}
+.non-proc__rail .non-proc__step.is-in .non-proc__art .non-proc__grains path:nth-child(1) { animation-delay: 0s; }
+.non-proc__rail .non-proc__step.is-in .non-proc__art .non-proc__grains path:nth-child(2) { animation-delay: .5s; }
+.non-proc__rail .non-proc__step.is-in .non-proc__art .non-proc__grains path:nth-child(3) { animation-delay: 1s; }
+.non-proc__rail .non-proc__step.is-in .non-proc__art .non-proc__grains path:nth-child(4) { animation-delay: 1.5s; }
+
+/* BALANCE — the beam rocks and settles. */
+.non-proc__rail .non-proc__step:nth-child(5).is-in .non-proc__art > g:first-of-type {
+  transform-origin: 50% 50%;
+  animation: non-proc-tilt 5s ease-in-out infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .non-proc__rail .non-proc__step.is-in .non-proc__art .non-proc__fruit circle,
+  .non-proc__rail .non-proc__step.is-in .non-proc__art .non-proc__fruit path,
+  .non-proc__rail .non-proc__step.is-in .non-proc__art .non-proc__grains path,
+  .non-proc__rail .non-proc__step:nth-child(5).is-in .non-proc__art > g:first-of-type {
+    animation: none; opacity: 1;
+  }
+}

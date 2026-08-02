@@ -3953,3 +3953,76 @@ select:-moz-focusring { color: transparent; text-shadow: 0 0 0 var(--non-fg); }
   .non-proc__step.is-in .non-proc__grains path,
   .non-proc__step:nth-child(5).is-in .non-proc__art g { animation: none; opacity: 1; }
 }
+
+/* ==========================================================================
+   Somm, orb-focused. The orb is the interface.
+
+   Until now it was a 14px status dot beside a label — a system indicator, not
+   a presence. The reference is the opposite: a large, soft, breathing sphere
+   that the prompt sits beneath, the way Apple and ChatGPT anchor a voice or
+   assistant surface. The component reorganises around it.
+
+   Drawn in CSS on ::before rather than added to the markup, so nothing in
+   Liquid changes and the orb cannot end up in the DOM twice on pages that
+   render more than one Somm surface.
+
+   Cool white rather than the brand's flat ink: a sphere needs a light source
+   to read as spherical, and the off-centre highlight is what stops it looking
+   like a flat circle. This is the same reasoning that allows the green live
+   dot and the coloured fruit — a lit object, not a decorative colour.
+   ========================================================================== */
+.non-sommbox,
+.non-somm__bar { position: relative; }
+
+.non-sommbox::before {
+  content: "";
+  display: block;
+  width: clamp(120px, 15vw, 190px);
+  aspect-ratio: 1 / 1;
+  margin: 10px auto 26px;
+  border-radius: 50%;
+  background:
+    radial-gradient(circle at 42% 36%,
+      #ffffff 0%,
+      #eef2f8 26%,
+      #dfe6f2 46%,
+      rgba(223, 230, 242, .34) 64%,
+      rgba(223, 230, 242, .10) 76%,
+      transparent 82%);
+  filter: blur(12px);
+  opacity: .92;
+  animation: non-somm-orb 6s ease-in-out infinite;
+  pointer-events: none;
+}
+
+/* Slow. A fast breath reads as a loading spinner; this should feel like
+   something at rest that happens to be alive. */
+@keyframes non-somm-orb {
+  0%, 100% { transform: scale(1); opacity: .86; }
+  50% { transform: scale(1.06); opacity: 1; }
+}
+
+/* Everything below the orb centres under it. */
+.non-sommbox__body,
+.non-sommbox__head { text-align: center; }
+.non-sommbox__head { justify-content: center; gap: 14px; }
+.non-sommbox__opener { margin-inline: auto; max-width: 30ch; }
+.non-sommbox__ask { justify-content: center; }
+.non-sommbox__ask input,
+.non-sommbox__ask .non-somm__input { text-align: center; }
+.non-sommbox__seeds { justify-content: center; }
+
+/* With the orb carrying presence, the old dot steps back to a quiet marker —
+   two things pulsing at different rates would fight. */
+.non-sommbox__dot {
+  width: 8px;
+  height: 8px;
+  box-shadow: 0 0 8px 1px currentColor;
+  animation: non-somm-breathe 3.6s ease-in-out infinite;
+}
+.non-sommbox__dot::before,
+.non-sommbox__dot::after { display: none; }
+
+@media (prefers-reduced-motion: reduce) {
+  .non-sommbox::before { animation: none; }
+}

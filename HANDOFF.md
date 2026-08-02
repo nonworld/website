@@ -359,6 +359,32 @@ contrast ratios of 1.01, 1.05 and 1.63 — invisible. **Unwind all eight, then
 verify by computed contrast in the browser, not by eye.** Anything under 4.5:1
 is a fail.
 
+## NEXT — Stockist search needs place suggestions (raised 2026-08-02)
+
+Aaron: "This needs to come up with suggestions for places." Typing "armadale"
+runs a search and returns one venue; it should suggest matching places as you
+type, before you commit.
+
+Two things to settle first, because they change the build:
+
+1. **Which list is being suggested** — venue names, or suburbs/postcodes? The
+   screenshot searched a suburb and matched a venue NAME containing it
+   ("Liquorland North Armadale 3273"), which is why the single result is in WA
+   rather than the Melbourne suburb Aaron meant. A place typeahead probably
+   wants suburb + postcode, then filters venues by it.
+2. **Where the data lives** — check whether the section already ships the venue
+   list client-side or queries as you type. That decides whether the dropdown
+   is a filter over data already on the page (cheap) or needs a request per
+   keystroke (needs debouncing and a loading state).
+
+Build notes: debounce ~150ms, cap the list at ~8, keyboard up/down/enter/escape,
+and match the existing chip/field treatment rather than inventing a dropdown
+style. The Somm's seed chips are the closest precedent.
+
+**Note the location bug found alongside this:** searching a suburb matches
+against venue names, so "armadale" returns a WA store rather than Armadale VIC.
+Worth fixing with the same work.
+
 ## Pairing dish chips: the handler never binds (measured 2026-08-02)
 
 The chips still do nothing, and the cause is NOT the old `data-answer` bug —

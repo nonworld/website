@@ -3661,3 +3661,14 @@ select:-moz-focusring { color: transparent; text-shadow: 0 0 0 var(--non-fg); }
   color: #000;
   border-color: #EDEDE8;
 }
+
+/* .non-somm itself — the hero, pairing and stockists surfaces.
+
+   The no-panel rule above covered .non-sommbox and .non-somm__bar but NOT
+   .non-somm, which carries its own `background: var(--non-somm-bg, ...)`. So
+   the PDP went open and dark while the homepage hero kept the old #c9c7c1
+   slab — and the new chip ink (#a9a9a2), correct on near-black, landed on
+   light grey at 1.4 contrast. Invisible, in the one place I had not measured.
+
+   Same component, three surfaces: they have to move together. */
+.non-somm { background: transparent; }

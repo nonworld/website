@@ -15,11 +15,15 @@
                   alt: block.settings.name
               }}
             {%- elsif block.settings.image_url != blank -%}
+              {%- comment -%}
+                No inline max-height. Every mark is normalised to one cap
+                height in theme.css; a per-logo inline style beats any
+                stylesheet rule and is what made the row look uneven.
+              {%- endcomment -%}
               <img
                 src="{{ block.settings.image_url }}"
                 alt="{{ block.settings.name | escape }}"
-                loading="lazy"
-                style="max-height:{{ block.settings.max_height }}px">
+                loading="lazy">
             {%- endif -%}
           {%- endfor -%}
         </div>

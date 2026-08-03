@@ -85,6 +85,43 @@ fi
 if [ -n "$(git status --porcelain)" ]; then
   echo "→ staging"
   git add -A
+
+  # `git add -A` stages the WHOLE working tree, which is deliberate: the
+  # Shopify theme editor writes back to this branch and those files have to
+  # travel. The cost is that a commit message describes what you had in mind,
+  # never what the commit contains.
+  #
+  # For edits that is untidy. For DELETIONS it loses work, silently, inside a
+  # commit about something else. It happened twice on 2026-08-03: ccecd0d, a
+  # recipe-generator commit, deleted a somm audit doc; e5cf06e, a Worker
+  # commit, deleted two more. Nobody typed `git rm` either time.
+  #
+  # So deletions are opt-in. Anything staged for deletion without
+  # ALLOW_DELETE=1 is unstaged AND restored to the working tree, which fully
+  # reverses an accidental removal rather than merely declining to record it.
+  # Everything else in the commit proceeds as normal.
+  DELETED=$(git diff --cached --name-only --diff-filter=D)
+  if [ -n "$DELETED" ]; then
+    if [ "${ALLOW_DELETE:-0}" = "1" ]; then
+      echo "   deleting on purpose (ALLOW_DELETE=1):"
+      printf '%s\n' "$DELETED" | sed 's/^/     - /'
+    else
+      echo
+      echo "   REFUSING TO DELETE. These were staged for deletion and are not"
+      echo "   mentioned by you, so they are being put back:"
+      printf '%s\n' "$DELETED" | sed 's/^/     - /'
+      while IFS= read -r f; do
+        [ -z "$f" ] && continue
+        git reset -q HEAD -- "$f" 2>/dev/null || true
+        git checkout HEAD -- "$f" 2>/dev/null || true
+      done <<< "$DELETED"
+      echo
+      echo "   Restored. If you meant to delete them:"
+      echo "     ALLOW_DELETE=1 scripts/sync.sh \"...\""
+      echo
+    fi
+  fi
+
   git status --short
 
   MSG="${1:-}"

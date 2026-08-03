@@ -452,4 +452,3 @@
 
   document.querySelectorAll('[data-non-somm]').forEach(Somm);
 })();
-// guard test

@@ -344,8 +344,39 @@ Count words in Spanish.`,
       items.length > 1
         ? `${items.slice(0, -1).join(', ')} y ${items[items.length - 1]}`
         : items[0],
+
+    /* The fallback lines.
+     *
+     * These are written in code, not by the model, so the ANSWER IN SPANISH
+     * directive above cannot reach them — exactly like bestWith. The mega-test
+     * caught it: "¿Con qué comida va bien NON3?" failed extraction and the
+     * customer got the English "Hard to call from that alone…". A Spanish
+     * reader hitting a stumble was answered in the wrong language.
+     *
+     * `pairing` keeps the Mixed 6, because on a pairing question it is the
+     * honest answer. `neutral` recommends nothing, for the same reason the
+     * English one does not: a storage question should not come back holding a
+     * six-pack.
+     *
+     * "Mixed 6" is left in English. It is the product's name on the store, and
+     * the glossary rule is that names do not translate. */
+    fallback: {
+      pairing:
+        'Difícil de decidir solo con eso, así que empieza por el Mixed 6: cubre todos los platos y te dice cuál es tu sitio en la mesa.',
+      neutral:
+        'Esa no me ha llegado del todo bien. Pregúntamelo otra vez, o dilo de otra forma y lo retomo.',
+    },
   },
 };
+
+/* The fallback copy in the customer's language, English when we have none.
+   Never a half-and-half: if a language has no fallback block it gets the
+   English line whole, rather than an English sentence with a Spanish clause. */
+export function fallbackCopy(locale, kind) {
+  const tag = String(locale || 'en').trim().toLowerCase();
+  const L = LANGUAGES[tag] || LANGUAGES[tag.split('-')[0]];
+  return (L && L.fallback && L.fallback[kind]) || null;
+}
 
 /* Builds the bestWith sentence in the target language, or returns null when
    there is no entry — the caller then keeps the English one. */
@@ -808,7 +839,7 @@ function suggestionsFor(code) {
  *
  * `reason` says which path failed; `intent` says what the customer asked. They
  * are not the same thing and both matter. */
-function fallbackResponse(reason, err, env, intent) {
+function fallbackResponse(reason, err, env, intent, locale) {
   /* The copy is neutral, and no longer a pairing answer.
    *
    * It used to be "Hard to call from that alone, so start with the mixed six".
@@ -827,7 +858,9 @@ function fallbackResponse(reason, err, env, intent) {
     'Hard to call from that alone, so start with the mixed six: it covers every course and tells you which seat at the table is yours.';
 
   const isPairing = intent === 'pairing' || reason === 'extraction' || reason === 'score';
-  const line = isPairing ? PAIRING : NEUTRAL;
+  // Translated where we have it, English whole where we do not.
+  const line =
+    fallbackCopy(locale, isPairing ? 'pairing' : 'neutral') || (isPairing ? PAIRING : NEUTRAL);
 
   const body = {
     // No product is recommended on a non-pairing failure. Returning SET meant
@@ -937,10 +970,10 @@ export default {
               picks: [],
               productId: context ? String(context).toUpperCase() : null,
             }),
-            onFail: () => fallbackResponse('brand', null, env, 'brand'),
+            onFail: () => fallbackResponse('brand', null, env, 'brand', body.locale),
           });
         } catch (e) {
-          return json(fallbackResponse('brand', e, env, 'brand'), 200);
+          return json(fallbackResponse('brand', e, env, 'brand', body.locale), 200);
         }
       }
       try {
@@ -967,7 +1000,7 @@ export default {
           productId: context ? String(context).toUpperCase() : null,
         });
       } catch (e) {
-        return json(fallbackResponse('brand', e, env, 'brand'), 200);
+        return json(fallbackResponse('brand', e, env, 'brand', body.locale), 200);
       }
     }
 
@@ -984,10 +1017,10 @@ export default {
               picks: picksFrom(answer),
               productId: picksFrom(answer)[0] || (context ? String(context).toUpperCase() : null),
             }),
-            onFail: () => fallbackResponse('facts', null, env, intent),
+            onFail: () => fallbackResponse('facts', null, env, intent, body.locale),
           });
         } catch (e) {
-          return json(fallbackResponse('facts', e, env, intent), 200);
+          return json(fallbackResponse('facts', e, env, intent, body.locale), 200);
         }
       }
       try {
@@ -1002,7 +1035,7 @@ export default {
           productId: result.picks[0] || (context ? String(context).toUpperCase() : null),
         });
       } catch (e) {
-        return json(fallbackResponse('facts', e, env, intent), 200);
+        return json(fallbackResponse('facts', e, env, intent, body.locale), 200);
       }
     }
 
@@ -1045,7 +1078,7 @@ export default {
           source: 'bestWith',
         });
       }
-      return json(fallbackResponse('extraction', e, env, 'pairing'), 200);
+      return json(fallbackResponse('extraction', e, env, 'pairing', body.locale), 200);
     }
 
     /* A pairing question that names no food is not a pairing question.
@@ -1073,7 +1106,7 @@ export default {
           source: 'no-dish',
         });
       } catch (e) {
-        return json(fallbackResponse('facts', e, env, 'facts'), 200);
+        return json(fallbackResponse('facts', e, env, 'facts', body.locale), 200);
       }
     }
 
@@ -1106,7 +1139,7 @@ export default {
             query, product, reasons: scored.reasons, score: scored.score, fit, instead, lang,
           });
         } catch (e) {
-          return json(fallbackResponse('verdict', e, env, 'pairing'), 200);
+          return json(fallbackResponse('verdict', e, env, 'pairing', body.locale), 200);
         }
 
         return json({
@@ -1144,7 +1177,7 @@ export default {
         lang,
       });
     } catch (e) {
-      return json(fallbackResponse('explanation', e, env, 'pairing'), 200);
+      return json(fallbackResponse('explanation', e, env, 'pairing', body.locale), 200);
     }
 
     const includeAlternative = runnerUp && top.score - runnerUp.score <= 15;

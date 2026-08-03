@@ -8,7 +8,7 @@
  *   node test/pipeline.test.js
  */
 import { rankProducts, PRODUCTS, scoreProduct } from '../src/scoring-engine.js';
-import { languageDirective } from '../src/index.js';
+import { languageDirective, fallbackCopy } from '../src/index.js';
 
 // Ground truth is NON's core range deck, which names one headline pairing per
 // bottle. These five are not opinions — if one fails, the profiles are wrong.
@@ -212,6 +212,36 @@ const esDirective = languageDirective('es');
 const bansIt = esDirective.includes('Never write "vino sin alcohol"');
 if (!bansIt) failed++;
 console.log(`${bansIt ? 'PASS' : 'FAIL'}  es directive forbids "vino sin alcohol"`);
+
+/* The fallback lines, which are written in code and so are NOT covered by the
+   ANSWER IN SPANISH directive. The mega-test caught a Spanish pairing question
+   failing extraction and being answered with the English fallback. */
+const FALLBACK_CASES = [
+  ['es', 'pairing', true, 'es pairing fallback is Spanish'],
+  ['es', 'neutral', true, 'es neutral fallback is Spanish'],
+  ['es-ES', 'pairing', true, 'es-ES falls back to es'],
+  ['en', 'pairing', false, 'en has no override, uses the English line'],
+  ['zz', 'pairing', false, 'unknown locale uses the English line'],
+  [undefined, 'neutral', false, 'no locale uses the English line'],
+];
+for (const [tag, kind, wantSpanish, label] of FALLBACK_CASES) {
+  const got = fallbackCopy(tag, kind);
+  const ok = wantSpanish ? typeof got === 'string' && got.length > 0 : got === null;
+  if (!ok) failed++;
+  console.log(`${ok ? 'PASS' : 'FAIL'}  ${label}`);
+}
+
+// The Mixed 6 is a product name and must survive translation.
+const esPair = fallbackCopy('es', 'pairing') || '';
+const keepsName = esPair.includes('Mixed 6');
+if (!keepsName) failed++;
+console.log(`${keepsName ? 'PASS' : 'FAIL'}  es pairing fallback keeps the Mixed 6 name untranslated`);
+
+// And the neutral line must not recommend anything at all.
+const esNeutral = fallbackCopy('es', 'neutral') || '';
+const noProduct = !/Mixed 6|NON[1235790]/.test(esNeutral);
+if (!noProduct) failed++;
+console.log(`${noProduct ? 'PASS' : 'FAIL'}  es neutral fallback recommends no product`);
 
 console.log(failed ? `\n${failed} failing overall` : '\nall passing');
 process.exit(failed ? 1 : 0);

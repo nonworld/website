@@ -3,7 +3,7 @@
 Registered against `gid://shopify/OnlineStoreTheme/198370820256`, locale `es`.
 All writes so far returned zero `userErrors`.
 
-**241 strings registered so far. All About PROSE is done.**
+**259 strings registered so far. All of About is done — prose AND process data.**
 
 ## Done
 
@@ -15,11 +15,12 @@ All writes so far returned zero `userErrors`.
 | Shop / collection copy | 21 |
 | Contact + Stockists copy | 19 |
 | About prose (complete) | 78 |
+| About process data (complete) | 18 |
 
 ## Resume
 
-All About PROSE is registered; `es-about-remaining.json` is gone because it is
-empty. Pick up from "Still to do" below.
+All of About is registered. Pick up from "Still to do" below — the next
+unit is product copy.
 
 **Re-check digests before any write.** A digest is invalidated the moment the
 English changes, and a stale one fails. Re-fetch with
@@ -34,13 +35,9 @@ or skip.
 
 ## Still to do
 
-1. **About process data** — `p_b1..p_b6` × `titles`, `bodies`, `captions`. These
-   are NEWLINE-ALIGNED LISTS: line *n* of `titles` pairs with line *n* of
-   `bodies` and `captions`. Assert the line count is identical before and after,
-   per field, or the steps desync from their captions.
-2. **Product copy** — titles, descriptions, and the metafields the PDP reads
+1. **Product copy** — titles, descriptions, and the metafields the PDP reads
    (`profile`, `process`, `ingredients`, `storage`).
-3. **The somm worker** — answers are generated live and CANNOT be translated
+2. **The somm worker** — answers are generated live and CANNOT be translated
    afterwards. The target language and the glossary have to go into the prompt
    in `worker/somm/src`. Deploys with wrangler, which is authenticated here.
 
@@ -52,7 +49,20 @@ Some settings look like prose and are DATA. Three found so far:
   and 2 only; carry 1 and 3 across untouched.
 - Shop `chip-*.key` — matched against each product's `custom.food_tags` JSON.
   Translate the `.label`, never the `.key`.
-- About `p_b*` — newline-aligned lists, as above.
+- About `p_b*` — NEWLINE-ALIGNED LISTS: line *n* of `titles` pairs with line
+  *n* of `bodies` and `captions`. Assert the count per field before writing or
+  the steps desync from their captions. Registered values are in
+  `es-about-process.json`; `p_b*.code` (NON1..NON9) is a product name and was
+  deliberately left alone.
+
+## The other rule: one English string, one Spanish string
+
+"Tasted to level" appears both as a step title (`p_s5.title`) and as line 5 of
+all six bottles' `titles`. It was registered twice with two different Spanish
+renderings, which put both on the same page. Harmonised to
+**"Ajustado al gusto"**. Before registering a list field, grep the already-
+registered set for each line — repeated source strings across blocks are the
+normal case here, not the exception.
 
 Always list what you did NOT translate, and why. The skipped set is where the
 damage lives. See `docs/translation-glossary.md` for the terms that must never

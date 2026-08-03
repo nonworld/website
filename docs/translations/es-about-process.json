@@ -1,0 +1,78 @@
+{
+  "_note": "About process data, es. NEWLINE-ALIGNED LISTS: line n of titles pairs with line n of bodies and captions. Line counts asserted identical to English before registering. `code` (NON1..NON9) deliberately NOT translated.",
+  "resourceId": "gid://shopify/OnlineStoreThemeJsonTemplate/page.our-story?theme_id=198370820256",
+  "strings": {
+    "section.page.our-story.json.main.p_b1.titles:3c389ao194oy2": {
+      "digest": "7d45baa16955d5e068d10c26bf0205935228c17bfd8f34d4ee6960a24a4faa3e",
+      "value": "Infusión en frío\nEntra la manzanilla\nUna pizca de sal\nVerjus prensado\nAjustado al gusto"
+    },
+    "section.page.our-story.json.main.p_b1.bodies:3c38952qtux1r": {
+      "digest": "7c5771c73292b2c33ff4406a4b349be6fcb9a2ad5d130defd58e728744439b22",
+      "value": "48 horas de frambuesas de Tasmania liofilizadas en infusión fría. La liofilización retira el 85% del agua y deja el sabor.\nLa manzanilla lleva el tanino y el final cremoso y floral. Las pieles de frambuesa suman algo de agarre por su cuenta.\nSal del río Murray para la salinidad: lo que hace que un sorbo pida el siguiente.\nUvas Semillon verdes del Barossa Valley, prensadas para hacer verjus. Acidez sin vinagre.\nEl azúcar entra al final, solo lo que pidan las frambuesas."
+    },
+    "section.page.our-story.json.main.p_b1.captions:i03as4e707vo": {
+      "digest": "5e5f045a0b09dad584e830d5884c04c70cc203d133ec0bf5692a8f05550dc98b",
+      "value": "48 HORAS · EN FRÍO\nMANZANILLA · TANINO\nSAL DEL RÍO MURRAY\nSEMILLON · VERJUS\nAZÚCAR AL GUSTO"
+    },
+    "section.page.our-story.json.main.p_b2.titles:3t8krr8b9uzbd": {
+      "digest": "550f0455691272d21fae49b075ab5d1c38afa607d128dca1cd60a510b5394da0",
+      "value": "Caramelizado\nTé y especias\nMineralidad marina\nVerjus prensado\nAjustado al gusto"
+    },
+    "section.page.our-story.json.main.p_b2.bodies:3t8krjnjqp424": {
+      "digest": "ec04394b522521158f3a9b171d376257626367a18a6376347184fbeae90489a3",
+      "value": "Peras cocidas hasta que sus azúcares se oscurecen, y luego infusionadas. Cuerpo mantecoso, sin mantequilla.\nTé negro para la estructura, con clavo, cardamomo, anís estrellado, jengibre y pimienta detrás.\nKombu y salmuera de aceituna en lugar de un golpe seco de sal: profundidad sabrosa y oceánica.\nEl verjus corta el caramelo para que el cuerpo se mantenga vivo y no almibarado.\nEl agave y la vainilla lo cierran, catados contra la especia."
+    },
+    "section.page.our-story.json.main.p_b2.captions:1gur7su4apkfb": {
+      "digest": "1adf0160528db577b599e686e32f71c086a274ed608bee1e712de5117aca8560",
+      "value": "PERAS · CARAMELIZADAS\nTÉ NEGRO · ESPECIAS\nKOMBU · SALMUERA DE ACEITUNA\nSEMILLON · VERJUS\nAGAVE · VAINILLA"
+    },
+    "section.page.our-story.json.main.p_b3.titles:3n0z1nz2y4oy0": {
+      "digest": "c893c9d5761b9f7721a7777b88c3273ee12639dd61c7d65bbd0f5f08349c73c5",
+      "value": "Entran los cítricos\nCanela tostada\nUna pizca de sal\nVerjus prensado\nAjustado al gusto"
+    },
+    "section.page.our-story.json.main.p_b3.bodies:3n0z1kmc3rl1p": {
+      "digest": "fce93e6d35ab15a4efcb388643a365c76499d85e5dd83a7fd5c8b861065d8aca",
+      "value": "Naranja y yuzu, en zumo y en ralladura: el impulso aromático sobre el que se construye toda la bebida.\nLa canela se tuesta antes de entrar. Calidez, y un filo seco y sabroso bajo la fruta.\nLa sal sujeta el cítrico para que se lea como bebida y no como zumo.\nEl verjus se sitúa detrás del yuzu: ácido, nunca agresivo.\nAzúcar para nivelar, catado según lo dulces que llegaran las naranjas."
+    },
+    "section.page.our-story.json.main.p_b3.captions:g1czhjgwl2p2": {
+      "digest": "0e70bac84ac17c601c1a2e97d06160f2daab7175842c7efd868273d3266ead29",
+      "value": "NARANJA · YUZU\nCANELA · TOSTADA\nSAL\nSEMILLON · VERJUS\nAZÚCAR AL GUSTO"
+    },
+    "section.page.our-story.json.main.p_b4.titles:31s8gqxcsopqn": {
+      "digest": "901da0bcfc273451541d851fec1d17f2998e7ac8fbc94469d6da9c21b41a7775",
+      "value": "Reducido\nEntra el hibisco\nSal y lúpulo\nVerjus prensado\nAjustado al gusto"
+    },
+    "section.page.our-story.json.main.p_b4.bodies:31s8gcw5r75my": {
+      "digest": "1602c0424b84ac05feb4e798fe9dd3d6450e290df9d5553b057584ce6598866f",
+      "value": "Limón cocido a la manera de una mermelada, y luego montado con verbena de limón, hierba limón y mirto limón.\nHibisco para el color y el agarre; la raíz de regaliz y la menta piperita llevan el final mentolado.\nSal para la salinidad, con un susurro de lúpulo para el amargor.\nEl verjus mantiene el cítrico tenso en lugar de redondo.\nEl azúcar al final, en poca cantidad para que lo floral siga seco."
+    },
+    "section.page.our-story.json.main.p_b4.captions:7ecpp5t91sbl": {
+      "digest": "c3d480b97035d250f5986bc372c9fa4614281c2abae2ce673f4ddfc7b2ca6a16",
+      "value": "LIMÓN · MERMELADA\nHIBISCO · REGALIZ\nSAL · LÚPULO\nSEMILLON · VERJUS\nAZÚCAR AL GUSTO"
+    },
+    "section.page.our-story.json.main.p_b5.titles:2vkmqno4gyfda": {
+      "digest": "4a88f1a54be88f56359ca6eb07e4312509f21797bd52a4ae42e904f248d879b4",
+      "value": "Cocido despacio\nEntra el café\nSal y pimienta\nVerjus prensado\nAjustado al gusto"
+    },
+    "section.page.our-story.json.main.p_b5.bodies:2vkmqduy49mmj": {
+      "digest": "705e87d5343b212b5da5c47b8e233d10200910831af6f034718c49e5493ac73e",
+      "value": "Cerezas cocidas hasta volverse oscuras y confitadas: la nota de fondo de toda la botella.\nCafé arábica para el tanino y la profundidad, con garam masala, pimienta de Jamaica y nuez moscada detrás.\nLa sal y la pimienta rosa afilan la fruta oscura y evitan que se vuelva dulce.\nEl verjus levanta la fruta cocida del paladar.\nApenas azúcar: la fruta ya lo trae."
+    },
+    "section.page.our-story.json.main.p_b5.captions:32qciexbzprds": {
+      "digest": "60f5bed8978eb09e7805fef6b14e727b855dcf99bf0e5c7e8cfc473eccc873d8",
+      "value": "CEREZAS · COCIDAS\nARÁBICA · GARAM MASALA\nSAL · PIMIENTA ROSA\nSEMILLON · VERJUS\nCATA FINAL"
+    },
+    "section.page.our-story.json.main.p_b6.titles:3cpz948ehopql": {
+      "digest": "40de8716575c3ccab2154e07f026750c898248657ef2051e75c77dd445338424",
+      "value": "Fruta oscura\nRoble y hollejo\nTamari y sal\nVerjus prensado\nAjustado al gusto"
+    },
+    "section.page.our-story.json.main.p_b6.bodies:3cpz8sfr13tmw": {
+      "digest": "4c01671efbbec2ccede60d68e4b7f065746805bd8134b82d6dfa8315fb0fe1f4",
+      "value": "Ciruela Stanley, mora y hollejo de uva Shiraz, con remolacha para la tierra y el color.\nEl roble francés y el hollejo construyen un tanino firme; el pino abeto se queda en nariz como suelo de bosque.\nTamari para la profundidad sabrosa junto a la sal: umami más que condimento.\nEl verjus mantiene la fruta oscura en su sitio para que no se vuelva confitada.\nAzúcar y chile ancho lo rematan: primero la especia, luego la longitud."
+    },
+    "section.page.our-story.json.main.p_b6.captions:5fmeekvymn4z": {
+      "digest": "2bbf7b596f0964acdf8959a5801cde0e1550d715665f333f9ec81ba3f35448c4",
+      "value": "CIRUELA · MORA\nROBLE FRANCÉS · PINO\nTAMARI · SAL\nSEMILLON · VERJUS\nAZÚCAR · ANCHO"
+    }
+  }
+}

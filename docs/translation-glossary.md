@@ -50,7 +50,7 @@ brand speaks to one person, not to a customer base.
 | Locale | Theme strings | Section copy | Product copy | Published |
 |---|---|---|---|---|
 | `en` | source | source | source | yes |
-| `es` | done | not started | not started | no |
+| `es` | done | done | not started | no |
 | `ko` | not started | not started | not started | no |
 | `zh-CN` | not started | not started | not started | no |
 | `th` | not started | not started | not started | no |

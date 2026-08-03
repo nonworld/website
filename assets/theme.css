@@ -371,7 +371,6 @@ button { font-family: inherit; }
   border: 1px solid var(--non-somm-border, var(--non-line-strong));
   background: var(--non-somm-bg, var(--non-panel));
 }
-.non-somm__bar { display: flex; align-items: center; gap: 12px; padding: 15px 18px; }
 .non-somm__caret { font-family: var(--non-mono); font-size: 13px; color: var(--non-fg-faint); }
 .non-somm__input {
   flex: 1; background: transparent; border: 0; outline: none;
@@ -826,10 +825,6 @@ button { font-family: inherit; }
   background: var(--non-somm-bg, var(--non-panel));
   display: flex; flex-direction: column;
 }
-.non-sommbox__head {
-  padding: 13px 16px; border-bottom: 1px solid var(--non-line-soft);
-  display: flex; align-items: center; justify-content: space-between;
-}
 .non-sommbox__live {
   font-family: var(--non-mono); font-size: var(--t-mono); color: var(--non-fg-mute);
   display: inline-flex; align-items: center; gap: 7px;
@@ -860,10 +855,6 @@ button { font-family: inherit; }
    ask row another 12, so nothing lined up down the left edge and the panel
    read as three stacked strips rather than one object. One gutter throughout. */
 .non-sommbox { border-radius: 2px; }
-.non-sommbox__head { padding: 12px 16px; }
-.non-sommbox__body { padding: 16px; gap: 14px; }
-.non-sommbox__ask { padding: 12px 16px; gap: 12px; }
-.non-sommbox__seeds { padding: 0 16px 14px; gap: 8px; }
 /* The submit was a filled grey block the same weight as the seed chips beside
    it, so the commit action and the suggestions read identically. */
 .non-sommbox__submit {
@@ -874,15 +865,6 @@ button { font-family: inherit; }
 .non-sommbox__body {
   padding: 16px; display: flex; flex-direction: column; gap: 12px;
   max-height: 320px; overflow: auto;
-}
-.non-sommbox__ask {
-  border-top: 1px solid var(--non-line-soft);
-  display: flex; align-items: center; gap: 10px; padding: 12px 16px;
-}
-.non-sommbox__submit {
-  border: 0; background: var(--non-line-soft); color: var(--non-fg);
-  font-family: var(--non-sans); font-size: var(--t-mono); font-weight: 600;
-  letter-spacing: .14em; text-transform: uppercase; padding: 9px 14px; cursor: pointer;
 }
 .non-sommbox__seeds { display: flex; flex-wrap: wrap; gap: 7px; padding: 0 16px 14px; }
 
@@ -1103,12 +1085,7 @@ button { font-family: inherit; }
 
 .non-pair { display: grid; grid-template-columns: 1fr; gap: 26px; }
 @media (min-width: 860px) { .non-pair { grid-template-columns: minmax(0, 1fr) minmax(0, 420px); } }
-.non-pair__q { font-size: 20px; font-weight: 600; margin-bottom: 14px; }
 .non-pair__opts { display: flex; flex-wrap: wrap; gap: 8px; }
-.non-pair__opt {
-  border: 1px solid var(--non-line-strong); background: transparent; color: #e8e8e6;
-  font-size: 13px; padding: 10px 14px; cursor: pointer;
-}
 .non-pair__opt:hover, .non-pair__opt[aria-pressed="true"] { border-color: var(--non-fg); background: var(--non-fg); color: var(--non-bg); }
 .non-pair__dots { display: flex; gap: 6px; margin-bottom: 16px; }
 .non-pair__dot { width: 22px; height: 3px; background: #d6d6d4; }
@@ -2327,28 +2304,6 @@ a, button, .non-card, .non-filter, .non-pair__opt, .non-somm__seed,
   .non-card:hover { transform: none; }
   * { transition-duration: 1ms !important; }
 }
-
-/* --- the somm reads as a chat box ----------------------------------------
-   It was a hairline rectangle with a caret in it — indistinguishable from a
-   search field, and nothing about it said "ask me something". Three changes,
-   all affordance rather than decoration:
-
-   a filled well, so the input sits IN something rather than being outlined by
-   a 1px line; a rounded shape, because every chat input a customer has ever
-   used is rounded and a square one reads as a form field; and a focus state
-   that lifts the whole box rather than just the border, so typing feels like
-   you are addressing it. */
-.non-somm,
-.non-sommbox {
-  border-radius: 14px;
-  overflow: hidden;
-}
-.non-somm { background: var(--non-somm-bg, var(--non-panel)); }
-
-.non-somm__bar {
-  border-radius: 14px;
-  background: var(--non-somm-bg, var(--non-panel));
-}
 /* The well the input actually sits in. */
 .non-somm__bar,
 .non-sommbox__ask {
@@ -2393,18 +2348,6 @@ a, button, .non-card, .non-filter, .non-pair__opt, .non-somm__seed,
   border: 1px solid var(--non-line-strong);
   background: var(--non-panel-alt);
 }
-.non-somm__seed:hover,
-.non-sommbox__seeds button:hover {
-  background: var(--non-invert-bg);
-  color: var(--non-invert-fg);
-  border-color: var(--non-invert-bg);
-}
-
-/* The working mark, sitting in the answer area. Larger than the first pass —
-   34px in a full-width panel was easy to miss, which is the whole failure it
-   was built to fix. */
-.non-think { min-height: 44px; padding: 4px 0; }
-.non-think__tile { --tile: 44px; }
 
 @media (prefers-reduced-motion: reduce) {
   .non-somm__caret { animation: none; }
@@ -2497,8 +2440,6 @@ a, button, .non-card, .non-filter, .non-pair__opt, .non-somm__seed,
   content: ''; position: absolute; inset: 0; z-index: 0;
   background: linear-gradient(to top, rgba(0, 0, 0, .74), rgba(0, 0, 0, .28));
 }
-.non-about-cta--media { color: var(--non-invert-fg, #fff); }
-.non-about-cta--media .non-about-cta__body { color: rgba(255, 255, 255, .82); }
 
 /* --- About: the process rail ----------------------------------------------
    From the supplied NON_Process_Infographic embed, integrated rather than
@@ -2634,25 +2575,6 @@ a, button, .non-card, .non-filter, .non-pair__opt, .non-somm__seed,
   display: block;
   width: 100%;
 }
-
-/* --- NON Somm on the light surface ----------------------------------------
-   --non-somm-bg is now the grey for every Somm surface, so the contents have to
-   invert with it: the input, caret, seeds and streamed answer were all written
-   for the near-black panel and would have been light-on-light.
-
-   Scoped to .non-somm / .non-sommbox rather than applied globally — the Somm is
-   a light island on a dark page, and nothing outside it should change. */
-.non-somm,
-.non-sommbox {
-  color: var(--non-somm-fg);
-  --non-fg: var(--non-somm-fg);
-  --non-fg-dim: #3a3a38;
-  --non-fg-mute: #55534e;
-  --non-fg-faint: #6b6862;
-  --non-line: #b3b1ab;
-  --non-line-soft: #bfbdb7;
-  --non-line-strong: #9d9b95;
-}
 .non-somm__input,
 .non-sommbox__ask input { color: var(--non-somm-fg); }
 .non-somm__input::placeholder,
@@ -2699,13 +2621,6 @@ a, button, .non-card, .non-filter, .non-pair__opt, .non-somm__seed,
   max-width: 46ch;
   text-wrap: pretty;
 }
-
-/* Ask row reads as the primary action: a filled field with a solid button, not
-   two quiet outlines. */
-.non-sommbox__ask {
-  align-items: stretch;
-  border-top: 1px solid var(--non-line-soft);
-}
 .non-sommbox__submit {
   background: var(--non-somm-fg, var(--non-invert-bg));
   color: #f2f0ea;
@@ -2738,20 +2653,6 @@ a, button, .non-card, .non-filter, .non-pair__opt, .non-somm__seed,
   /* Two per row above the fold rather than one long and three short. */
   .non-sommbox__seeds .non-somm__seed { flex: 0 1 calc(50% - 4px); }
 }
-
-/* The query box. It was a transparent, borderless input, so it read as a line
-   of static label text rather than something you can click into and type in —
-   the placeholder looked like a caption. The JS was always wired
-   (data-non-somm → Somm()); the affordance was the missing part.
-
-   Now it is an explicit well: its own surface, a border, a resting cursor and a
-   focus ring that does not move anything. */
-.non-sommbox__ask {
-  display: flex;
-  align-items: stretch;
-  gap: 10px;
-  padding: 14px 16px;
-}
 .non-sommbox__ask .non-somm__input {
   flex: 1 1 auto;
   min-width: 0;
@@ -2766,7 +2667,6 @@ a, button, .non-card, .non-filter, .non-pair__opt, .non-somm__seed,
   transition: border-color var(--duration-hover) var(--ease-hover),
               box-shadow var(--duration-hover) var(--ease-hover);
 }
-.non-sommbox__ask .non-somm__input::placeholder { color: #8b8880; }
 .non-sommbox__ask .non-somm__input:focus {
   outline: none;
   border-color: var(--non-somm-fg, var(--non-fg));
@@ -3013,13 +2913,6 @@ a, button, .non-card, .non-filter, .non-pair__opt, .non-somm__seed,
   0%, 100% { opacity: 1; }
   55%      { opacity: .35; }
 }
-.non-sommbox__dot,
-.non-somm__dot {
-  animation:
-    sommPulse 2s var(--ease-standard) infinite,
-    sommDotFlash 2s var(--ease-standard) infinite;
-  box-shadow: 0 0 0 0 rgba(74, 222, 128, .8);
-}
 /* Halo tuned for the light panel: the old rgba(74,222,128,.55) sat almost
    exactly on the grey's luminance and disappeared into it. */
 @keyframes sommPulse {
@@ -3049,10 +2942,6 @@ a, button, .non-card, .non-filter, .non-pair__opt, .non-somm__seed,
   0%, 100% { opacity: .38; }
   6%       { opacity: 1; }
   22%      { opacity: .38; }
-}
-.non-steps .non-step__n {
-  opacity: .38;
-  animation: nonStepTravel 7s var(--ease-standard) infinite;
 }
 .non-steps .non-step:nth-child(1) .non-step__n { animation-delay: 0s; }
 .non-steps .non-step:nth-child(2) .non-step__n { animation-delay: .5s; }
@@ -3572,19 +3461,6 @@ select:-moz-focusring { color: transparent; text-shadow: 0 0 0 var(--non-fg); }
   box-shadow: none;
 }
 
-/* Commit action: light on dark, and square. The supplied design pills this at
-   999px; NON has no soft corners and the seed chips were explicitly de-pilled
-   for that reason, so the motion is taken and the geometry is not. */
-.non-somm__submit,
-.non-sommbox__submit {
-  background: #EDEDE8;
-  color: #000;
-  border: 0;
-  border-radius: 0;
-}
-.non-somm__submit:hover,
-.non-sommbox__submit:hover { opacity: .85; }
-
 /* Seeds: hairline on the open surface, inheriting ink. */
 .non-somm__seed,
 .non-sommbox__seeds button {
@@ -3647,84 +3523,6 @@ select:-moz-focusring { color: transparent; text-shadow: 0 0 0 var(--non-fg); }
   .non-somm__answer:not([hidden]) { animation: none; }
 }
 
-/* The seed chips, at the specificity that actually wins.
-
-   The light-island rule for these is
-   `.non-somm .non-somm__seed, .non-sommbox .non-somm__seed, .non-sommbox__seeds button`
-   — (0,2,0). The override above was (0,1,1) and lost, so the chips stayed
-   white-filled on the open dark surface: five small boxes on a component whose
-   whole redesign was about removing the box. Measured before fixing:
-   background rgb(255,255,255) with 2px radius, on a transparent panel.
-
-   Matching the selector exactly rather than reaching for !important — the
-   cascade is doing its job, the earlier rule was simply more specific. */
-.non-somm .non-somm__seed,
-.non-sommbox .non-somm__seed,
-.non-sommbox__seeds button {
-  background: transparent;
-  color: #a9a9a2;
-  border: 1px solid #3a3a37;
-  border-radius: 0;
-}
-.non-somm .non-somm__seed:hover,
-.non-sommbox .non-somm__seed:hover,
-.non-sommbox__seeds button:hover {
-  background: #EDEDE8;
-  color: #000;
-  border-color: #EDEDE8;
-}
-
-/* .non-somm itself — the hero, pairing and stockists surfaces.
-
-   The no-panel rule above covered .non-sommbox and .non-somm__bar but NOT
-   .non-somm, which carries its own `background: var(--non-somm-bg, ...)`. So
-   the PDP went open and dark while the homepage hero kept the old #c9c7c1
-   slab — and the new chip ink (#a9a9a2), correct on near-black, landed on
-   light grey at 1.4 contrast. Invisible, in the one place I had not measured.
-
-   Same component, three surfaces: they have to move together. */
-.non-somm { background: transparent; }
-
-/* Pills, per Aaron 2026-08-02: "this needs circles, make sure the
-   buttons/pills are all nice."
-
-   This reverses the earlier square-chip decision for the Somm specifically.
-   The supplied redesign pills its CTA at 999px and Aaron has confirmed he
-   wants that geometry, so the Somm now follows the design rather than the
-   older no-soft-corners note. Scoped to the Somm — nothing else on the site
-   changes, so the rule still holds everywhere it was not overruled.
-
-   999px, not a fixed radius: a pill has to stay a pill when the chip wraps to
-   two lines, which a fixed value stops doing the moment the height changes. */
-.non-somm .non-somm__seed,
-.non-sommbox .non-somm__seed,
-.non-sommbox__seeds button,
-.non-somm__submit,
-.non-sommbox__submit {
-  border-radius: 999px;
-}
-
-/* The submit gets real horizontal room — a pill with square-button padding
-   reads as a mistake rather than a shape. */
-.non-somm__submit,
-.non-sommbox__submit {
-  padding: 13px 28px;
-  min-height: 44px;
-}
-
-/* Chips breathe a little more inside a curve than inside a corner. */
-.non-somm .non-somm__seed,
-.non-sommbox .non-somm__seed,
-.non-sommbox__seeds button {
-  padding: 11px 20px;
-}
-
-/* The live dot is a true circle with a ring around it, as in the design. */
-.non-sommbox__dot,
-.non-somm__dot {
-  border-radius: 50%;
-}
-
 /* The hero input, which the earlier rule did not reach.
 
    The PDP input is `.non-sommbox__ask input`; the hero's is `.non-somm__input`
@@ -3752,26 +3550,6 @@ select:-moz-focusring { color: transparent; text-shadow: 0 0 0 var(--non-fg); }
 
 /* The caret and prompt mark on the hero read as page ink too. */
 .non-somm__caret { color: #8d8d87; }
-
-/* The live orb, at a size where the pulse is actually perceivable.
-
-   Measured before this: a 7x7px dot running `breathe` at scale 1 → 1.06. That
-   is 0.4px of travel. The animation was running the whole time and could not
-   be seen — "not pulsing" was a size problem, not a motion problem, and no
-   amount of retiming would have fixed it. The rings had the same issue,
-   expanding from a 13px box to 19px at 1px stroke.
-
-   So: a bigger orb, a wider swing, and a halo that carries the pulse beyond
-   the orb itself. Green stays — it is the documented exception, the one thing
-   on the page reporting a system state rather than saying something. */
-.non-sommbox__dot,
-.non-somm__dot {
-  width: 11px;
-  height: 11px;
-  flex: none;
-  box-shadow: 0 0 0 0 currentColor;
-  animation: non-somm-breathe 2.8s ease-in-out infinite;
-}
 .non-sommbox__dot::before,
 .non-sommbox__dot::after,
 .non-somm__dot::before,
@@ -3835,45 +3613,12 @@ select:-moz-focusring { color: transparent; text-shadow: 0 0 0 var(--non-fg); }
   text-align: left;
   border: 1px solid #3a3a37;
 }
-
-.non-somm__submit,
-.non-sommbox__submit {
-  padding: 0 26px;
-  min-height: 52px;
-}
-
-/* The orb, made unmissable. 11px with a 1px ring is still a speck next to
-   26px display type; at 14px with a halo it reads as a live indicator rather
-   than a full stop. position: relative is restated because the rings are
-   absolutely positioned against it. */
-.non-sommbox__dot,
-.non-somm__dot {
-  position: relative;
-  width: 14px;
-  height: 14px;
-  border-radius: 50%;
-  flex: none;
-  box-shadow: 0 0 12px 2px currentColor;
-}
 .non-sommbox__dot::before,
 .non-sommbox__dot::after,
 .non-somm__dot::before,
 .non-somm__dot::after {
   inset: -9px;
   border-width: 1.5px;
-}
-
-/* The orb's halo and rings must be the orb's colour, not the label's.
-
-   The dot's BACKGROUND is the live green, but its `color` was inherited from
-   .non-sommbox__live (muted grey) — and the glow and both rings are drawn with
-   currentColor. So a green dot sat inside a grey halo with grey rings, which
-   is why it read as a speck rather than a live indicator. Setting color on the
-   dot makes every part of it agree. */
-.non-sommbox__dot,
-.non-somm__dot {
-  color: #4ade80;
-  background: #4ade80;
 }
 
 /* ==========================================================================
@@ -4017,7 +3762,6 @@ select:-moz-focusring { color: transparent; text-shadow: 0 0 0 var(--non-fg); }
 /* Everything below the orb centres under it. */
 .non-sommbox__body,
 .non-sommbox__head { text-align: center; }
-.non-sommbox__head { justify-content: center; gap: 14px; }
 .non-sommbox__opener { margin-inline: auto; max-width: 30ch; }
 .non-sommbox__ask { justify-content: center; }
 .non-sommbox__ask input,
@@ -4032,8 +3776,6 @@ select:-moz-focusring { color: transparent; text-shadow: 0 0 0 var(--non-fg); }
   box-shadow: 0 0 8px 1px currentColor;
   animation: non-somm-breathe 3.6s ease-in-out infinite;
 }
-.non-sommbox__dot::before,
-.non-sommbox__dot::after { display: none; }
 
 @media (prefers-reduced-motion: reduce) {
   .non-sommbox::before { animation: none; }
@@ -4103,11 +3845,6 @@ select:-moz-focusring { color: transparent; text-shadow: 0 0 0 var(--non-fg); }
   align-self: flex-end;
 }
 .non-sommbox__seeds { margin-top: 0; }
-
-/* 2. The hero gets the same orb, so the component reads as one thing across
-   the site rather than two designs sharing a name. The hero bar is a single
-   row, so the orb sits above it and the row stays intact underneath. */
-.non-somm__bar { display: flex; flex-wrap: wrap; justify-content: center; }
 .non-somm__bar::before {
   content: "";
   display: block;
@@ -4151,33 +3888,6 @@ select:-moz-focusring { color: transparent; text-shadow: 0 0 0 var(--non-fg); }
    without restructuring the hero, and the orb belongs where the Somm is the
    subject of the surface rather than a control on it. The PDP keeps it. */
 .non-somm__bar::before { content: none; display: none; }
-.non-somm__bar { display: flex; flex-wrap: nowrap; justify-content: flex-start; }
-
-/* Logo marquee: an even rhythm, regardless of each mark's proportions.
-
-   Every logo carried an inline max-height from its own block — 44px on some,
-   70px on others — and nothing capped how WIDE the artwork ran. So a tall
-   narrow crest and a wide short wordmark occupied completely different
-   footprints, and what read as broken gaps was just leftover space beside the
-   narrow ones. Sizing by height alone cannot produce an even row out of marks
-   drawn to different proportions.
-
-   Each logo now gets an identical slot and is contained inside it. The
-   artwork keeps its own aspect ratio; the SPACING stops depending on it. The
-   per-block height setting is no longer emitted — it was the thing fighting
-   this. */
-.non-poured__set { gap: 0; padding-left: 0; }
-.non-poured__set img {
-  flex: 0 0 auto;
-  width: 168px;
-  height: 52px;
-  max-width: none;
-  max-height: none;
-  object-fit: contain;
-  object-position: center;
-  padding: 0 26px;
-  box-sizing: content-box;
-}
 @media (max-width: 859px) {
   .non-poured__set img { width: 116px; height: 42px; padding: 0 16px; }
 }
@@ -4262,7 +3972,6 @@ select:-moz-focusring { color: transparent; text-shadow: 0 0 0 var(--non-fg); }
   background: transparent;
 }
 .non-somm__seeds { justify-content: center; }
-.non-somm__caret { display: none; }
 
 @media (prefers-reduced-motion: reduce) {
   .non-somm::before { animation: none; }
@@ -4309,47 +4018,6 @@ select:-moz-focusring { color: transparent; text-shadow: 0 0 0 var(--non-fg); }
   border-color: #8d8d87;
   border-bottom-color: #EDEDE8;
 }
-
-/* ==========================================================================
-   Somm: one layout, one alignment system.
-
-   What was wrong, and it was my doing — successive patches each fixed a
-   detail and left the component with three competing systems:
-
-     · left-aligned copy above a centred orb
-     · an orb floating in ~200px of dead space, attached to nothing
-     · a centred placeholder sitting on a full-bleed rule
-     · ASK on its own baseline, detached up and to the right
-     · the field's surface invisible, so it read as a caption with a line
-
-   Fixed as a whole rather than piecemeal: one centred column, one measure,
-   one baseline for the field row, and spacing that ties the orb to what it
-   belongs to instead of leaving it stranded.
-   ========================================================================== */
-.non-somm,
-.non-sommbox {
-  max-width: 680px;
-  margin-inline: auto;
-}
-
-/* The orb sits close to the field it introduces. It was pushed away by
-   margins on both sides, which is what made it read as unrelated. */
-.non-somm::before,
-.non-sommbox::before {
-  margin: 0 auto 18px;
-}
-
-/* The field row: input and ASK on ONE baseline, same height, no float. */
-.non-somm__bar,
-.non-sommbox__ask {
-  display: flex;
-  flex-wrap: nowrap;
-  align-items: stretch;
-  justify-content: center;
-  gap: 10px;
-  width: 100%;
-  margin: 0 0 16px;
-}
 .non-somm__input,
 .non-sommbox__ask input,
 .non-sommbox__ask .non-somm__input {
@@ -4376,41 +4044,6 @@ select:-moz-focusring { color: transparent; text-shadow: 0 0 0 var(--non-fg); }
    between the input and the button. */
 .non-somm__bar .non-somm__live,
 .non-sommbox__live { order: 99; }
-
-.non-somm__seeds,
-.non-sommbox__seeds {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
-  gap: 8px;
-  margin: 0;
-}
-.non-somm .non-somm__seed,
-.non-sommbox .non-somm__seed,
-.non-sommbox__seeds button {
-  min-height: 0;
-  padding: 10px 14px;
-  font-size: 13px;
-}
-
-/* The field surface, at the specificity that wins.
-
-   Third time this pattern has bitten in one session: an earlier rule scoped
-   `.non-somm .non-somm__input` (0,2,0) sets `background: transparent`, and the
-   later single-class rule (0,1,0) lost — so the field kept reading as a
-   caption with a rule under it. Matching the selector exactly rather than
-   reaching for !important; the cascade is behaving correctly and the earlier
-   rule was simply more specific. */
-.non-somm .non-somm__input,
-.non-somm__bar .non-somm__input,
-.non-sommbox__ask input,
-.non-sommbox__ask .non-somm__input {
-  background: rgba(242, 240, 234, .05);
-  border: 1px solid #3d3d38;
-  border-radius: 0;
-  text-align: left;
-  padding: 15px 16px;
-}
 .non-somm .non-somm__input:hover,
 .non-somm__bar .non-somm__input:hover,
 .non-sommbox__ask input:hover,
@@ -4667,49 +4300,8 @@ select:-moz-focusring { color: transparent; text-shadow: 0 0 0 var(--non-fg); }
    opened up — the blur needs roughly its own radius again above the element. */
 .non-somm,
 .non-sommbox { padding-top: 30px; }
-
-/* Logo marquee: one cap height, width follows the artwork.
-
-   The fixed 168x52 slot was the problem, not the fix. object-fit: contain
-   scales a mark to whichever dimension binds first, so a wide wordmark like
-   AMAN filled the width and shrank to a few px tall, while a compact crest
-   filled the height and sat narrow — same box, wildly different optical
-   weight.
-
-   Constraining HEIGHT only is what normalises them: every logo is scaled to
-   the same cap height and takes whatever width its own proportions need. Wide
-   marks are simply wider, which is correct and what a real logo bar does. The
-   margin does the spacing, so the rhythm stays even. max-width is a safety
-   rail for an extremely wide asset, not a sizing rule. */
-.non-poured__set img {
-  width: auto;
-  height: 34px;
-  max-height: 34px;
-  max-width: 190px;
-  padding: 0;
-  margin: 0 34px;
-  object-fit: contain;
-  flex: none;
-}
 @media (max-width: 859px) {
   .non-poured__set img { height: 26px; max-height: 26px; max-width: 140px; margin: 0 20px; }
-}
-
-/* Guard against the collapse the previous rule caused.
-
-   `width: auto` with `flex: none` resolves to the image's CONTENT width, and
-   an img that has not decoded yet reports zero — so all seven logos measured
-   0px wide with a 34px height. Auto width in a flex row needs an explicit
-   basis to fall back on.
-
-   flex-basis auto plus a min-width means the slot can never collapse, while
-   the height still does the optical normalising: every mark is scaled to the
-   same cap height and takes whatever width it needs above that floor. */
-.non-poured__set img {
-  flex: 0 0 auto;
-  width: auto;
-  min-width: 96px;
-  height: 34px;
 }
 @media (max-width: 859px) {
   .non-poured__set img { min-width: 70px; height: 26px; }
@@ -4764,7 +4356,6 @@ select:-moz-focusring { color: transparent; text-shadow: 0 0 0 var(--non-fg); }
     justify-content: flex-start;
     margin: 0 0 8px;
   }
-  .non-sommbox__body { margin: 0 0 14px; }
   .non-sommbox__opener {
     margin: 0;
     max-width: 46ch;
@@ -4775,16 +4366,6 @@ select:-moz-focusring { color: transparent; text-shadow: 0 0 0 var(--non-fg); }
   .non-sommbox__ask { margin: 0 0 10px; justify-content: flex-start; }
   .non-somm__seeds,
   .non-sommbox__seeds { justify-content: flex-start; }
-
-  /* Shorter controls suit the tighter block. */
-  .non-somm .non-somm__input,
-  .non-sommbox__ask input,
-  .non-sommbox__ask .non-somm__input { height: 46px; font-size: 15px; }
-  .non-somm__submit,
-  .non-sommbox__submit { height: 46px; padding: 0 22px; }
-  .non-somm .non-somm__seed,
-  .non-sommbox .non-somm__seed,
-  .non-sommbox__seeds button { padding: 8px 12px; font-size: 12.5px; }
 }
 
 /* Below 700 it stacks again — two columns at 84px plus a field is not a phone
@@ -5002,23 +4583,6 @@ select:-moz-focusring { color: transparent; text-shadow: 0 0 0 var(--non-fg); }
   .non-proc__rail .non-proc__step:nth-child(5).is-in .non-proc__art > g:first-of-type {
     animation: none; opacity: 1;
   }
-}
-
-/* Seamless loop: each set must be at least as wide as the viewport.
-
-   The track holds two identical sets and animates translateX(0) → -50%, which
-   moves exactly one set width. That is only seamless if a single set already
-   covers the screen — otherwise the first set runs off the left before the
-   second arrives, and you see empty track. Shrinking the logos made each set
-   narrower than the viewport, which is what opened the gap.
-
-   min-width: 100% forces each set to fill the screen; space-around then
-   distributes the logos across it, so both sets stay identical in width and
-   the -50% lands exactly on the seam. */
-.non-poured__set {
-  min-width: 100%;
-  justify-content: space-around;
-  flex: none;
 }
 
 /* ==========================================================================

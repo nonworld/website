@@ -125,6 +125,49 @@ for f in (root / 'assets').glob('*.css'):
     if s.count('/*') != s.count('*/'):
         errors.append(f"{f.relative_to(root)}: comments unbalanced")
 
+# 6. The orb has ONE owner.
+#
+#    This is not a Shopify rejection mode. It is here because the orb has been
+#    broken and re-broken more than anything else in this theme: its position
+#    was set in ten separate blocks across sixteen hundred lines, two of which
+#    each claimed in a comment to be the last word, and the later one silently
+#    won. The fix was to give it a single owner block at the end of the file.
+#
+#    This check keeps it that way. Any rule that targets the orb pseudo-element
+#    and sets a position property must be inside the owner block, which is
+#    marked by the OWNER sentinel below. Move the declaration into that block
+#    rather than deleting this check.
+#    Scoped to the HORIZONTAL PULL properties specifically. Those are what the
+#    competing blocks fought over — margin-left, margin-right, margin-inline —
+#    and what put the orb 116px off-screen on mobile and 24px out on the home
+#    page. The orb's size, colour, animation and grid placement are still free
+#    to live wherever they read best; only "how far left or right is it" is
+#    owned by one block.
+OWNER = 'THE ORB — single owner'
+PULL = re.compile(r'(?<![-\w])(margin-left|margin-right|margin-inline(?:-start|-end)?)\s*:', re.I)
+css = root / 'assets' / 'theme.css'
+if css.exists():
+    text = css.read_text(encoding='utf-8')
+    owner_at = text.find(OWNER)
+    if owner_at == -1:
+        errors.append("assets/theme.css: the orb owner block is gone — see preflight.py check 6")
+    else:
+        for m in re.finditer(r'([^{}]*)\{([^{}]*)\}', text):
+            sel, body = m.group(1), m.group(2)
+            if '.non-somm::before' not in sel and '.non-sommbox::before' not in sel:
+                continue
+            # Compare at the declaration body, not the selector: a rule's match
+            # starts at the previous rule's closing brace, so the owner rule
+            # would otherwise appear to start before its own comment header.
+            if m.start(2) > owner_at:
+                continue  # the owner block itself, and anything after it
+            hits = sorted(set(h.group(1).lower() for h in PULL.finditer(body)))
+            if hits:
+                line = text[:m.start(2)].count('\n') + 1
+                errors.append(
+                    f"assets/theme.css:{line}: sets {', '.join(hits)} on the orb "
+                    f"outside its owner block — move it into '{OWNER}'")
+
 if errors:
     print("PREFLIGHT FAILED — Shopify would reject these silently:\n")
     for e in errors:

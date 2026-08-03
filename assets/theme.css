@@ -5397,21 +5397,19 @@ select:-moz-focusring { color: transparent; text-shadow: 0 0 0 var(--non-fg); }
    ========================================================================== */
 .non-somm::before,
 .non-sommbox::before {
+  /* No pull in either direction, on any surface.
+
+     `margin-right: auto` used to live here to hold the orb to the start of
+     its GRID column. It does something entirely different in a FLEX row: an
+     auto margin there absorbs all the free space and shoves every following
+     sibling to the far edge. The stockists search is flex, so its orb sat
+     alone on the left with the search field flung across the page.
+
+     justify-self does the original job properly. It is a grid property, so
+     the grid surfaces get their left alignment and the flex surfaces ignore
+     it completely and simply lay the orb out as the first item. One rule,
+     correct in both, no per-page exceptions. */
   margin-left: 0;
-  margin-right: auto;
+  margin-right: 0;
+  justify-self: start;
 }
-
-/* The stockists search has NO orb, and never should have had one.
-
-   It carries .non-somm only to borrow the input styling — the bordered field,
-   the mono button, the focus ring. The orb rides along on that class, so a
-   venue search box grew a 96px blurred sphere it was never designed around,
-   sitting outside the field and shoving it sideways: .non-somm is a flex row
-   here, not the grid the pairing page uses, and margin-right: auto on a flex
-   item pushes every sibling to the far edge.
-
-   Suppressed rather than restyled. The orb is the somm's mark — it means "an
-   answer is being reasoned out". A search over a venue list is not that, so
-   the honest fix is that this box does not get the mark, not that the mark is
-   made smaller here. */
-.non-stock-search::before { content: none; }

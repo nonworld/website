@@ -683,6 +683,9 @@ button { font-family: inherit; }
 .non-split { display: grid; grid-template-columns: 1fr; }
 @media (min-width: 860px) { .non-split { grid-template-columns: 1fr 1fr; } }
 .non-split__cell { position: relative; min-height: 330px; }
+/* When one of the pair is suppressed because it links to the current page,
+   the survivor takes the whole band rather than sitting in half of it. */
+.non-split__cell:only-child { grid-column: 1 / -1; }
 .non-split__cell > img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
 .non-split__body {
   position: relative; padding: 40px; height: 100%;

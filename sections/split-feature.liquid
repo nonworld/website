@@ -24,6 +24,25 @@
 {% render 'section-style', section: section %}
 <div class="non-split"{% if section.settings.max_height > 0 %} style="--non-split-max: {{ section.settings.max_height }}px"{% endif %}>
   {%- for block in section.blocks -%}
+    {%- comment -%}
+      Do not offer someone a door into the room they are standing in.
+
+      The closers are one global pair rendered under every page, which is why
+      the stockists page was closing with "Find a stockist" and the shop page
+      with "Shop the range". A card whose link resolves to the current page is
+      skipped rather than rendered dead.
+
+      `contains` rather than `==` because request.path carries the market and
+      locale prefix — /en-au/pages/store-locator against a /pages/store-locator
+      setting — so an equality test would never fire outside the primary
+      market. A bare "/" is excluded: it is inside every path.
+    {%- endcomment -%}
+    {%- assign target = block.settings.link | split: '?' | first -%}
+    {%- assign is_here = false -%}
+    {%- if target != blank and target != '/' and request.path contains target -%}
+      {%- assign is_here = true -%}
+    {%- endif -%}
+    {%- unless is_here -%}
     {%- assign alt_text = block.settings.image_alt | default: block.settings.title -%}
     <div class="non-split__cell" {{ block.shopify_attributes }}>
       {%- if block.settings.image != blank -%}
@@ -55,6 +74,7 @@
         {%- endif -%}
       </div>
     </div>
+    {%- endunless -%}
   {%- endfor -%}
 </div>
 

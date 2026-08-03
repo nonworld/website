@@ -5271,9 +5271,14 @@ select:-moz-focusring { color: transparent; text-shadow: 0 0 0 var(--non-fg); }
       Now driven by --non-step-dot-bg, which defaults to the page colour and is
       overridden per surface. A marker should read the same everywhere.
    ========================================================================== */
+/* Square frame, square photograph, object-fit: cover — which for matching
+   aspect ratios crops nothing. The previous contain + 14px padding on a 4:3
+   frame letterboxed a 1:1 bottle shot against a grey bed, and no bed colour
+   fixes that because the product backdrops are not all the same white. */
+.non-recipe__media--bottle { aspect-ratio: 1 / 1; }
 .non-recipe__img--bottle {
-  object-fit: contain;
-  padding: 14px;
+  object-fit: cover;
+  padding: 0;
   box-sizing: border-box;
 }
 

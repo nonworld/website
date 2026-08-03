@@ -113,6 +113,7 @@
     "recipes": {
       "type": "pairing-recipes",
       "settings": {
+        "show_field": false,
         "heading": "Or start with the bottle",
         "subheading": "A dish written around what is already in the glass"
       }

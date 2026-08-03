@@ -9,6 +9,13 @@
   Matched on template suffix and name, so "our-story" covers /pages/about-us
   whatever the page handle becomes. Comma separated, editable, and empty by
   default so the section behaves normally anywhere else it is used.
+
+  max_blocks is 3 while the band still RENDERS two — the loop below stops at
+  two survivors. The third card exists so a page that suppresses one of them
+  still has a pair to draw from. Leaving it at 2 made Shopify reject the whole
+  footer group; the GitHub sync said nothing and only themeFilesUpsert named
+  the reason. Notes like this belong here and not in the schema JSON: an
+  unrecognised key in there is itself one of the silent rejection modes.
 {%- endcomment -%}
 {%- assign hide_list = section.settings.hide_on_templates | default: '' | downcase | split: ',' -%}
 {%- assign this_template = template.suffix | default: template.name | downcase -%}
@@ -93,7 +100,6 @@
 {% schema %}
 {
   "name": "Split feature",
-  "_comment": "3, not 2. The band still RENDERS two — the loop above stops at two survivors. The third exists so that a page which suppresses one of the cards still has a pair to draw from. Setting this to 2 made Shopify reject the whole footer group silently on the GitHub sync; only themeFilesUpsert reported why.",
   "max_blocks": 3,
   "settings": [
     {

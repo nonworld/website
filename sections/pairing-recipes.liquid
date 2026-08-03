@@ -271,7 +271,18 @@
                 No entry carries an image yet (docs/recipes.md), so the bed
                 shows rather than a collapsed column.
               {%- endcomment -%}
-              <div class="non-recipe__media">
+              {%- comment -%}
+                --bottle on the MEDIA as well as the image. The bottle shots are
+                square (2000x2000) and the frame was 4:3, so a contained bottle
+                left a grey bed down both sides and read as an image that had
+                failed to load into its box. A square frame around a square
+                photograph fits exactly: no bed, no crop, nothing to colour-match.
+              {%- endcomment -%}
+              {%- assign media_class = 'non-recipe__media' -%}
+              {%- if recipe.image == blank and bottle.featured_image != blank -%}
+                {%- assign media_class = 'non-recipe__media non-recipe__media--bottle' -%}
+              {%- endif -%}
+              <div class="{{ media_class }}">
                 {%- if recipe.image != blank -%}
                   {{
                     recipe.image.value

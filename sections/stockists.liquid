@@ -237,64 +237,15 @@
   {%- endif -%}
 
   {%- comment -%}
-    The pair that closes the page, in the closers' own markup and classes.
+    No closing pair here any more.
 
-    These used to be .non-stock-offer — a hand-copy of .non-split__cell whose
-    comment even said "matching the closing cards elsewhere". It had drifted:
-    a pure-black scrim against the closers' themed charcoal one, page-gutter
-    padding against a flat 40px, a 720px breakpoint against 860px, weight 500
-    against 600, and an eyebrow the closers never had. Two implementations of
-    one card is how the bottom of this page stopped matching every other page.
-
-    Same section settings, so nothing in the theme editor changes. The global
-    closers are switched off for this template in the footer group, because
-    this pair is now that pair.
+    Every page now ends with the footer group's closers, in one place, with the
+    two cards chosen for the page you are on — this page gets "Got a bottle?"
+    and NONHQ. This section used to render its own pair, which meant two pairs
+    stacked on the stockists page and a different shape from every other page.
+    The trade_* and direct_* settings are kept in the schema so the theme
+    editor does not reject the template for referencing them.
   {%- endcomment -%}
-  {%- if section.settings.trade_heading != blank or section.settings.direct_heading != blank -%}
-    <div class="non-split">
-      {%- if section.settings.trade_heading != blank -%}
-        <div class="non-split__cell">
-          {%- if section.settings.trade_image != blank -%}
-            {{ section.settings.trade_image | image_url: width: 1200, format: 'webp' | image_tag: loading: 'lazy', widths: '600,900,1200', class: 'non-split__img', alt: section.settings.trade_heading }}
-          {%- elsif section.settings.trade_image_url != blank -%}
-            {% render 'cdn-image',
-               url: section.settings.trade_image_url,
-               alt: section.settings.trade_heading,
-               class: 'non-split__img',
-               sizes: '(min-width: 860px) 50vw, 100vw' %}
-          {%- endif -%}
-          <div class="non-split__body">
-            <div class="non-split__title">{{ section.settings.trade_heading }}</div>
-            <p class="non-split__text">{{ section.settings.trade_body }}</p>
-            {%- if section.settings.trade_cta != blank -%}
-              <a class="non-split__link" href="{{ section.settings.trade_url | default: '/pages/contact' }}">{{ section.settings.trade_cta }}</a>
-            {%- endif -%}
-          </div>
-        </div>
-      {%- endif -%}
-
-      {%- if section.settings.direct_heading != blank -%}
-        <div class="non-split__cell">
-          {%- if section.settings.direct_image != blank -%}
-            {{ section.settings.direct_image | image_url: width: 1200, format: 'webp' | image_tag: loading: 'lazy', widths: '600,900,1200', class: 'non-split__img', alt: section.settings.direct_heading }}
-          {%- elsif section.settings.direct_image_url != blank -%}
-            {% render 'cdn-image',
-               url: section.settings.direct_image_url,
-               alt: section.settings.direct_heading,
-               class: 'non-split__img',
-               sizes: '(min-width: 860px) 50vw, 100vw' %}
-          {%- endif -%}
-          <div class="non-split__body">
-            <div class="non-split__title">{{ section.settings.direct_heading }}</div>
-            <p class="non-split__text">{{ section.settings.direct_body }}</p>
-            {%- if section.settings.direct_cta != blank -%}
-              <a class="non-split__link" href="{{ section.settings.direct_url | default: '/collections/the-range' }}">{{ section.settings.direct_cta }}</a>
-            {%- endif -%}
-          </div>
-        </div>
-      {%- endif -%}
-    </div>
-  {%- endif -%}
 
   <p class="non-note" style="margin-top:28px">
     {{ section.settings.find_prompt }}

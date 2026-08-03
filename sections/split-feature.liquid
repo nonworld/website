@@ -38,67 +38,69 @@
 {% render 'section-style', section: section %}
 <div class="non-split"{% if section.settings.max_height > 0 %} style="--non-split-max: {{ section.settings.max_height }}px"{% endif %}>
   {%- comment -%}
-    The band is always a PAIR. There are three cards defined and at most one of
-    them suppresses itself on any given page, so taking the first two survivors
-    gives two everywhere: the shop page loses "Skip the questions?" and gains
-    NONHQ, the NONHQ page loses NONHQ and keeps the range. Before this the shop
-    page closed with a single card stretched across the full width.
+    Two cards, chosen for the page you are on.
+
+    Every page closes with a pair in this one place. Which pair is not fixed:
+    each card names the templates it is the RIGHT next step for, and the band
+    takes the first two that apply. A shop page sends you to a stockist or to
+    NONHQ; a stockists page sends you to a recipe or to NONHQ; the About page
+    sends you to a tasting or to the somm. Nothing sends you to the page you
+    are standing on.
+
+    Two passes rather than a sort, because Liquid cannot sort an array of
+    blocks by a computed key. Pass one takes the cards that name this
+    template, pass two fills any remaining slot from the rest in block order,
+    so the band is never short even on a template nobody thought about.
   {%- endcomment -%}
   {%- assign rendered = 0 -%}
+
   {%- for block in section.blocks -%}
     {%- if rendered >= 2 -%}{%- break -%}{%- endif -%}
+    {%- assign target = block.settings.link | split: '?' | first -%}
+    {%- assign is_here = false -%}
     {%- comment -%}
-      Do not offer someone a door into the room they are standing in.
-
-      The closers are one global pair rendered under every page, which is why
-      the stockists page was closing with "Find a stockist" and the shop page
-      with "Shop the range". A card whose link resolves to the current page is
-      skipped rather than rendered dead.
-
       `contains` rather than `==` because request.path carries the market and
       locale prefix — /en-au/pages/store-locator against a /pages/store-locator
       setting — so an equality test would never fire outside the primary
       market. A bare "/" is excluded: it is inside every path.
     {%- endcomment -%}
+    {%- if target != blank and target != '/' and request.path contains target -%}
+      {%- assign is_here = true -%}
+    {%- endif -%}
+
+    {%- assign wants_here = false -%}
+    {%- assign want_list = block.settings.priority_templates | default: '' | downcase | split: ',' -%}
+    {%- for w in want_list -%}
+      {%- assign candidate = w | strip -%}
+      {%- if candidate != blank and candidate == this_template -%}{%- assign wants_here = true -%}{%- endif -%}
+    {%- endfor -%}
+
+    {%- if wants_here and is_here == false -%}
+      {%- assign rendered = rendered | plus: 1 -%}
+      {% render 'split-cell', block: block %}
+    {%- endif -%}
+  {%- endfor -%}
+
+  {%- for block in section.blocks -%}
+    {%- if rendered >= 2 -%}{%- break -%}{%- endif -%}
     {%- assign target = block.settings.link | split: '?' | first -%}
     {%- assign is_here = false -%}
     {%- if target != blank and target != '/' and request.path contains target -%}
       {%- assign is_here = true -%}
     {%- endif -%}
-    {%- unless is_here -%}
-    {%- assign rendered = rendered | plus: 1 -%}
-    {%- assign alt_text = block.settings.image_alt | default: block.settings.title -%}
-    <div class="non-split__cell" {{ block.shopify_attributes }}>
-      {%- if block.settings.image != blank -%}
-        {{
-          block.settings.image
-          | image_url: width: 1200, format: 'webp'
-          | image_tag: loading: 'lazy', widths: '600,900,1200', class: 'non-split__img', alt: alt_text
-        }}
-      {%- elsif block.settings.image_url != blank -%}
-        {% render 'cdn-image',
-           url: block.settings.image_url,
-           alt: alt_text,
-           class: 'non-split__img',
-           sizes: '(min-width: 860px) 50vw, 100vw' %}
-      {%- else -%}
-        {%- comment -%}
-          A visible placeholder rather than nothing. An empty panel reads as a
-          layout bug; a placeholder reads as "an image belongs here", which is
-          what it is.
-        {%- endcomment -%}
-        {{ 'lifestyle-2' | placeholder_svg_tag }}
-      {%- endif -%}
 
-      <div class="non-split__body">
-        <div class="non-split__title">{{ block.settings.title }}</div>
-        <p class="non-split__text">{{ block.settings.text }}</p>
-        {%- if block.settings.link_label != blank -%}
-          <a class="non-split__link" href="{{ block.settings.link }}">{{ block.settings.link_label }}</a>
-        {%- endif -%}
-      </div>
-    </div>
-    {%- endunless -%}
+    {%- assign wants_here = false -%}
+    {%- assign want_list = block.settings.priority_templates | default: '' | downcase | split: ',' -%}
+    {%- for w in want_list -%}
+      {%- assign candidate = w | strip -%}
+      {%- if candidate != blank and candidate == this_template -%}{%- assign wants_here = true -%}{%- endif -%}
+    {%- endfor -%}
+
+    {%- comment -%} wants_here already rendered in pass one. {%- endcomment -%}
+    {%- if is_here == false and wants_here == false -%}
+      {%- assign rendered = rendered | plus: 1 -%}
+      {% render 'split-cell', block: block %}
+    {%- endif -%}
   {%- endfor -%}
 </div>
 
@@ -107,7 +109,7 @@
 {% schema %}
 {
   "name": "Split feature",
-  "max_blocks": 3,
+  "max_blocks": 6,
   "settings": [
     {
       "type": "text",
@@ -225,6 +227,12 @@
           "type": "url",
           "id": "link",
           "label": "Link"
+        },
+        {
+          "type": "text",
+          "id": "priority_templates",
+          "label": "Show first on templates",
+          "info": "Comma-separated template names this card is the right next step for, e.g. collection, product. The band shows the first two that apply, then fills from the rest."
         }
       ]
     }

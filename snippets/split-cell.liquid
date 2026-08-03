@@ -1,0 +1,39 @@
+{%- comment -%}
+  One closing card. Extracted so split-feature can run its two passes —
+  priority cards first, then the rest — without holding two copies of this
+  markup that drift apart. That drift is exactly what happened on the
+  stockists page, which carried a hand-copy of this card for months.
+
+  Takes: block
+{%- endcomment -%}
+{%- assign alt_text = block.settings.image_alt | default: block.settings.title -%}
+<div class="non-split__cell" {{ block.shopify_attributes }}>
+  {%- if block.settings.image != blank -%}
+    {{
+      block.settings.image
+      | image_url: width: 1200, format: 'webp'
+      | image_tag: loading: 'lazy', widths: '600,900,1200', class: 'non-split__img', alt: alt_text
+    }}
+  {%- elsif block.settings.image_url != blank -%}
+    {% render 'cdn-image',
+       url: block.settings.image_url,
+       alt: alt_text,
+       class: 'non-split__img',
+       sizes: '(min-width: 860px) 50vw, 100vw' %}
+  {%- else -%}
+    {%- comment -%}
+      A visible placeholder rather than nothing. An empty panel reads as a
+      layout bug; a placeholder reads as "an image belongs here", which is
+      what it is.
+    {%- endcomment -%}
+    {{ 'lifestyle-2' | placeholder_svg_tag }}
+  {%- endif -%}
+
+  <div class="non-split__body">
+    <div class="non-split__title">{{ block.settings.title }}</div>
+    <p class="non-split__text">{{ block.settings.text }}</p>
+    {%- if block.settings.link_label != blank -%}
+      <a class="non-split__link" href="{{ block.settings.link }}">{{ block.settings.link_label }}</a>
+    {%- endif -%}
+  </div>
+</div>

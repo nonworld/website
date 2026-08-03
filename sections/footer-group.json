@@ -29,7 +29,8 @@
             "title": "Can't be bothered cooking?",
             "text": "Someone else is already pouring it. Find the restaurants, bars and retailers near you with NON on the list.",
             "link_label": "Find a stockist",
-            "link": "/pages/store-locator"
+            "link": "/pages/store-locator",
+            "priority_templates": "index, collection, product, contact, pairing"
           }
         },
         "bottle": {
@@ -40,29 +41,44 @@
             "title": "Skip the questions?",
             "text": "If you already know what you are after, the whole range is one click away — nine bottles, sets and the stopper.",
             "link_label": "Shop the range",
-            "link": "/collections/the-range"
+            "link": "/collections/the-range",
+            "priority_templates": "index, pairing, contact"
+          }
+        },
+        "pair": {
+          "type": "cell",
+          "settings": {
+            "image_url": "https://cdn.shopify.com/s/files/1/0371/5874/8205/files/non-story-038A8736.jpg?v=1785541727&width=1400",
+            "image_alt": "Fruit roasting in the NON kitchen",
+            "title": "Got a bottle?",
+            "text": "Tell the somm what you are eating and it writes the dish around what is already in the glass, shopping list included.",
+            "link_label": "Find your pairing",
+            "link": "/pages/pairing",
+            "priority_templates": "stockists, product, our-story"
           }
         },
         "hq": {
           "type": "cell",
           "settings": {
-            "image_url": "https://cdn.shopify.com/s/files/1/0371/5874/8205/files/NON5-5.jpg?v=1750016778&width=1400",
+            "image_url": "https://cdn.shopify.com/s/files/1/0371/5874/8205/files/non-story-038A8469.jpg?v=1785541727&width=1400",
             "image_alt": "NONHQ in Cheltenham",
-            "title": "In Melbourne?",
-            "text": "Pick it up from NONHQ in Cheltenham. The full range on the shelf, and someone there to talk you through it.",
-            "link_label": "Visit NONHQ",
-            "link": "/pages/visit-us"
+            "title": "Come and see it",
+            "text": "NONHQ in Cheltenham is the world's first non-alcoholic cellar door. Taste the ingredients separately, then the bottles.",
+            "link_label": "Book a tasting",
+            "link": "/pages/visit-us",
+            "priority_templates": "collection, stockists, our-story"
           }
         }
       },
       "block_order": [
         "out",
         "bottle",
+        "pair",
         "hq"
       ],
       "settings": {
         "max_height": 0,
-        "hide_on_templates": "our-story, stockists"
+        "hide_on_templates": ""
       }
     }
   },

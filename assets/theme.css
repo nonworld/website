@@ -561,6 +561,30 @@ button { font-family: inherit; }
 }
 .non-row::-webkit-scrollbar { display: none; }
 .non-row > * { scroll-snap-align: start; }
+
+/* A horizontally scrollable row sitting in the middle of a page steals the
+   page's scroll. On a trackpad a two-finger gesture almost always carries a
+   little sideways drift, and the browser hands the whole gesture to whatever
+   is under the cursor that can scroll that way — so the page stops dead and
+   the cards slide about instead. On the home page that is "Sets": six cards
+   against five columns, so it overflows by one and becomes a trap.
+
+   On a fine pointer the row is driven by its arrows, which already exist,
+   already hide themselves when there is nothing off screen, and scroll by
+   whole cards. overflow-x: hidden only removes the WHEEL path — scrollBy and
+   scrollLeft still work, so the arrows are unaffected.
+
+   Touch is left alone deliberately: on a phone the swipe IS the control, and
+   a horizontal swipe there is unambiguous rather than accidental drift. */
+@media (pointer: fine) {
+  .non-row {
+    overflow-x: hidden;
+    scroll-snap-type: none;
+  }
+}
+/* Belt and braces for coarse pointers: keep the sideways swipe, but stop it
+   chaining into the page or into a parent scroller once the row runs out. */
+.non-row { overscroll-behavior-inline: contain; }
 /* Below 860 the grid drops to two columns and the row had no mobile rule at
    all, so a long row showed 200px cards on a 390px screen — small pictures
    AND no clue the thing scrolls. 2.2 columns is deliberate: it matches the
@@ -5376,3 +5400,18 @@ select:-moz-focusring { color: transparent; text-shadow: 0 0 0 var(--non-fg); }
   margin-left: 0;
   margin-right: auto;
 }
+
+/* The stockists search has NO orb, and never should have had one.
+
+   It carries .non-somm only to borrow the input styling — the bordered field,
+   the mono button, the focus ring. The orb rides along on that class, so a
+   venue search box grew a 96px blurred sphere it was never designed around,
+   sitting outside the field and shoving it sideways: .non-somm is a flex row
+   here, not the grid the pairing page uses, and margin-right: auto on a flex
+   item pushes every sibling to the far edge.
+
+   Suppressed rather than restyled. The orb is the somm's mark — it means "an
+   answer is being reasoned out". A search over a venue list is not that, so
+   the honest fix is that this box does not get the mark, not that the mark is
+   made smaller here. */
+.non-stock-search::before { content: none; }

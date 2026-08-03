@@ -5371,6 +5371,23 @@ select:-moz-focusring { color: transparent; text-shadow: 0 0 0 var(--non-fg); }
   .non-somm, .non-sommbox { --non-orb-gutter: 0px; }
 }
 
+/* Below 700px there is no orb column, and the pull has to go with it.
+
+   --non-orb-core is 40%, and a percentage MARGIN resolves against the
+   containing block, not the element. Above 700px the containing block is the
+   96px orb column, so 40% is 38.4px and the orb shifts by a bit of itself.
+   Below 700px the two-column grid is gone, so the same 40% resolved against
+   the full 346px component: measured on the product page, margin-left came
+   out at -138.4px on a 66px orb, putting its box at x = -116. The orb was not
+   subtly misplaced on a phone, it was off the screen entirely — which is why
+   the product page appeared to have no orb at all.
+
+   The stacked layout wants it on top anyway, so there is nothing to pull. */
+@media (max-width: 699px) {
+  .non-somm::before,
+  .non-sommbox::before { margin-left: 0; }
+}
+
 /* Press quotes: two at a time, the rest cycling.
 
    Items are hidden by ABSENCE of .is-on rather than by a hidden attribute, so

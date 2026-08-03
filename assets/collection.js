@@ -22,8 +22,15 @@
   var items = Array.prototype.map.call(shelf.querySelectorAll('[data-non-item]'), function (el) {
     var tags = {};
     var why = {};
-    try { tags = JSON.parse(el.getAttribute('data-tags') || '{}'); } catch (e) {}
-    try { why = JSON.parse(el.getAttribute('data-why') || '{}'); } catch (e) {}
+    /* A card whose tags fail to parse silently scores 0 against every filter,
+       so it sinks to the bottom of the shelf and reads as "no good match"
+       rather than as broken data. */
+    try { tags = JSON.parse(el.getAttribute('data-tags') || '{}'); } catch (e) {
+      console.warn('[NON shelf] food tags failed to parse for "' + (el.getAttribute('data-code') || '?') + '" — it will not match any filter. Check custom.food_tags on that product.', e);
+    }
+    try { why = JSON.parse(el.getAttribute('data-why') || '{}'); } catch (e) {
+      console.warn('[NON shelf] food_why failed to parse for "' + (el.getAttribute('data-code') || '?') + '" — the card will match but show no reason.', e);
+    }
     return {
       el: el,
       card: el.querySelector('.non-card'),

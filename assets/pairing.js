@@ -27,11 +27,20 @@
 
   try {
     reasons = JSON.parse(document.querySelector('[data-non-pair-reasons]').textContent);
-  } catch (e) {}
+  } catch (e) {
+    /* The verdict still renders without these — it just loses the per-bottle
+       paragraph, silently, so the tool looks thinner rather than broken. */
+    console.warn('[NON pairing] reasons JSON missing or malformed — the verdict will show the answered lines but no per-bottle explanation.', e);
+  }
 
   document.querySelectorAll('[data-non-catalogue]').forEach(function (n) {
-    try { Object.assign(catalogue, JSON.parse(n.textContent)); } catch (e) {}
+    try { Object.assign(catalogue, JSON.parse(n.textContent)); } catch (e) {
+      console.warn('[NON pairing] catalogue JSON failed to parse — the verdict cannot show the bottle or its add-to-cart.', e);
+    }
   });
+  if (!Object.keys(catalogue).length) {
+    console.warn('[NON pairing] no catalogue on this page: the tool will pick a bottle code but cannot name it, price it or sell it.');
+  }
 
   var scores = {};
   var trace = [];

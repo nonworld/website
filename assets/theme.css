@@ -5522,3 +5522,22 @@ select:-moz-focusring { color: transparent; text-shadow: 0 0 0 var(--non-fg); }
     align-items: center;
   }
 }
+
+/* Theme-editor only: a picked product that resolved to nothing.
+
+   Never rendered on the storefront — it sits behind request.design_mode. It
+   exists because a block that silently renders nothing looks finished, which
+   is how the Not drinks row showed three cards instead of five without anyone
+   noticing. */
+.non-card--missing {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  justify-content: center;
+  padding: 18px;
+  border: 1px dashed var(--non-line-strong);
+  background: transparent;
+  min-height: 220px;
+}
+.non-card--missing .non-card__name { font-size: 13px; line-height: 1.4; color: var(--non-fg); min-height: 0; }
+.non-card--missing .non-mono { font-size: var(--t-mono); color: var(--non-fg-mute); }

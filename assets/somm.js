@@ -42,13 +42,27 @@
     try {
       Object.assign(catalogue, JSON.parse(node.textContent));
     } catch (e) {
-      /* a malformed catalogue must not take the somm down */
+      /* A malformed catalogue must not take the somm down — but it must not
+         pass unnoticed either. Without it every pick card resolves to nothing
+         and the panel renders empty, which looks like the somm failing to
+         answer rather than a data fault. */
+      console.warn('[NON somm] catalogue JSON failed to parse — pick cards will not render. Fix [data-non-catalogue] in the section rendering this page.', e);
     }
   });
+  if (!Object.keys(catalogue).length) {
+    console.warn('[NON somm] no product catalogue found on this page. The somm will answer, but it cannot show which bottle it means. Every surface that renders [data-non-somm] must also render [data-non-catalogue].');
+  }
 
   function pickCard(code) {
     var p = catalogue[String(code).toUpperCase()];
-    if (!p) return '';
+    if (!p) {
+      /* Returning '' here is what made the picks panel look broken: the somm
+         names a bottle in prose and then shows no card, with nothing anywhere
+         saying why. Usually the product is absent from THIS MARKET's catalog,
+         which is exactly how the Not drinks row lost two products. */
+      console.warn('[NON somm] "' + code + '" is not in this page\'s catalogue, so no card can be shown. Most often the product is not published to the current market.');
+      return '';
+    }
     return (
       '<a class="non-somm__pick" href="' + p.url + '">' +
       (p.image ? '<img src="' + p.image + '" alt="" loading="lazy">' : '') +

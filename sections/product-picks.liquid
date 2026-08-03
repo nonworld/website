@@ -50,6 +50,23 @@
           {%- assign item = block.settings.product -%}
           {%- if item != blank -%}
             {% render 'product-card', product: item, show_add: section.settings.show_add %}
+          {%- elsif request.design_mode -%}
+            {%- comment -%}
+              A picked product that resolves to nothing renders NOTHING, with
+              no hint anywhere. That is how this row quietly showed three cards
+              instead of five for weeks: the Waiter's Friend and the Gift Card
+              were absent from every market catalog except AU, so Liquid
+              resolved them to blank and the section skipped them without
+              complaint. It looked finished.
+
+              Editor-only, so a customer never sees it — but whoever opens the
+              theme editor is told which block is empty and why.
+            {%- endcomment -%}
+            <div class="non-card non-card--missing">
+              <span class="non-mono non-card__flag non-card__flag--out">Not available here</span>
+              <p class="non-card__name">This block has no product, or the product is not published to the market being previewed.</p>
+              <p class="non-mono">Check the block in the sidebar, and Markets &rarr; catalog membership.</p>
+            </div>
           {%- endif -%}
         {%- endfor -%}
       </div>

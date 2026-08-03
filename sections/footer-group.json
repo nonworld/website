@@ -21,86 +21,34 @@
     "closers": {
       "type": "split-feature",
       "blocks": {
-        "out": {
-          "type": "cell",
-          "settings": {
-            "image_url": "https://cdn.shopify.com/s/files/1/0371/5874/8205/files/non-story-038A8614.jpg?v=1785541727&width=1400",
-            "image_alt": "NON poured at a restaurant table",
-            "title": "Can't be bothered cooking?",
-            "text": "Someone else is already pouring it. Find the restaurants, bars and retailers near you with NON on the list.",
-            "link_label": "Find a stockist",
-            "link": "/pages/store-locator",
-            "priority_templates": "collection, product, contact"
-          }
-        },
-        "bottle": {
-          "type": "cell",
-          "settings": {
-            "image_url": "https://cdn.shopify.com/s/files/1/0371/5874/8205/files/non-story-038A8683.jpg?v=1785541727&width=1400",
-            "image_alt": "The NON range",
-            "title": "Skip the questions?",
-            "text": "If you already know what you are after, the whole range is one click away — nine bottles, sets and the stopper.",
-            "link_label": "Shop the range",
-            "link": "/collections/the-range",
-            "priority_templates": "index, pairing"
-          }
-        },
-        "pair": {
-          "type": "cell",
-          "settings": {
-            "image_url": "https://cdn.shopify.com/s/files/1/0371/5874/8205/files/non-story-038A8736.jpg?v=1785541727&width=1400",
-            "image_alt": "Fruit roasting in the NON kitchen",
-            "title": "Got a bottle?",
-            "text": "Tell the somm what you are eating and it writes the dish around what is already in the glass, shopping list included.",
-            "link_label": "Find your pairing",
-            "link": "/pages/pairing",
-            "priority_templates": "index, product, stockists"
-          }
-        },
         "hq": {
           "type": "cell",
           "settings": {
             "image_url": "https://cdn.shopify.com/s/files/1/0371/5874/8205/files/non-story-038A8469.jpg?v=1785541727&width=1400",
             "image_alt": "NONHQ in Cheltenham",
-            "title": "Come and see it",
-            "text": "NONHQ in Cheltenham is the world's first non-alcoholic cellar door. Taste the ingredients separately, then the bottles.",
+            "title": "Visit NONHQ",
+            "text": "The world's first non-alcoholic cellar door, in Cheltenham. Taste the raw ingredients on their own first, then the bottles they end up in.",
             "link_label": "Book a tasting",
             "link": "/pages/visit-us",
-            "priority_templates": "collection, stockists, our-story"
+            "priority_templates": ""
           }
         },
-        "story": {
+        "stopper": {
           "type": "cell",
           "settings": {
-            "image_url": "https://cdn.shopify.com/s/files/1/0371/5874/8205/files/non-story-038A8388.jpg?v=1785541727&width=1400",
-            "image_alt": "Fruit cooking in the NON kitchen",
-            "title": "Cooked, not de-alcoholised",
-            "text": "No wine is made and then stripped. Fruit, tannin, salt and acid, built from zero in a kitchen in Melbourne.",
-            "link_label": "Read the story",
-            "link": "/pages/about-us",
-            "priority_templates": "contact"
-          }
-        },
-        "sets": {
-          "type": "cell",
-          "settings": {
-            "image_url": "https://cdn.shopify.com/s/files/1/0371/5874/8205/files/Mixed-6.jpg?v=1763080460&width=1400",
-            "image_alt": "The NON mixed six",
-            "title": "Not sure where to start?",
-            "text": "The mixed six covers every course, so you find out which bottle is yours without having to pick one first.",
-            "link_label": "See the sets",
-            "link": "/collections/non-sets",
-            "priority_templates": "pairing, our-story"
+            "image_url": "https://cdn.shopify.com/s/files/1/0371/5874/8205/files/NON-Stopper-1.jpg?v=1746615649&width=1400",
+            "image_alt": "The NON Stopper",
+            "title": "Savour the flavour",
+            "text": "Every bottle is sparkling, and every sparkling bottle goes flat. The stopper holds the carbonation so the fifth glass reads like the first.",
+            "link_label": "Get the stopper",
+            "link": "/products/nonstopper",
+            "priority_templates": ""
           }
         }
       },
       "block_order": [
-        "out",
-        "bottle",
-        "pair",
         "hq",
-        "story",
-        "sets"
+        "stopper"
       ],
       "settings": {
         "max_height": 0,

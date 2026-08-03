@@ -3302,8 +3302,21 @@ select:-moz-focusring { color: transparent; text-shadow: 0 0 0 var(--non-fg); }
 
   /* The globe was a 420px minimum on a screen barely twice that tall, so it
      ate most of a scroll. It is decoration behind the press quotes, not the
-     content. */
-  .non-globe { min-height: var(--non-globe-box, 260px); }
+     content.
+
+     min(), not the bare variable. The rule above read
+     `var(--non-globe-box, 260px)` and the 260px fallback only applies when the
+     variable is UNSET — but press-quotes.liquid writes it inline on the
+     element as `--non-globe-box: {{ globe_size | plus: 60 }}px`, and an inline
+     custom property beats a stylesheet one. So this rule has never once fired.
+     Measured on a 375px phone: a 480px-tall box holding a globe that globe.js
+     had correctly fitted to 331px, leaving 149px of empty box below it.
+
+     The globe is square and fitted to the column width, so the height it
+     actually needs is about the width it is given. 92vw caps the box near
+     that, and min() keeps a deliberately small globe small rather than
+     inflating it to the cap. */
+  .non-globe { min-height: min(var(--non-globe-box, 260px), 92vw); }
 }
 
 /* --- Mobile menu panel ----------------------------------------------------

@@ -65,15 +65,50 @@
     {%- endfor -%}
   {%- endcapture -%}
 
-  <img
-    src="{{ src }}?{% if v != blank %}v={{ v }}&{% endif %}width=1200&format=webp"
-    srcset="{{ srcset | strip }}"
-    sizes="{{ sizes }}"
-    alt="{{ alt | default: shop.name | escape }}"
-    {% if class != blank %}class="{{ class }}"{% endif %}
-    loading="{{ loading }}"
-    {% if priority != blank %}fetchpriority="{{ priority }}"{% endif %}
-    decoding="async">
+  {%- if defer -%}
+    {%- comment -%}
+      Deferred, because loading="lazy" cannot help here.
+
+      The hero carousel stacks all five slides on top of each other, so every
+      one of them is inside the viewport from the first paint and the browser
+      fetches the lot. Measured on the homepage at 375px: 481KB of hero for a
+      component that shows one image at a time, 74% of every image byte on the
+      page.
+
+      So the non-first slides ship no src at all. carousel.js promotes
+      data-src to src once the page is idle or the carousel first advances,
+      whichever comes first. The <noscript> copy keeps them working with
+      JavaScript off, where there is no rotation and the markup is all there is.
+    {%- endcomment -%}
+    <img
+      data-src="{{ src }}?{% if v != blank %}v={{ v }}&{% endif %}width=1200&format=webp"
+      data-srcset="{{ srcset | strip }}"
+      sizes="{{ sizes }}"
+      alt="{{ alt | default: shop.name | escape }}"
+      {% if class != blank %}class="{{ class }}"{% endif %}
+      loading="lazy"
+      decoding="async">
+    <noscript>
+      <img
+        src="{{ src }}?{% if v != blank %}v={{ v }}&{% endif %}width=1200&format=webp"
+        srcset="{{ srcset | strip }}"
+        sizes="{{ sizes }}"
+        alt="{{ alt | default: shop.name | escape }}"
+        {% if class != blank %}class="{{ class }}"{% endif %}
+        loading="lazy"
+        decoding="async">
+    </noscript>
+  {%- else -%}
+    <img
+      src="{{ src }}?{% if v != blank %}v={{ v }}&{% endif %}width=1200&format=webp"
+      srcset="{{ srcset | strip }}"
+      sizes="{{ sizes }}"
+      alt="{{ alt | default: shop.name | escape }}"
+      {% if class != blank %}class="{{ class }}"{% endif %}
+      loading="{{ loading }}"
+      {% if priority != blank %}fetchpriority="{{ priority }}"{% endif %}
+      decoding="async">
+  {%- endif -%}
 {%- else -%}
   <img
     src="{{ url }}"

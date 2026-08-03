@@ -124,11 +124,16 @@
                 alt: block.settings.alt | default: shop.name
             }}
           {%- elsif block.settings.image_url != blank -%}
+            {%- comment -%}
+              First slide eager, the rest deferred. They are stacked, so they
+              are all in the viewport and lazy loading does nothing for them.
+            {%- endcomment -%}
             {% render 'cdn-image',
                url: block.settings.image_url,
                alt: block.settings.alt,
                sizes: '(min-width: 1440px) 38vw, (min-width: 860px) 420px, 100vw',
-               eager: forloop.first %}
+               eager: forloop.first,
+               defer: forloop.first == false %}
           {%- endif -%}
         </div>
       {%- endfor -%}

@@ -22,7 +22,36 @@
     var index = 0;
     var timer = null;
 
+    /* Promote the deferred slides.
+     *
+     * Every slide is stacked in the viewport, so loading="lazy" never held any
+     * of them back — the homepage fetched 481KB of hero on a 375px phone to
+     * show one image. The non-first slides now ship data-src instead of src
+     * (see snippets/cdn-image.liquid) and are hydrated here.
+     *
+     * On idle, so it costs the first paint nothing, and immediately on the
+     * first advance in case idle never arrives on a busy phone. Whichever
+     * happens first; hydrate() is safe to call twice. */
+    function hydrate() {
+      root.querySelectorAll('img[data-src]').forEach(function (img) {
+        var set = img.getAttribute('data-srcset');
+        if (set) img.setAttribute('srcset', set);
+        img.setAttribute('src', img.getAttribute('data-src'));
+        img.removeAttribute('data-src');
+        img.removeAttribute('data-srcset');
+      });
+    }
+
+    if (window.requestIdleCallback) {
+      requestIdleCallback(hydrate, { timeout: 3000 });
+    } else {
+      setTimeout(hydrate, 1200);
+    }
+
     function show(next) {
+      // Before the class moves, not after: a slide must not be crossfaded to
+      // while it still has no src.
+      hydrate();
       index = (next + slides.length) % slides.length;
 
       slides.forEach(function (slide, i) {

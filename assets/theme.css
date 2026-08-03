@@ -1406,6 +1406,37 @@ button { font-family: inherit; }
   width: 26px; height: 26px; border: 1px solid var(--non-line-strong);
   background: transparent; color: var(--non-fg); cursor: pointer; line-height: 1;
 }
+/* Touch targets for the quantity cluster.
+
+   Measured in the drawer at 375px: minus, plus and Remove were all 25x25 and
+   sitting 10px apart — three sub-25px targets in a row, next to each other,
+   where a mis-tap on Remove costs the customer the line item rather than a
+   wrong quantity. The brief's "no cramped clusters of tappable elements", and
+   the worst instance of it on the site.
+
+   Expanded with an invisible ::after rather than by growing the boxes: the
+   drawn control is 26px because that is what the design wants beside a 62px
+   thumbnail, and inflating it would push the price and title around. The gap
+   is 10px, so a 44px target on each overlaps its neighbour slightly; the
+   expander is therefore 44px tall but only as wide as the control plus the
+   gap, which keeps every centre unambiguous. */
+.non-drawer__qty button,
+.non-drawer__rm {
+  position: relative;
+}
+.non-drawer__qty button::after,
+.non-drawer__rm::after {
+  content: "";
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  width: 36px;
+  height: 44px;
+}
+/* Remove sits apart from the pair, so it can afford the full 44 both ways. */
+.non-drawer__rm::after { width: 44px; }
+
 .non-drawer__empty { padding: 40px 0; color: var(--non-fg-mute); font-size: 14px; }
 
 /* --- NON Lotto ---------------------------------------------------------- */

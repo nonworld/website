@@ -4842,6 +4842,16 @@ select:-moz-focusring { color: transparent; text-shadow: 0 0 0 var(--non-fg); }
 }
 .non-verdict__field canvas { width: 100%; height: 100%; display: block; }
 
+/* THE VERDICT reads as a title now, not a data label. It kept the mono
+   eyebrow's size and tracking so the panel header does not suddenly grow —
+   only the face changes. */
+.non-verdict__label {
+  font-family: var(--non-sans);
+  font-size: var(--t-mono);
+  letter-spacing: .14em;
+  text-transform: uppercase;
+}
+
 .non-verdict__picks,
 .non-verdict__await { position: relative; z-index: 1; }
 

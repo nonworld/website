@@ -53,8 +53,9 @@
       data-non-contact-field
       data-density="{{ section.settings.field_density }}"
       data-ink="{{ section.settings.field_ink | default: '242,240,234' }}"
-      data-envelope-x="{{ section.settings.field_envelope_x | divided_by: 100.0 }}"
-      data-envelope-scale="{{ section.settings.field_envelope_scale | divided_by: 100.0 }}"
+      data-envelope-x="0.5"
+      data-envelope-scale="0"
+      data-gain="{{ section.settings.field_gain | default: 220 | divided_by: 100.0 }}"
       aria-hidden="true">
       <canvas></canvas>
     </div>
@@ -342,23 +343,14 @@
     },
     {
       "type": "range",
-      "id": "field_envelope_x",
-      "label": "Envelope position",
-      "min": 30,
-      "max": 85,
-      "step": 5,
-      "default": 70,
-      "unit": "%"
-    },
-    {
-      "type": "range",
-      "id": "field_envelope_scale",
-      "label": "Envelope size",
-      "min": 60,
-      "max": 220,
-      "step": 10,
-      "default": 140,
-      "unit": "%"
+      "id": "field_gain",
+      "label": "Field brightness",
+      "min": 100,
+      "max": 400,
+      "step": 20,
+      "default": 220,
+      "unit": "%",
+      "info": "With the envelope off, the dashes carry the weight on their own."
     },
     {
       "type": "text",

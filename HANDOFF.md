@@ -44,6 +44,17 @@ setting with `"default": ""` invalidates the entire section file.
 4. an empty `"default": ""` on a free-text setting
 5. unbalanced CSS braces or comments
 
+**A `range` setting in a template can be silently refused.** `index.json` was
+rejected four times until `rotate_seconds` was removed from it — the schema
+defined it, the section had already deployed, and it should have been valid.
+Removing it made the template land instantly. The rotation still works on the
+schema default. `preflight.py` cannot catch this one; you can only recognise it.
+
+**Keep API writes small and read back after a timeout.** A 26-string
+`translationsRegister` timed out; the connector errored and NOTHING was
+written. Verified by reading the stored translations back, then retried as two
+batches of 13. A timeout tells you nothing about whether the write landed.
+
 **Wrangler IS authenticated** as `hello@non.world` on the NON World account.
 Worker deploys work from this machine.
 
@@ -130,6 +141,17 @@ lost that component on its own headline pairing. Verified against the live worke
 - `zoom`-scaled on mobile; it was clipped at 375px, losing the drawings.
 - Kitchen band is now three squares, one column on mobile.
 
+**Measured, not assumed**
+- Speed: the theme is **3% of page weight**. 79% is Shopify platform bundles,
+  12% apps. Do NOT optimise the theme for speed — see task #8.
+- Mobile: sub-44px tap targets went 41 → 1 on Shop. The one left is the
+  keyboard-only skip link.
+- Dead CSS: 57 fully overridden rules removed, 16KB. Verified by diffing
+  **6,490 computed properties** before and after — zero differences.
+- Instrumentation: every feature now reports `_started` / `_answered` /
+  `_failed` to `dataLayer`. The gap between started and answered is where dead
+  ends live. GTM is already consuming them.
+
 **Site-wide**
 - One canonical chip across `.non-filter`, `.non-pair__opt`, `.non-somm__seed`.
 - Type scale raised ~+1px at every floor.
@@ -153,15 +175,20 @@ Read task #7 before rebuilding.
 Working agreement: **one step at a time, deployed and verified before the
 next.** New requests go on the queue rather than interrupting.
 
+**Closed:** duplicated verdict points, dynamic pairing questions, chip
+unification, placeholder copy, picks panel, market catalogs, page header images
+(built then reverted), speed audit, forensic mobile, silent-failure audit, dead
+CSS, instrumentation, process animation, currency suffix, oyster scoring.
+
 | # | Status | |
 |---|---|---|
-| 8 | not started | Speed audit. `theme.css` ~228KB with known duplication — five superseded `.non-poured__set img` blocks, many overridden `.non-somm__seed` blocks |
-| 9 | not started | Forensic mobile audit. The animation clipping was found by measuring at 375px; expect more |
-| 10 | half done | `preflight.py` built and catching real faults. **Runtime half remains**: empty catches in `somm.js`, `renderPicks` returning silently on an unknown code, `product-picks` dropping a product with no editor warning |
-| 11 | step 1 done | Translation. Glossary + `locales/es.json` shipped. Per locale still: section copy, product copy, somm worker prompt |
-| 12 | not started | Strip dead code, keep the theme app-friendly |
-| 13 | not started | Instrumentation — Microsoft Clarity plus feature events. Standard analytics never caught the dead chips |
-| 14 | blocked | Log somm queries to D1 → Drive. **Nothing is logged today**; the worker binds only an API key, two model names and a rate-limit counter |
+| 11 | in progress | **es: 241 strings registered.** All section prose done except About process data. Next: `p_b1..p_b6` x titles/bodies/captions — NEWLINE-ALIGNED lists, assert identical line counts or steps desync from captions. Then product copy, then the somm worker prompt. See `docs/translations/README.md`. **es stays UNPUBLISHED** until product copy and the somm land |
+| 14 | blocked | Log somm queries to D1 → Drive. **Nothing is logged today.** Needs a privacy-policy line first |
+| 18 | Aaron | Uninstall Instant — 261KB, and it monkey-patches `window.fetch`. I cannot: the API denies `scriptTags` and `appInstallations` |
+| 19 | Aaron | **No reviews exist anywhere** — no app, no metafields, no markup. Use press quotes and venue logos on PDPs instead, or install a review app |
+
+Also outstanding: Microsoft Clarity install, week-on-week feature alerting, the
+app-friendliness half of #12, and the press-quote translation decision.
 
 ---
 

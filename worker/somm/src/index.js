@@ -930,7 +930,13 @@ export default {
             maxTokens: 700,
             system: BRAND_SYSTEM + HOUSE_RULES + lang,
             messages: [{ role: 'user', content: query }],
-            tail: (answer) => ({ intent: 'brand', answer, explanation: answer, picks: [], productId: null }),
+            tail: (answer) => ({
+              intent: 'brand',
+              answer,
+              explanation: answer,
+              picks: [],
+              productId: context ? String(context).toUpperCase() : null,
+            }),
             onFail: () => fallbackResponse('brand', null, env, 'brand'),
           });
         } catch (e) {
@@ -948,7 +954,18 @@ export default {
           system: BRAND_SYSTEM + HOUSE_RULES + lang,
           messages: [{ role: 'user', content: query }],
         });
-        return json({ intent: 'brand', answer, explanation: answer, picks: [], productId: null });
+        // The bottle the customer is standing on, not null. "What wine does
+        // this replace?" is a brand question asked ON a product page, and
+        // returning null there meant the analytics could not tell which
+        // bottle prompted it — the last seven null productIds in the
+        // mega-test were all this shape.
+        return json({
+          intent: 'brand',
+          answer,
+          explanation: answer,
+          picks: [],
+          productId: context ? String(context).toUpperCase() : null,
+        });
       } catch (e) {
         return json(fallbackResponse('brand', e, env, 'brand'), 200);
       }

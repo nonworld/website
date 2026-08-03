@@ -4488,16 +4488,21 @@ select:-moz-focusring { color: transparent; text-shadow: 0 0 0 var(--non-fg); }
     max-width: 880px;
     padding: 34px 0 30px;
 
-    /* The rhythm below is authored as 12 / 20 / 20, and without this it was
-       not what rendered. A grid's default align-content is stretch, so when
-       the block is taller than its rows — on the PDP it was 480px against
-       348px of content — the browser shares the extra 68px BETWEEN the rows.
-       The heading ended up stranded above 80px of nothing, which is what read
-       as it being in the wrong place.
+    /* The rhythm below is authored as 12 / 20 / 20. What rendered was 80px of
+       nothing under the heading, which is what read as the heading sitting in
+       the wrong place.
 
-       align-content: start makes the rows take their content height and lets
-       the slack collect at the end, so the intervals below are the intervals
-       on screen. */
+       The orb is placed with `grid-area: 1 / 1 / -1` to span the full height
+       of the column beside it. But -1 means "the last line of the EXPLICIT
+       grid", and only columns were ever declared — so the explicit grid is
+       one row tall, -1 resolves back to the first line, and the orb lands in
+       row 1 on its own. A 96px orb in a row holding a 16px heading makes that
+       row 96px, and the heading floats at the top of it.
+
+       Declaring the rows explicitly is what makes -1 mean what it says. Eight
+       is comfortably more than any surface uses, and with align-content:start
+       the unused ones collapse to zero rather than padding the block out. */
+    grid-template-rows: repeat(8, auto);
     align-content: start;
   }
   .non-somm::before,

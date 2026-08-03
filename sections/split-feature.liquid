@@ -20,9 +20,16 @@
 {%- assign hide_list = section.settings.hide_on_templates | default: '' | downcase | split: ',' -%}
 {%- assign this_template = template.suffix | default: template.name | downcase -%}
 {%- assign skip_here = false -%}
+{%- comment -%}
+  `candidate`, NOT `assign t = t | strip`. Inside a for loop the iteration
+  variable wins on read, so assigning back to `t` looked like it stripped the
+  value and silently did nothing. "our-story" matched because it is first in
+  the list and carries no leading space; " stockists" never matched, and the
+  stockists page rendered two pairs of closing cards for it.
+{%- endcomment -%}
 {%- for t in hide_list -%}
-  {%- assign t = t | strip -%}
-  {%- if t != blank and t == this_template -%}{%- assign skip_here = true -%}{%- endif -%}
+  {%- assign candidate = t | strip -%}
+  {%- if candidate != blank and candidate == this_template -%}{%- assign skip_here = true -%}{%- endif -%}
 {%- endfor -%}
 
 {%- if skip_here -%}

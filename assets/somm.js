@@ -238,6 +238,11 @@
     }
 
     function renderPicks(picks) {
+      if (window.NON && NON.answered) {
+        /* Reported here rather than on fetch success, because an answer the
+           reader never sees is not an answer. This fires when it is on screen. */
+        NON.answered('somm', { picks: (picks || []).length, has_box: !!picksBox });
+      }
       if (!picksBox || !picks || !picks.length) return;
       var html = picks.map(pickCard).filter(Boolean).join('');
       if (!html) return;
@@ -263,6 +268,13 @@
 
     function ask(query) {
       if (!query.trim()) return;
+
+      /* Length and surface only — never the question itself. Capturing what a
+         customer typed is a data-collection decision with a privacy-policy
+         consequence, and that is task #14. */
+      if (window.NON && NON.started) {
+        NON.started('somm', { chars: query.trim().length, context: context, has_endpoint: !!ENDPOINT });
+      }
 
       history.push({ role: 'user', text: query });
 
@@ -304,10 +316,18 @@
             });
           });
         })
-        .catch(function () {
+        .catch(function (err) {
           // Endpoint down or CORS-blocked: fall back rather than show nothing.
           // The mark goes red for a beat first — the identity doc has a red
           // state and this is what it is for — then the fallback answers.
+          //
+          // Reported, because the fallback is convincing: the reader still
+          // gets an answer, so a worker that is down looks exactly like one
+          // that is up. Without this the somm could fail for days in silence.
+          if (window.NON && NON.failed) {
+            NON.failed('somm', { reason: 'endpoint_unreachable', context: context });
+          }
+          console.warn('[NON somm] endpoint unreachable — serving the canned fallback. The customer still sees an answer, so this will not look broken.', err);
           thinking(true, true);
           setTimeout(function () { thinking(false); fallback(query); }, 700);
         })

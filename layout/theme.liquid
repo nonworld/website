@@ -107,6 +107,19 @@
       };
     </script>
 
+    {%- comment -%}
+      Feature events, loaded before anything that reports them.
+
+      Standard analytics measures whether people ARRIVED. This measures whether
+      the thing they touched WORKED — which is the gap the dead pairing chips
+      lived in for weeks while every metric looked normal.
+
+      Deliberately first: somm.js, pairing.js and collection.js all guard with
+      `if (window.NON && NON.track)`, so they degrade to silence rather than
+      throwing if this ever fails to load. Nothing depends on it to function.
+    {%- endcomment -%}
+    <script src="{{ 'non-events.js' | asset_url }}" defer></script>
+
     <script src="{{ 'cart.js' | asset_url }}" defer></script>
 
     {{ content_for_header }}

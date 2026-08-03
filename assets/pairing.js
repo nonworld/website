@@ -169,6 +169,19 @@
 
   function finish() {
     var code = leader();
+    if (window.NON && NON.answered) {
+      /* answers_used is the useful one: it tells you whether the dynamic
+         question flow is retiring questions as intended, or whether people
+         are being asked things that do not apply to them. */
+      NON.answered('pairing', {
+        bottle: code || 'none',
+        answers_used: Object.keys(chosen).length,
+        resolved: !!catalogue[code]
+      });
+    }
+    if (!catalogue[code] && window.NON && NON.failed) {
+      NON.failed('pairing', { reason: 'bottle_not_in_catalogue', bottle: code || 'none' });
+    }
     // The questions stay on screen. They are the page now, and hiding what was
     // answered to reveal a verdict leaves nothing to change your mind with.
     resultEl.hidden = false;
@@ -279,6 +292,10 @@
         axis.querySelectorAll('[data-non-pair-opt]').forEach(function (o) {
           o.setAttribute('aria-pressed', o === opt ? 'true' : 'false');
         });
+      }
+
+      if (window.NON && NON.started) {
+        NON.started('pairing', { axis: axisIndex, first_answer: !chosen[axisIndex] });
       }
 
       applyAxis(axisIndex, opt);

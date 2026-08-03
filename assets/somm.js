@@ -285,9 +285,21 @@
       if (stream) stream.textContent = '';
       thinking(true);
 
-      fetch(ENDPOINT, {
+      askOnce({
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: {
+          'Content-Type': 'application/json',
+          // Ask for the stream. The Worker answers with SSE on the two
+          // single-call paths and plain JSON everywhere else; the handler
+          // below already switches on the response content-type, so both
+          // shapes are handled and neither is assumed.
+          //
+          // Sent as a header rather than a body flag so the Worker can keep
+          // serving JSON to every other caller — the audit harnesses and
+          // /somm/suggestions read res.json(), and a Worker that streamed at
+          // everyone would break all of them to save a second here.
+          Accept: 'text/event-stream, application/json'
+        },
         body: JSON.stringify({
           query: query,
           context: context,
@@ -343,6 +355,28 @@
     }
 
     // SSE: append tokens as they arrive; a trailing {"picks":[…]} frame sets picks.
+    /* One retry, and only on a NETWORK failure.
+     *
+     * The 204-question mega-test had one request return `fetch failed` after
+     * seventy seconds. There was no retry, so that customer got a dead box —
+     * 0.5% of questions, but 100% of that person's experience.
+     *
+     * Deliberately narrow:
+     *  - a rejected promise only. An HTTP response, including a 500, is the
+     *    Worker answering, and its own fallback is better than asking twice.
+     *  - once. A Worker that is down stays down, and a second failure should
+     *    reach the canned fallback quickly rather than after three timeouts.
+     *  - a short pause first, because the failure mode this exists for is a
+     *    dropped connection rather than a busy server.
+     */
+    function askOnce(init) {
+      return fetch(ENDPOINT, init).catch(function (err) {
+        console.warn('[NON somm] request failed, retrying once', err);
+        return new Promise(function (resolve) { setTimeout(resolve, 400); })
+          .then(function () { return fetch(ENDPOINT, init); });
+      });
+    }
+
     function readStream(res) {
       var reader = res.body.getReader();
       var decoder = new TextDecoder();

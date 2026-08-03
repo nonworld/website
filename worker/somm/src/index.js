@@ -395,6 +395,117 @@ async function claude(env, { system, messages, maxTokens, model }) {
   return (data.content || []).map((b) => b.text || '').join('').trim();
 }
 
+/* ------------------------------------------------------------- streaming
+
+   Median response was 4.9s and p90 8.1s, measured over 204 questions. The
+   model is not the slow part in a way we can fix; what we can fix is making
+   the customer wait for the WHOLE paragraph before seeing any of it.
+
+   somm.js has been able to read a stream since it was written — it switches on
+   the response content-type and has a `readStream` that understands
+   `data: {"token": "..."}` frames. The Worker simply never sent any. This is
+   the missing half.
+
+   Gated on the Accept header rather than switched on for everyone. The JSON
+   contract is what the audit harnesses, `/somm/suggestions` and any other
+   consumer rely on; a Worker that silently started streaming at every caller
+   would break them all to save a second on one surface.
+
+   Only the two single-call prose paths stream (facts/other and brand). The
+   pairing path is extract -> score -> phrase, so its first token cannot appear
+   until two of the three are already done, and streaming the last step alone
+   would buy almost nothing. */
+
+function wantsStream(request) {
+  const accept = request.headers.get('accept') || '';
+  return accept.includes('text/event-stream');
+}
+
+function sse(frame) {
+  return `data: ${JSON.stringify(frame)}\n\n`;
+}
+
+/* Streams the model's text out as it arrives, then a final frame carrying the
+   structured fields the JSON path would have returned. On an upstream failure
+   BEFORE any token has been sent we can still fall back cleanly; once tokens
+   are on the wire the status line is long gone, so the failure is reported in
+   the stream and the client keeps what it has. */
+async function claudeStreamResponse(env, { system, messages, maxTokens, model, tail, onFail }) {
+  const upstream = await fetch('https://api.anthropic.com/v1/messages', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'x-api-key': env.ANTHROPIC_API_KEY,
+      'anthropic-version': '2023-06-01',
+    },
+    body: JSON.stringify({ model, max_tokens: maxTokens, system, messages, stream: true }),
+  });
+
+  if (!upstream.ok) {
+    // Nothing has been written yet, so this can still be an ordinary JSON
+    // fallback with the right status and shape.
+    throw new Error(`anthropic ${upstream.status}: ${await upstream.text()}`);
+  }
+
+  const { readable, writable } = new TransformStream();
+  const writer = writable.getWriter();
+  const enc = new TextEncoder();
+
+  (async () => {
+    const reader = upstream.body.getReader();
+    const dec = new TextDecoder();
+    let buffer = '';
+    let text = '';
+    try {
+      for (;;) {
+        const { value, done } = await reader.read();
+        if (done) break;
+        buffer += dec.decode(value, { stream: true });
+        const frames = buffer.split('\n\n');
+        buffer = frames.pop();
+        for (const frame of frames) {
+          // Anthropic's SSE carries `event:` and `data:` lines; only the data
+          // matters, and only content_block_delta carries text.
+          const line = frame.split('\n').find((l) => l.startsWith('data:'));
+          if (!line) continue;
+          const payload = line.slice(5).trim();
+          if (!payload || payload === '[DONE]') continue;
+          let evt;
+          try {
+            evt = JSON.parse(payload);
+          } catch {
+            continue;
+          }
+          if (evt.type === 'content_block_delta' && evt.delta && evt.delta.text) {
+            text += evt.delta.text;
+            await writer.write(enc.encode(sse({ token: evt.delta.text })));
+          }
+        }
+      }
+      await writer.write(enc.encode(sse(tail(text.trim()))));
+      await writer.write(enc.encode('data: [DONE]\n\n'));
+    } catch (e) {
+      console.error('[somm] stream:', e && e.message ? e.message : e);
+      if (!text && typeof onFail === 'function') {
+        await writer.write(enc.encode(sse(onFail(e))));
+      }
+      await writer.write(enc.encode('data: [DONE]\n\n'));
+    } finally {
+      await writer.close();
+    }
+  })();
+
+  return new Response(readable, {
+    status: 200,
+    headers: {
+      'Content-Type': 'text/event-stream; charset=utf-8',
+      'Cache-Control': 'no-store',
+      Connection: 'keep-alive',
+      ...cors(),
+    },
+  });
+}
+
 /* ------------------------------------------------------ step 0: routing */
 
 async function routeQuery(env, query) {
@@ -414,7 +525,10 @@ async function routeQuery(env, query) {
   }
 }
 
-async function answerFacts(env, query, code, facts, lang = '') {
+/* Split from answerFacts so the streaming path and the JSON path send the
+   IDENTICAL prompt. Two copies of a prompt this long is how the streamed
+   answer and the tested answer quietly stop being the same answer. */
+function factsPrompt(query, code, facts, lang = '') {
   const scope = code
     ? PRODUCTS.filter((p) => p.id === String(code).toUpperCase())
     : PRODUCTS;
@@ -447,8 +561,7 @@ async function answerFacts(env, query, code, facts, lang = '') {
     }
   }
 
-  const answer = await claude(env, {
-    model: env.EXPLAIN_MODEL || 'claude-sonnet-5',
+  return {
     // 400 truncated the trade answer mid-number ("NON9 the richest at 51 cal
     // and 12.5"). Two short paragraphs of six-bottle comparison do not fit.
     maxTokens: 700,
@@ -464,13 +577,22 @@ async function answerFacts(env, query, code, facts, lang = '') {
           '\n\nQuestion: ' + query,
       },
     ],
+  };
+}
+
+// Name-drop any bottle the answer actually cites, so the pick cards match
+// the words rather than being a second, unrelated recommendation.
+function picksFrom(answer) {
+  return PRODUCTS.filter((p) => answer.indexOf(p.id) !== -1).map((p) => p.id).slice(0, 2);
+}
+
+async function answerFacts(env, query, code, facts, lang = '') {
+  const prompt = factsPrompt(query, code, facts, lang);
+  const answer = await claude(env, {
+    model: env.EXPLAIN_MODEL || 'claude-sonnet-5',
+    ...prompt,
   });
-
-  // Name-drop any bottle the answer actually cites, so the pick cards match
-  // the words rather than being a second, unrelated recommendation.
-  const picks = PRODUCTS.filter((p) => answer.indexOf(p.id) !== -1).map((p) => p.id).slice(0, 2);
-
-  return { answer, picks };
+  return { answer, picks: picksFrom(answer) };
 }
 
 /* --------------------------------------------------- step 1: extraction */
@@ -656,17 +778,46 @@ function suggestionsFor(code) {
 // Anthropic's error bodies do not echo the key, and this is truncated, but it
 // is still internal detail — set DEBUG=0 in wrangler.toml to suppress it once
 // the Worker is known good.
-function fallbackResponse(reason, err, env) {
+/* `intent` is passed in rather than left off.
+ *
+ * This function is the ONLY response path that omitted it, which is why the
+ * mega-test found intent null on every fallback: the instrumentation counting
+ * answers by intent was blind to exactly the responses worth counting.
+ *
+ * `reason` says which path failed; `intent` says what the customer asked. They
+ * are not the same thing and both matter. */
+function fallbackResponse(reason, err, env, intent) {
+  /* The copy is neutral, and no longer a pairing answer.
+   *
+   * It used to be "Hard to call from that alone, so start with the mixed six".
+   * That is a fine answer to "what goes with lamb" and a non-sequitur to
+   * everything else — the mega-test caught it firing on "how should I store it
+   * before opening?", which recommended a six-pack to someone asking about a
+   * fridge. A generic failure has to degrade sensibly whatever provoked it, so
+   * it now admits the miss and invites the question again, with no product
+   * recommendation attached at all.
+   *
+   * The pairing paths keep the Mixed 6 as an honest answer, because there it
+   * IS the answer — see the pairing fallback below. */
+  const NEUTRAL =
+    'That one has not come through cleanly. Ask me again, or put it another way and I will pick it up.';
+  const PAIRING =
+    'Hard to call from that alone, so start with the mixed six: it covers every course and tells you which seat at the table is yours.';
+
+  const isPairing = intent === 'pairing' || reason === 'extraction' || reason === 'score';
+  const line = isPairing ? PAIRING : NEUTRAL;
+
   const body = {
-    productId: 'SET',
-    productName: 'Mixed 6 Pack',
+    // No product is recommended on a non-pairing failure. Returning SET meant
+    // a storage question came back holding a six-pack.
+    productId: isPairing ? 'SET' : null,
+    productName: isPairing ? 'Mixed 6 Pack' : null,
     score: 0,
-    explanation:
-      'Hard to call from that alone, so start with the mixed six: it covers every course and tells you which seat at the table is yours.',
-    answer:
-      'Hard to call from that alone, so start with the mixed six: it covers every course and tells you which seat at the table is yours.',
-    picks: ['SET'],
+    explanation: line,
+    answer: line,
+    picks: isPairing ? ['SET'] : [],
     fallback: true,
+    intent: intent || reason || null,
     reason,
   };
 
@@ -750,20 +901,56 @@ export default {
     // product data sheet and never from the model's own recall. The KB is the
     // only cleared source; anything outside it is refused rather than guessed.
     if (intent === 'brand') {
+      if (wantsStream(request)) {
+        try {
+          return await claudeStreamResponse(env, {
+            model: env.EXPLAIN_MODEL || 'claude-sonnet-5',
+            maxTokens: 700,
+            system: BRAND_SYSTEM + HOUSE_RULES + lang,
+            messages: [{ role: 'user', content: query }],
+            tail: (answer) => ({ intent: 'brand', answer, explanation: answer, picks: [], productId: null }),
+            onFail: () => fallbackResponse('brand', null, env, 'brand'),
+          });
+        } catch (e) {
+          return json(fallbackResponse('brand', e, env, 'brand'), 200);
+        }
+      }
       try {
         const answer = await claude(env, {
           model: env.EXPLAIN_MODEL || 'claude-sonnet-5',
-          maxTokens: 400,
+          // 700, matching the facts path. Both are "two short paragraphs"
+          // prompts and 400 is what cut the trade answer off mid-number there;
+          // there is no reason the brand path should be one bad question away
+          // from the same failure.
+          maxTokens: 700,
           system: BRAND_SYSTEM + HOUSE_RULES + lang,
           messages: [{ role: 'user', content: query }],
         });
         return json({ intent: 'brand', answer, explanation: answer, picks: [], productId: null });
       } catch (e) {
-        return json(fallbackResponse('brand', e, env), 200);
+        return json(fallbackResponse('brand', e, env, 'brand'), 200);
       }
     }
 
     if (intent === 'facts' || intent === 'other') {
+      if (wantsStream(request)) {
+        try {
+          return await claudeStreamResponse(env, {
+            model: env.EXPLAIN_MODEL || 'claude-sonnet-5',
+            ...factsPrompt(query, context, body.facts, lang),
+            tail: (answer) => ({
+              intent,
+              answer,
+              explanation: answer,
+              picks: picksFrom(answer),
+              productId: picksFrom(answer)[0] || (context ? String(context).toUpperCase() : null),
+            }),
+            onFail: () => fallbackResponse('facts', null, env, intent),
+          });
+        } catch (e) {
+          return json(fallbackResponse('facts', e, env, intent), 200);
+        }
+      }
       try {
         const result = await answerFacts(env, query, context, body.facts, lang);
         return json({
@@ -776,7 +963,7 @@ export default {
           productId: result.picks[0] || (context ? String(context).toUpperCase() : null),
         });
       } catch (e) {
-        return json(fallbackResponse('facts', e, env), 200);
+        return json(fallbackResponse('facts', e, env, intent), 200);
       }
     }
 
@@ -819,7 +1006,7 @@ export default {
           source: 'bestWith',
         });
       }
-      return json(fallbackResponse('extraction', e, env), 200);
+      return json(fallbackResponse('extraction', e, env, 'pairing'), 200);
     }
 
     /* A pairing question that names no food is not a pairing question.
@@ -847,7 +1034,7 @@ export default {
           source: 'no-dish',
         });
       } catch (e) {
-        return json(fallbackResponse('facts', e, env), 200);
+        return json(fallbackResponse('facts', e, env, 'facts'), 200);
       }
     }
 
@@ -880,7 +1067,7 @@ export default {
             query, product, reasons: scored.reasons, score: scored.score, fit, instead, lang,
           });
         } catch (e) {
-          return json(fallbackResponse('verdict', e, env), 200);
+          return json(fallbackResponse('verdict', e, env, 'pairing'), 200);
         }
 
         return json({
@@ -918,7 +1105,7 @@ export default {
         lang,
       });
     } catch (e) {
-      return json(fallbackResponse('explanation', e, env), 200);
+      return json(fallbackResponse('explanation', e, env, 'pairing'), 200);
     }
 
     const includeAlternative = runnerUp && top.score - runnerUp.score <= 15;

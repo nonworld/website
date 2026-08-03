@@ -110,10 +110,20 @@
           {{ block.shopify_attributes }}>
           {%- liquid
             assign loading = 'lazy'
+            assign defer_slide = true
             if forloop.first
               assign loading = 'eager'
+              assign defer_slide = false
             endif
           -%}
+          {%- comment -%}
+            defer_slide is computed HERE, not written as `defer: forloop.first
+            == false` in the render tag. Liquid does not evaluate a comparison
+            in an argument position: it passed `forloop.first` straight through
+            and dropped the `== false`, so the FIRST slide was deferred and the
+            other four loaded eagerly — precisely backwards, and it looked
+            plausible in the diff.
+          {%- endcomment -%}
           {%- if block.settings.image != blank -%}
             {{
               block.settings.image
@@ -133,7 +143,7 @@
                alt: block.settings.alt,
                sizes: '(min-width: 1440px) 38vw, (min-width: 860px) 420px, 100vw',
                eager: forloop.first,
-               defer: forloop.first == false %}
+               defer: defer_slide %}
           {%- endif -%}
         </div>
       {%- endfor -%}

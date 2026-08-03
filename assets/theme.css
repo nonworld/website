@@ -96,11 +96,18 @@
      the Text size control in the customizer moves the whole scale together
      rather than one arbitrary element. Defaults to 1, i.e. no change. */
   --non-type-scale: 1;
-  --t-mono:    calc(clamp(11px,  0.62vw, 13px)  * var(--non-type-scale));
-  --t-small:   calc(clamp(13px,  0.78vw, 15px)  * var(--non-type-scale));
-  --t-body:    calc(clamp(15.5px, 0.95vw, 18px) * var(--non-type-scale));
-  --t-copy:    calc(clamp(16.5px, 1.05vw, 20px) * var(--non-type-scale));
-  --t-lead:    calc(clamp(17px,  1.15vw, 21px)  * var(--non-type-scale));
+  /* Raised across the board 2026-08-03. Aaron: "most the site is probably a
+     little hard to read." The floors were the problem more than the ceilings —
+     11px mono is a caption size and it was carrying eyebrows, captions, spec
+     strips and the somm's own labels on a near-black background, where thin
+     light type on dark reads smaller than the same size on white. Every step
+     up is roughly +1px at the floor, which lifts the whole scale without
+     redrawing a single layout, because everything already reads these tokens. */
+  --t-mono:    calc(clamp(12px,  0.70vw, 14px)  * var(--non-type-scale));
+  --t-small:   calc(clamp(14px,  0.85vw, 16px)  * var(--non-type-scale));
+  --t-body:    calc(clamp(16.5px, 1.00vw, 19px) * var(--non-type-scale));
+  --t-copy:    calc(clamp(17.5px, 1.10vw, 21px) * var(--non-type-scale));
+  --t-lead:    calc(clamp(18px,  1.20vw, 22px)  * var(--non-type-scale));
   --t-title:   calc(clamp(28px,  2.4vw, 44px)   * var(--non-type-scale));
 }
 

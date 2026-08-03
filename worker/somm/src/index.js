@@ -201,8 +201,84 @@ enthusiastic Spanish version of a restrained English sentence.
 
 Every other rule above still applies, including the sentence and word limits.
 Count words in Spanish.`,
+
+    /* The bestWith answer is assembled in code, never by the model, so the
+       directive above cannot reach it. It needs real vocabulary.
+
+       Cooking styles are PREPOSITIONAL PHRASES on purpose. Spanish adjectives
+       agree with the noun's gender, so "grilled" as `asado` gives "cordero
+       asado" but "carne roja asada" — and the pairs are built at runtime, so
+       there is no safe single form. `a la parrilla` is invariant and reads as
+       a chef would write it. Same reasoning for every entry here. */
+    styles: {
+      braised: 'en estofado',
+      charred: 'a la brasa',
+      cured: 'en salazón',
+      fried: 'a la sartén',
+      grilled: 'a la parrilla',
+      'lightly cooked': 'de cocción breve',
+      poached: 'al escalfado',
+      raw: 'en crudo',
+      roasted: 'al horno',
+      smoked: 'al humo',
+      steamed: 'al vapor',
+    },
+    proteins: {
+      beef: 'ternera',
+      chocolate: 'chocolate',
+      'cured meat': 'embutido',
+      game: 'caza',
+      'goat cheese': 'queso de cabra',
+      grain: 'cereales',
+      'hard cheese': 'queso curado',
+      lamb: 'cordero',
+      mushroom: 'setas',
+      oyster: 'ostra',
+      poultry: 'ave',
+      'raw fish': 'pescado crudo',
+      'red meat': 'carne roja',
+      shellfish: 'marisco',
+      vegetable: 'verdura',
+      'white fish': 'pescado blanco',
+    },
+    /* Cheese does not take the generic style phrases. "cured" on a cheese is
+       `curado`, not the salt-curing `en salazón` used for meat, and "raw"
+       means unpasteurised milk, not served raw. Both cheese nouns are
+       masculine, so the adjective is safe here. */
+    overrides: {
+      'goat cheese': { cured: 'curado', raw: 'de leche cruda' },
+      'hard cheese': { cured: 'curado', raw: 'de leche cruda' },
+    },
+    // The CODE, not the name: NON1 is a product name and never translates,
+    // while `p.name` in the worker is the English one and would land untranslated
+    // in the middle of a Spanish sentence.
+    bestWith: (code, list) => `${code} marida mejor con ${list}.`,
+    join: (items) =>
+      items.length > 1
+        ? `${items.slice(0, -1).join(', ')} y ${items[items.length - 1]}`
+        : items[0],
   },
 };
+
+/* Builds the bestWith sentence in the target language, or returns null when
+   there is no entry — the caller then keeps the English one. */
+function bestWithSentence(locale, found) {
+  const tag = String(locale || 'en').trim().toLowerCase();
+  const L = LANGUAGES[tag] || LANGUAGES[tag.split('-')[0]];
+  if (!L || !L.proteins) return null;
+
+  const items = found.pairs.map(({ style, protein }) => {
+    const noun = L.proteins[protein];
+    if (!noun) return null;               // unknown term: bail rather than half-translate
+    const override = L.overrides && L.overrides[protein] && L.overrides[protein][style];
+    const qual = override || (style ? L.styles[style] : '');
+    if (style && !qual) return null;
+    return qual ? `${noun} ${qual}` : noun;
+  });
+
+  if (items.some((x) => !x)) return null;
+  return L.bestWith(found.productId, L.join(items));
+}
 
 // 'en' and anything unrecognised return '' — the prompts go out unchanged.
 export function languageDirective(locale) {
@@ -490,12 +566,17 @@ function suggestionsFor(code) {
   const proteins = p.bestWith.proteins;
   const out = [];
 
+  const pairs = [];
   for (let i = 0; i < 3 && i < proteins.length; i++) {
     const style = styles[i % styles.length];
     out.push(style ? `${style} ${proteins[i]}` : proteins[i]);
+    pairs.push({ style: style || '', protein: proteins[i] });
   }
 
-  return { productId: p.id, productName: p.name, suggestions: out };
+  // `pairs` keeps the two halves separate so a translation can put them back
+  // together under its own grammar. English happens to be `style protein`;
+  // Spanish is not, and joining first would throw that away.
+  return { productId: p.id, productName: p.name, suggestions: out, pairs };
 }
 
 /* ------------------------------------------------------------- fallback */
@@ -650,16 +731,20 @@ export default {
       const onBottle = context ? suggestionsFor(context) : null;
       if (onBottle && onBottle.suggestions.length) {
         const list = onBottle.suggestions;
-        const phrased =
+        const phrasedEn =
           list.length > 1
             ? `${list.slice(0, -1).join(', ')} and ${list[list.length - 1]}`
             : list[0];
+        // Translated where we can; English is the fallback, never a half-and-half.
+        const sentence =
+          bestWithSentence(body.locale, onBottle) ||
+          `${onBottle.productName} sits best with ${phrasedEn}.`;
         return json({
           intent: 'pairing',
           productId: onBottle.productId,
           productName: onBottle.productName,
-          answer: `${onBottle.productName} sits best with ${phrased}.`,
-          explanation: `${onBottle.productName} sits best with ${phrased}.`,
+          answer: sentence,
+          explanation: sentence,
           picks: [onBottle.productId],
           suggestions: list,
           source: 'bestWith',

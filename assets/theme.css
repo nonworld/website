@@ -7,15 +7,26 @@
    ========================================================================== */
 
 :root {
-  --non-bg: #0c0c0c;
+  /* The ground is a warm charcoal, not a near-black. It was #0c0c0c, which
+     put large white type at nearly full contrast and made photography punch a
+     hole in the page rather than sit on it. The hue leans toward the brand
+     ink (#231f20) rather than to a neutral grey, so the whole dark scale
+     reads as one family.
+
+     The scale moves together, and has to. Lifting the ground on its own would
+     leave --non-panel below the page behind it, and every card on the site
+     would read as a hole instead of a surface. Panels, lines and the photo
+     bed each step up by the same amount so separation is preserved rather
+     than crushed. */
+  --non-bg: #171513;
   --non-fg: #f2f0ea;
   --non-fg-dim: #a3a3a0;
   --non-fg-mute: #8a8a87;
   --non-fg-faint: #7d7d7a;
   --non-fg-ghost: #5f5f5c;
-  --non-line: #1f1f1d;
-  --non-line-strong: #333331;
-  --non-line-soft: #262624;
+  --non-line: #2a2825;
+  --non-line-strong: #3d3a36;
+  --non-line-soft: #302e2b;
   /* One shape for repeating content imagery: cards, tiles, rooms, the pairing
      verdict, the stockist offer cards. Bands, the PDP gallery and the venue
      logos deliberately do NOT read this — a hero forced to 1:1 is taller than
@@ -23,25 +34,25 @@
      padded into a square box stops being a wordmark. Sections that expose a
      ratio setting still win; this is the floor, not an override. */
   --non-image-ratio: 1;
-  --non-panel: #131311;
+  --non-panel: #1f1d1b;
   /* Every NON Somm surface reads this one token — the chat box on the homepage,
      the product-page box, the pairing tool and the stockists search all share
      .non-somm. It used to fall back to --non-panel, so the Somm only looked
      like the Somm where a section had been told to set somm_bg by hand. */
   --non-somm-bg: #c9c7c1;
   --non-somm-fg: #0c0c0c;
-  --non-panel-alt: #161614;
+  --non-panel-alt: #232120;
   --non-invert-bg: #ffffff;
   --non-invert-fg: #000000;
   --non-ink: #231f20;
   /* One scrim, one value. Drawer and lotto had rgba(6,6,6,.86) while captions
      used rgba(12,12,12,.9) and .85 and .25 — four different blacks doing the
      same job. */
-  --non-scrim: rgba(12, 12, 12, .88);
-  --non-scrim-soft: rgba(12, 12, 12, .55);
+  --non-scrim: rgba(23, 21, 19, .88);
+  --non-scrim-soft: rgba(23, 21, 19, .55);
   /* The fill behind photography. A shade above the page so a dark photo has a
      legible edge instead of dissolving into the background. */
-  --non-photo-bed: #17171a;
+  --non-photo-bed: #201f22;
 
   /* Two faces, and no named alternates. Arial, Menlo, SFMono and ui-monospace
      were in these stacks as fallbacks; none of them is a NON font, and a
@@ -155,36 +166,6 @@
   src: local('Helvetica Neue'), local('HelveticaNeue'), local('Helvetica Neue Light'), local('Helvetica'), local('Arial');
   font-weight: 300 700;
   font-display: swap;
-}
-
-/* Softer charcoal ground — home and shop only.
-
-   #0c0c0c is a near-black. Lifting it to a warm charcoal takes the harshness
-   off large white type and lets photography sit on the page instead of
-   punching a hole in it. The hue moves toward the brand ink (#231f20) rather
-   than to a neutral grey, so it reads as the same family.
-
-   Scoped with :has() on the root, NOT on body. `html` also paints
-   `background: var(--non-bg)`, and the canvas colour is taken from html — set
-   the token on body alone and the overscroll gutter stays near-black while
-   the page is charcoal. Where :has() is unsupported the page simply keeps the
-   old ground, which is a clean degradation rather than a broken one.
-
-   The whole dark scale has to move together. Raising the ground alone would
-   put --non-panel (#131311) BELOW the page behind it, inverting every card:
-   panels would read as holes instead of surfaces. Lines and the photo bed
-   step up by the same amount so separation is preserved rather than crushed. */
-:root:has(body.template-index),
-:root:has(body.template-collection) {
-  --non-bg: #171513;
-  --non-panel: #1f1d1b;
-  --non-panel-alt: #232120;
-  --non-line: #2a2825;
-  --non-line-soft: #302e2b;
-  --non-line-strong: #3d3a36;
-  --non-photo-bed: #201f22;
-  --non-scrim: rgba(23, 21, 19, .88);
-  --non-scrim-soft: rgba(23, 21, 19, .55);
 }
 
 *, *::before, *::after { box-sizing: border-box; min-width: 0; }

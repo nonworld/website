@@ -2398,6 +2398,40 @@ a, button, .non-card, .non-filter, .non-pair__opt, .non-somm__seed,
   object-fit: cover; display: block;
 }
 
+/* Grade for the video band.
+
+   Large flat surfaces — white walls, poured floors — are where H.264 gives up
+   first: it spends its bits on the moving subject and leaves the flat areas
+   blotchy. Two things fix the FEEL of that without re-encoding:
+
+   1. Pulling saturation down stops the hi-vis and painted lines pinning the
+      eye to the noisiest part of the frame.
+   2. A fine grain layer breaks the banding up. Counter-intuitive, but adding
+      noise is the standard fix for visible banding — the eye reads dithered
+      as smooth and stepped as dirty.
+
+   The grain is inline feTurbulence, so it costs zero requests. */
+.non-about-hard-media[data-grade="soften"] > video {
+  filter: saturate(0.4) contrast(0.94) brightness(1.03);
+}
+.non-about-hard-media[data-grade="mono"] > video {
+  filter: grayscale(1) contrast(0.94) brightness(1.04);
+}
+
+.non-about-hard-media__grain {
+  position: absolute; inset: 0;
+  pointer-events: none;
+  mix-blend-mode: overlay;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='160' height='160' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+
+/* Soft scrim so the band lands into the page instead of cutting against it. */
+.non-about-hard-media__scrim {
+  position: absolute; inset: 0;
+  pointer-events: none;
+  background: linear-gradient(to bottom, rgba(35,31,32,0.18) 0%, rgba(35,31,32,0) 22%, rgba(35,31,32,0) 78%, rgba(35,31,32,0.28) 100%);
+}
+
 /* Full-bleed kitchen band, 420px, caption over the image. The scrim is a
    gradient rather than a flat overlay so the type stays legible at the bottom
    without flattening the whole photograph. */

@@ -226,7 +226,7 @@
   by hand). The slot renders nothing until an asset is set.
 {%- endcomment -%}
 {%- if section.settings.hard_video_url != blank or section.settings.hard_image != blank or section.settings.hard_image_url != blank -%}
-  <div class="non-about-hard-media">
+  <div class="non-about-hard-media"{% if section.settings.hard_video_url != blank %} data-grade="{{ section.settings.hard_video_grade }}"{% endif %}>
     {%- if section.settings.hard_video_url != blank -%}
       {%- comment -%}
         Video wins over both image slots when it is set. Muted + playsinline are
@@ -243,6 +243,10 @@
         {% if section.settings.hard_video_poster_url != blank %}poster="{{ section.settings.hard_video_poster_url }}"{% endif %}>
         <source src="{{ section.settings.hard_video_url }}" type="video/mp4">
       </video>
+      {%- if section.settings.hard_video_grain > 0 -%}
+        <div class="non-about-hard-media__grain" style="opacity:{{ section.settings.hard_video_grain | divided_by: 100.0 }}"></div>
+      {%- endif -%}
+      <div class="non-about-hard-media__scrim"></div>
     {%- elsif section.settings.hard_image != blank -%}
       {{ section.settings.hard_image | image_url: width: 1600, format: 'webp' | image_tag: loading: 'lazy', widths: '600,900,1200,1600', alt: section.settings.hard_image_alt }}
     {%- else -%}
@@ -583,6 +587,29 @@
       "id": "hard_video_url",
       "label": "The difficult part — video URL (mp4)",
       "info": "Takes precedence over both image slots when set. Autoplays muted and loops, so keep it short and silent."
+    },
+    {
+      "type": "select",
+      "id": "hard_video_grade",
+      "label": "The difficult part — video grade",
+      "options": [
+        { "value": "none", "label": "Ungraded" },
+        { "value": "soften", "label": "Softened" },
+        { "value": "mono", "label": "Monochrome" }
+      ],
+      "default": "soften",
+      "info": "Softened pulls the colour back so the flat white surfaces stop fighting the hi-vis. Monochrome is the house treatment."
+    },
+    {
+      "type": "range",
+      "id": "hard_video_grain",
+      "label": "The difficult part — grain",
+      "min": 0,
+      "max": 12,
+      "step": 1,
+      "unit": "%",
+      "default": 5,
+      "info": "Fine grain over the video. Adding noise is what fixes visible banding on flat walls — the eye reads dithered as smooth and stepped as dirty. 0 turns it off."
     },
     {
       "type": "text",

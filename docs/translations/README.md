@@ -3,7 +3,7 @@
 Registered against `gid://shopify/OnlineStoreTheme/198370820256`, locale `es`.
 All writes so far returned zero `userErrors`.
 
-**215 strings registered so far.**
+**241 strings registered so far. All About PROSE is done.**
 
 ## Done
 
@@ -14,28 +14,23 @@ All writes so far returned zero `userErrors`.
 | Homepage section copy | 35 |
 | Shop / collection copy | 21 |
 | Contact + Stockists copy | 19 |
-| About prose, batches 1 and 2 | 52 |
+| About prose (complete) | 78 |
 
 ## Resume
 
-`es-about-remaining.json` holds the **26 remaining About prose strings** — the six
-process stages, the three stats, the credentials and the two closing CTAs — already
-translated, with their keys and digests. Register them with:
+All About PROSE is registered; `es-about-remaining.json` is gone because it is
+empty. Pick up from "Still to do" below.
 
-```graphql
-mutation Reg($resourceId: ID!, $translations: [TranslationInput!]!) {
-  translationsRegister(resourceId: $resourceId, translations: $translations) {
-    translations { key }
-    userErrors { field message }
-  }
-}
-```
-
-**Re-check the digests first.** A digest is invalidated the moment the English
-changes, and a stale one fails the write. Re-fetch with
+**Re-check digests before any write.** A digest is invalidated the moment the
+English changes, and a stale one fails. Re-fetch with
 `translatableResource(resourceId: ...) { translatableContent { key value digest } }`
-— it returns ~840KB, so it lands in a tool-results file; filter by prefix
-rather than reading it.
+— it returns ~840KB into a tool-results file; filter by prefix rather than
+reading it.
+
+**Keep batches to ~13 strings.** A 26-string write timed out mid-flight; the
+connector returned an error and NOTHING was written. Always read back after a
+timeout rather than assuming either outcome — retrying blind can double-write
+or skip.
 
 ## Still to do
 

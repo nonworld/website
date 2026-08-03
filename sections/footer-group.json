@@ -30,7 +30,7 @@
             "text": "Someone else is already pouring it. Find the restaurants, bars and retailers near you with NON on the list.",
             "link_label": "Find a stockist",
             "link": "/pages/store-locator",
-            "priority_templates": "index, collection, product, contact"
+            "priority_templates": "collection, product, contact"
           }
         },
         "bottle": {
@@ -42,7 +42,7 @@
             "text": "If you already know what you are after, the whole range is one click away — nine bottles, sets and the stopper.",
             "link_label": "Shop the range",
             "link": "/collections/the-range",
-            "priority_templates": "index, pairing, our-story"
+            "priority_templates": "index, pairing"
           }
         },
         "pair": {
@@ -54,7 +54,7 @@
             "text": "Tell the somm what you are eating and it writes the dish around what is already in the glass, shopping list included.",
             "link_label": "Find your pairing",
             "link": "/pages/pairing",
-            "priority_templates": "product, stockists, our-story"
+            "priority_templates": "index, product, stockists"
           }
         },
         "hq": {
@@ -66,7 +66,7 @@
             "text": "NONHQ in Cheltenham is the world's first non-alcoholic cellar door. Taste the ingredients separately, then the bottles.",
             "link_label": "Book a tasting",
             "link": "/pages/visit-us",
-            "priority_templates": "collection, pairing, stockists"
+            "priority_templates": "collection, stockists, our-story"
           }
         },
         "story": {
@@ -80,6 +80,18 @@
             "link": "/pages/about-us",
             "priority_templates": "contact"
           }
+        },
+        "sets": {
+          "type": "cell",
+          "settings": {
+            "image_url": "https://cdn.shopify.com/s/files/1/0371/5874/8205/files/Mixed-6.jpg?v=1763080460&width=1400",
+            "image_alt": "The NON mixed six",
+            "title": "Not sure where to start?",
+            "text": "The mixed six covers every course, so you find out which bottle is yours without having to pick one first.",
+            "link_label": "See the sets",
+            "link": "/collections/non-sets",
+            "priority_templates": "pairing, our-story"
+          }
         }
       },
       "block_order": [
@@ -87,7 +99,8 @@
         "bottle",
         "pair",
         "hq",
-        "story"
+        "story",
+        "sets"
       ],
       "settings": {
         "max_height": 0,

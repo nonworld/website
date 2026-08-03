@@ -43,6 +43,11 @@ setting with `"default": ""` invalidates the entire section file.
 3. a template setting whose id is absent from the section schema
 4. an empty `"default": ""` on a free-text setting
 5. unbalanced CSS braces or comments
+6. a section-group JSON with more blocks than the section's `max_blocks`
+   (2026-08-03: adding a third closer card rejected the whole `footer-group.json`;
+   `themeFilesUpsert` named it as "Block count exceeds maximum of 2")
+7. an unrecognised key in the schema JSON — a `"_comment"` note added beside
+   `max_blocks` was enough to make `split-feature.liquid` stop deploying
 
 **A `range` setting in a template can be silently refused.** `index.json` was
 rejected four times until `rotate_seconds` was removed from it — the schema

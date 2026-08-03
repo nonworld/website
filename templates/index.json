@@ -261,38 +261,6 @@
         "heading": "Press"
       }
     },
-    "split": {
-      "type": "split-feature",
-      "blocks": {
-        "s1": {
-          "type": "cell",
-          "settings": {
-            "image_url": "https://www.non.world/cdn/shop/files/Work_With_Us.jpg?v=1739406834&width=1200",
-            "image_alt": "The NONHQ cellar door in Cheltenham, Victoria",
-            "title": "Visit NONHQ",
-            "text": "The world's first non-alcoholic cellar door. Tastings, tours and workshops in Cheltenham, VIC.",
-            "link_label": "Book a tasting",
-            "link": "/pages/visit-us"
-          }
-        },
-        "s2": {
-          "type": "cell",
-          "settings": {
-            "image_url": "https://www.non.world/cdn/shop/files/The-Stopper-Set-3_6c6b42db-6db2-4a64-9a03-f98ec154f113.jpg?v=1749960905&width=1200",
-            "image_alt": "The NON stopper on an open bottle",
-            "title": "Savour the flavour",
-            "text": "The NONstopper holds carbonation and freshness seven days, cold.",
-            "link_label": "See the stopper",
-            "link": "/products/nonstopper"
-          }
-        }
-      },
-      "block_order": [
-        "s1",
-        "s2"
-      ],
-      "settings": {}
-    },
     "sets": {
       "type": "featured-collection",
       "settings": {
@@ -314,8 +282,6 @@
     "range",
     "sets",
     "made-for",
-    "press",
-    "split"
+    "press"
   ]
 }
-

@@ -202,47 +202,13 @@
         "heading": "The whole table, at a glance",
         "subheading": "Course × bottle",
         "why_heading": "Why it works with food"
-      }
-    },
-    "closers": {
-      "type": "split-feature",
-      "blocks": {
-        "out": {
-          "type": "cell",
-          "settings": {
-            "image_url": "https://cdn.shopify.com/s/files/1/0371/5874/8205/files/non-story-038A8614.jpg?v=1785541727&width=1400",
-            "image_alt": "NON poured at a restaurant table",
-            "title": "Can't be bothered cooking?",
-            "text": "Someone else is already pouring it. Find the restaurants, bars and retailers near you with NON on the list.",
-            "link_label": "Find a stockist",
-            "link": "/pages/store-locator"
-          }
-        },
-        "bottle": {
-          "type": "cell",
-          "settings": {
-            "image_url": "https://cdn.shopify.com/s/files/1/0371/5874/8205/files/non-story-038A8683.jpg?v=1785541727&width=1400",
-            "image_alt": "The NON range",
-            "title": "Skip the questions?",
-            "text": "If you already know what you are after, the whole range is one click away — nine bottles, sets and the stopper.",
-            "link_label": "Shop the range",
-            "link": "/collections/the-range"
-          }
-        }
       },
-      "block_order": [
-        "out",
-        "bottle"
-      ],
-      "settings": {
-        "max_height": 0
-      }
+      "disabled": true
     }
   },
   "order": [
     "main",
     "recipes",
-    "matrix",
-    "closers"
+    "matrix"
   ]
 }

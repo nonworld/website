@@ -5413,3 +5413,23 @@ select:-moz-focusring { color: transparent; text-shadow: 0 0 0 var(--non-fg); }
   max-width: none;
 }
 .non-verdict__stage:has(.non-verdict__answer:not([hidden])) .non-verdict__await { display: none; }
+
+/* The somm orb sits LEFT, not centred in its column.
+
+   Its column is narrower than the orb itself, and `margin: 0 auto` then
+   centred the overflow — so the orb floated inboard while the eyebrow above
+   it, the input beside it and everything else on the page started at the
+   gutter. It read as a stray object rather than the mark for the thing next
+   to it. Last in the file because several earlier rules set this margin and
+   the last one wins. */
+.non-somm::before,
+.non-sommbox::before {
+  margin-left: 0;
+  margin-right: auto;
+}
+
+/* The closers pair now renders from the footer group, on every page. Give it
+   the same top rule every other band gets so it does not butt straight into
+   whatever section happens to end above it. */
+#shopify-section-sections--closers,
+.shopify-section-group-footer-group .non-split { border-top: 1px solid var(--non-line); }

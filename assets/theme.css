@@ -5161,3 +5161,46 @@ select:-moz-focusring { color: transparent; text-shadow: 0 0 0 var(--non-fg); }
 /* The recipe generator is a pale surface, so the marker fills with that. */
 .non-recipes { --non-step-dot-bg: rgb(201, 199, 194); }
 .non-recipes .non-recipe { --non-step-dot-bg: rgb(201, 199, 194); }
+
+/* ==========================================================================
+   The somm orb, aligned to the NON logo.
+
+   It looked indented on every page and margin-left: 0 did not fix it, because
+   the offset was never in the margin. Two things were stacking:
+
+   1. The orb is a radial-gradient with its circle at 40% — so inside a 96px
+      box the bright core sits ~38px in. The BOX was flush left; the visible
+      orb never was.
+   2. The somm host starts at the content gutter (46px) while the logo starts
+      at 40px, so everything in the column was already 6px inboard.
+
+   --non-orb-pull cancels both: 40% of the orb's width to undo the gradient's
+   own offset, plus the 6px gutter difference. The result is the orb's bright
+   core sitting on the same vertical as the N of NON.
+
+   Tunable rather than hardcoded, because "aligning" a soft glow is a
+   judgement about where a blurred edge appears to begin, and that is Aaron's
+   eye to settle, not a number I can derive.
+   ========================================================================== */
+.non-somm,
+.non-sommbox {
+  --non-orb-core: 40%;   /* matches the gradient's circle position */
+  --non-orb-gutter: 6px; /* content gutter minus the logo's own left */
+}
+
+.non-somm::before,
+.non-sommbox::before {
+  margin-left: calc((-1 * var(--non-orb-core)) - var(--non-orb-gutter));
+  margin-right: auto;
+}
+
+/* The glow now reaches into the page gutter by design, so nothing above it
+   may clip — a half-cropped orb reads as a rendering fault. */
+.non-somm,
+.non-sommbox,
+.non-somm__bar { overflow: visible; }
+
+@media (max-width: 859px) {
+  /* Tighter gutter on a phone, so the pull is smaller. */
+  .non-somm, .non-sommbox { --non-orb-gutter: 0px; }
+}

@@ -107,11 +107,17 @@ Voice: a sommelier who knows the kitchen. Specific and unfussy.`;
 // So route first. One cheap call, one word out.
 const ROUTE_SYSTEM = `Classify the question. Reply with ONE word, nothing else:
 
-pairing  — asks what to drink with food, an occasion, a meal, a gift, a mood,
-           or which bottle suits something
+pairing  — asks what to drink WITH A NAMED FOOD, meal or dish. There must be
+           food in the question. "steak", "oysters", "a cheese board", "mapo
+           tofu", "what goes with roast chicken".
+           NOT a gift, NOT "is this a good choice", NOT "who is it for" —
+           those name no food and belong in facts.
 facts    — asks about the drinks themselves: calories, kilojoules, sugar,
            carbs, sodium, alcohol, ingredients, allergens, vegan, gluten,
-           caffeine, how to serve it, how long it keeps, what it tastes like
+           caffeine, how to serve it, how long it keeps, what it tastes like,
+           which bottle is most popular or the best seller, whether it makes a
+           good gift, who a bottle suits, and whether the bottle someone is
+           looking at is a good choice
 
 Examples that are facts, not pairing:
   "are they low calorie?"        "how many calories?"      "is it sweet?"
@@ -189,6 +195,19 @@ House rules. These override anything above them:
 - Never narrate your own sources. Do not say "I don't have", "the notes", "the
   sheet", "my data", "I can't compare", or apologise for a gap. Answer what you
   can and stop. Saying less is always better than explaining what you lack.
+
+- The range is NON1, NON2, NON3, NON5, NON7 and NON9, plus the stopper and the
+  sets. Never name any other product. Do not invent a bottle, a flavour or a
+  variant that is not in the data in front of you, and never describe a bottle
+  by a name you were not given. If you want to compare, compare with one of the
+  six by its real name.
+
+- The sheet carries how each bottle SELLS. Use it to reassure a customer that
+  they have chosen well, and never against the bottle they are looking at. If
+  someone is on a bottle's own page, do not tell them it is the least ordered,
+  do not rank it below the others, and do not volunteer its position unless
+  they asked which is most popular. "One of the six" is always available and
+  always true.
 
 - Health, medical, pregnancy, medication, addiction and driving questions: give
   the factual position — every NON bottle is 0.0% ABV — and then say it is a
@@ -801,6 +820,35 @@ export default {
         });
       }
       return json(fallbackResponse('extraction', e, env), 200);
+    }
+
+    /* A pairing question that names no food is not a pairing question.
+
+       "I'm buying it as a gift" routes to pairing, extraction succeeds and
+       returns an EMPTY profile — no proteins, no flavour notes — the bottle
+       then scores near zero against nothing, and the verdict prompt is under
+       orders to state a weak fit plainly. The result on NON1's own page was
+       "a reasonable, not standout, choice" about the best-selling bottle in
+       the range. The scoring was working; it was being asked the wrong
+       question.
+
+       An empty profile with a bottle in hand is a question ABOUT the bottle,
+       so it goes to the facts path, which has the full sheet including how
+       the bottle actually sells. */
+    if (context && dish && !(dish.proteins || []).length && !(dish.flavourNotes || []).length) {
+      try {
+        const result = await answerFacts(env, query, context, body.facts, lang);
+        return json({
+          intent: 'facts',
+          answer: result.answer,
+          explanation: result.answer,
+          picks: result.picks,
+          productId: String(context).toUpperCase(),
+          source: 'no-dish',
+        });
+      } catch (e) {
+        return json(fallbackResponse('facts', e, env), 200);
+      }
     }
 
     // ---- product page: score the one bottle, return a verdict -------------

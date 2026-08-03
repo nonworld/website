@@ -24,31 +24,83 @@
         "hq": {
           "type": "cell",
           "settings": {
-            "image_url": "https://cdn.shopify.com/s/files/1/0371/5874/8205/files/non-story-038A8469.jpg?v=1785541727&width=1400",
+            "image_url": "https://cdn.shopify.com/s/files/1/0371/5874/8205/files/Work_With_Us.jpg?v=1739406834&width=1400",
             "image_alt": "NONHQ in Cheltenham",
             "title": "Visit NONHQ",
-            "text": "The world's first non-alcoholic cellar door, in Cheltenham. Taste the raw ingredients on their own first, then the bottles they end up in.",
+            "text": "The world's first non-alcoholic cellar door. Tastings, tours and workshops in Cheltenham, VIC.",
             "link_label": "Book a tasting",
             "link": "/pages/visit-us",
-            "priority_templates": ""
+            "priority_templates": "index, our-story, stockists"
           }
         },
         "stopper": {
           "type": "cell",
           "settings": {
-            "image_url": "https://cdn.shopify.com/s/files/1/0371/5874/8205/files/NON-Stopper-1.jpg?v=1746615649&width=1400",
+            "image_url": "https://cdn.shopify.com/s/files/1/0371/5874/8205/files/The-Stopper-Set-3_6c6b42db-6db2-4a64-9a03-f98ec154f113.jpg?v=1749960905&width=1400",
             "image_alt": "The NON Stopper",
             "title": "Savour the flavour",
-            "text": "Every bottle is sparkling, and every sparkling bottle goes flat. The stopper holds the carbonation so the fifth glass reads like the first.",
-            "link_label": "Get the stopper",
+            "text": "The NONstopper holds carbonation and freshness seven days, cold.",
+            "link_label": "See the stopper",
             "link": "/products/nonstopper",
-            "priority_templates": ""
+            "priority_templates": "index"
+          }
+        },
+        "pair": {
+          "type": "cell",
+          "settings": {
+            "image_url": "https://cdn.shopify.com/s/files/1/0371/5874/8205/files/non-story-038A8736.jpg?v=1785541727&width=1400",
+            "image_alt": "A glass of NON",
+            "title": "Or start with a glass",
+            "text": "Tell the somm what you're eating and it will pick the bottle. That's the fastest version of everything on this page.",
+            "link_label": "Find your pairing",
+            "link": "/pages/pairing",
+            "priority_templates": "our-story, collection"
+          }
+        },
+        "out": {
+          "type": "cell",
+          "settings": {
+            "image_url": "https://cdn.shopify.com/s/files/1/0371/5874/8205/files/non-story-038A8614.jpg?v=1785541727&width=1400",
+            "image_alt": "NON poured at a restaurant table",
+            "title": "Can't be bothered cooking?",
+            "text": "Someone else is already pouring it. Find the restaurants, bars and retailers near you with NON on the list.",
+            "link_label": "Find a stockist",
+            "link": "/pages/store-locator",
+            "priority_templates": "collection, product, contact"
+          }
+        },
+        "bottle": {
+          "type": "cell",
+          "settings": {
+            "image_url": "https://cdn.shopify.com/s/files/1/0371/5874/8205/files/non-story-038A8683.jpg?v=1785541727&width=1400",
+            "image_alt": "The NON range",
+            "title": "Skip the questions?",
+            "text": "If you already know what you are after, the whole range is one click away — nine bottles, sets and the stopper.",
+            "link_label": "Shop the range",
+            "link": "/collections/the-range",
+            "priority_templates": "pairing, product, stockists"
+          }
+        },
+        "story": {
+          "type": "cell",
+          "settings": {
+            "image_url": "https://cdn.shopify.com/s/files/1/0371/5874/8205/files/non-story-038A8388.jpg?v=1785541727&width=1400",
+            "image_alt": "Fruit cooking in the NON kitchen",
+            "title": "Cooked, not de-alcoholised",
+            "text": "No wine is made and then stripped. Fruit, tannin, salt and acid, built from zero in a kitchen in Melbourne.",
+            "link_label": "Read the story",
+            "link": "/pages/about-us",
+            "priority_templates": "contact, pairing"
           }
         }
       },
       "block_order": [
         "hq",
-        "stopper"
+        "stopper",
+        "pair",
+        "out",
+        "bottle",
+        "story"
       ],
       "settings": {
         "max_height": 0,

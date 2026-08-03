@@ -274,8 +274,7 @@
         "q4"
       ],
       "settings": {
-        "heading": "Press",
-        "rotate_seconds": 7
+        "heading": "Press"
       }
     },
     "sets": {
@@ -302,4 +301,3 @@
     "press"
   ]
 }
-

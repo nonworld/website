@@ -321,7 +321,23 @@
     searchForm.addEventListener('submit', function (e) {
       e.preventDefault();
       state.query = queryInput.value;
+
+      /* Length and result count only — never the search term. A stockist
+         search is often a suburb, which is close enough to a location to be
+         worth not storing. The number that matters is how often a search
+         returns nothing: that is either a coverage gap worth knowing about or
+         a matcher that has stopped working, and both look identical from the
+         outside. */
+      if (window.NON && NON.started) {
+        NON.started('stockist_search', { chars: (state.query || '').trim().length });
+      }
       applyFilters();
+      if (window.NON && NON.answered) {
+        var n = (state.results || state.filtered || []).length;
+        NON.answered('stockist_search', { results: n });
+        if (!n) NON.failed('stockist_search', { reason: 'no_results' });
+      }
+      return;
     });
 
     var debounce;

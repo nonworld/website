@@ -71,6 +71,21 @@
   function apply(key) {
     var filtered = key !== 'all';
 
+    /* The shelf is the whole proposition — "tell it what you're eating and it
+       reorders itself". If the tags ever stop parsing, every card scores 0 and
+       the shelf silently returns its default order, which looks like a filter
+       that found nothing rather than one that broke. matched is the number
+       that would go to zero. */
+    if (window.NON && NON.started) {
+      var matched = filtered
+        ? pours.filter(function (i) { return (i.tags[key] || 0) > 0; }).length
+        : pours.length;
+      NON.started('shelf_filter', { filter: key, matched: matched, of: pours.length });
+      if (filtered && matched === 0) {
+        NON.failed('shelf_filter', { filter: key, reason: 'no_product_scored' });
+      }
+    }
+
     // order: best match first, non-pours pinned to the end
     var ordered = filtered
       ? pours

@@ -3,7 +3,7 @@
 Registered against `gid://shopify/OnlineStoreTheme/198370820256`, locale `es`.
 All writes so far returned zero `userErrors`.
 
-**259 strings registered so far. All of About is done — prose AND process data.**
+**277 strings registered. All of About is done, plus the six bottles' titles and SEO.**
 
 ## Done
 
@@ -16,6 +16,7 @@ All writes so far returned zero `userErrors`.
 | Contact + Stockists copy | 19 |
 | About prose (complete) | 78 |
 | About process data (complete) | 18 |
+| Product titles + SEO, six bottles | 18 |
 
 ## Resume
 
@@ -35,8 +36,19 @@ or skip.
 
 ## Still to do
 
-1. **Product copy** — titles, descriptions, and the metafields the PDP reads
-   (`profile`, `process`, `ingredients`, `storage`).
+1. **Product copy — BLOCKED on the metafield definitions.** `title`,
+   `meta_title` and `meta_description` are done for the six bottles. The PDP
+   metafields (`custom.profile`, `custom.process`, `custom.ingredients`,
+   `custom.storage`, plus `notes`, `sits`, `perfect_for_captions`) hold the
+   real copy but do NOT appear in the product's `translatableContent` — their
+   definitions are not marked translatable, so Shopify will not accept a
+   translation for them. That flag has to be set per definition before any of
+   it can be registered. Still to do once unblocked: those metafields,
+   `body_html`, and the remaining products (375ml, sets, merch, gift card).
+
+   Pattern used for SEO titles: `<title> | Alternativa al vino 0,0 %`. NOT
+   "alternativa al vino sin alcohol" — that string contains "vino sin
+   alcohol", which is the one rendering the glossary forbids outright.
 2. **The somm worker** — answers are generated live and CANNOT be translated
    afterwards. The target language and the glossary have to go into the prompt
    in `worker/somm/src`. Deploys with wrangler, which is authenticated here.

@@ -5214,3 +5214,21 @@ select:-moz-focusring { color: transparent; text-shadow: 0 0 0 var(--non-fg); }
   /* Tighter gutter on a phone, so the pull is smaller. */
   .non-somm, .non-sommbox { --non-orb-gutter: 0px; }
 }
+
+/* Press quotes: two at a time, the rest cycling.
+
+   Items are hidden by ABSENCE of .is-on rather than by a hidden attribute, so
+   the section still renders every quote as a plain stack if press-rotate.js
+   never loads — a worse layout, not a broken one.
+
+   Cross-fade only. The quotes are different lengths, so anything that moves
+   them would make the block jump on every rotation. */
+.non-press__item {
+  display: none;
+  opacity: 0;
+  transition: opacity var(--duration-slow, .5s) var(--ease-out, ease);
+}
+.non-press__item.is-on { display: block; opacity: 1; }
+
+/* No script: show them all rather than nothing. */
+.non-press__list:not([data-non-press-ready]) .non-press__item { display: block; opacity: 1; }

@@ -22,9 +22,25 @@
 <div class="{{ globe_class }}">
   <div class="non-mono non-eyebrow">{{ section.settings.heading }}</div>
 
-  <div class="non-press__list">
+  {%- comment -%}
+    TWO on screen, rotating through however many are added.
+
+    The old press strip carried four quotes side by side and each one was a
+    paragraph wide; two at a time gives each the room to be read. The rest are
+    in the DOM from the start — rendered, not fetched — so the rotation costs
+    nothing and the section degrades to a plain stack of every quote if the
+    script never runs.
+
+    aria-live is off deliberately: this rotates on a timer without the reader
+    asking, and announcing each change would talk over them.
+  {%- endcomment -%}
+  <div
+    class="non-press__list"
+    data-non-press
+    data-visible="2"
+    data-interval="{{ section.settings.rotate_seconds | default: 7 | times: 1000 }}">
     {%- for block in section.blocks -%}
-      <div {{ block.shopify_attributes }}>
+      <div class="non-press__item" data-non-press-item {{ block.shopify_attributes }}>
         <blockquote class="non-press__quote" style="margin:0">
           &ldquo;{{ block.settings.quote }}&rdquo;
         </blockquote>
@@ -50,6 +66,13 @@
   {%- endif -%}
 </div>
 
+{%- comment -%}
+  The rotation loads whether or not the globe does — they are unrelated, and
+  nesting it inside the globe condition meant the quotes only cycled on the
+  one layout that happened to have the globe switched on.
+{%- endcomment -%}
+<script src="{{ 'press-rotate.js' | asset_url }}" defer></script>
+
 {%- if show_globe -%}
   <script src="{{ 'globe.js' | asset_url }}" defer></script>
 {%- endif -%}
@@ -63,6 +86,17 @@
       "id": "heading",
       "label": "Heading",
       "default": "Press"
+    },
+    {
+      "type": "range",
+      "id": "rotate_seconds",
+      "label": "Rotate every",
+      "min": 4,
+      "max": 20,
+      "step": 1,
+      "unit": "s",
+      "default": 7,
+      "info": "Two quotes show at a time and cycle through the rest. Long enough to finish reading the longer ones."
     },
     {
       "type": "header",

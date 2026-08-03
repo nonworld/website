@@ -5476,9 +5476,34 @@ select:-moz-focusring { color: transparent; text-shadow: 0 0 0 var(--non-fg); }
 
   /* Product card titles are the primary route into a PDP from the grid. The
      media above them is already a large target; the title should not be a
-     16px sliver underneath it. */
-  .non-card__title a,
-  a.non-card__title {
+     sliver underneath it. The class is __name, not __title — the first pass
+     guessed and fixed nothing. */
+  .non-card__name,
+  a.non-card__name {
+    min-height: 44px;
+    display: inline-flex;
+    align-items: center;
+  }
+
+  /* ADD is the buy button. It was the smallest thing on the card. */
+  .non-card__add {
+    min-height: 44px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  /* The closers pair now sits on every page, so its two links are the most
+     repeated call to action on the site. */
+  .non-split__link {
+    min-height: 44px;
+    display: inline-flex;
+    align-items: center;
+  }
+
+  /* The logo is the route home from every page. */
+  .non-header__logo { min-height: 24px; }
+  .non-header > a:first-child {
     min-height: 44px;
     display: inline-flex;
     align-items: center;

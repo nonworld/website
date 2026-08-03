@@ -1138,23 +1138,26 @@ button { font-family: inherit; }
    applied globally, exactly as .non-somm does it further down. Everything in
    here (.non-filter, .non-step, .non-eyebrow) is written for the near-black
    page and would otherwise be light-on-light. */
+/* 2026-08-03: the band now carries the contact page's dash field instead of
+   being a light grey island.
+
+   The light-surface token overrides that used to live here are GONE, not
+   overridden further down. The field draws in the theme's ink on the page
+   ground, so the band has to sit on that ground for it to read at all — and
+   with the ground back, every token in here was inverting text that is
+   already correct on the near-black page. Redeclaring them dark would have
+   been fifteen lines restating :root. */
 .non-recipes {
-  --non-recipes-bg: #c9c7c2;
+  --non-recipes-bg: var(--non-bg);
   background: var(--non-recipes-bg);
-  border-top: 1px solid #1f1f1d;
-  border-bottom: 1px solid #1f1f1d;
-  color: #141412;
-  --non-fg: #141412;
-  --non-fg-dim: #3a3a38;
-  --non-fg-mute: #57554f;
-  --non-fg-faint: #6e6c66;
-  --non-fg-ghost: #9a988f;
-  --non-line: #dedad1;
-  --non-line-soft: #cbc7be;
-  --non-line-strong: #a8a5a0;
-  --non-invert-bg: #0c0c0c;
-  --non-invert-fg: #ffffff;
+  border-top: 1px solid var(--non-line);
+  border-bottom: 1px solid var(--non-line);
+  position: relative;
 }
+
+/* Same stacking contract as .non-contact-section: the field is absolute at
+   inset 0, so everything else needs a stacking context to sit above it. */
+.non-recipes > *:not(.non-contact-field) { position: relative; z-index: 1; }
 .non-recipes__inner { padding: 52px var(--non-pad) 56px; }
 
 .non-recipes__head {
@@ -1190,10 +1193,13 @@ button { font-family: inherit; }
 
    Sans, not mono: the design sets these in NONHelvetica at 13.5px. Mono here
    reads as a data label rather than something you press. */
+/* Chips, now on the dark band. These were white with a pale border, which is
+   invisible against the ink the field draws on. They take the page's own chip
+   colours; the canonical chip further up already defines the shape. */
 .non-recipes .non-filter {
-  background: #ffffff;
-  color: #141412;
-  border: 1px solid #c6c2b8;
+  background: transparent;
+  color: var(--non-fg);
+  border: 1px solid var(--non-line-strong);
   font-family: var(--non-sans);
   font-size: 13.5px;
   letter-spacing: 0;
@@ -1203,17 +1209,17 @@ button { font-family: inherit; }
   transition: border-color var(--duration-hover) var(--ease-hover),
               background var(--duration-hover) var(--ease-hover);
 }
-.non-recipes .non-filter:hover { border-color: #141412; }
+.non-recipes .non-filter:hover { border-color: var(--non-fg); }
 .non-recipes .non-filter[aria-pressed="true"] {
-  background: var(--non-ink);
-  color: #ffffff;
-  border-color: var(--non-ink);
+  background: var(--non-fg);
+  color: var(--non-bg);
+  border-color: var(--non-fg);
 }
 /* .non-filters carries its own top margin for the shop page; the column gap
    above is what spaces it here. */
 .non-recipes__group .non-filters { margin-top: 0; gap: 9px; }
 .non-recipes__write {
-  border: 0; background: var(--non-ink); color: #ffffff;
+  border: 0; background: var(--non-fg); color: var(--non-bg);
   font-family: var(--non-sans); font-size: var(--t-mono); font-weight: 700;
   letter-spacing: .14em; text-transform: uppercase; padding: 14px 22px;
   cursor: pointer; min-height: 44px;
@@ -5259,9 +5265,11 @@ select:-moz-focusring { color: transparent; text-shadow: 0 0 0 var(--non-fg); }
 
 .non-steps .non-step::before { background: var(--non-step-dot-bg, var(--non-bg)); }
 
-/* The recipe generator is a pale surface, so the marker fills with that. */
-.non-recipes { --non-step-dot-bg: rgb(201, 199, 194); }
-.non-recipes .non-recipe { --non-step-dot-bg: rgb(201, 199, 194); }
+/* The recipe generator used to be a pale surface and the step markers filled
+   with it. It runs on the page ground now, so they fill with that instead —
+   otherwise every marker is a pale disc on a dark band. */
+.non-recipes { --non-step-dot-bg: var(--non-bg); }
+.non-recipes .non-recipe { --non-step-dot-bg: var(--non-bg); }
 
 /* ==========================================================================
    The somm orb, aligned to the NON logo.

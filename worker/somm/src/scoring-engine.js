@@ -79,6 +79,8 @@ const PRODUCTS = [
       glutenFree: true,  // gluten measured at 0.0g on every panel
       volume: '750ml',
       ingredients: 'Water, verjus, raspberries, sugar, chamomile, salt.',
+      caffeine: 'none',
+      storage: 'Cool, dry place. Sparkling stopper preserves the carbonation. Refrigerate after opening, drink within 5-7 days.',
     },
     positioning: 'Sits where a dry rosé sat',
   },
@@ -121,6 +123,8 @@ const PRODUCTS = [
       glutenFree: true,  // gluten measured at 0.0g on every panel
       volume: '750ml',
       ingredients: 'Water, pears, verjus, black tea, kelp (kombu), olive brine, vanilla, agave, clove, cardamom, ginger root, star anise, peppercorn.',
+      caffeine: '51.8mg per bottle, from the black tea',
+      storage: 'Cool, dry place. Sparkling stopper preserves the carbonation. Refrigerate after opening, drink within 5-7 days.',
     },
     positioning: 'Sits where a rich white sat',
   },
@@ -166,6 +170,8 @@ const PRODUCTS = [
       glutenFree: true,  // gluten measured at 0.0g on every panel
       volume: '750ml',
       ingredients: 'Water, verjus, oranges, yuzu, sugar, salt, cinnamon.',
+      caffeine: 'none',
+      storage: 'Cool, dry place. Refrigerate after opening, drink within 5-7 days.',
     },
     positioning: 'Sits where an aromatic white sat',
   },
@@ -203,6 +209,8 @@ const PRODUCTS = [
       glutenFree: true,  // gluten measured at 0.0g on every panel
       volume: '750ml',
       ingredients: 'Water, verjus, sugar, lemon verbena, lemongrass, hibiscus, lemon myrtle, liquorice root, peppermint, salt, hops.',
+      caffeine: 'none',
+      storage: 'Cool, dry place. Sparkling stopper preserves the carbonation. Refrigerate after opening, drink within 5-7 days.',
     },
     positioning: 'Sits where a dry sparkling sat',
     // The only bottle that actively cools chilli — see heatBonus below.
@@ -245,6 +253,8 @@ const PRODUCTS = [
       glutenFree: true,  // gluten measured at 0.0g on every panel
       volume: '750ml',
       ingredients: 'Water, verjus, cherries, coffee arabica, salt, pink peppercorn, garam masala, allspice, nutmeg.',
+      caffeine: '37mg per bottle, from the coffee',
+      storage: 'Cool, dry place. Sparkling stopper preserves the carbonation. Refrigerate after opening, drink within 5-7 days.',
     },
     positioning: 'Sits where a big red sat',
   },
@@ -287,6 +297,8 @@ const PRODUCTS = [
       glutenFree: true,  // gluten measured at 0.0g on every panel
       volume: '750ml',
       ingredients: 'Water, verjus, Stanley plum, beetroot, Shiraz grape skin, blackberry, fir pine, sugar, tamari, ancho chilli, french oak.',
+      caffeine: 'none',
+      storage: 'Cool, dry place. Sparkling stopper preserves the carbonation. Refrigerate after opening, drink within 5-7 days.',
     },
     positioning: 'Sits where a pinot noir sat',
   },
@@ -455,6 +467,8 @@ function factsSheet(catalogue = PRODUCTS) {
         `  per 150ml serve: ${f.calories} cal, ${f.sugarG}g sugar (${f.addedSugarG}g added), ${f.sodiumMg}mg sodium, ${f.carbsG}g carbs, ${f.glutenG}g gluten`,
         `  ${f.vegan ? 'vegan' : 'not vegan'}, ${f.glutenFree ? 'gluten free' : 'contains gluten'}`,
         `  serve: ${f.serve}`,
+        `  caffeine: ${f.caffeine}`,
+        `  storage: ${f.storage}`,
         `  ingredients: ${f.ingredients}`,
         `  ${p.positioning}. ${p.dominantFlavours.join(', ')}.`,
       ].join('\n');

@@ -111,8 +111,7 @@ pairing  — asks what to drink with food, an occasion, a meal, a gift, a mood,
            or which bottle suits something
 facts    — asks about the drinks themselves: calories, kilojoules, sugar,
            carbs, sodium, alcohol, ingredients, allergens, vegan, gluten,
-           caffeine, how it is made, how to serve it, how long it keeps, what
-           it tastes like, how it differs from wine or from de-alcoholised
+           caffeine, how to serve it, how long it keeps, what it tastes like
 
 Examples that are facts, not pairing:
   "are they low calorie?"        "how many calories?"      "is it sweet?"
@@ -124,8 +123,14 @@ Anything asking how healthy, how sweet, how strong or what is in the bottle is
 facts. Only route to pairing when the question is about what to drink WITH
 something, or which bottle suits an occasion.
 brand    — asks about NON itself: who started it, why, where the name came
-           from, when it launched, what NON is trying to be, how it differs
-           from the category, Aaron's background, awards
+           from, when it launched, WHERE IT IS MADE, what NONHQ is, what NON
+           is trying to be, how it differs from the category, Aaron's
+           background, awards.
+           Also route here anything asking WHAT NON IS rather than what is in
+           it: "is it wine?", "is it a mocktail?", "how is it different from
+           de-alcoholised wine?", "is it just grape juice?". Those are the
+           brand's central claim and the approved wording lives in the notes,
+           not on the spec sheet.
 other    — anything else (shipping, orders, stockists, wholesale, careers)
 
 If it asks both, answer pairing.`;
@@ -149,6 +154,47 @@ Hard rules:
 - Two short paragraphs maximum. Australian English. No em dashes.
 
 Voice: a sommelier who knows the spec sheet. Precise and unfussy.`;
+
+/* ---------------------------------------------------------- house rules
+
+   Appended to all four PROSE prompts, never to the two classifiers.
+
+   Each of these exists because the 2026-08-03 audit caught it live, not
+   because it seemed prudent:
+
+   - The somm called the range "the wines" when declining a shipping question.
+     One line, unprompted, and it concedes the argument the whole About page
+     is built on. The Spanish directive already carried this rule; English
+     had it nowhere, which is how the translated path ended up better
+     protected than the source.
+
+   - Nine of thirty-eight answers narrated their own sources — "I don't have",
+     "the notes don't cover". FACTS_SYSTEM already banned it, but the rule
+     lived only there, so the brand answers were the worst offenders.
+
+   - Pregnancy was correctly deferred to a doctor; driving got a flat "no
+     alcohol in any of them to affect your ability to drive". Same class of
+     question, two standards, and the confident one is the one that carries
+     legal weight. State the ABV, then defer. */
+const HOUSE_RULES = `
+
+House rules. These override anything above them:
+
+- NON is a WINE ALTERNATIVE. It is never "wine". Never call the range "the
+  wines" or "our wines", never call a bottle "a wine", and never describe NON
+  as non-alcoholic wine or de-alcoholised wine. It sits where wine sits; it is
+  not a version of it. If you need a noun, use "bottle", "the range", or the
+  bottle's name.
+
+- Never narrate your own sources. Do not say "I don't have", "the notes", "the
+  sheet", "my data", "I can't compare", or apologise for a gap. Answer what you
+  can and stop. Saying less is always better than explaining what you lack.
+
+- Health, medical, pregnancy, medication, addiction and driving questions: give
+  the factual position — every NON bottle is 0.0% ABV — and then say it is a
+  question for a doctor or the relevant authority. Do not reassure, do not tell
+  anyone what is safe for them, and do not say a drink will or will not affect
+  their ability to do anything.`;
 
 /* --------------------------------------------------------------- language
 
@@ -384,8 +430,10 @@ async function answerFacts(env, query, code, facts, lang = '') {
 
   const answer = await claude(env, {
     model: env.EXPLAIN_MODEL || 'claude-sonnet-5',
-    maxTokens: 400,
-    system: FACTS_SYSTEM + lang,
+    // 400 truncated the trade answer mid-number ("NON9 the richest at 51 cal
+    // and 12.5"). Two short paragraphs of six-bottle comparison do not fit.
+    maxTokens: 700,
+    system: FACTS_SYSTEM + HOUSE_RULES + lang,
     messages: [
       {
         role: 'user',
@@ -487,7 +535,7 @@ async function explain(env, { query, product, reasons, score, lang = '' }) {
   return claude(env, {
     model: env.EXPLAIN_MODEL || 'claude-sonnet-5',
     maxTokens: 150,
-    system: EXPLAIN_SYSTEM + lang,
+    system: EXPLAIN_SYSTEM + HOUSE_RULES + lang,
     messages: [
       {
         role: 'user',
@@ -550,7 +598,7 @@ async function verdict(env, { query, product, reasons, score, fit, instead, lang
   return claude(env, {
     model: env.EXPLAIN_MODEL || 'claude-sonnet-5',
     maxTokens: 150,
-    system: VERDICT_SYSTEM + lang,
+    system: VERDICT_SYSTEM + HOUSE_RULES + lang,
     messages: [{ role: 'user', content: lines.join('\n') }],
   });
 }
@@ -687,7 +735,7 @@ export default {
         const answer = await claude(env, {
           model: env.EXPLAIN_MODEL || 'claude-sonnet-5',
           maxTokens: 400,
-          system: BRAND_SYSTEM + lang,
+          system: BRAND_SYSTEM + HOUSE_RULES + lang,
           messages: [{ role: 'user', content: query }],
         });
         return json({ intent: 'brand', answer, explanation: answer, picks: [], productId: null });
@@ -704,7 +752,9 @@ export default {
           answer: result.answer,
           explanation: result.answer,
           picks: result.picks,
-          productId: result.picks[0] || null,
+          // Fall back to the bottle the customer is looking at. It was null
+          // on five facts answers that named a bottle in their own text.
+          productId: result.picks[0] || (context ? String(context).toUpperCase() : null),
         });
       } catch (e) {
         return json(fallbackResponse('facts', e, env), 200);
@@ -786,6 +836,10 @@ export default {
         }
 
         return json({
+          // Set on every path: the audit found intent null on five of six
+          // pairing answers, which makes them invisible to the dataLayer
+          // _answered events that count by intent.
+          intent: 'pairing',
           productId: product.id,
           productName: product.name,
           fit,
@@ -826,6 +880,7 @@ export default {
 
     return json({
       // documented shape
+      intent: 'pairing',
       productId: top.productId,
       productName: top.product.name,
       score: top.score,

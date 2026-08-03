@@ -14,6 +14,15 @@
  * signed off as written.
  *
  * Anything not in here is not approved. The prompt that consumes it says so.
+ *
+ * 2026-08-03: WHERE IT IS MADE and NONHQ added after an audit found the Somm
+ * answering "the brand notes don't mention anything called NONHQ" and "I don't
+ * have production or origin details" — both while the answers sat in the live
+ * About page. Every line in those two blocks is taken from NON's own published
+ * site copy (the About page's where/who facts and the NONHQ call to action),
+ * not from an interview or from inference. Worth Aaron's eye at next review,
+ * since the rest of this file carries explicit sign-off and these two blocks
+ * carry only the site's authority.
  */
 export const BRAND_KB = `
 ORIGIN
@@ -28,6 +37,21 @@ ORIGIN
   restaurants, never bottled, never available outside that context.
 - Aaron's background is cosmetics chemistry, not drinks or hospitality.
 - NON launched in 2019.
+
+WHERE IT IS MADE
+- NON is made in a purpose-built kitchen in Cheltenham, Melbourne, Australia.
+- It is made in-house by chefs, food scientists, bartenders and winemakers.
+- Every ingredient is processed on its own before anything is blended: cooked,
+  steeped, sous-vide, roasted or dehydrated. Nothing is fermented and nothing
+  is de-alcoholised.
+- Production runs on 100% green energy and ships carbon neutral.
+
+NONHQ
+- NONHQ is NON's cellar door, and the first non-alcoholic cellar door in the
+  world.
+- Visitors taste the ingredients on their own first, then the bottles they go
+  into.
+- Tastings are booked through the Visit Us page on non.world.
 
 NAME AND POSITIONING
 - "NON" was chosen to be bold and unapologetic, rather than apologetic or

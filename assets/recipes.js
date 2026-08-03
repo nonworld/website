@@ -47,10 +47,23 @@
   // stacked down the page instead of choosing between them.
   var variant = 0;
 
+  /* 'any' means no restriction, and it is the default. Vegetarian includes
+     vegan, because someone avoiding meat is not also refusing the dish that
+     avoids more than they asked. Vegan is the strict subset. */
+  var diet = 'any';
+
+  function dietOk(el) {
+    if (diet === 'any') return true;
+    var d = el.getAttribute('data-diet') || 'omni';
+    if (diet === 'vegan') return d === 'vegan';
+    return d === 'vegan' || d === 'vegetarian';
+  }
+
   function matching() {
     return recipes.filter(function (r) {
       return r.getAttribute('data-bottle') === bottle &&
-             r.getAttribute('data-effort') === effort;
+             r.getAttribute('data-effort') === effort &&
+             dietOk(r);
     });
   }
 
@@ -62,7 +75,7 @@
   function effortsFor(b) {
     var seen = {};
     return recipes
-      .filter(function (r) { return r.getAttribute('data-bottle') === b; })
+      .filter(function (r) { return r.getAttribute('data-bottle') === b && dietOk(r); })
       .map(function (r) { return r.getAttribute('data-effort'); })
       .filter(function (e) {
         if (seen[e]) return false;
@@ -87,6 +100,12 @@
       btn.setAttribute(
         'aria-pressed',
         btn.getAttribute('data-non-recipe-effort') === effort ? 'true' : 'false'
+      );
+    });
+    root.querySelectorAll('[data-non-recipe-diet]').forEach(function (btn) {
+      btn.setAttribute(
+        'aria-pressed',
+        btn.getAttribute('data-non-recipe-diet') === diet ? 'true' : 'false'
       );
     });
   }
@@ -148,6 +167,15 @@
     var f = e.target.closest('[data-non-recipe-effort]');
     if (f) {
       effort = f.getAttribute('data-non-recipe-effort');
+      variant = 0;
+      marks();
+      if (written) write();
+      return;
+    }
+
+    var dbtn = e.target.closest('[data-non-recipe-diet]');
+    if (dbtn) {
+      diet = dbtn.getAttribute('data-non-recipe-diet');
       variant = 0;
       marks();
       if (written) write();

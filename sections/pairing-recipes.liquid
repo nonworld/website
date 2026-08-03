@@ -143,6 +143,33 @@
           </div>
         </div>
 
+        {%- comment -%}
+          Diet. Deliberately a NARROWING filter with an "anything" default
+          rather than a third mandatory pick: bottle x effort is already 30
+          combinations, and making diet compulsory would make it 90 and
+          guarantee empty states on most of them. Left on "anything" every
+          existing path behaves exactly as it did.
+        {%- endcomment -%}
+        <div class="non-recipes__group">
+          <span class="non-mono non-eyebrow">{{ section.settings.diet_label }}</span>
+          <div class="non-filters" role="group" aria-label="{{ section.settings.diet_label | escape }}">
+            {%- assign diets = 'any,vegetarian,vegan' | split: ',' -%}
+            {%- for diet in diets -%}
+              <button
+                type="button"
+                class="non-filter"
+                data-non-recipe-diet="{{ diet }}"
+                aria-pressed="{% if diet == 'any' %}true{% else %}false{% endif %}">
+                {%- case diet -%}
+                  {%- when 'any' -%}{{ section.settings.diet_any }}
+                  {%- when 'vegetarian' -%}{{ section.settings.diet_vegetarian }}
+                  {%- else -%}{{ section.settings.diet_vegan }}
+                {%- endcase -%}
+              </button>
+            {%- endfor -%}
+          </div>
+        </div>
+
         <button type="button" class="non-recipes__write" data-non-recipe-write>
           {{ section.settings.write_label }}
         </button>
@@ -182,6 +209,7 @@
             data-non-recipe
             data-bottle="{{ bottle.handle }}"
             data-effort="{{ recipe.effort | downcase | strip }}"
+            data-diet="{{ recipe.diet | default: 'omni' | downcase | strip }}"
             hidden>
             <div class="non-recipe__main">
               <div>
@@ -319,6 +347,30 @@
 {
   "name": "Pairing recipes",
   "settings": [
+    {
+      "type": "text",
+      "id": "diet_label",
+      "label": "Diet filter label",
+      "default": "Diet"
+    },
+    {
+      "type": "text",
+      "id": "diet_any",
+      "label": "Diet: no restriction",
+      "default": "Anything"
+    },
+    {
+      "type": "text",
+      "id": "diet_vegetarian",
+      "label": "Diet: vegetarian",
+      "default": "Vegetarian"
+    },
+    {
+      "type": "text",
+      "id": "diet_vegan",
+      "label": "Diet: vegan",
+      "default": "Vegan"
+    },
     {
       "type": "header",
       "content": "Background"

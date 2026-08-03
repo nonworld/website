@@ -1205,15 +1205,15 @@ button { font-family: inherit; }
 }
 .non-recipes .non-filter:hover { border-color: #141412; }
 .non-recipes .non-filter[aria-pressed="true"] {
-  background: #0c0c0c;
+  background: var(--non-ink);
   color: #ffffff;
-  border-color: #0c0c0c;
+  border-color: var(--non-ink);
 }
 /* .non-filters carries its own top margin for the shop page; the column gap
    above is what spaces it here. */
 .non-recipes__group .non-filters { margin-top: 0; gap: 9px; }
 .non-recipes__write {
-  border: 0; background: #0c0c0c; color: #ffffff;
+  border: 0; background: var(--non-ink); color: #ffffff;
   font-family: var(--non-sans); font-size: var(--t-mono); font-weight: 700;
   letter-spacing: .14em; text-transform: uppercase; padding: 14px 22px;
   cursor: pointer; min-height: 44px;
@@ -1291,7 +1291,7 @@ button { font-family: inherit; }
   display: flex; flex-direction: column; gap: 10px;
 }
 .non-recipe__add {
-  background: #0c0c0c; color: #ffffff; text-align: center;
+  background: var(--non-ink); color: #ffffff; text-align: center;
   font-size: var(--t-mono); font-weight: 700; letter-spacing: .14em;
   text-transform: uppercase; padding: 15px; text-decoration: none;
 }
@@ -1507,7 +1507,7 @@ button { font-family: inherit; }
 }
 .non-stock-filters .non-filter:hover { border-color: #141412; }
 .non-stock-filters .non-filter[aria-pressed="true"] {
-  background: #0c0c0c; color: #ffffff; border-color: #0c0c0c;
+  background: var(--non-ink); color: #ffffff; border-color: var(--non-ink);
 }
 
 /* The full-directory card closing the results column. */
@@ -4139,6 +4139,20 @@ select:-moz-focusring { color: transparent; text-shadow: 0 0 0 var(--non-fg); }
   box-shadow: none;
   text-align: center;
   color: #EDEDE8;
+}
+
+/* Where the Somm is the whole interface (PDP, homepage) it self-centres on
+   `margin-inline: auto` above. Where it is one FIELD inside a left-aligned
+   form — the pairing free-text route, the stockists search — that auto margin
+   centred it in its column and pushed the orb out of line with every label
+   above it. On the pairing page the indent measured 73px, and nothing in the
+   stylesheet set 73px: it was (1026 - 880) / 2, the auto margin doing exactly
+   what it was asked to.
+
+   Listed together because it is one cause with one fix, not two page bugs. */
+.non-pair__freetext .non-somm,
+.non-somm.non-stock-search {
+  margin-inline: 0;
 }
 
 /* 1. The orb. Sized so it is present without dominating, and sitting close

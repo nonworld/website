@@ -1627,6 +1627,21 @@ button { font-family: inherit; }
     overflow-y: auto;
     overscroll-behavior: contain;
     padding-right: 12px;
+    /* The orb was being cut down its left side here, and the cause is this
+       scroll container rather than anything the orb does.
+
+       `overflow-y: auto` cannot be scoped to one axis: the moment it is set,
+       the other axis computes to `auto` as well, so this box clips
+       horizontally too. Its left clip edge lands exactly where the orb starts,
+       and the circle's edge is shaved off against it.
+
+       Widen the scrollport 24px to the left and pull the box back by the same
+       amount, so the orb keeps its position on the page to the pixel and
+       simply has room inside the clip region. Do not replace this with a plain
+       padding-left: that moves the orb 24px inboard and breaks its alignment
+       with the home page. */
+    padding-left: 24px;
+    margin-left: -24px;
   }
   .non-stockists__list::-webkit-scrollbar { width: 8px; }
   .non-stockists__list::-webkit-scrollbar-thumb {

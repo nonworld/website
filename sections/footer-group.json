@@ -30,7 +30,7 @@
             "text": "Someone else is already pouring it. Find the restaurants, bars and retailers near you with NON on the list.",
             "link_label": "Find a stockist",
             "link": "/pages/store-locator",
-            "priority_templates": "index, collection, product, contact, pairing"
+            "priority_templates": "index, collection, product, contact"
           }
         },
         "bottle": {
@@ -42,7 +42,7 @@
             "text": "If you already know what you are after, the whole range is one click away — nine bottles, sets and the stopper.",
             "link_label": "Shop the range",
             "link": "/collections/the-range",
-            "priority_templates": "index, pairing, contact"
+            "priority_templates": "index, pairing, our-story"
           }
         },
         "pair": {
@@ -54,7 +54,7 @@
             "text": "Tell the somm what you are eating and it writes the dish around what is already in the glass, shopping list included.",
             "link_label": "Find your pairing",
             "link": "/pages/pairing",
-            "priority_templates": "stockists, product, our-story"
+            "priority_templates": "product, stockists, our-story"
           }
         },
         "hq": {
@@ -66,7 +66,19 @@
             "text": "NONHQ in Cheltenham is the world's first non-alcoholic cellar door. Taste the ingredients separately, then the bottles.",
             "link_label": "Book a tasting",
             "link": "/pages/visit-us",
-            "priority_templates": "collection, stockists, our-story"
+            "priority_templates": "collection, pairing, stockists"
+          }
+        },
+        "story": {
+          "type": "cell",
+          "settings": {
+            "image_url": "https://cdn.shopify.com/s/files/1/0371/5874/8205/files/non-story-038A8388.jpg?v=1785541727&width=1400",
+            "image_alt": "Fruit cooking in the NON kitchen",
+            "title": "Cooked, not de-alcoholised",
+            "text": "No wine is made and then stripped. Fruit, tannin, salt and acid, built from zero in a kitchen in Melbourne.",
+            "link_label": "Read the story",
+            "link": "/pages/about-us",
+            "priority_templates": "contact"
           }
         }
       },
@@ -74,7 +86,8 @@
         "out",
         "bottle",
         "pair",
-        "hq"
+        "hq",
+        "story"
       ],
       "settings": {
         "max_height": 0,

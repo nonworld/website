@@ -293,6 +293,12 @@
           context: context,
           page: window.location.pathname,
           code: code,
+          // The Somm's answers are generated, so they cannot be translated
+          // after the fact — the language has to travel with the question.
+          // theme.liquid already sets <html lang> from request.locale, so the
+          // storefront's own locale is the source and nothing new is plumbed.
+          // The Worker treats 'en' and anything it does not know as English.
+          locale: document.documentElement.lang || 'en',
           // The bottle's own spec sheet, when the page publishes one. The
           // request used to carry a code and nothing else, so anything not
           // derivable from the code — storage, serving, ingredients — had no

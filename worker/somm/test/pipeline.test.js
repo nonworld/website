@@ -8,6 +8,7 @@
  *   node test/pipeline.test.js
  */
 import { rankProducts, PRODUCTS, scoreProduct } from '../src/scoring-engine.js';
+import { languageDirective } from '../src/index.js';
 
 // Ground truth is NON's core range deck, which names one headline pairing per
 // bottle. These five are not opinions — if one fails, the profiles are wrong.
@@ -169,6 +170,48 @@ if (suggestionsFor('NOPE') !== null) {
   console.log('FAIL  unknown product should return null');
   failed++;
 }
+
+/* -------------------------------------------------------------- language
+
+   The invariant worth guarding is not that Spanish works — it is that
+   English is untouched. languageDirective must return the EMPTY STRING for
+   every English path, because the four prose prompts are built by
+   concatenation: the moment it returns anything for 'en', every English
+   answer on the live site is served a different system prompt.            */
+
+console.log('\n--- language directive ---');
+
+const LANG_CASES = [
+  [undefined, '', 'no locale sent at all'],
+  [null, '', 'null locale'],
+  ['', '', 'empty string'],
+  ['en', '', 'plain en'],
+  ['EN', '', 'uppercase en'],
+  ['en-AU', '', 'en-AU'],
+  ['en-us', '', 'en-us'],
+  ['de', '', 'a locale with no entry falls back to English'],
+  ['zz-ZZ', '', 'nonsense locale'],
+];
+
+for (const [input, expected, label] of LANG_CASES) {
+  const got = languageDirective(input);
+  const ok = got === expected;
+  if (!ok) failed++;
+  console.log(`${ok ? 'PASS' : 'FAIL'}  ${label}: returns ${got === '' ? 'empty' : JSON.stringify(got.slice(0, 30))}`);
+}
+
+for (const [tag, label] of [['es', 'es'], ['es-ES', 'es-ES falls back to es'], ['ES', 'uppercase ES']]) {
+  const got = languageDirective(tag);
+  const ok = got.length > 0 && got.includes('SPANISH') && got.includes('alternativa al vino');
+  if (!ok) failed++;
+  console.log(`${ok ? 'PASS' : 'FAIL'}  ${label}: Spanish directive carries the glossary rule`);
+}
+
+// The rule that protects the brand argument in every language.
+const esDirective = languageDirective('es');
+const bansIt = esDirective.includes('Never write "vino sin alcohol"');
+if (!bansIt) failed++;
+console.log(`${bansIt ? 'PASS' : 'FAIL'}  es directive forbids "vino sin alcohol"`);
 
 console.log(failed ? `\n${failed} failing overall` : '\nall passing');
 process.exit(failed ? 1 : 0);

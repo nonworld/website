@@ -205,7 +205,7 @@ Count words in Spanish.`,
 };
 
 // 'en' and anything unrecognised return '' — the prompts go out unchanged.
-function languageDirective(locale) {
+export function languageDirective(locale) {
   const tag = String(locale || 'en').trim().toLowerCase();
   if (!tag || tag === 'en' || tag.startsWith('en-')) return '';
   const entry = LANGUAGES[tag] || LANGUAGES[tag.split('-')[0]];
@@ -634,6 +634,37 @@ export default {
     try {
       dish = await extractDish(env, query);
     } catch (e) {
+      /* Extraction failed. Before falling back to the Mixed 6, check whether
+         the question even had a dish in it.
+
+         "What does it pair best with?" on a product page is the commonest
+         question there is, and it is the INVERSE of what the extractor does:
+         it names no food, so there is nothing to extract, the model returns
+         prose instead of a DishProfile, and two attempts later the customer
+         is told to buy a mixed six while standing on the NON1 page. That is
+         the honest fallback answering the wrong question.
+
+         The bottle's own bestWith data already answers it, deterministically
+         and with no model call — the same data /somm/suggestions serves. Use
+         it whenever we know which bottle they are looking at. */
+      const onBottle = context ? suggestionsFor(context) : null;
+      if (onBottle && onBottle.suggestions.length) {
+        const list = onBottle.suggestions;
+        const phrased =
+          list.length > 1
+            ? `${list.slice(0, -1).join(', ')} and ${list[list.length - 1]}`
+            : list[0];
+        return json({
+          intent: 'pairing',
+          productId: onBottle.productId,
+          productName: onBottle.productName,
+          answer: `${onBottle.productName} sits best with ${phrased}.`,
+          explanation: `${onBottle.productName} sits best with ${phrased}.`,
+          picks: [onBottle.productId],
+          suggestions: list,
+          source: 'bestWith',
+        });
+      }
       return json(fallbackResponse('extraction', e, env), 200);
     }
 

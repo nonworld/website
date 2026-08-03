@@ -5185,8 +5185,18 @@ select:-moz-focusring { color: transparent; text-shadow: 0 0 0 var(--non-fg); }
 .non-somm,
 .non-sommbox {
   --non-orb-core: 40%;   /* matches the gradient's circle position */
-  --non-orb-gutter: 6px; /* content gutter minus the logo's own left */
+
+  /* Zero by DEFAULT. The first pass hardcoded 6px, which is the homepage
+     hero's inset — but Pairing and Stockists already sit flush at the logo
+     gutter, so the same 6px over-pulled them 6px PAST the logo. Cancel the
+     gradient offset everywhere; correct the gutter only where a surface is
+     actually inset. */
+  --non-orb-gutter: 0px;
 }
+
+/* The homepage hero column starts 6px inboard of the logo. */
+.non-hero .non-somm,
+.non-hero .non-sommbox { --non-orb-gutter: 6px; }
 
 .non-somm::before,
 .non-sommbox::before {

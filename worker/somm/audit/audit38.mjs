@@ -2,6 +2,7 @@
    These are the questions those findings NAME, by their Q numbers, plus the
    re-test requirements from somm-full-fix-pass.md. Every previously-failing
    question is here, several in more than one phrasing as the brief asks. */
+import { fileURLToPath } from 'node:url';
 const EP='https://non-somm.polished-snow-7889.workers.dev/somm';
 const Q=[
  // finding 1 — called the range "the wines"
@@ -67,5 +68,5 @@ for(const [id,cat,q,code] of Q){
   console.log(`${id.padEnd(5)} ${String(rec.ms).padStart(5)}ms intent=${String(rec.intent).padEnd(8)} ${rec.fallback?'FALLBACK ':''}${q.slice(0,44)}`);
 }
 const fs=await import('node:fs');
-fs.writeFileSync(new URL('./audit38-results.jsonl',import.meta.url).pathname, out.map(o=>JSON.stringify(o)).join('\n')+'\n');
+fs.writeFileSync(fileURLToPath(new URL('./audit38-results.jsonl',import.meta.url)), out.map(o=>JSON.stringify(o)).join('\n')+'\n');
 console.log('\nwrote', out.length, 'rows');

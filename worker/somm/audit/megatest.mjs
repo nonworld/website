@@ -6,11 +6,12 @@
  * Writes JSONL so analysis is a separate step from collection — a crash at
  * question 150 must not cost the first 149.
  */
+import { fileURLToPath } from 'node:url';
 import { writeFileSync, appendFileSync, existsSync, unlinkSync, openSync, closeSync } from 'node:fs';
 
 const EP = 'https://non-somm.polished-snow-7889.workers.dev/somm';
-const OUT = new URL('./megatest-results.jsonl', import.meta.url).pathname;
-const LOCK = new URL('./.megatest.lock', import.meta.url).pathname;
+const OUT = fileURLToPath(new URL('./megatest-results.jsonl', import.meta.url));
+const LOCK = fileURLToPath(new URL('./.megatest.lock', import.meta.url));
 
 /* A lock, because this cost a full run once.
  *
@@ -24,7 +25,12 @@ const LOCK = new URL('./.megatest.lock', import.meta.url).pathname;
  * the first. Delete the lock by hand if a crash leaves it behind. */
 try {
   closeSync(openSync(LOCK, 'wx'));
-} catch {
+} catch (e) {
+  // EEXIST means a real concurrent run. Anything else is this script being
+  // wrong about where it is, and reporting that as "another run holds it"
+  // sends you hunting a process that does not exist — which is exactly what
+  // an unescaped space in the path did on the first attempt.
+  if (e.code !== 'EEXIST') throw e;
   console.error(`another run holds ${LOCK}\n` +
     'Kill it (pkill -f megatest.mjs) or delete the lock, then try again.');
   process.exit(1);

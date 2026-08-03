@@ -5433,3 +5433,54 @@ select:-moz-focusring { color: transparent; text-shadow: 0 0 0 var(--non-fg); }
    whatever section happens to end above it. */
 #shopify-section-sections--closers,
 .shopify-section-group-footer-group .non-split { border-top: 1px solid var(--non-line); }
+
+/* ==========================================================================
+   Mobile tap targets.
+
+   Measured at 375px across Pairing, Shop, About and Contact: the header cart,
+   every section's "more" link and the whole footer were rendering at 16px
+   tall. 16px is the height of the TEXT — there was no target around it, so
+   these were type you had to aim at rather than controls.
+
+   The chips were fixed earlier at 44px; these are what was left.
+
+   Scoped to the breakpoint deliberately. On desktop a pointer is precise and
+   44px of stacked padding in a footer column just spreads the list out; on a
+   phone it is the difference between hitting the link and hitting the page.
+   ========================================================================== */
+@media (max-width: 859px) {
+  /* Header controls sit next to the logo and the menu — all three need the
+     same target, or the smallest one is the one people miss. */
+  .non-header__cart,
+  .non-header__menu {
+    min-height: 44px;
+    display: inline-flex;
+    align-items: center;
+  }
+
+  /* "All sets →", "Find a stockist →" and every other section link. */
+  .non-section__more {
+    min-height: 44px;
+    display: inline-flex;
+    align-items: center;
+  }
+
+  /* The footer was the worst of it: five stacked links at 16px each, close
+     enough together that the wrong one is a real possibility. */
+  .non-footer a,
+  .non-menu__nav a {
+    min-height: 44px;
+    display: inline-flex;
+    align-items: center;
+  }
+
+  /* Product card titles are the primary route into a PDP from the grid. The
+     media above them is already a large target; the title should not be a
+     16px sliver underneath it. */
+  .non-card__title a,
+  a.non-card__title {
+    min-height: 44px;
+    display: inline-flex;
+    align-items: center;
+  }
+}

@@ -4487,6 +4487,18 @@ select:-moz-focusring { color: transparent; text-shadow: 0 0 0 var(--non-fg); }
     column-gap: 44px;
     max-width: 880px;
     padding: 34px 0 30px;
+
+    /* The rhythm below is authored as 12 / 20 / 20, and without this it was
+       not what rendered. A grid's default align-content is stretch, so when
+       the block is taller than its rows — on the PDP it was 480px against
+       348px of content — the browser shares the extra 68px BETWEEN the rows.
+       The heading ended up stranded above 80px of nothing, which is what read
+       as it being in the wrong place.
+
+       align-content: start makes the rows take their content height and lets
+       the slack collect at the end, so the intervals below are the intervals
+       on screen. */
+    align-content: start;
   }
   .non-somm::before,
   .non-sommbox::before { width: 96px; height: 96px; }

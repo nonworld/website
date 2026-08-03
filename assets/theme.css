@@ -4608,7 +4608,7 @@ select:-moz-focusring { color: transparent; text-shadow: 0 0 0 var(--non-fg); }
    through the header and hero, fading in across 140px so there is no hard
    edge, then solid for the form and the envelope below. The fade is the point
    — a straight cut would read as a seam across the page. */
-.non-contact-field {
+.non-contact-section .non-contact-field {
   -webkit-mask-image: linear-gradient(to bottom,
     transparent 0,
     transparent 360px,
@@ -4621,11 +4621,22 @@ select:-moz-focusring { color: transparent; text-shadow: 0 0 0 var(--non-fg); }
     #000 500px);
 }
 @media (max-width: 859px) {
-  .non-contact-field {
+  .non-contact-section .non-contact-field {
     -webkit-mask-image: linear-gradient(to bottom, transparent 0, transparent 260px, #000 380px);
     mask-image: linear-gradient(to bottom, transparent 0, transparent 260px, #000 380px);
   }
 }
+
+/* The mask above is scoped to the CONTACT section, and has to be.
+
+   It clears the first 360px so the field does not draw through that page's
+   header and hero, reaching full strength at 500px. Unscoped, it applied to
+   every element with the class — and the recipe band is 422px tall, so the
+   whole field sat inside the transparent part of its own mask. The canvas was
+   drawing correctly the entire time; nothing was reaching the screen.
+
+   Worth knowing for next time: reading the canvas bitmap proves the CANVAS is
+   painting, not that anything is visible. A mask is applied downstream of it. */
 
 /* Logos: bound BOTH dimensions, so neither shape can dominate.
 

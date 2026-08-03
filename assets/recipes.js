@@ -41,12 +41,34 @@
   var written = false;
   var timers = [];
 
+  // Which of the recipes matching the current bottle+effort is on screen.
+  // There used to be exactly one of each, so this did not exist and reveal()
+  // simply unhid every match. With more than one per pair that showed them
+  // stacked down the page instead of choosing between them.
+  var variant = 0;
+
+  function matching() {
+    return recipes.filter(function (r) {
+      return r.getAttribute('data-bottle') === bottle &&
+             r.getAttribute('data-effort') === effort;
+    });
+  }
+
   // Every effort that exists for the current bottle, so "write me another"
   // rolls within the bottle rather than jumping to a different one.
+  // Deduped: with several recipes per effort the raw list repeats an effort
+  // once per recipe, which would weight the random roll toward whichever
+  // effort happened to have the most dishes written for it.
   function effortsFor(b) {
+    var seen = {};
     return recipes
       .filter(function (r) { return r.getAttribute('data-bottle') === b; })
-      .map(function (r) { return r.getAttribute('data-effort'); });
+      .map(function (r) { return r.getAttribute('data-effort'); })
+      .filter(function (e) {
+        if (seen[e]) return false;
+        seen[e] = true;
+        return true;
+      });
   }
 
   function clearTimers() {
@@ -70,17 +92,13 @@
   }
 
   function reveal() {
-    var shown = 0;
+    var list = matching();
+    if (variant >= list.length) variant = 0;
 
-    recipes.forEach(function (article) {
-      var match =
-        article.getAttribute('data-bottle') === bottle &&
-        article.getAttribute('data-effort') === effort;
-      article.hidden = !match;
-      if (match) shown++;
-    });
+    recipes.forEach(function (article) { article.hidden = true; });
+    if (list.length) list[variant].hidden = false;
 
-    if (empty) empty.hidden = shown > 0;
+    if (empty) empty.hidden = list.length > 0;
     if (writeBtn) writeBtn.disabled = false;
     written = true;
   }
@@ -120,6 +138,7 @@
     var b = e.target.closest('[data-non-recipe-bottle]');
     if (b) {
       bottle = b.getAttribute('data-non-recipe-bottle');
+      variant = 0;
       marks();
       // Only re-write once they have asked for a dish at least once.
       if (written) write();
@@ -129,6 +148,7 @@
     var f = e.target.closest('[data-non-recipe-effort]');
     if (f) {
       effort = f.getAttribute('data-non-recipe-effort');
+      variant = 0;
       marks();
       if (written) write();
       return;
@@ -137,10 +157,22 @@
     if (e.target.closest('[data-non-recipe-write]')) return write();
 
     if (e.target.closest('[data-non-recipe-another]')) {
-      // Roll within the current bottle. Jumping to a different bottle would
-      // answer a question the customer did not ask.
+      // Another dish for the SAME bottle and the same effort first, if one
+      // has been written. Someone who picked "Sunday" and asked for another
+      // wants a different Sunday dish, not to be moved to a weeknight.
+      var list = matching();
+      if (list.length > 1) {
+        variant = (variant + 1) % list.length;
+        write();
+        return;
+      }
+
+      // Only when that pair has nothing else to offer does the effort roll.
+      // Jumping to a different bottle would answer a question the customer
+      // did not ask.
       var options = effortsFor(bottle).filter(function (x) { return x !== effort; });
       if (options.length) {
+        variant = 0;
         effort = options[Math.floor(Math.random() * options.length)];
         write();
       }

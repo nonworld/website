@@ -5494,7 +5494,9 @@ select:-moz-focusring { color: transparent; text-shadow: 0 0 0 var(--non-fg); }
   }
 
   /* The closers pair now sits on every page, so its two links are the most
-     repeated call to action on the site. */
+     repeated call to action on the site. About's own CTAs — "Book a tasting",
+     "Find your pairing" — are the same shape and were the last two left. */
+  .non-about-cta__link,
   .non-split__link {
     min-height: 44px;
     display: inline-flex;

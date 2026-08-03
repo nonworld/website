@@ -5105,3 +5105,28 @@ select:-moz-focusring { color: transparent; text-shadow: 0 0 0 var(--non-fg); }
 }
 .non-card--missing .non-card__name { font-size: 13px; line-height: 1.4; color: var(--non-fg); min-height: 0; }
 .non-card--missing .non-mono { font-size: var(--t-mono); color: var(--non-fg-mute); }
+
+/* The guided verdict, now inside the panel headed THE VERDICT.
+
+   It used to print in the left column while that panel showed a waiting line —
+   the one place a reader looks for the answer was the one place it was not.
+   The questions, the free-text somm and the panel are one flow now: ask on the
+   left, answered on the right, whichever route you took.
+
+   Scaled down from the full-column treatment: the heading was sized for a
+   1100px column and this panel is a third of that. */
+.non-verdict__result { position: relative; z-index: 1; }
+.non-verdict__result[hidden] { display: none; }
+.non-verdict__result .non-pair__verdictq {
+  font-size: var(--t-lead);
+  line-height: 1.2;
+  margin-bottom: 12px;
+}
+.non-verdict__result .non-pair__why { margin: 0 0 10px; padding-left: 0; list-style: none; }
+.non-verdict__result .non-pair__why li { font-size: var(--t-small); line-height: 1.5; }
+.non-verdict__result .non-pair__whygen { font-size: var(--t-small); line-height: 1.5; }
+.non-verdict__result .non-pair__buy { margin-top: 14px; }
+.non-verdict__result .non-pair__again { margin-top: 12px; }
+
+/* The waiting line stands down for either route. */
+.non-verdict__stage:has(.non-verdict__result:not([hidden])) .non-verdict__await { display: none; }

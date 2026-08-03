@@ -77,31 +77,14 @@
         from.
       {%- endcomment -%}
       {%- comment -%}
-        THE VERDICT, ABOVE the free-text box rather than below it.
+        The verdict is NOT rendered here. It lives in the panel headed THE
+        VERDICT, in the aside — see [data-non-pair-result] below.
 
-        It used to render underneath, so answering three questions pushed the
-        answer off the bottom while the grey "or just name the dish" panel — the
-        alternative route you had already declined by answering — kept the prime
-        position. Now the recommendation appears in place and pushes the grey box
-        down, which is what a result should do.
-
-        The bottle and its add to cart live in here too, not under the
-        photograph in the side column.
+        It used to print in this column while that panel sat empty showing a
+        waiting line, which is the one place a reader is looking for it. The
+        questions, the free-text somm and the panel are now one flow: ask on
+        the left, answered on the right, whichever route you took.
       {%- endcomment -%}
-      <div class="non-pair__verdict" data-non-pair-result hidden>
-        <div class="non-pair__verdictq" data-non-pair-title></div>
-        <div class="non-pair__body" data-non-pair-body></div>
-
-        <div
-          class="non-pair__buy"
-          data-non-pair-buy
-          data-add-label="{{ section.settings.add_label | escape }}"
-          hidden></div>
-
-        <button type="button" class="non-btn non-btn--ghost non-pair__again" data-non-pair-reset>
-          {{ section.settings.reset_label }}
-        </button>
-      </div>
 
       {%- assign dishes = section.blocks | where: 'type', 'dish' -%}
       {%- if section.settings.freetext_label != blank -%}
@@ -231,6 +214,25 @@
           suggests belong in the panel headed THE VERDICT rather than one on
           each side of the page.
         {%- endcomment -%}
+        {%- comment -%}
+          The guided result. Same panel as the free-text answer and the picks,
+          because they are three outcomes of one question, not three features.
+        {%- endcomment -%}
+        <div class="non-pair__verdict non-verdict__result" data-non-pair-result hidden>
+          <div class="non-pair__verdictq" data-non-pair-title></div>
+          <div class="non-pair__body" data-non-pair-body></div>
+
+          <div
+            class="non-pair__buy"
+            data-non-pair-buy
+            data-add-label="{{ section.settings.add_label | escape }}"
+            hidden></div>
+
+          <button type="button" class="non-btn non-btn--ghost non-pair__again" data-non-pair-reset>
+            {{ section.settings.reset_label }}
+          </button>
+        </div>
+
         <div class="non-somm__answer non-verdict__answer" data-non-somm-answer hidden>
           <div class="non-mono non-eyebrow">{{ section.settings.freetext_answer_label }}</div>
           <p class="non-somm__stream" data-non-somm-stream></p>

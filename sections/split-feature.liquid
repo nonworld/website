@@ -93,7 +93,8 @@
 {% schema %}
 {
   "name": "Split feature",
-  "max_blocks": 2,
+  "_comment": "3, not 2. The band still RENDERS two — the loop above stops at two survivors. The third exists so that a page which suppresses one of the cards still has a pair to draw from. Setting this to 2 made Shopify reject the whole footer group silently on the GitHub sync; only themeFilesUpsert reported why.",
+  "max_blocks": 3,
   "settings": [
     {
       "type": "text",

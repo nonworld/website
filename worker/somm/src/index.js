@@ -150,6 +150,68 @@ Hard rules:
 
 Voice: a sommelier who knows the spec sheet. Precise and unfussy.`;
 
+/* --------------------------------------------------------------- language
+
+   The somm's answers are GENERATED, not stored, so they cannot be translated
+   after the fact the way section and product copy can. The target language
+   and the terms that must survive it have to go into the prompt.
+
+   Two rules govern this block:
+
+   1. English is untouched. `directive('en')` returns the empty string, so an
+      English request sends byte-identical system prompts to the ones that
+      shipped before this existed. No locale, unknown locale, or 'en' all
+      take that path. Nothing about the live behaviour changes today.
+
+   2. ROUTE_SYSTEM and EXTRACT_SYSTEM never receive a directive. They are
+      classifiers — one word out, and a JSON dish object — read by code, not
+      by a customer. Translating their OUTPUT would break the switch
+      statements downstream. Only the four prose prompts get it.
+
+   The glossary lives in docs/translation-glossary.md and this is the second
+   copy of it. That is deliberate: the worker cannot read the repo at runtime.
+   If a term changes there, change it here.                                  */
+
+const LANGUAGES = {
+  es: {
+    name: 'Spanish',
+    // Informal address, per the glossary: the brand speaks to one person.
+    directive: `
+
+ANSWER IN SPANISH. Not English. The customer is reading Spanish.
+
+Address the reader informally (tú, not usted).
+
+Never translate these. They are names:
+- NON, and the bottle names NON1 NON2 NON3 NON5 NON7 NON9
+- NON Somm, NONHQ, NON Lotto
+- Verjus (the ingredient carries this name in Spanish)
+
+Never write "vino sin alcohol" or "vino desalcoholizado" for what NON is.
+NON is not wine with the alcohol taken out, and that phrasing collapses the
+whole argument. Say "alternativa al vino". If you need to state the strength,
+write "0,0 %" with a comma, as Spanish does.
+
+Use the Spanish WINE trade's words, not everyday ones: tanino, salinidad,
+acidez, cuerpo. A sommelier reading it should recognise the register.
+
+Keep NON's register: short, declarative, slightly dry. No exclamation marks,
+no selling, a concrete noun in preference to an adjective. Do not write an
+enthusiastic Spanish version of a restrained English sentence.
+
+Every other rule above still applies, including the sentence and word limits.
+Count words in Spanish.`,
+  },
+};
+
+// 'en' and anything unrecognised return '' — the prompts go out unchanged.
+function languageDirective(locale) {
+  const tag = String(locale || 'en').trim().toLowerCase();
+  if (!tag || tag === 'en' || tag.startsWith('en-')) return '';
+  const entry = LANGUAGES[tag] || LANGUAGES[tag.split('-')[0]];
+  return entry ? entry.directive : '';
+}
+
 /* ------------------------------------------------------------------ utils */
 
 function json(body, status = 200, extra = {}) {
@@ -211,7 +273,7 @@ async function routeQuery(env, query) {
   }
 }
 
-async function answerFacts(env, query, code, facts) {
+async function answerFacts(env, query, code, facts, lang = '') {
   const scope = code
     ? PRODUCTS.filter((p) => p.id === String(code).toUpperCase())
     : PRODUCTS;
@@ -247,7 +309,7 @@ async function answerFacts(env, query, code, facts) {
   const answer = await claude(env, {
     model: env.EXPLAIN_MODEL || 'claude-sonnet-5',
     maxTokens: 400,
-    system: FACTS_SYSTEM,
+    system: FACTS_SYSTEM + lang,
     messages: [
       {
         role: 'user',
@@ -345,11 +407,11 @@ async function extractDish(env, query) {
 
 /* -------------------------------------------------- step 3: explanation */
 
-async function explain(env, { query, product, reasons, score }) {
+async function explain(env, { query, product, reasons, score, lang = '' }) {
   return claude(env, {
     model: env.EXPLAIN_MODEL || 'claude-sonnet-5',
     maxTokens: 150,
-    system: EXPLAIN_SYSTEM,
+    system: EXPLAIN_SYSTEM + lang,
     messages: [
       {
         role: 'user',
@@ -384,7 +446,7 @@ function fitBucket(score) {
   return 'weak';
 }
 
-async function verdict(env, { query, product, reasons, score, fit, instead }) {
+async function verdict(env, { query, product, reasons, score, fit, instead, lang = '' }) {
   const lines = [
     `The customer said: "${query}"`,
     '',
@@ -412,7 +474,7 @@ async function verdict(env, { query, product, reasons, score, fit, instead }) {
   return claude(env, {
     model: env.EXPLAIN_MODEL || 'claude-sonnet-5',
     maxTokens: 150,
-    system: VERDICT_SYSTEM,
+    system: VERDICT_SYSTEM + lang,
     messages: [{ role: 'user', content: lines.join('\n') }],
   });
 }
@@ -529,6 +591,10 @@ export default {
     // answer has to be allowed to be no.
     const context = body.productContext || body.code || null;
 
+    // Empty string for English, which is every request today. The four prose
+    // prompts get it appended; the two classifiers never do.
+    const lang = languageDirective(body.locale);
+
     // ---- route: factual questions never reach the pairing engine ---------
     const intent = await routeQuery(env, query);
 
@@ -540,7 +606,7 @@ export default {
         const answer = await claude(env, {
           model: env.EXPLAIN_MODEL || 'claude-sonnet-5',
           maxTokens: 400,
-          system: BRAND_SYSTEM,
+          system: BRAND_SYSTEM + lang,
           messages: [{ role: 'user', content: query }],
         });
         return json({ intent: 'brand', answer, explanation: answer, picks: [], productId: null });
@@ -551,7 +617,7 @@ export default {
 
     if (intent === 'facts' || intent === 'other') {
       try {
-        const result = await answerFacts(env, query, context, body.facts);
+        const result = await answerFacts(env, query, context, body.facts, lang);
         return json({
           intent: intent,
           answer: result.answer,
@@ -597,7 +663,7 @@ export default {
         let sentence;
         try {
           sentence = await verdict(env, {
-            query, product, reasons: scored.reasons, score: scored.score, fit, instead,
+            query, product, reasons: scored.reasons, score: scored.score, fit, instead, lang,
           });
         } catch (e) {
           return json(fallbackResponse('verdict', e, env), 200);
@@ -631,6 +697,7 @@ export default {
         product: top.product,
         reasons: top.reasons,
         score: top.score,
+        lang,
       });
     } catch (e) {
       return json(fallbackResponse('explanation', e, env), 200);

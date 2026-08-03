@@ -53,11 +53,17 @@ or skip.
    "alternativa al vino sin alcohol" — that string contains "vino sin
    alcohol", which is the one rendering the glossary forbids outright.
 
-   Two English strings carry HARD-CODED AUD PRICES that translate into
-   nonsense for every other market: `BUY 6 FOR $150` at the top of every
-   bottle's `body_html`, and the gift card's `meta_description` ($40/$70/
-   $90/$150). Translating them faithfully propagates the problem into a
-   second language. They want fixing in English first.
+   RESOLVED 2026-08-03: the hard-coded AUD prices are gone from English.
+   `BUY 6 FOR $150` was removed from all six bottles' `body_html`, and the
+   gift card's DENOMINATIONS block and SEO description were rewritten without
+   figures — a gift card's values are variants, so Shopify already knows them.
+   The Spanish gift-card `meta_description` was re-registered against the new
+   digest. The six POS-only SKUs still carry the line deliberately: they sell
+   in-store in AUD, where the figure is correct.
+
+   The standing rule, from Aaron: nothing is hard-coded, prices come from the
+   Shopify product. Do not translate a price into a second language — fix the
+   English first.
 2. **The somm worker** — answers are generated live and CANNOT be translated
    afterwards. The target language and the glossary have to go into the prompt
    in `worker/somm/src`. Deploys with wrangler, which is authenticated here.

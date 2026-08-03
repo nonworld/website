@@ -409,7 +409,11 @@ export default {
          Off by default: it costs an API call, and health gets polled. */
       const mode = codeCheckMode(env);
       let shopify;
-      if (mode === 'live' && url.searchParams.get('deep') === '1' && env.SHOPIFY_ADMIN_TOKEN) {
+      /* Probe regardless of mode. In trusted mode nothing reads the token, but
+         you still need to know whether a newly pasted one is good BEFORE
+         flipping CODE_CHECK back to live — otherwise the only way to find out
+         is to open the shop and watch it close. */
+      if (url.searchParams.get('deep') === '1' && env.SHOPIFY_ADMIN_TOKEN) {
         try {
           const probe = await fetch(
             `https://${env.SHOPIFY_STORE}/admin/api/2025-01/graphql.json`,

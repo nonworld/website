@@ -225,9 +225,25 @@
   The design pairs it with a photograph on the left (038A8614, spicing cherries
   by hand). The slot renders nothing until an asset is set.
 {%- endcomment -%}
-{%- if section.settings.hard_image != blank or section.settings.hard_image_url != blank -%}
+{%- if section.settings.hard_video_url != blank or section.settings.hard_image != blank or section.settings.hard_image_url != blank -%}
   <div class="non-about-hard-media">
-    {%- if section.settings.hard_image != blank -%}
+    {%- if section.settings.hard_video_url != blank -%}
+      {%- comment -%}
+        Video wins over both image slots when it is set. Muted + playsinline are
+        what make autoplay legal on iOS and in Chrome; without them the browser
+        silently refuses to start and the band shows the poster forever.
+      {%- endcomment -%}
+      <video
+        autoplay
+        muted
+        loop
+        playsinline
+        preload="metadata"
+        aria-label="{{ section.settings.hard_image_alt | escape }}"
+        {% if section.settings.hard_video_poster_url != blank %}poster="{{ section.settings.hard_video_poster_url }}"{% endif %}>
+        <source src="{{ section.settings.hard_video_url }}" type="video/mp4">
+      </video>
+    {%- elsif section.settings.hard_image != blank -%}
       {{ section.settings.hard_image | image_url: width: 1600, format: 'webp' | image_tag: loading: 'lazy', widths: '600,900,1200,1600', alt: section.settings.hard_image_alt }}
     {%- else -%}
       {% render 'cdn-image',
@@ -561,6 +577,18 @@
       "id": "hard_image_url",
       "label": "The difficult part — image URL",
       "info": "Design: 038A8614. Used only when no image is uploaded."
+    },
+    {
+      "type": "text",
+      "id": "hard_video_url",
+      "label": "The difficult part — video URL (mp4)",
+      "info": "Takes precedence over both image slots when set. Autoplays muted and loops, so keep it short and silent."
+    },
+    {
+      "type": "text",
+      "id": "hard_video_poster_url",
+      "label": "The difficult part — video poster URL",
+      "info": "First frame. Shown while the video loads and wherever autoplay is refused."
     },
     {
       "type": "text",

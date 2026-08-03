@@ -2982,6 +2982,24 @@ a, button, .non-card, .non-filter, .non-pair__opt, .non-somm__seed,
   color: #fff;
   border-bottom-color: #fff;
 }
+/* This variant sets min-height: 0 on purpose — over a photograph the CTA is an
+   underlined text link, not a button, and the rule further down that gives
+   .non-about-cta__link a 44px floor is one class less specific, so it loses.
+   That is the right outcome visually and the wrong one for a thumb: measured
+   20px on a phone for "Book a tasting" and "Find your pairing", the two CTAs
+   the page exists to serve.
+
+   The underline has to stay on the text, so the height cannot come from the
+   box. An invisible ::after takes the touch instead. Clearance to the nearest
+   other tappable measured 322px and 99px, so 44px cannot collide. */
+.non-about-cta--media .non-about-cta__link { position: relative; }
+.non-about-cta--media .non-about-cta__link::after {
+  content: "";
+  position: absolute;
+  left: 0; right: 0; top: 50%;
+  transform: translateY(-50%);
+  height: 44px;
+}
 /* --solid must not re-apply its inverted button on a photograph. */
 .non-about-cta--media.non-about-cta--solid .non-about-cta__link {
   background: none;

@@ -4172,6 +4172,22 @@ select:-moz-focusring { color: transparent; text-shadow: 0 0 0 var(--non-fg); }
   margin-inline: 0;
 }
 
+/* Stockists is the one surface where the somm has a SINGLE child.
+
+   The eight declared rows exist so the orb's `1 / -1` span resolves; with more
+   children the unused ones collapse to zero. With one child they cannot: a
+   spanning item contributes its height to every row it covers, so the orb's
+   96px minus the 72px bar leaves 24px spread across rows 2-8 at 3.42px each.
+   Measured at 1440 that put the orb's centre at 551 against the search bar's
+   531 — twenty pixels low, with dead space under the field.
+
+   One row, and both centred in it. The orb sets the row height, the bar sits
+   on the same axis, and there are no phantom rows left to pad the block. */
+.non-somm.non-stock-search {
+  grid-template-rows: auto;
+  align-items: center;
+}
+
 /* ...and the orb sits INSIDE the column, with no negative pull.
 
    Everywhere else the orb is pulled left by 40% of its width so its bright

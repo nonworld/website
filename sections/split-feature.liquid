@@ -1,3 +1,26 @@
+{%- comment -%}
+  Suppressed on templates that already carry their own pair.
+
+  This section now renders from the footer group, i.e. on every page. About has
+  its own bespoke CTA pair ("Come and see it" / "Or start with a glass") and
+  the generic closers landed directly beneath it — two pairs of the same shape,
+  stacked, doing the same job.
+
+  Matched on template suffix and name, so "our-story" covers /pages/about-us
+  whatever the page handle becomes. Comma separated, editable, and empty by
+  default so the section behaves normally anywhere else it is used.
+{%- endcomment -%}
+{%- assign hide_list = section.settings.hide_on_templates | default: '' | downcase | split: ',' -%}
+{%- assign this_template = template.suffix | default: template.name | downcase -%}
+{%- assign skip_here = false -%}
+{%- for t in hide_list -%}
+  {%- assign t = t | strip -%}
+  {%- if t != blank and t == this_template -%}{%- assign skip_here = true -%}{%- endif -%}
+{%- endfor -%}
+
+{%- if skip_here -%}
+  {%- comment -%} nothing rendered here by design {%- endcomment -%}
+{%- else -%}
 {% render 'section-style', section: section %}
 <div class="non-split"{% if section.settings.max_height > 0 %} style="--non-split-max: {{ section.settings.max_height }}px"{% endif %}>
   {%- for block in section.blocks -%}
@@ -35,11 +58,19 @@
   {%- endfor -%}
 </div>
 
+{%- endif -%}
+
 {% schema %}
 {
   "name": "Split feature",
   "max_blocks": 2,
   "settings": [
+    {
+      "type": "text",
+      "id": "hide_on_templates",
+      "label": "Hide on templates",
+      "info": "Comma-separated template suffixes, e.g. our-story. Use when a page already has its own pair of these."
+    },
     {
       "type": "range",
       "id": "max_height",

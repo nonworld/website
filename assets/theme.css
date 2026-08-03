@@ -5380,3 +5380,29 @@ select:-moz-focusring { color: transparent; text-shadow: 0 0 0 var(--non-fg); }
   text-overflow: clip !important;
   white-space: normal !important;
 }
+
+/* The somm's answer, in the verdict panel.
+
+   It used to print under the free-text box on the LEFT while the panel headed
+   THE VERDICT sat empty on the right. Answering the questions and naming a
+   dish are two routes to one result, so both now end in the same place.
+
+   Sits above the field, and the waiting line stands down as soon as either
+   route produces something. */
+.non-verdict__answer {
+  position: relative;
+  z-index: 1;
+  margin: 0 0 14px;
+  min-height: 0;
+  border-top: 0;
+  padding-top: 0;
+}
+.non-verdict__answer[hidden] { display: none; }
+.non-verdict__answer .non-somm__stream {
+  margin: 8px 0 0;
+  font-size: var(--t-body);
+  line-height: 1.55;
+  color: var(--non-fg);
+  max-width: none;
+}
+.non-verdict__stage:has(.non-verdict__answer:not([hidden])) .non-verdict__await { display: none; }

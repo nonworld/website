@@ -165,20 +165,13 @@
           </form>
 
           {%- comment -%}
-            Somewhere for the answer to land. This page had [data-non-somm-picks]
-            in the verdict column but no [data-non-somm-stream] anywhere, so
-            somm.js resolved `stream` to null — and pressing a dish chip ran
-            straight into `stream.innerHTML = ''` in type(). It threw, and a
-            thrown click looks exactly like a dead button.
-
-            Outside .non-somm deliberately: the answer belongs on the page, not
-            inside the grey panel, and the stream colour is scoped to the panel
-            so text out here keeps the page's own ink.
+            The answer does NOT land here. It renders in the verdict panel, on
+            the right, next to the bottle it picked — see [data-non-somm-answer]
+            in the aside below. Naming a dish and answering the questions are
+            two routes to one result, so they end in the same place; splitting
+            them meant "THE VERDICT" sat empty on the right while the verdict
+            itself printed on the left.
           {%- endcomment -%}
-          <div class="non-somm__answer" data-non-somm-answer hidden>
-            <div class="non-mono non-eyebrow">{{ section.settings.freetext_answer_label }}</div>
-            <p class="non-somm__stream" data-non-somm-stream></p>
-          </div>
         </div>
       {%- endif -%}
 
@@ -231,6 +224,17 @@
           </div>
           <script src="{{ 'contact-field.js' | asset_url }}" defer></script>
         {%- endif -%}
+
+        {%- comment -%}
+          Both routes end here. The guided questions and the free-text somm are
+          two ways of asking the same thing, so the answer and the bottles it
+          suggests belong in the panel headed THE VERDICT rather than one on
+          each side of the page.
+        {%- endcomment -%}
+        <div class="non-somm__answer non-verdict__answer" data-non-somm-answer hidden>
+          <div class="non-mono non-eyebrow">{{ section.settings.freetext_answer_label }}</div>
+          <p class="non-somm__stream" data-non-somm-stream></p>
+        </div>
 
         <div class="non-somm__picks non-verdict__picks" data-non-somm-picks hidden></div>
 

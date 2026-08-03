@@ -34,6 +34,13 @@
       data-ink="{{ section.settings.field_ink | default: '242,240,234' }}"
       data-envelope-x="{{ section.settings.field_envelope_x | divided_by: 100.0 }}"
       data-envelope-scale="{{ section.settings.field_envelope_scale | divided_by: 100.0 }}"
+      {%- comment -%}
+        Contact was the one instance never passing a gain, so it ran at 1.0 while
+        the pairing field ran at 2.2. The ripple sweeps at the same rate on both —
+        it was simply too dim here to notice, which reads as "the animation is
+        less frequent on this page" rather than as a brightness difference.
+      {%- endcomment -%}
+      data-gain="{{ section.settings.field_gain | default: 160 | divided_by: 100.0 }}"
       aria-hidden="true">
       <canvas></canvas>
     </div>
@@ -196,6 +203,17 @@
       "default": 20,
       "unit": "px",
       "info": "Lower is denser and costs more to draw. 20 matches the supplied design."
+    },
+    {
+      "type": "range",
+      "id": "field_gain",
+      "label": "Field brightness",
+      "min": 100,
+      "max": 400,
+      "step": 20,
+      "default": 160,
+      "unit": "%",
+      "info": "How strongly the ripple reads. The sweep runs at the same rate whatever this is set to."
     },
     {
       "type": "range",

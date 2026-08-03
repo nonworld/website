@@ -23,7 +23,16 @@
 {%- else -%}
 {% render 'section-style', section: section %}
 <div class="non-split"{% if section.settings.max_height > 0 %} style="--non-split-max: {{ section.settings.max_height }}px"{% endif %}>
+  {%- comment -%}
+    The band is always a PAIR. There are three cards defined and at most one of
+    them suppresses itself on any given page, so taking the first two survivors
+    gives two everywhere: the shop page loses "Skip the questions?" and gains
+    NONHQ, the NONHQ page loses NONHQ and keeps the range. Before this the shop
+    page closed with a single card stretched across the full width.
+  {%- endcomment -%}
+  {%- assign rendered = 0 -%}
   {%- for block in section.blocks -%}
+    {%- if rendered >= 2 -%}{%- break -%}{%- endif -%}
     {%- comment -%}
       Do not offer someone a door into the room they are standing in.
 
@@ -43,6 +52,7 @@
       {%- assign is_here = true -%}
     {%- endif -%}
     {%- unless is_here -%}
+    {%- assign rendered = rendered | plus: 1 -%}
     {%- assign alt_text = block.settings.image_alt | default: block.settings.title -%}
     <div class="non-split__cell" {{ block.shopify_attributes }}>
       {%- if block.settings.image != blank -%}

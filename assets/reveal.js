@@ -43,7 +43,6 @@
     '.non-hq-room',
     '.non-hq-step',
     '.non-about-cta',
-    '.non-stock-offer',
     '.non-promo',
     '.non-creds',
     // Bands built 2026-08-01. Each is one reveal for the whole band, not one

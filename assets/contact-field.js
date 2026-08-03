@@ -48,7 +48,12 @@
   // Offset rather than centred: at 0.5 the envelope sits under the form column.
   var envX = parseFloat(wrap.getAttribute('data-envelope-x'));
   if (!(envX > 0 && envX < 1)) envX = 0.7;
-  var envScale = parseFloat(wrap.getAttribute('data-envelope-scale'));
+  // `0` means off, and it has to be told apart from "absent". The old guard was
+  // `if (!(envScale > 0)) envScale = 1.4`, which swallowed an explicit 0 along
+  // with the missing case — so every instance that asked for no envelope got
+  // the full-size one, silently, for as long as the attribute has existed.
+  var envRaw = parseFloat(wrap.getAttribute('data-envelope-scale'));
+  var envScale = isNaN(envRaw) || envRaw < 0 ? 1.4 : envRaw;
 
   // Brightness multiplier. The alpha below is mostly carried by the envelope
   // term, so switching the envelope off — as the pairing verdict does — takes
@@ -56,7 +61,6 @@
   // an instance without an envelope sit at the same visual weight.
   var gain = parseFloat(wrap.getAttribute('data-gain'));
   if (!(gain > 0)) gain = 1;
-  if (!(envScale > 0)) envScale = 1.4;
 
   var reduced =
     window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -103,6 +107,7 @@
     ex = Math.max(ew / 2 + 8, Math.min(w - ew / 2 - 8, ex));
 
     function inEnv(x, y) {
+      if (envScale <= 0) return 0;
       var dx = Math.abs(x - ex), dy = Math.abs(y - ey);
       if (dx > ew / 2 || dy > eh / 2) return 0;
       var edge = Math.min(ew / 2 - dx, eh / 2 - dy);

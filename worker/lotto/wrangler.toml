@@ -16,6 +16,24 @@ LOTTO_POOL = '''[
 ]'''
 
 SHOPIFY_STORE = "non-world.myshopify.com"
+
+# How a prize code is verified at the moment it is handed out.
+#
+#   live    — ask the Admin API whether the code is still ACTIVE on every draw.
+#             Safest, and the original design. Needs SHOPIFY_ADMIN_TOKEN.
+#   trusted — no Shopify call; the pool below is taken as verified.
+#
+# Set to trusted on 2026-08-03. Shopify stopped allowing new legacy custom apps
+# on 1 January 2026, and an existing app's Admin API token cannot be revealed a
+# second time — ZAP's was created in September 2023 and is masked for good. The
+# only remaining route to a static token is rotating it, which breaks the
+# Zapier automations that run off that app.
+#
+# All six codes were confirmed ACTIVE through the Admin API on the date below.
+# To go back to live checking: set this to "live" and put a shpat_ token in
+# SHOPIFY_ADMIN_TOKEN. Nothing else changes.
+CODE_CHECK = "trusted"
+POOL_VERIFIED_AT = "2026-08-03"
 KLAVIYO_LIST_ID = "WQLa3T"
 KLAVIYO_EVENT = "Scratched NON Lotto"
 RATE_LIMIT_PER_HOUR = "6"

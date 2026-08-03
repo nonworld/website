@@ -279,10 +279,33 @@ async function toKlaviyo(env, { email, prize, sessionId, alreadyRevealed }) {
  * So: missing config is a closed shop. The theme already renders that state
  * honestly, and /health says exactly which piece is absent.
  */
+/* CODE_CHECK decides whether a prize code is verified against Shopify at the
+   moment it is handed out.
+
+   'live'    — the original behaviour. Every draw asks the Admin API whether
+               that code is still ACTIVE, and a failure closes the shop rather
+               than issuing something that might be dead.
+
+   'trusted' — no Shopify call. The pool is taken as verified, and the date it
+               was last checked is published on /health so the claim is
+               falsifiable rather than assumed.
+
+   'trusted' exists because Shopify stopped issuing static Admin API tokens:
+   legacy custom apps could no longer be created after 1 January 2026, and an
+   existing app's token cannot be revealed a second time. On this store the
+   only route to a fresh token is rotating ZAP's, which breaks the Zapier
+   automations running off it. The choice was a scratchie that never opens or
+   one that trusts a pool checked by hand — this makes the second choice
+   explicit, dated and reversible instead of silently degrading. */
+function codeCheckMode(env) {
+  return String(env.CODE_CHECK || 'live').toLowerCase() === 'trusted' ? 'trusted' : 'live';
+}
+
 function missingConfig(env) {
   const missing = [];
   if (!env.SHOPIFY_STORE) missing.push('SHOPIFY_STORE');
-  if (!env.SHOPIFY_ADMIN_TOKEN) missing.push('SHOPIFY_ADMIN_TOKEN');
+  // Only needed when we actually intend to call Shopify.
+  if (codeCheckMode(env) === 'live' && !env.SHOPIFY_ADMIN_TOKEN) missing.push('SHOPIFY_ADMIN_TOKEN');
   if (!env.KLAVIYO_API_KEY) missing.push('KLAVIYO_API_KEY');
   if (!env.LOTTO_KV) missing.push('LOTTO_KV');
   return missing;
@@ -384,8 +407,9 @@ export default {
          same check, and the cheap one was quietly standing in for the other.
 
          Off by default: it costs an API call, and health gets polled. */
+      const mode = codeCheckMode(env);
       let shopify;
-      if (url.searchParams.get('deep') === '1' && env.SHOPIFY_ADMIN_TOKEN) {
+      if (mode === 'live' && url.searchParams.get('deep') === '1' && env.SHOPIFY_ADMIN_TOKEN) {
         try {
           const probe = await fetch(
             `https://${env.SHOPIFY_STORE}/admin/api/2025-01/graphql.json`,
@@ -399,7 +423,10 @@ export default {
             },
           );
           if (!probe.ok) {
-            shopify = `token rejected: HTTP ${probe.status}`;
+            // Shopify's body distinguishes a wrong value from a wrong store,
+            // and "HTTP 401" alone sent us round the houses once already.
+            const why = (await probe.text()).slice(0, 160);
+            shopify = `token rejected: HTTP ${probe.status} — ${why}`;
           } else {
             const data = await probe.json();
             shopify = data?.errors?.length
@@ -411,11 +438,26 @@ export default {
         }
       }
 
+      /* Shape only, never the value: enough to tell a shpat_ access token from
+         a shpss_ app secret, or to catch a stray newline in the paste. */
+      let tokenShape;
+      if (url.searchParams.get('deep') === '1' && env.SHOPIFY_ADMIN_TOKEN) {
+        const t = env.SHOPIFY_ADMIN_TOKEN;
+        tokenShape = {
+          prefix: t.slice(0, 6),
+          length: t.length,
+          hasWhitespace: /\s/.test(t),
+        };
+      }
+
       return json({
         ok: missing.length === 0 && (shopify === undefined || shopify === 'ok'),
         prizes: loadPool(env).length,
         missing, // named explicitly, so a half-configured deploy is one curl away
+        codeCheck: mode,
+        ...(mode === 'trusted' ? { poolVerifiedAt: env.POOL_VERIFIED_AT || 'unrecorded' } : {}),
         ...(shopify === undefined ? {} : { shopify }),
+        ...(tokenShape === undefined ? {} : { tokenShape }),
       });
     }
 
@@ -512,6 +554,11 @@ export default {
       if (!candidate) break;
 
       let live;
+      if (codeCheckMode(env) === 'trusted') {
+        live = true;
+        prize = candidate;
+        break;
+      }
       try {
         live = await codeIsLive(env, candidate.code);
       } catch (e) {

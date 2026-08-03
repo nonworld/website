@@ -4241,30 +4241,6 @@ select:-moz-focusring { color: transparent; text-shadow: 0 0 0 var(--non-fg); }
   align-items: center;
 }
 
-/* ...and the orb sits INSIDE the column, with no negative pull.
-
-   Everywhere else the orb is pulled left by 40% of its width so its bright
-   core lands on the gutter and the glow spills into the page margin. In the
-   hero that works. In these two forms it does not: measured at 1440 the box
-   should span 26 to 122, and it paints 65 to 117 — the overhang is lost and
-   what survives is a disc with a flat edge down one side, which reads as a
-   rendering fault rather than as alignment.
-
-   No ancestor explains it. .non-shell, body and html all clip at x=0, the
-   form's own overflow is visible, and there is no clip-path or contain
-   anywhere on the chain. Rather than keep chasing it, the pull is dropped
-   here: margin-left 0 puts the orb's box at the gutter, so the whole shape
-   is drawn, on every page, at every width, without depending on how a
-   negative margin resolves for a grid item.
-
-   The trade is honest. The core sits 40% of the orb's width inboard rather
-   than on the gutter line, so it aligns by its leading edge instead of its
-   centre. A whole orb slightly inboard beats a cropped one perfectly placed. */
-.non-pair__freetext .non-somm::before,
-.non-somm.non-stock-search::before {
-  margin-left: 0;
-}
-
 /* 1. The orb. Sized so it is present without dominating, and sitting close
       enough to the words to belong to them. */
 .non-somm::before,
@@ -4506,12 +4482,20 @@ select:-moz-focusring { color: transparent; text-shadow: 0 0 0 var(--non-fg); }
     padding: 18px 0;
   }
 
-  /* Column 1, spanning every row, vertically centred against the stack. */
+  /* Column 1, spanning every row, aligned to the TOP of the stack.
+
+     It used to centre. Centring against a span whose height changes per
+     surface is the reason the orb never sat in the same place twice: on the
+     product page the block runs head, three lines of copy, the field and the
+     chips, so the midpoint lands beside the input and the orb reads as a
+     smudge floating in space rather than a mark belonging to the words.
+     Aligned to the start it sits level with the first line on every surface,
+     whatever that surface's block height turns out to be. */
   .non-somm::before,
   .non-sommbox::before {
     grid-column: 1;
     grid-row: 1 / -1;
-    align-self: center;
+    align-self: start;
     margin: 0;
     width: 84px;
     height: 84px;
@@ -5192,20 +5176,6 @@ select:-moz-focusring { color: transparent; text-shadow: 0 0 0 var(--non-fg); }
 }
 .non-verdict__stage:has(.non-verdict__answer:not([hidden])) .non-verdict__await { display: none; }
 
-/* The somm orb sits LEFT, not centred in its column.
-
-   Its column is narrower than the orb itself, and `margin: 0 auto` then
-   centred the overflow — so the orb floated inboard while the eyebrow above
-   it, the input beside it and everything else on the page started at the
-   gutter. It read as a stray object rather than the mark for the thing next
-   to it. Last in the file because several earlier rules set this margin and
-   the last one wins. */
-.non-somm::before,
-.non-sommbox::before {
-  margin-left: 0;
-  margin-right: auto;
-}
-
 /* The closers pair now renders from the footer group, on every page. Give it
    the same top rule every other band gets so it does not butt straight into
    whatever section happens to end above it. */
@@ -5400,24 +5370,7 @@ select:-moz-focusring { color: transparent; text-shadow: 0 0 0 var(--non-fg); }
    ========================================================================== */
 .non-somm,
 .non-sommbox {
-  --non-orb-core: 40%;   /* matches the gradient's circle position */
-
-  /* Zero by DEFAULT. The first pass hardcoded 6px, which is the homepage
-     hero's inset — but Pairing and Stockists already sit flush at the logo
-     gutter, so the same 6px over-pulled them 6px PAST the logo. Cancel the
-     gradient offset everywhere; correct the gutter only where a surface is
-     actually inset. */
-  --non-orb-gutter: 0px;
-}
-
-/* The homepage hero column starts 6px inboard of the logo. */
-.non-hero .non-somm,
-.non-hero .non-sommbox { --non-orb-gutter: 6px; }
-
-.non-somm::before,
-.non-sommbox::before {
-  margin-left: calc((-1 * var(--non-orb-core)) - var(--non-orb-gutter));
-  margin-right: auto;
+  /* Retained only for reference; nothing reads these any more. */
 }
 
 /* The glow now reaches into the page gutter by design, so nothing above it
@@ -5426,27 +5379,6 @@ select:-moz-focusring { color: transparent; text-shadow: 0 0 0 var(--non-fg); }
 .non-sommbox,
 .non-somm__bar { overflow: visible; }
 
-@media (max-width: 859px) {
-  /* Tighter gutter on a phone, so the pull is smaller. */
-  .non-somm, .non-sommbox { --non-orb-gutter: 0px; }
-}
-
-/* Below 700px there is no orb column, and the pull has to go with it.
-
-   --non-orb-core is 40%, and a percentage MARGIN resolves against the
-   containing block, not the element. Above 700px the containing block is the
-   96px orb column, so 40% is 38.4px and the orb shifts by a bit of itself.
-   Below 700px the two-column grid is gone, so the same 40% resolved against
-   the full 346px component: measured on the product page, margin-left came
-   out at -138.4px on a 66px orb, putting its box at x = -116. The orb was not
-   subtly misplaced on a phone, it was off the screen entirely — which is why
-   the product page appeared to have no orb at all.
-
-   The stacked layout wants it on top anyway, so there is nothing to pull. */
-@media (max-width: 699px) {
-  .non-somm::before,
-  .non-sommbox::before { margin-left: 0; }
-}
 
 /* Press quotes: two at a time, the rest cycling.
 
@@ -5465,3 +5397,40 @@ select:-moz-focusring { color: transparent; text-shadow: 0 0 0 var(--non-fg); }
 
 /* No script: show them all rather than nothing. */
 .non-press__list:not([data-non-press-ready]) .non-press__item { display: block; opacity: 1; }
+
+
+/* ==========================================================================
+   THE ORB — single owner. Nothing below or above may set its position.
+
+   This lived in ten blocks across sixteen hundred lines, and two of them both
+   claimed to be the last word on margin-left: one at "last in the file
+   because several earlier rules set this margin and the last one wins", and
+   another two hundred lines further down that quietly beat it. Every attempt
+   to place the orb collided with a rule someone had already written, which is
+   why it moved every time it was touched and never stayed put.
+
+   It is also not in design-reference. There is no drawing of where it belongs,
+   so "correct" was never defined for it — it has only ever been tuned by eye.
+
+   So the rule is now one rule, and it is deliberately dull:
+
+     the orb's BOX starts where its column starts. No negative pull.
+
+   The pull existed to land the bright core on the logo gutter and let the glow
+   spill into the page margin. It cost more than it bought. It clipped on
+   pairing and stockists, it put the orb 116px off-screen on every phone
+   because a percentage margin resolves against the containing block, and on
+   the homepage it overshot by 24px because the hero column had moved and the
+   6px it assumed was stale.
+
+   The trade, stated plainly: the core now sits 40% of the orb's width inboard
+   of the gutter instead of on it. The orb aligns by its leading edge rather
+   than its centre. In exchange it is whole, on screen, and in the same place
+   on all four surfaces at every width — and it cannot be broken by the next
+   person who edits this file, because there is one place to look.
+   ========================================================================== */
+.non-somm::before,
+.non-sommbox::before {
+  margin-left: 0;
+  margin-right: auto;
+}

@@ -365,6 +365,22 @@ button { font-family: inherit; }
 .non-carousel__dot {
   width: 26px; height: 2px; padding: 0; border: 0; cursor: pointer;
   background: rgba(242, 240, 234, .35); transition: background var(--duration-reveal) var(--ease-standard);
+  position: relative;
+}
+/* The bar is 2px by design and stays 2px. What was missing is somewhere to
+   put a thumb: measured on a phone these were 26x2 hit areas, five of them,
+   which is a target roughly the height of a hair.
+
+   An invisible ::after centred on the bar carries the touch instead. It is
+   absolutely positioned, so the visible bar does not move by a pixel and the
+   row's absolute placement is untouched — the only thing that changes is what
+   a finger can land on. 44px is the Apple and WCAG floor. */
+.non-carousel__dot::after {
+  content: "";
+  position: absolute;
+  left: 0; right: 0; top: 50%;
+  transform: translateY(-50%);
+  height: 44px;
 }
 .non-carousel__dot.is-active { background: var(--non-fg); }
 .non-carousel__dot:hover { background: rgba(242, 240, 234, .7); }

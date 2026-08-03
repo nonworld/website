@@ -157,6 +157,36 @@
   font-display: swap;
 }
 
+/* Softer charcoal ground — home and shop only.
+
+   #0c0c0c is a near-black. Lifting it to a warm charcoal takes the harshness
+   off large white type and lets photography sit on the page instead of
+   punching a hole in it. The hue moves toward the brand ink (#231f20) rather
+   than to a neutral grey, so it reads as the same family.
+
+   Scoped with :has() on the root, NOT on body. `html` also paints
+   `background: var(--non-bg)`, and the canvas colour is taken from html — set
+   the token on body alone and the overscroll gutter stays near-black while
+   the page is charcoal. Where :has() is unsupported the page simply keeps the
+   old ground, which is a clean degradation rather than a broken one.
+
+   The whole dark scale has to move together. Raising the ground alone would
+   put --non-panel (#131311) BELOW the page behind it, inverting every card:
+   panels would read as holes instead of surfaces. Lines and the photo bed
+   step up by the same amount so separation is preserved rather than crushed. */
+:root:has(body.template-index),
+:root:has(body.template-collection) {
+  --non-bg: #171513;
+  --non-panel: #1f1d1b;
+  --non-panel-alt: #232120;
+  --non-line: #2a2825;
+  --non-line-soft: #302e2b;
+  --non-line-strong: #3d3a36;
+  --non-photo-bed: #201f22;
+  --non-scrim: rgba(23, 21, 19, .88);
+  --non-scrim-soft: rgba(23, 21, 19, .55);
+}
+
 *, *::before, *::after { box-sizing: border-box; min-width: 0; }
 
 html, body {

@@ -4155,6 +4155,27 @@ select:-moz-focusring { color: transparent; text-shadow: 0 0 0 var(--non-fg); }
   margin-inline: 0;
 }
 
+/* ...and the pull is then capped at the page padding.
+
+   The orb is pulled left by 40% of its own width so its bright core lands on
+   the gutter and the soft glow spills into the page margin — that is the
+   homepage look, and these two pages should match it, not invent their own.
+
+   The catch is that 40% of a 96px orb is 38.4px, and --non-pad is 40px at
+   1280 and smaller below that. Once the form sits flush at the gutter the
+   pull can exceed the padding, the orb's box goes negative, and .non-shell
+   (overflow-x: clip) slices a straight edge down one side of a circle. The
+   hero never hits this because its column is inset a further 10px.
+
+   min() caps the pull at whatever padding actually exists, so the core sits
+   on the gutter at wide viewports and the orb slides flush to the page edge
+   at narrow ones — never past it, at any width, without relying on an
+   ancestor to not clip. */
+.non-pair__freetext .non-somm::before,
+.non-somm.non-stock-search::before {
+  margin-left: calc(-1 * min(var(--non-orb-core), var(--non-pad)));
+}
+
 /* 1. The orb. Sized so it is present without dominating, and sitting close
       enough to the words to belong to them. */
 .non-somm::before,

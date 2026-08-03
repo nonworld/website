@@ -155,3 +155,33 @@ Australia.
 5. **This is not legal advice.** I have written what the system does, in plain
    English, which is the part I can verify. Whether it satisfies the Privacy
    Act, GDPR, UK GDPR and CCPA is a question for someone qualified.
+
+---
+
+## What is live today, and the gap that matters
+
+Read back from the store on 2026-08-04. The footer already links PRIVACY POLICY
+to `/policies/privacy-policy`, and that resolves to the **stock Shopify
+boilerplate**: cookies, log files, web beacons, Order Information, Google
+Analytics, behavioural advertising opt-outs, and a Data Retention line that says
+order information is kept "unless and until you ask us to delete this
+information".
+
+It is a reasonable generic policy for a shop that only sells things. It does not
+describe this shop.
+
+**It says nothing about the Somm.** The site takes free text from a customer —
+on the homepage, on every product page, and on the pairing page — and sends it
+to Anthropic, a third-party processor in the United States. The live policy
+discloses Shopify and Google and no one else. A customer reading it today would
+have no way to know their question leaves the site at all.
+
+That is the gap, and it is the reason this draft exists. It is also why the
+order of operations matters: the Somm is already live and already sending
+queries, so the disclosure is overdue independently of task #14's logging.
+
+**Not changed by me.** Replacing the live policy is a legal act, not a content
+edit, and it needs the eight [CONFIRM] answers and a lawyer first. Shopify
+Settings → Policies → Privacy policy is the field; the footer link and the
+checkout link both follow it automatically, so nothing in the theme needs
+touching when it is replaced.

@@ -3,7 +3,8 @@
 Registered against `gid://shopify/OnlineStoreTheme/198370820256`, locale `es`.
 All writes so far returned zero `userErrors`.
 
-**277 strings registered. All of About is done, plus the six bottles' titles and SEO.**
+**310 strings registered. All of About is done, and every storefront product's
+title and SEO.**
 
 ## Done
 
@@ -16,7 +17,7 @@ All writes so far returned zero `userErrors`.
 | Contact + Stockists copy | 19 |
 | About prose (complete) | 78 |
 | About process data (complete) | 18 |
-| Product titles + SEO, six bottles | 18 |
+| Product titles + SEO, all 20 storefront products | 51 |
 
 ## Resume
 
@@ -37,7 +38,9 @@ or skip.
 ## Still to do
 
 1. **Product copy — BLOCKED on the metafield definitions.** `title`,
-   `meta_title` and `meta_description` are done for the six bottles. The PDP
+   `meta_title` and `meta_description` are DONE for all 20 storefront
+   products (the 9 POS-only SKUs are deliberately skipped — they never
+   render on the storefront). The PDP
    metafields (`custom.profile`, `custom.process`, `custom.ingredients`,
    `custom.storage`, plus `notes`, `sits`, `perfect_for_captions`) hold the
    real copy but do NOT appear in the product's `translatableContent` — their
@@ -49,6 +52,12 @@ or skip.
    Pattern used for SEO titles: `<title> | Alternativa al vino 0,0 %`. NOT
    "alternativa al vino sin alcohol" — that string contains "vino sin
    alcohol", which is the one rendering the glossary forbids outright.
+
+   Two English strings carry HARD-CODED AUD PRICES that translate into
+   nonsense for every other market: `BUY 6 FOR $150` at the top of every
+   bottle's `body_html`, and the gift card's `meta_description` ($40/$70/
+   $90/$150). Translating them faithfully propagates the problem into a
+   second language. They want fixing in English first.
 2. **The somm worker** — answers are generated live and CANNOT be translated
    afterwards. The target language and the glossary have to go into the prompt
    in `worker/somm/src`. Deploys with wrangler, which is authenticated here.

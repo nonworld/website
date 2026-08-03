@@ -26,6 +26,8 @@ the real damage — not in the grammar, in the meaning.
 | **cold steep, dry-hopped, sous vide, verjus pressed** | Process terms. Use the culinary term a chef would use, not a literal description. |
 | **the pick** | A recommendation, not a selection or a harvest. |
 | **poured at** | Venue listing. The sense is "served at", not "poured into". |
+| **wine knife / waiter's friend** | The tool, not a knife for cutting. Spanish uses "cuchillo de camarero". Note the product was renamed from "NON Waiter's Friend" to "NON Wine Knife" on 2026-08-03. |
+| **set / pack** | "El Set de …" and "Pack Mixto de …" — kept as the product-range words they are, not translated to "conjunto" or "lote". |
 
 ## Register
 

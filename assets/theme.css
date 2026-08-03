@@ -5503,6 +5503,17 @@ select:-moz-focusring { color: transparent; text-shadow: 0 0 0 var(--non-fg); }
     align-items: center;
   }
 
+  /* SEND on the contact form measured 38px while every field above it was 44.
+     The one control the page exists for was the smallest thing on it. Covers
+     .non-btn generally, which is the house button. */
+  .non-btn,
+  button[type="submit"] {
+    min-height: 44px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+  }
+
   /* The logo is the route home from every page. */
   .non-header__logo { min-height: 24px; }
   .non-header > a:first-child {

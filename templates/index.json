@@ -242,23 +242,40 @@
           "type": "quote",
           "settings": {
             "quote": "NON isn't trying to be an imitation of wine, but rather its own, distinct flavor.",
-            "source": "Rolling Stone"
+            "source": "Sage Anderson & Jonathan Zavaleta, Rolling Stone"
           }
         },
         "q2": {
           "type": "quote",
           "settings": {
             "quote": "NON isn't just a drink; it's an experience.",
-            "source": "Forbes"
+            "source": "Stephanie Gravalese, Forbes"
+          }
+        },
+        "q3": {
+          "type": "quote",
+          "settings": {
+            "quote": "I guarantee NON will change your opinion on how complex a non-alcoholic wine can be.",
+            "source": "Danielle St. Pierre, Food & Wine Editor"
+          }
+        },
+        "q4": {
+          "type": "quote",
+          "settings": {
+            "quote": "Racine is a fan of NON1, noting, 'This is more of a fusion rather than a traditional wine but it does have layers of complexity. My favorite is the Rosé made with raspberry and chamomile but the red and white are also excellent.'",
+            "source": "Michaela English, Vogue"
           }
         }
       },
       "block_order": [
         "q1",
-        "q2"
+        "q2",
+        "q3",
+        "q4"
       ],
       "settings": {
-        "heading": "Press"
+        "heading": "Press",
+        "rotate_seconds": 7
       }
     },
     "sets": {

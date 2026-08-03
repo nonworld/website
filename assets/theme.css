@@ -424,7 +424,18 @@ button { font-family: inherit; }
   display: flex; gap: 12px; align-items: center;
 }
 .non-somm__pick:hover { border-color: var(--non-fg); opacity: 1; }
-.non-somm__pick img { width: 60px; height: 76px; object-fit: cover; background: var(--non-photo-bed); }
+/* The bottle shot is a tall bottle standing in a lot of empty frame. `cover`
+   fills the 60x76 box by cropping the sides off it, and because the image had
+   no flex guard it also shrank inside the verdict panel, where two cards share
+   ~380px — which is how it ended up a vertical sliver of label rather than a
+   bottle. `contain` keeps the whole bottle; the flex basis stops the box being
+   squeezed to fit the words beside it. */
+.non-somm__pick img {
+  flex: 0 0 60px;
+  width: 60px; height: 76px;
+  object-fit: contain;
+  background: var(--non-photo-bed);
+}
 .non-somm__pick-meta { display: flex; flex-direction: column; gap: 5px; }
 .non-somm__pick-code { font-family: var(--non-mono); font-size: 10px; letter-spacing: .14em; color: var(--non-fg-faint); }
 .non-somm__pick-name { font-size: var(--t-body); font-weight: 500; line-height: 1.25; }
@@ -4803,6 +4814,12 @@ select:-moz-focusring { color: transparent; text-shadow: 0 0 0 var(--non-fg); }
 
 .non-verdict__picks,
 .non-verdict__await { position: relative; z-index: 1; }
+
+/* The shared picks list turns into a row at 860px, which is right when it has
+   the page's width. The verdict panel is a ~380px column at every breakpoint,
+   so two cards side by side leave each one too narrow for a 60px bottle and
+   its name. Stacked, each card gets the full panel. */
+.non-verdict__picks { flex-direction: column; }
 
 .non-verdict__await {
   margin: 0;

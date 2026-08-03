@@ -3,6 +3,8 @@
 Registered against `gid://shopify/OnlineStoreTheme/198370820256`, locale `es`.
 All writes so far returned zero `userErrors`.
 
+**215 strings registered so far.**
+
 ## Done
 
 | Surface | Strings |
@@ -12,11 +14,12 @@ All writes so far returned zero `userErrors`.
 | Homepage section copy | 35 |
 | Shop / collection copy | 21 |
 | Contact + Stockists copy | 19 |
-| About prose, first batch | 26 |
+| About prose, batches 1 and 2 | 52 |
 
 ## Resume
 
-`es-about-remaining.json` holds the **52 remaining About prose strings**, already
+`es-about-remaining.json` holds the **26 remaining About prose strings** — the six
+process stages, the three stats, the credentials and the two closing CTAs — already
 translated, with their keys and digests. Register them with:
 
 ```graphql

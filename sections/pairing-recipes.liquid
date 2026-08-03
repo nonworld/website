@@ -40,7 +40,7 @@
   class="non-recipes"
   data-non-recipes
   data-trace-speed="{{ section.settings.trace_speed | default: 340 }}"
-  {% if section.settings.band_bg != blank %}style="--non-recipes-bg: {{ section.settings.band_bg }}"{% endif %}>
+  >
   {%- comment -%}
     The dash field, the same one the contact page runs. Identical markup and
     the same contact-field.js, so there is one implementation rather than a
@@ -511,13 +511,6 @@
     {
       "type": "header",
       "content": "Appearance"
-    },
-    {
-      "type": "color",
-      "id": "band_bg",
-      "label": "Band background",
-      "default": "#c9c7c2",
-      "info": "The design makes this a light island in the dark page."
     },
     {
       "type": "color",

@@ -1,0 +1,101 @@
+{
+  "general": {
+    "accessibility": {
+      "skip_to_content": "Saltar al contenido",
+      "close": "Cerrar",
+      "previous": "Anterior",
+      "next": "Siguiente"
+    },
+    "meta": {
+      "tags": "Etiquetado «{{ tags }}»",
+      "page": "Página {{ page }}"
+    },
+    "404": {
+      "title": "Aquí no se sirve nada",
+      "subtext": "La página se ha movido o nunca existió.",
+      "link": "Volver a la tienda"
+    },
+    "search": {
+      "heading": "Buscar",
+      "placeholder": "Busca botellas y páginas",
+      "submit": "Buscar",
+      "results_with_count": {
+        "one": "{{ count }} resultado",
+        "other": "{{ count }} resultados"
+      },
+      "no_results": "Nada coincide con «{{ terms }}»."
+    },
+    "newsletter": {
+      "label": "Correo electrónico",
+      "submit": "Suscribirme",
+      "success": "Gracias, ya estás en la lista."
+    }
+  },
+  "products": {
+    "product": {
+      "add_to_cart": "Añadir al carrito",
+      "sold_out": "Agotado",
+      "unavailable": "No disponible",
+      "quantity": "Cantidad",
+      "from_price": "Desde {{ price }}",
+      "regular_price": "Precio habitual",
+      "sale_price": "Precio rebajado",
+      "vendor": "Marca",
+      "somm_heading": "NON Somm",
+      "somm_placeholder": "Pregunta por esta botella",
+      "ask": "Preguntar"
+    }
+  },
+  "cart": {
+    "general": {
+      "title": "Carrito",
+      "empty": "Tu carrito está vacío.",
+      "continue_shopping": "Seguir comprando",
+      "subtotal": "Subtotal",
+      "checkout": "Finalizar compra",
+      "remove": "Quitar",
+      "note": "Nota del pedido",
+      "taxes_and_shipping": "Impuestos y envío se calculan al finalizar la compra.",
+      "item_count": {
+        "one": "{{ count }} artículo",
+        "other": "{{ count }} artículos"
+      },
+      "free_shipping_progress": "Te faltan {{ amount }} para el envío gratis",
+      "free_shipping_met": "Envío gratis conseguido"
+    },
+    "prize": {
+      "won": "Has ganado",
+      "apply": "Aplicar a este pedido",
+      "applied": "Aplicado al finalizar la compra"
+    },
+    "upsell": {
+      "add": "Añadir",
+      "adding": "Añadiendo…"
+    }
+  },
+  "sections": {
+    "header": {
+      "cart_count": "Carrito ({{ count }})",
+      "menu": "Menú"
+    },
+    "somm": {
+      "heading": "NON Somm",
+      "placeholder": "Dime qué hay esta noche en la mesa",
+      "ask": "Preguntar",
+      "error": "El somm no está en sala. Inténtalo en un momento."
+    },
+    "lotto": {
+      "heading": "Rasca y descubre",
+      "subtext": "Hay que participar para ganar. Un regalo por invitado.",
+      "won": "Has ganado",
+      "code": "Código",
+      "copied": "Copiado",
+      "email_placeholder": "tu@correo.com",
+      "email_it": "Envíamelo por correo",
+      "saved": "Guardado ✓",
+      "no_thanks": "No, gracias",
+      "while_stocks_last": "Hasta agotar existencias",
+      "unavailable": "NON Lotto está cerrado ahora mismo."
+    }
+  }
+}

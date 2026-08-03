@@ -223,11 +223,18 @@
                     recipe by filling the metaobject's image field; nothing here
                     changes when you do.
                   {%- endcomment -%}
+                  {%- comment -%}
+                    --bottle, because the crop has to differ. A recipe
+                    photograph is a scene and fills a 4:3 frame; the bottle
+                    shot is a tall cut-out on white, so `cover` took a 4:3
+                    slice out of the middle and cut the base off. Contained on
+                    the bed instead, whole bottle, nothing lost.
+                  {%- endcomment -%}
                   {{
                     bottle.featured_image
                     | image_url: width: 900
                     | image_tag: loading: 'lazy', widths: '420,640,900',
-                      class: 'non-recipe__img', alt: bottle.title
+                      class: 'non-recipe__img non-recipe__img--bottle', alt: bottle.title
                   }}
                 {%- endif -%}
               </div>

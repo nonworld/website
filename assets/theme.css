@@ -5130,3 +5130,34 @@ select:-moz-focusring { color: transparent; text-shadow: 0 0 0 var(--non-fg); }
 
 /* The waiting line stands down for either route. */
 .non-verdict__stage:has(.non-verdict__result:not([hidden])) .non-verdict__await { display: none; }
+
+/* ==========================================================================
+   Recipe generator: the crop, and the step markers.
+
+   1. THE IMAGE. Every recipe falls back to the bottle's own product shot
+      because no non_recipe entry carries an image. That shot is a tall cut-out
+      on white, and the frame is 4:3 with object-fit: cover — so it took a
+      landscape slice out of the middle of a portrait bottle and cut the base
+      off. Contained on the bed for the fallback only; a real recipe photograph
+      is a scene and should still fill the frame.
+
+   2. THE STEP MARKER. The dot is drawn as a ring: a border, filled with the
+      page colour so it masks the rail passing behind it. That fill was
+      hardcoded to var(--non-bg), which is the near-black page — correct on the
+      PDP, wrong here, where the recipe surface is a pale grey. Same rule, two
+      opposite readings: a hollow ring on dark, a solid black dot on light.
+
+      Now driven by --non-step-dot-bg, which defaults to the page colour and is
+      overridden per surface. A marker should read the same everywhere.
+   ========================================================================== */
+.non-recipe__img--bottle {
+  object-fit: contain;
+  padding: 14px;
+  box-sizing: border-box;
+}
+
+.non-steps .non-step::before { background: var(--non-step-dot-bg, var(--non-bg)); }
+
+/* The recipe generator is a pale surface, so the marker fills with that. */
+.non-recipes { --non-step-dot-bg: rgb(201, 199, 194); }
+.non-recipes .non-recipe { --non-step-dot-bg: rgb(201, 199, 194); }

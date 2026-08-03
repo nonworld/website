@@ -376,10 +376,46 @@ export default {
     const url = new URL(request.url);
     if (url.pathname === '/health') {
       const missing = missingConfig(env);
+
+      /* `?deep=1` also proves the Shopify token WORKS, not merely that it is
+         set. On 2026-08-03 this endpoint reported ok:true with nothing missing
+         while every reveal returned closed, because the token was present and
+         rejected — `shopify 401` in the tail. Presence and validity are not the
+         same check, and the cheap one was quietly standing in for the other.
+
+         Off by default: it costs an API call, and health gets polled. */
+      let shopify;
+      if (url.searchParams.get('deep') === '1' && env.SHOPIFY_ADMIN_TOKEN) {
+        try {
+          const probe = await fetch(
+            `https://${env.SHOPIFY_STORE}/admin/api/2025-01/graphql.json`,
+            {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json',
+                'X-Shopify-Access-Token': env.SHOPIFY_ADMIN_TOKEN,
+              },
+              body: JSON.stringify({ query: '{ shop { name } }' }),
+            },
+          );
+          if (!probe.ok) {
+            shopify = `token rejected: HTTP ${probe.status}`;
+          } else {
+            const data = await probe.json();
+            shopify = data?.errors?.length
+              ? `token lacks scope: ${data.errors.map((e) => e.message).join('; ')}`
+              : 'ok';
+          }
+        } catch (e) {
+          shopify = `unreachable: ${e.message}`;
+        }
+      }
+
       return json({
-        ok: missing.length === 0,
+        ok: missing.length === 0 && (shopify === undefined || shopify === 'ok'),
         prizes: loadPool(env).length,
         missing, // named explicitly, so a half-configured deploy is one curl away
+        ...(shopify === undefined ? {} : { shopify }),
       });
     }
 

@@ -32,8 +32,27 @@
 {%- endcomment -%}
 
 {%- liquid
-  assign recipes = section.settings.recipes.value | default: shop.metaobjects.non_recipe.values
   assign efforts = 'fast,sunday,showoff,aperitivo,sweet' | split: ','
+  assign curated = section.settings.recipes.value
+-%}
+
+{%- comment -%}
+  Paginate, and not a bare `for`. An unpaginated metaobject collection stops at
+  fifty entries — silently, with no error and no marker in the markup. The
+  generator held a hundred-plus recipes and rendered fifty of them, which read
+  as "half the bottles have no Sunday dish" rather than as a cap. `by 250` puts
+  every entry on page one, so there is never a second page to link to.
+
+  The curated override is a plain array rather than a paginatable collection,
+  so it stays outside the paginate loop — the tag is still opened either way
+  because closing it conditionally would unbalance the template.
+{%- endcomment -%}
+{%- paginate shop.metaobjects.non_recipe.values by 250 -%}
+{%- liquid
+  assign recipes = shop.metaobjects.non_recipe.values
+  if curated != blank
+    assign recipes = curated
+  endif
 -%}
 
 <section
@@ -342,6 +361,7 @@
 </section>
 
 <script src="{{ 'recipes.js' | asset_url }}" defer></script>
+{%- endpaginate -%}
 
 {% schema %}
 {

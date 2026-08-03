@@ -39,6 +39,10 @@ BLOCK = {
     "form": "endform", "schema": "endschema", "comment": "endcomment",
     "capture": "endcapture", "paginate": "endpaginate", "style": "endstyle",
     "javascript": "endjavascript", "liquid": None,
+    # `raw` was missing, so every balanced {% raw %}…{% endraw %} reported as a
+    # stray endraw and blocked the push — four untouched snippets failing the
+    # guard is how a real failure gets waved through as "the usual noise".
+    "raw": "endraw",
 }
 
 liquid_files = glob("**/*.liquid", recursive=True)

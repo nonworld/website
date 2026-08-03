@@ -1516,7 +1516,23 @@ button { font-family: inherit; }
 .non-venue__addr { font-size: var(--t-small); color: var(--non-fg-mute); }
 .non-venue__kind,
 .non-venue__pours { font-family: var(--non-mono); font-size: var(--t-mono); color: var(--non-fg-faint); letter-spacing: .12em; text-transform: uppercase; }
-.non-venue__dir { font-size: var(--t-small); color: var(--non-fg-mute); text-decoration: underline; }
+.non-venue__dir {
+  font-size: var(--t-small); color: var(--non-fg-mute); text-decoration: underline;
+  position: relative;
+}
+/* Directions is the only action in a venue row, and on a phone it was a 16px
+   tall target — the one thing a customer standing in the street actually
+   wants to hit. Measured 105px of clear space between consecutive rows and
+   nothing else tappable inside one, so an invisible ::after can take the
+   touch at 44px without any chance of overlapping its neighbours, and without
+   lengthening a list that runs to thousands of venues. */
+.non-venue__dir::after {
+  content: "";
+  position: absolute;
+  left: 0; right: 0; top: 50%;
+  transform: translateY(-50%);
+  height: 44px;
+}
 .non-venue__dist { font-family: var(--non-mono); font-size: var(--t-mono); color: var(--non-fg-faint); white-space: nowrap; }
 
 /* The tool's own column: search, filters, results, see-all.

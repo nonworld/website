@@ -190,6 +190,26 @@ if css.exists():
                     f"assets/theme.css:{line}: sets {', '.join(hits)} on the orb "
                     f"outside its owner block — move it into '{OWNER}'")
 
+# 6b. The somm grid declares its columns ONCE.
+#
+#     Same failure as check 6, one section further down the same file, and I
+#     wrote it: two blocks ninety lines apart both set grid-template-columns on
+#     .non-somm. The later one won silently, so moving every child into column
+#     1 crammed the whole component into a 96px orb track — a 38px input and
+#     chips stacked one word wide, on every page and in every language.
+#
+#     A duplicate here is never intentional, so the rule is simply "one".
+somm_cols = [
+    (text[:m.start()].count('\n') + 1)
+    for m in re.finditer(r'([^{}]*)\{([^{}]*grid-template-columns[^{}]*)\}', text)
+    if 'non-somm' in ' '.join(m.group(1).split())
+] if css.exists() else []
+if len(somm_cols) > 1:
+    errors.append(
+        "assets/theme.css: grid-template-columns declared on .non-somm "
+        f"{len(somm_cols)} times (lines {', '.join(map(str, somm_cols))}) — "
+        "the later one wins silently; declare columns once. See check 6b")
+
 # 7. EDITABILITY — copy a merchant cannot reach from the theme editor.
 #
 #    Not a Shopify rejection mode either. It is here because "can Josh change

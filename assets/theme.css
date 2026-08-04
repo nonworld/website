@@ -4706,36 +4706,31 @@ select:-moz-focusring { color: transparent; text-shadow: 0 0 0 var(--non-fg); }
   .non-somm__stream { text-align: left; }
 }
 
-/* More room. The two-column block was right but tight: the orb sat close to
-   the field, the component was capped narrow enough to squeeze the input, and
-   the gap between the field row and the suggestions was larger than the gap
-   above it — so the spacing read as uneven rather than generous.
+/* More room: a wider measure, real vertical padding, and one consistent
+   rhythm down the column.
 
-   Wider measure, a bigger gutter between the orb and the conversation, real
-   vertical padding, and one consistent rhythm down the right column. */
+   THE SECOND GRID DECLARATION USED TO LIVE HERE, and it is the reason the
+   single-column change did not take. Two blocks ninety lines apart both set
+   grid-template-columns on the same selector; the later one won silently, so
+   the component kept its 96px orb column while every child had already been
+   moved into column 1. Everything landed in a 96px track: a 38px input, the
+   suggestion chips stacked one word wide, on every page and in every
+   language. Exactly the failure the orb owner block was written to end, and
+   I reproduced it one section further down the same file.
+
+   Columns are declared ONCE, at the top of the 700px block. Nothing below
+   may set them again. */
 @media (min-width: 700px) {
   .non-somm,
   .non-sommbox {
-    grid-template-columns: 96px minmax(0, 1fr);
-    column-gap: 44px;
     max-width: 880px;
     padding: 34px 0 30px;
 
-    /* The rhythm below is authored as 12 / 20 / 20. What rendered was 80px of
-       nothing under the heading, which is what read as the heading sitting in
-       the wrong place.
-
-       The orb is placed with `grid-area: 1 / 1 / -1` to span the full height
-       of the column beside it. But -1 means "the last line of the EXPLICIT
-       grid", and only columns were ever declared — so the explicit grid is
-       one row tall, -1 resolves back to the first line, and the orb lands in
-       row 1 on its own. A 96px orb in a row holding a 16px heading makes that
-       row 96px, and the heading floats at the top of it.
-
-       Declaring the rows explicitly is what makes -1 mean what it says. Eight
-       is comfortably more than any surface uses, and with align-content:start
-       the unused ones collapse to zero rather than padding the block out. */
-    grid-template-rows: repeat(8, auto);
+    /* Rows stay implicit now. They were declared explicitly to make a
+       `1 / 1 / -1` orb span resolve, and that span is gone — the orb is one
+       row at the top of one column. Eight fixed rows against a stack whose
+       length differs per surface is a second thing to keep in sync for no
+       remaining benefit. */
     align-content: start;
   }
   .non-somm::before,

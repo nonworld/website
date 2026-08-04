@@ -1268,13 +1268,16 @@ async function logExchange(env, row) {
   try {
     await env.SOMM_LOG.prepare(
       `INSERT INTO somm_log
-         (at, question, answer, context, product, route, intent, picks, locale, ms, fallback, error)
-       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+         (at, question, answer, context, product, route, intent, picks, locale,
+          ms, fallback, error, store, country, region, page, device, model)
+       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
     ).bind(
       row.at, row.question, row.answer ?? null, row.context ?? null,
       row.product ?? null, row.route ?? null, row.intent ?? null,
       row.picks ?? null, row.locale ?? null, row.ms ?? null,
       row.fallback ? 1 : 0, row.error ?? null,
+      row.store ?? null, row.country ?? null, row.region ?? null,
+      row.page ?? null, row.device ?? null, row.model ?? null,
     ).run();
   } catch (e) {
     console.error('[somm] log:', e && e.message ? e.message : e);
@@ -1378,10 +1381,34 @@ export default {
       await logExchange(env, {
         at: started, question: String(body.query || ''), context: body.context || null,
         product: body.product || null, locale: body.locale || null,
+        page: body.page || null,
         ms: Date.now() - started, error: `handler: ${e && e.message ? e.message : e}`,
       });
       throw e;
     }
+
+    /* WHERE AND ON WHAT, which is most of what makes the log analysable.
+
+       Country and region come from Cloudflare's edge, which already knows
+       them — no lookup, no IP stored. Deliberately no city: country answers
+       "which market asks this", and city plus a distinctive question starts
+       to describe a person, which is the thing the privacy policy promises
+       not to do. The line is drawn in code rather than left to whoever writes
+       the next SELECT.
+
+       `store` is the storefront host the ask came from, so AU, US and UK
+       traffic can be told apart without inferring it from locale — locale is
+       the language, and a UK visitor reading English is not a UK store.
+
+       `page` is the exact path; `context` is only the surface type. The
+       client has been sending it all along and nothing was reading it. */
+    const cf = request.cf || {};
+    const ua = request.headers.get('User-Agent') || '';
+    let store = null;
+    try {
+      const origin = request.headers.get('Origin') || request.headers.get('Referer');
+      if (origin) store = new URL(origin).host;
+    } catch { /* malformed Origin is not worth failing a log over */ }
 
     const base = {
       at: started,
@@ -1389,6 +1416,17 @@ export default {
       context: body.context || null,
       product: body.product || null,
       locale: body.locale || null,
+      page: body.page || null,
+      store,
+      country: cf.country || null,
+      region: cf.region || cf.regionCode || null,
+      // Coarse on purpose. The useful question is whether answers should be
+      // shorter on a phone, and that needs two buckets, not a UA string.
+      device: /Mobi|Android|iPhone|iPad/i.test(ua) ? 'mobile' : 'desktop',
+      // Every customer-facing sentence is written by EXPLAIN_MODEL. Recorded
+      // so a change in answer quality can be attributed to a model change
+      // rather than argued about.
+      model: env.EXPLAIN_MODEL || null,
     };
 
     const type = res.headers.get('Content-Type') || '';

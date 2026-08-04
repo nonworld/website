@@ -26,7 +26,6 @@
 */
 
 import fs from 'node:fs';
-import { pathToFileURL } from 'node:url';
 import { groundTruth, BOTTLES, SPARSE } from './groundtruth.mjs';
 
 const ENDPOINT = process.env.SOMM_URL || 'https://non-somm.polished-snow-7889.workers.dev/somm';

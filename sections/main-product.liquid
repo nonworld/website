@@ -653,6 +653,24 @@
     "storage": {{ m.storage | metafield_text | default: '' | json }},
     "notes": {{ m.notes | metafield_text | default: '' | json }},
     "nutrition": {{ nutrition | default: '' | json }},
+    {%- comment -%}
+      PACK PRICING, so arithmetic stops being a deflection.
+
+      The accuracy test asked "do I save anything buying six" thirty times and
+      got the price redirect thirty times — while the answer is knowable, and
+      on these bottles it is "no": six at $150 is 6 x $30 exactly. Deflecting a
+      question whose answer is sitting in the payload reads as evasion, and the
+      customer is on the page where the number is printed anyway.
+
+      Sent as the variant list rather than as a computed saving, so the Worker
+      does the sum from real figures and nothing here can go stale against the
+      variant it describes.
+    {%- endcomment -%}
+    "packs": [
+      {%- for v in product.variants -%}
+        {"units": {{ v.title | plus: 0 | default: 1 | json }}, "price": {{ v.price | money | json }}, "available": {{ v.available | json }}}{% unless forloop.last %},{% endunless %}
+      {%- endfor -%}
+    ],
     "available": {{ product.available | json }}
   }
 </script>

@@ -19,6 +19,7 @@
    given against what it said.
 */
 
+import { isMain } from './is-main.mjs';
 const STORE = 'https://www.non.world';
 
 export const BOTTLES = {
@@ -147,15 +148,9 @@ export async function groundTruth() {
   return all;
 }
 
-/* pathToFileURL, not a template string. import.meta.url percent-encodes the
-   space in "Claude Code" while process.argv[1] does not, so the naive compare
-   is false on this machine and the script exits silently having done nothing
-   — which is exactly how it first "ran successfully" and wrote no file. Same
-   trap the mega-test hit with new URL().pathname. */
-const { pathToFileURL } = await import('node:url');
 // argv[1] is undefined under `node -e`, where this module is imported rather
 // than run. Guarding it means importing the key never crashes the importer.
-if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) {
+if (isMain(import.meta.url)) {
   const fs = await import('node:fs');
   const gt = await groundTruth();
   const out = new URL('./groundtruth.json', import.meta.url);

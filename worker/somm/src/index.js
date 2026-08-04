@@ -214,8 +214,13 @@ House rules. These override anything above them:
   and the price/stock/shipping rule used to collide: told to refuse price and
   told not to say "I don't have", the only phrasing left was "I don't have
   pricing to share", which is the confession the first rule bans. So:
-    price or availability  -> "The price and availability are on the bottle's
+    a discount code, an
+    active promotion, or
+    how many units are
+    left in the warehouse  -> "The price and availability are on the bottle's
                               own page."
+                              This does NOT cover "is it in stock" when the
+                              sheet answers it. See the out-of-stock rule.
     shipping or delivery   -> "Shipping and delivery are on the shipping page."
     orders, returns, an
     existing order         -> "Customer service will sort that out faster than
@@ -225,6 +230,58 @@ House rules. These override anything above them:
     given                  -> name what NON HAS been awarded, and say nothing
                               about the one you were asked about.
   Then carry on with something you do know. Redirect, never confess.
+
+- PRICE IS ARITHMETIC, NOT A LOOKUP. When the sheet carries a price and a
+  packs list, ANSWER price questions from it: the single bottle, a pack, the
+  per-bottle rate, and whether a pack saves anything. Do the sum and give the
+  figure.
+
+  On these bottles a six-pack at $150 is six times $30 exactly, so the honest
+  answer to "do I save buying six" is NO — say so plainly rather than implying
+  a discount that is not there. If a pack IS cheaper per bottle, give the
+  saving as a number.
+
+  Keep the redirect only for what could go stale between the question and the
+  checkout: a discount code, an active promotion, a live stock count. A figure
+  already in the sheet is not one of those, and deflecting it reads as evasion
+  on a page that prints the price two inches away.
+
+- OUT OF STOCK IS SAID PLAINLY, NEVER SOFTENED. THIS RULE BEATS THE PRICE AND
+  AVAILABILITY REDIRECT ABOVE. If the sheet's Stock line says SOLD OUT, say so
+  in your first sentence — "this one is sold out" — and never answer "is this
+  in stock" with the redirect when the sheet has already told you the answer.
+  The redirect exists for a number you do not have; a sold-out flag is a fact
+  you do have. Do not redirect to "availability
+  is on the page" — the sheet already told you — and never recommend, praise
+  or steer a customer toward a product you have been told is unavailable.
+  Point at something they CAN buy instead. Nothing costs more trust than being
+  talked into an item that cannot be added to a cart.
+
+- ASK A HUMAN, when the question deserves one. Some questions are genuinely
+  beyond a drinks assistant: a medical or pregnancy question, an allergy or
+  intolerance you cannot clear from the ingredient list, a trade, wholesale,
+  press or event enquiry, a complaint, or anything where being wrong would
+  cost the person something real.
+
+  For those, answer whatever part you legitimately can, then end your reply
+  with this on its own final line, exactly:
+
+    [[ASK-A-HUMAN: <five to ten words saying what a person needs to answer>]]
+
+  It is stripped before the customer sees it. It is a signal, not speech, so
+  do not mention it, do not announce that you are escalating, and do not
+  apologise — the no-confession rule still holds.
+
+  ALWAYS use it for trade, wholesale, stockist, distribution, press, events,
+  partnership or sponsorship enquiries. These are not customer service. The
+  "customer service will sort that out" redirect is for an EXISTING order — a
+  restaurant group asking about wholesale is the most valuable message this
+  site can receive, and sending them to a returns desk loses it.
+
+  DO NOT use it for price, availability, shipping, delivery, or an existing
+  order or return. Those have their own redirects above and a human is not
+  needed. Do not use it merely because a detail is missing from the sheet; use
+  it when a PERSON is genuinely required.
 
 - The range is NON1, NON2, NON3, NON5, NON7 and NON9, plus the stopper and the
   sets. Never name any other product. Do not invent a bottle, a flavour or a
@@ -491,7 +548,7 @@ function sse(frame) {
    BEFORE any token has been sent we can still fall back cleanly; once tokens
    are on the wire the status line is long gone, so the failure is reported in
    the stream and the client keeps what it has. */
-async function claudeStreamResponse(env, { system, messages, maxTokens, model, tail, onFail }) {
+async function claudeStreamResponse(env, { system, messages, maxTokens, model, tail, onFail, escalationMeta }) {
   const upstream = await fetch('https://api.anthropic.com/v1/messages', {
     method: 'POST',
     headers: {
@@ -517,6 +574,7 @@ async function claudeStreamResponse(env, { system, messages, maxTokens, model, t
     const dec = new TextDecoder();
     let buffer = '';
     let text = '';
+    let held = false;
     try {
       for (;;) {
         const { value, done } = await reader.read();
@@ -539,11 +597,32 @@ async function claudeStreamResponse(env, { system, messages, maxTokens, model, t
           }
           if (evt.type === 'content_block_delta' && evt.delta && evt.delta.text) {
             text += evt.delta.text;
-            await writer.write(enc.encode(sse({ token: evt.delta.text })));
+            /* HOLD BACK EVERYTHING FROM THE FIRST '[['.
+
+               The ask-a-human sentinel is metadata the model writes on the
+               last line, and a stream emits it character by character — so
+               without this the customer watches "[[ASK-A-HUM" type itself
+               across the screen before anything strips it. Stripping the
+               finished string is too late when the string is being watched.
+
+               '[[' appears nowhere in normal answer prose, so suppressing
+               from it costs nothing, and the tail below carries the cleaned
+               answer that the client repaints from. If the model never
+               finishes the sentinel, the fragment is dropped anyway. */
+            if (!held && text.includes('[[')) held = true;
+            if (!held) await writer.write(enc.encode(sse({ token: evt.delta.text })));
           }
         }
       }
-      await writer.write(enc.encode(sse(tail(text.trim()))));
+      /* Escalation is resolved HERE rather than in each route's tail lambda,
+         so a route added later inherits it instead of quietly dropping it.
+         The tail receives the cleaned answer and the payload carries the
+         drafted email alongside it. */
+      const cleaned = extractEscalation(text.trim(), escalationMeta || {});
+      await writer.write(enc.encode(sse({
+        ...tail(cleaned.answer),
+        ...(cleaned.escalate ? { escalate: cleaned.escalate } : {}),
+      })));
       await writer.write(enc.encode('data: [DONE]\n\n'));
     } catch (e) {
       console.error('[somm] stream:', e && e.message ? e.message : e);
@@ -611,6 +690,27 @@ function factsPrompt(query, code, facts, lang = '') {
       ['Sits where', facts.sits],
       ['Nutrition', facts.nutrition],
       ['Price', facts.price],
+      /* PACKS AND STOCK WERE MISSING FROM THIS LIST, WHICH IS WHY THE RULES
+         ABOUT THEM DID NOTHING.
+
+         Adding "answer pricing arithmetic" to the house rules while the pack
+         prices were never put in front of the model produced the worst of both
+         outcomes: it stopped deflecting and started calculating, so "price per
+         bottle if I buy twelve" came back $360 — twelve times the single price
+         — when the twelve-pack is $300 and was sitting unused in the payload.
+         A rule that tells the model to use data it cannot see does not make it
+         cautious, it makes it confident and wrong.
+
+         Same for availability: the sold-out rule could not fire because
+         `available` never reached the prompt. */
+      ['Pack prices', Array.isArray(facts.packs) && facts.packs.length
+        ? facts.packs.map((p) => `${p.units} bottle${p.units === 1 ? '' : 's'} for ${p.price}`
+            + (p.available === false ? ' (unavailable)' : '')).join('; ')
+        : ''],
+      // Phrased so the false case cannot be skim-read as the true one.
+      ['Stock', facts.available === false
+        ? 'SOLD OUT — this product cannot be bought right now'
+        : (facts.available === true ? 'In stock' : '')],
     ].filter(([, v]) => v !== undefined && v !== null && String(v).trim() !== '');
 
     if (rows.length) {
@@ -926,6 +1026,53 @@ async function rateLimited(env, request) {
   return false;
 }
 
+
+/* --------------------------------------------------------------- escalate */
+
+/* The model marks a question as needing a person by ending its reply with
+   [[ASK-A-HUMAN: reason]]. This pulls that line off and turns it into a
+   drafted email.
+
+   STRIPPING IS UNCONDITIONAL AND DELIBERATELY LOOSE. A streamed answer can be
+   cut mid-sentinel, and a half-written "[[ASK-A-HUM" reaching a customer is
+   worse than losing the signal — so the trailing-fragment pattern is removed
+   whether or not it parsed. Metadata leaking into prose is the failure mode
+   that matters here.
+
+   The draft is composed here rather than by a second model call. It costs
+   nothing, it cannot hallucinate, and the only free text in it is the
+   customer's own question. A drafted email that invents a detail would be
+   worse than no feature. */
+const ESCALATE_RE = /\[\[ASK-A-HUMAN:\s*([^\]]*)\]\]/i;
+const ESCALATE_FRAGMENT = /\[\[ASK-?A?-?H?U?M?A?N?:?[^\]]*$/i;
+
+function extractEscalation(text, { query, code, title, page }) {
+  const raw = String(text || '');
+  const m = raw.match(ESCALATE_RE);
+  const answer = raw.replace(ESCALATE_RE, '').replace(ESCALATE_FRAGMENT, '').trim();
+  if (!m) return { answer, escalate: null };
+
+  const reason = (m[1] || '').trim() || 'a question that needs a person';
+  const about = title || code || 'the range';
+  const subject = code && code !== 'SET'
+    ? `Question about ${about}`
+    : 'Question from the NON site';
+
+  const body = [
+    'Hi NON,',
+    '',
+    `I asked this on ${page || 'your site'}${code && code !== 'SET' ? ` (${about})` : ''}:`,
+    '',
+    `  "${String(query || '').trim()}"`,
+    '',
+    'Could someone come back to me on it?',
+    '',
+    'Thanks',
+  ].join('\n');
+
+  return { answer, escalate: { reason, subject, body, about } };
+}
+
 /* -------------------------------------------------------------- handler */
 
 const handler = {
@@ -989,6 +1136,7 @@ const handler = {
             maxTokens: 700,
             system: BRAND_SYSTEM + HOUSE_RULES + lang,
             messages: [{ role: 'user', content: query }],
+            escalationMeta: { query, code: context, page: body.page, title: body.facts && body.facts.title },
             tail: (answer) => ({
               intent: 'brand',
               answer,
@@ -1035,6 +1183,7 @@ const handler = {
         try {
           return await claudeStreamResponse(env, {
             model: env.EXPLAIN_MODEL || 'claude-sonnet-5',
+            escalationMeta: { query, code: context, page: body.page, title: body.facts && body.facts.title },
             ...factsPrompt(query, context, body.facts, lang),
             tail: (answer) => ({
               intent,
@@ -1514,10 +1663,27 @@ export default {
       return new Response(toClient, { status: res.status, headers: res.headers });
     }
 
-    // JSON path. Clone before reading — res is still the customer's response.
+    /* JSON path. The escalation sentinel is resolved here, in the one place
+       that already sees every JSON response, so no route has to remember to
+       do it and a route added later cannot forget. The body is rebuilt rather
+       than mutated, because a Response's body has already been serialised. */
+    let payloadForLog = null;
+    try {
+      const cloned = await res.clone().json();
+      if (cloned && typeof cloned.answer === 'string' && ESCALATE_RE.test(cloned.answer)) {
+        const { answer, escalate } = extractEscalation(cloned.answer, {
+          query: body.query, code: body.code, page: body.page,
+          title: body.facts && body.facts.title,
+        });
+        const rebuilt = { ...cloned, answer, ...(cloned.explanation ? { explanation: answer } : {}), escalate };
+        payloadForLog = rebuilt;
+        res = new Response(JSON.stringify(rebuilt), { status: res.status, headers: res.headers });
+      }
+    } catch { /* not JSON, or unreadable: leave the response untouched */ }
+
     const finish = (async () => {
-      let payload = {};
-      try { payload = await res.clone().json(); } catch { /* non-JSON, log what we have */ }
+      let payload = payloadForLog || {};
+      try { if (!payloadForLog) payload = await res.clone().json(); } catch { /* log what we have */ }
       await logExchange(env, {
         ...base,
         answer: payload.answer || null,

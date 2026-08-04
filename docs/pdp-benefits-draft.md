@@ -49,7 +49,7 @@ For the table with the oysters on it | Salinity meets salinity, and verjus does 
 Where a rich white sat | Bold body, buttery texture, minerality from kombu and a long spiced finish. The bottle for the course a Chardonnay used to get.
 Savoury by construction | Japanese kombu and Kalamata olive brine for salinity, black tea and spice for tannin, roasted pears for the body. The glutamate in the kombu is doing the same work as miso on a plate.
 For roast chicken and butter sauce | Buttery body against buttery sauce, with tea tannin cutting through it. Equally at home with grilled fish and miso, or a mushroom risotto.
-27 calories a serve, 5.1g sugar | The lowest sugar of the still-bodied bottles, balanced with agave and vanilla rather than sugar. Vegan, gluten free, 0.0% ABV.
+27 calories a serve, 5.1g sugar, 51.8mg caffeine | The lowest sugar in the range, balanced with agave and vanilla rather than added sugar. The caffeine comes from the black tea — about half a cup of coffee's worth per bottle. Vegan, gluten free, 0.0% ABV.
 ```
 
 ## NON3 — Toasted Cinnamon & Yuzu
@@ -113,9 +113,12 @@ For reference, what each set holds:
 
 ## Two things to check before pasting
 
-**The caffeine figure on NON7.** 37mg per bottle comes from the Somm's own
-answer, not from the PDP. It is the one number here I have not seen on a page,
-and it is a health-adjacent claim, so confirm it against the spec sheet.
+**Caffeine is now confirmed, and there is more of it than one bottle.** The
+ground-truth pull on 4 August read both figures straight from the store's own
+product descriptions: NON7 carries 37mg per bottle, and **NON2 carries 51.8mg**
+— the higher of the two, from the black tea. Neither figure appears anywhere on
+its product page outside the description, and caffeine is the kind of thing
+people actively look for. Both lines above now state it.
 
 **"The fullest bottle NON makes" on NON9** is a superlative rather than a
 description. True against the six on the site today; it dates the moment a

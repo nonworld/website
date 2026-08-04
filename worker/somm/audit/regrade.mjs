@@ -22,8 +22,8 @@
    only accepted if it MATCHES the key for the bottle it is attributed to.
 */
 
+import { isMain } from './is-main.mjs';
 import fs from 'node:fs';
-import { pathToFileURL } from 'node:url';
 import { groundTruth } from './groundtruth.mjs';
 
 const gt = await groundTruth();
@@ -126,4 +126,4 @@ const changed = out.filter((r) => r.verdict !== r.verdictWas).length;
 console.log(`\n${changed} verdicts changed by the corrected rules`);
 console.log(`still wrong: ${out.filter((r) => r.verdict === 'wrong').length}`);
 
-if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) { /* ran directly */ }
+if (isMain(import.meta.url)) { /* ran directly */ }

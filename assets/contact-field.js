@@ -55,6 +55,19 @@
   var envRaw = parseFloat(wrap.getAttribute('data-envelope-scale'));
   var envScale = isNaN(envRaw) || envRaw < 0 ? 1.4 : envRaw;
 
+  /* No envelope on a phone.
+   *
+   * The mark is drawn at a fixed proportion of the field, so on a narrow
+   * screen it lands across the form itself — on the contact page it sat over
+   * the Name and Email inputs, with the dashes reading as though they were
+   * part of the fields. It is decoration behind a form, and the form wins.
+   *
+   * Measured at paint time rather than from a media query so it follows a
+   * rotation; the canvas is repainted on resize anyway. */
+  if (window.matchMedia && window.matchMedia('(max-width: 859px)').matches) {
+    envScale = 0;
+  }
+
   // Brightness multiplier. The alpha below is mostly carried by the envelope
   // term, so switching the envelope off — as the pairing verdict does — takes
   // most of the light with it and the field reads as an empty box. gain lets

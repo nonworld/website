@@ -30,7 +30,7 @@
             "text": "The world's first non-alcoholic cellar door. Tastings, tours and workshops in Cheltenham, VIC.",
             "link_label": "Book a tasting",
             "link": "/pages/visit-us",
-            "priority_templates": "index, our-story, stockists"
+            "priority_templates": "index"
           }
         },
         "stopper": {
@@ -54,7 +54,7 @@
             "text": "Tell the somm what you're eating and it will pick the bottle. That's the fastest version of everything on this page.",
             "link_label": "Find your pairing",
             "link": "/pages/pairing",
-            "priority_templates": "our-story, collection"
+            "priority_templates": "our-story, stockists"
           }
         },
         "out": {
@@ -66,7 +66,7 @@
             "text": "Someone else is already pouring it. Find the restaurants, bars and retailers near you with NON on the list.",
             "link_label": "Find a stockist",
             "link": "/pages/store-locator",
-            "priority_templates": "collection, product, contact"
+            "priority_templates": "contact"
           }
         },
         "bottle": {
@@ -78,7 +78,7 @@
             "text": "If you already know what you are after, the whole range is one click away — nine bottles, sets and the stopper.",
             "link_label": "Shop the range",
             "link": "/collections/the-range",
-            "priority_templates": "pairing, product, stockists"
+            "priority_templates": "our-story"
           }
         },
         "story": {
@@ -90,7 +90,7 @@
             "text": "No wine is made and then stripped. Fruit, tannin, salt and acid, built from zero in a kitchen in Melbourne.",
             "link_label": "Read the story",
             "link": "/pages/about-us",
-            "priority_templates": "contact, pairing"
+            "priority_templates": "stockists, contact"
           }
         }
       },

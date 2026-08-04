@@ -305,6 +305,12 @@
         termsEl.textContent = data.terms || '';
         copyBtn.hidden = !data.code;
 
+        /* "No thanks" is the wrong word once the prize is theirs. Relabel the
+         * footer button to a plain dismissal so the way out stops reading as
+         * a refusal of the thing they just claimed. */
+        var noBtn = root.querySelector('.non-lotto__no');
+        if (noBtn) noBtn.textContent = noBtn.getAttribute('data-done-label') || 'Done';
+
         if (sentEl) {
           sentEl.hidden = false;
           sentEl.textContent = data.emailed
@@ -489,7 +495,25 @@
     });
   }
 
-  root.querySelector('[data-non-lotto-close]').addEventListener('click', function () { close(true); });
+  /* Every close control, not just the one.
+   *
+   * There used to be a single exit — the "No thanks" button in the footer —
+   * plus Escape. A phone has no Escape key, so on mobile that button was the
+   * only way out, and after someone claims a prize a button reading "No
+   * thanks" reads as handing it back. People would not press it, and there was
+   * nothing else to press.
+   *
+   * querySelectorAll, so the new × in the card is wired by the same line. */
+  root.querySelectorAll('[data-non-lotto-close]').forEach(function (el) {
+    el.addEventListener('click', function () { close(true); });
+  });
+
+  /* Tap the scrim to dismiss. The root IS the scrim — position: fixed, inset 0
+   * — so anything outside the card counts, which is the behaviour every modal
+   * on a phone is expected to have. */
+  root.addEventListener('click', function (e) {
+    if (!e.target.closest('.non-lotto__card')) close(true);
+  });
 
   document.addEventListener('click', function (e) {
     if (e.target.closest('[data-non-lotto-open]')) {

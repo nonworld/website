@@ -45,12 +45,21 @@
   </div>
 {%- endif -%}
 
-<div class="non-section">
+{%- comment -%}
+  The wrapper is inside the test, not around it.
 
-  {%- if page.content != blank -%}
+  This was a .non-section holding nothing but the page.content check. The About
+  page keeps its copy in section settings and leaves the page body empty, so
+  the div rendered with no children — and .non-section carries 48px of padding
+  top and bottom, which put a 96px blank band between the credentials strip and
+  The Origin. Empty on every viewport; just more obvious on a phone, where 96px
+  is a fifth of the screen.
+{%- endcomment -%}
+{%- if page.content != blank -%}
+  <div class="non-section">
     <div class="non-rte" style="margin-top:26px">{{ page.content }}</div>
-  {%- endif -%}
-</div>
+  </div>
+{%- endif -%}
 
 {%- comment -%}
   CORRECTION. This block previously read "the design's About page carried no

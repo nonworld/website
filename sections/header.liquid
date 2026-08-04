@@ -48,10 +48,23 @@
   <button
     type="button"
     class="non-header__menu"
+    aria-label="{{ section.settings.menu_label | default: 'Menu' }}"
     data-non-menu-open
     aria-expanded="false"
     aria-controls="non-menu-{{ section.id }}">
-    {{ section.settings.menu_label | default: 'Menu' }}
+    {%- comment -%}
+      Three bars, not the word "Menu".
+
+      The label was fine on a desktop nav bar and reads as clutter on a phone,
+      where the hamburger is the one icon every person already knows. The word
+      stays in aria-label so the control is still announced properly, and the
+      bars are spans rather than an SVG so they inherit currentColor and cost
+      nothing to load.
+    {%- endcomment -%}
+    <span class="non-header__bars" aria-hidden="true">
+      <span></span><span></span><span></span>
+    </span>
+    <span class="visually-hidden">{{ section.settings.menu_label | default: 'Menu' }}</span>
   </button>
 
   <button type="button" class="non-header__cart" data-non-cart-open data-non-cart-count>

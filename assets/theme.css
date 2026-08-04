@@ -1914,6 +1914,30 @@ button { font-family: inherit; }
 .non-lotto__card { pointer-events: auto; }
 .non-lotto:not([hidden]) { pointer-events: auto; }
 
+/* The close control. The card is position: relative already, so this sits in
+   its top-right corner rather than floating over the scrim where it could land
+   on the foil. 44px of target, 20px of glyph. */
+.non-lotto__card { position: relative; }
+.non-lotto__x {
+  position: absolute;
+  top: 6px;
+  right: 6px;
+  width: 44px;
+  height: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 0;
+  background: none;
+  color: var(--non-fg-mute);
+  font-size: 20px;
+  line-height: 1;
+  cursor: pointer;
+  z-index: 2;
+  transition: color var(--duration-hover) var(--ease-hover);
+}
+.non-lotto__x:hover { color: var(--non-fg); }
+
 /* The live dot in the hero bar. Same mark as the product page, sitting inline
    with the input rather than in a header — the hero has no header row, and
    adding one to hold a dot would cost more than the dot is worth. */
@@ -3330,6 +3354,37 @@ select:-moz-focusring { color: transparent; text-shadow: 0 0 0 var(--non-fg); }
     cursor: pointer;
   }
   .non-header__cart { flex: none; }
+
+  /* The hamburger. Three 1px bars in an 18px box, inside the 44px target the
+     button already carried, so nothing about the tap area changes — only what
+     is drawn in it. */
+  .non-header__menu { padding: 0 10px; border-color: transparent; }
+  .non-header__bars {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 4px;
+    width: 20px;
+    height: 14px;
+  }
+  .non-header__bars > span {
+    display: block;
+    height: 1px;
+    width: 100%;
+    background: currentColor;
+  }
+
+  /* Stick the header to the top.
+     A phone scroll on this site is long — the range, the recipes, the stockist
+     list all run for screens — and the only way back to navigation was to
+     scroll the whole way up. position: sticky keeps it in flow, so nothing
+     below has to be offset to compensate. */
+  .non-header {
+    position: sticky;
+    top: 0;
+    z-index: 90;
+    background: var(--non-bg);
+  }
 
   /* The globe was a 420px minimum on a screen barely twice that tall, so it
      ate most of a scroll. It is decoration behind the press quotes, not the

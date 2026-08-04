@@ -51,6 +51,24 @@
       the teaser below, which is copy, not a prize. The Worker remains the
       control; this is presentation.
     {%- endcomment -%}
+    {%- comment -%}
+      A real close control, always present.
+
+      Until now the only way out of this modal was the "No thanks" button in the
+      footer, plus Escape. A phone has no Escape key, so on mobile that button
+      was the single exit — and once someone has typed their email and claimed a
+      prize, a button reading "No thanks" reads as giving the prize back. People
+      correctly refuse to press it and end up trapped.
+
+      Placed in the panel rather than floating over the scrim so it cannot land
+      on top of the foil, and labelled for screen readers because a bare
+      multiplication sign is not a word.
+    {%- endcomment -%}
+    <button
+      type="button"
+      class="non-lotto__x"
+      data-non-lotto-close
+      aria-label="{{ 'general.accessibility.close' | t | default: 'Close' }}">&#215;</button>
     <div class="non-lotto__panel" data-non-lotto-panel>
       <div class="non-lotto__prize">
         {%- comment -%} What is under the foil before the claim. {%- endcomment -%}
@@ -117,7 +135,16 @@
       <span class="non-mono non-eyebrow" style="font-size:9.5px">
         {{ 'sections.lotto.while_stocks_last' | t }}
       </span>
-      <button type="button" class="non-lotto__no" data-non-lotto-close>
+      {%- comment -%}
+        data-done-label is what this button becomes once a prize is claimed.
+        Translated here rather than hardcoded in lotto.js, which has no access
+        to the locale files.
+      {%- endcomment -%}
+      <button
+        type="button"
+        class="non-lotto__no"
+        data-non-lotto-close
+        data-done-label="{{ 'sections.lotto.done' | t | default: 'Done' }}">
         {{ 'sections.lotto.no_thanks' | t }}
       </button>
     </div>

@@ -181,6 +181,29 @@
       {%- elsif m.profile != blank -%}
         <p class="non-buy__blurb">{{ m.profile | metafield_text }}</p>
       {%- endif -%}
+
+      {%- comment -%}
+        THE SHOPIFY DESCRIPTION, FOR PRODUCTS THE DESIGN LEAVES EMPTY.
+
+        Every product carries two to four kilobytes of written description in
+        Shopify and this template renders none of it. On a bottle that is the
+        right call and was a deliberate one: the design replaced a prose block
+        with the spec strip, the five process steps and three pairing cards,
+        all of which say the same things better and none of which duplicate it.
+
+        On a set it is a hole. A set has no profile, no process and no pairings
+        — has_spec is false, so all of those bands correctly sit out — and what
+        remains is a title, a price and a photograph. Meanwhile the description
+        holds the only fact unique to the product: which three bottles are in
+        the box. Five sets shipped without it while it sat in Shopify the whole
+        time. Nothing needed writing; it needed printing.
+
+        Gated on has_spec so bottles are untouched. Gated on blurb being empty
+        so a product with a proper short blurb is not given both.
+      {%- endcomment -%}
+      {%- if has_spec == false and m.blurb == blank and product.description != blank -%}
+        <div class="non-rte non-buy__desc">{{ product.description }}</div>
+      {%- endif -%}
     </div>
 
     <form method="post" action="{{ routes.cart_add_url }}" data-non-product-form>

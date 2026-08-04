@@ -144,7 +144,25 @@ for f in (root / 'assets').glob('*.css'):
 #    to live wherever they read best; only "how far left or right is it" is
 #    owned by one block.
 OWNER = 'THE ORB — single owner'
-PULL = re.compile(r'(?<![-\w])(margin-left|margin-right|margin-inline(?:-start|-end)?)\s*:', re.I)
+#    Widened twice, each time by something that got past it:
+#
+#    `margin: 4px auto 20px` — the shorthand sets margin-left and margin-right
+#    just as surely as the longhands do, and an `auto` in the second slot is
+#    the classic centring idiom. The old pattern only looked for longhand
+#    property names, so the one declaration in the file that actively centred
+#    the orb was invisible to the check written to find exactly that.
+#
+#    `align-self` / `align-items` — the orb's containers are column flex, so
+#    the horizontal axis is the CROSS axis and alignment there is owned by
+#    align-*, not by margins or justify-*. A stray align-self on the orb
+#    outside the owner block would move it horizontally while every property
+#    this check knew about stayed at zero, which is precisely the "it moved
+#    again and nothing explains it" failure the owner block exists to end.
+PULL = re.compile(
+    r'(?<![-\w])(margin-left|margin-right|margin-inline(?:-start|-end)?'
+    r'|align-self)\s*:'
+    r'|(?<![-\w])(margin)\s*:[^;}]*\bauto\b',
+    re.I)
 css = root / 'assets' / 'theme.css'
 if css.exists():
     text = css.read_text(encoding='utf-8')
@@ -161,7 +179,11 @@ if css.exists():
             # would otherwise appear to start before its own comment header.
             if m.start(2) > owner_at:
                 continue  # the owner block itself, and anything after it
-            hits = sorted(set(h.group(1).lower() for h in PULL.finditer(body)))
+            # group(1) is the longhand branch, group(2) the `margin: … auto`
+            # shorthand branch; exactly one of the two matches per hit.
+            hits = sorted(set(
+                (h.group(1) or h.group(2) + ' (shorthand, with auto)').lower()
+                for h in PULL.finditer(body)))
             if hits:
                 line = text[:m.start(2)].count('\n') + 1
                 errors.append(

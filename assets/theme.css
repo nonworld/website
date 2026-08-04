@@ -4000,7 +4000,10 @@ select:-moz-focusring { color: transparent; text-shadow: 0 0 0 var(--non-fg); }
   display: block;
   width: clamp(120px, 15vw, 190px);
   aspect-ratio: 1 / 1;
-  margin: 10px auto 26px;
+  /* No `auto` on the horizontal slots: it centres, and the orb's placement
+     is owned by the block at the end of this file. Zeroes here so the
+     shorthand cannot quietly re-centre what that block left-aligns. */
+  margin: 10px 0 26px;
   border-radius: 50%;
   background:
     radial-gradient(circle at 42% 36%,
@@ -4060,7 +4063,8 @@ select:-moz-focusring { color: transparent; text-shadow: 0 0 0 var(--non-fg); }
    ========================================================================== */
 .non-sommbox::before {
   width: clamp(72px, 7vw, 96px);
-  margin: 4px auto 20px;
+  /* Horizontal slots zeroed — see the owner block at the end of the file. */
+  margin: 4px 0 20px;
   background:
     radial-gradient(circle at 40% 34%,
       rgba(242, 240, 234, .92) 0%,
@@ -4115,7 +4119,8 @@ select:-moz-focusring { color: transparent; text-shadow: 0 0 0 var(--non-fg); }
   flex: 0 0 100%;
   width: clamp(72px, 7vw, 96px);
   aspect-ratio: 1 / 1;
-  margin: 4px auto 20px;
+  /* Horizontal slots zeroed — see the owner block at the end of the file. */
+  margin: 4px 0 20px;
   border-radius: 50%;
   background:
     radial-gradient(circle at 40% 34%,
@@ -4198,7 +4203,8 @@ select:-moz-focusring { color: transparent; text-shadow: 0 0 0 var(--non-fg); }
   width: 90px;
   height: 90px;
   border-radius: 50%;
-  margin: 4px auto 20px;
+  /* Horizontal slots zeroed — see the owner block at the end of the file. */
+  margin: 4px 0 20px;
   background:
     radial-gradient(circle at 40% 34%,
       rgba(242, 240, 234, .92) 0%,
@@ -4643,7 +4649,10 @@ select:-moz-focusring { color: transparent; text-shadow: 0 0 0 var(--non-fg); }
   .non-sommbox::before {
     grid-column: 1;
     grid-row: 1 / -1;
-    align-self: start;
+    /* align-self used to be declared here. It now lives in the owner block
+       with the same value, because on a phone these containers are column
+       flex rather than grid and align-self is the property that positions the
+       orb horizontally there. Same declaration, one home. */
     margin: 0;
     width: 84px;
     height: 84px;
@@ -5599,6 +5608,24 @@ select:-moz-focusring { color: transparent; text-shadow: 0 0 0 var(--non-fg); }
   margin-left: 0;
   margin-right: 0;
   justify-self: start;
+
+  /* And the part that was missing, which is why the orb kept coming back to
+     the middle no matter what happened to its margins.
+
+     .non-somm and .non-sommbox are `display: flex; flex-direction: column;
+     align-items: center`. In a column flex container the cross axis is the
+     horizontal one, so align-items CENTRES every child — including this
+     pseudo-element. No margin value can argue with that: zero margins on a
+     centred flex item just means it is centred with no offset. And
+     justify-self, as the comment above concedes, is a grid property that flex
+     ignores outright, so the one rule meant to place the orb was a no-op on
+     every surface that actually renders it.
+
+     align-self is the flex-axis answer and it is the property align-items was
+     overriding all along. Declared alongside justify-self rather than instead
+     of it: if either container is ever switched to grid, one of the two is
+     always the live one. */
+  align-self: start;
 }
 
 /* MOBILE ORB — self-contained, so nothing can shave it.

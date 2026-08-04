@@ -116,6 +116,10 @@ pairing  — asks what to drink WITH A NAMED FOOD, meal or dish. There must be
            tofu", "what goes with roast chicken".
            NOT a gift, NOT "is this a good choice", NOT "who is it for" —
            those name no food and belong in facts.
+           NOT A DRINK. "a pint of Guinness", "a glass of shiraz", "an espresso
+           martini", "a negroni" name something to DRINK, not something to eat.
+           Nobody pairs a drink with a drink: the question behind it is which
+           NON sits where that drink sat, which is facts.
 facts    — asks about the drinks themselves: calories, kilojoules, sugar,
            carbs, sodium, alcohol, ingredients, allergens, vegan, gluten,
            caffeine, how to serve it, how long it keeps, what it tastes like,
@@ -649,6 +653,11 @@ async function answerFacts(env, query, code, facts, lang = '') {
     model: env.EXPLAIN_MODEL || 'claude-sonnet-5',
     ...prompt,
   });
+  // An empty string is not an answer. "Pint of guiness" — misspelt — returned
+  // a zero-length body with no error and no fallback flag, so the panel opened
+  // and stayed blank. Treat it as the failure it is and let the caller's
+  // fallback handle it.
+  if (!answer || !answer.trim()) throw new Error('empty answer');
   return { answer, picks: picksFrom(answer) };
 }
 
@@ -729,8 +738,21 @@ async function extractDish(env, query) {
 
 /* -------------------------------------------------- step 3: explanation */
 
+/* claude(), but an empty body is an error rather than an answer. The prose
+   paths all render their result directly into the panel, so a zero-length
+   string is indistinguishable from a broken deploy to the person reading it. */
+async function claudeNonEmpty(env, opts) {
+  const text = await claude(env, opts);
+  if (!text || !text.trim()) throw new Error('empty answer');
+  return text;
+}
+
 async function explain(env, { query, product, reasons, score, lang = '' }) {
-  return claude(env, {
+  // Same guard as answerFacts. This is the path that actually produced the
+  // blank panel: "Pint of guiness" routed to pairing, scored a bottle, and the
+  // sentence came back empty — so the customer got a pick card with no words
+  // above it and nothing to say why.
+  return claudeNonEmpty(env, {
     model: env.EXPLAIN_MODEL || 'claude-sonnet-5',
     maxTokens: 150,
     system: EXPLAIN_SYSTEM + HOUSE_RULES + lang,
@@ -793,7 +815,7 @@ async function verdict(env, { query, product, reasons, score, fit, instead, lang
 
   lines.push('', 'Write the one-sentence verdict.');
 
-  return claude(env, {
+  return claudeNonEmpty(env, {
     model: env.EXPLAIN_MODEL || 'claude-sonnet-5',
     maxTokens: 150,
     system: VERDICT_SYSTEM + HOUSE_RULES + lang,

@@ -4628,39 +4628,45 @@ select:-moz-focusring { color: transparent; text-shadow: 0 0 0 var(--non-fg); }
   .non-somm,
   .non-sommbox {
     display: grid;
-    grid-template-columns: 84px minmax(0, 1fr);
-    column-gap: 28px;
+    /* ONE COLUMN. The orb used to have its own 84px column beside everything
+       else, and that is the reason it never stayed put.
+
+       In a column of its own, the orb's left edge is a function of the column
+       width, the column gap and a negative pull — three numbers, none of which
+       has anything to do with where the heading starts. Every attempt to align
+       it was tuning those three against each other by eye, on one page, at one
+       width. It then disagreed with the text on every other page, and the next
+       fix moved it again.
+
+       Sharing the content column removes the question rather than answering
+       it. The orb starts where the heading starts because it is in the same
+       column as the heading, and there is no number left to get wrong. */
+    grid-template-columns: minmax(0, 1fr);
     align-items: start;
     text-align: left;
     max-width: 720px;
     padding: 18px 0;
   }
 
-  /* Column 1, spanning every row, aligned to the TOP of the stack.
+  /* First row of the single column, above the words rather than beside them.
 
-     It used to centre. Centring against a span whose height changes per
-     surface is the reason the orb never sat in the same place twice: on the
-     product page the block runs head, three lines of copy, the field and the
-     chips, so the midpoint lands beside the input and the orb reads as a
-     smudge floating in space rather than a mark belonging to the words.
-     Aligned to the start it sits level with the first line on every surface,
-     whatever that surface's block height turns out to be. */
+     grid-row: 1 / -1 used to make it span the whole stack, which meant its
+     apparent position depended on how tall that stack happened to be — head
+     plus three lines of copy plus a field plus chips on the product page,
+     versus a field alone elsewhere. Same element, different place on every
+     surface, and nothing in the CSS said so.
+
+     One row, first in the flow, and it moves only when the block moves. */
   .non-somm::before,
   .non-sommbox::before {
     grid-column: 1;
-    grid-row: 1 / -1;
-    /* align-self used to be declared here. It now lives in the owner block
-       with the same value, because on a phone these containers are column
-       flex rather than grid and align-self is the property that positions the
-       orb horizontally there. Same declaration, one home. */
-    margin: 0;
+    margin: 0 0 10px;
     width: 84px;
     height: 84px;
   }
 
-  /* Everything else stacks in column 2. */
   .non-somm > *,
-  .non-sommbox > * { grid-column: 2; }
+  .non-sommbox > * { grid-column: 1; }
 
   /* Left-aligned and tightened — this is the compact version. */
   .non-sommbox__head {
@@ -5628,65 +5634,17 @@ select:-moz-focusring { color: transparent; text-shadow: 0 0 0 var(--non-fg); }
   align-self: start;
 }
 
-/* THE PULL, RESTORED — with the number that broke it last time removed.
+/* NO PULL. NOT ON ANY SURFACE, NOT AT ANY WIDTH.
    ==========================================================================
-   Measured on the homepage at 1280px, after the align-self fix above: the
-   somm's box starts at x=46 and the H1 starts at x=46. The orb IS aligned.
-   It does not look aligned, and both of those things are true at once.
+   There was a negative margin here, twice — once as a percentage, once as two
+   measured pixel values per breakpoint. Both existed to drag the orb's box out
+   of its own column and towards the text, because the orb was in a column that
+   the text was not in.
 
-   The orb is a radial gradient centred at 40% of its own box. On a 96px box
-   that puts the bright core 38px inboard, so the light lands well right of
-   where every line of text begins and the eye reads it as indented. Aligning
-   the BOX was never the goal; the goal was aligning the MARK, and a blurred
-   circle's mark is its core, not its border box.
-
-   Hence a pull — the thing the owner block above was written to abolish. What
-   made the old pull dangerous was not its existence but its units and its
-   homes: it was a PERCENTAGE, which resolves against the containing block, so
-   it grew as the page grew and threw the orb 116px off-screen on a phone; and
-   it was declared in several places that each thought they were last.
-
-   This one is a fixed pixel value, in the owner block, on desktop only:
-
-     - 30px against a 46px gutter, so the box edge lands at x=16 and the orb
-       cannot leave the viewport at any width. The gutter cannot shrink below
-       this without the H1 moving too, at which point both move together.
-     - Desktop only, because below 700px the layout is centred by design and
-       the phone gutter is far too small to absorb it. Mobile keeps zero.
-
-   Why a pull and not simply moving the gradient's centre left, which would
-   need no margin at all: a background is painted only inside the element's
-   box. Sliding the core from 40% to 8% does not slide the orb left, it clips
-   the left 92% of the glow off and leaves a hard-edged crescent. The core has
-   to stay near the middle of its box, so it is the box that must move. That
-   is why the original design used a negative margin, and the fix is to make
-   the number safe rather than to remove it.
-
-   TWO VALUES, ONE PER GUTTER, BOTH MEASURED. Each pulls the box exactly to
-   the page edge and not one pixel past it, so nothing can ever overflow:
-
-     desktop  gutter 46px, orb 96px,  core at 40%  ->  pull 30, core +8px
-     mobile   gutter 22px, orb 104px, core at 42%  ->  pull 22, core +22px
-
-   Mobile does not reach flush and cannot. Flush would need a 44px pull, which
-   puts the box 22px off the left edge, and .non-shell clips there — that is
-   the flat-edged orb reported earlier. 22px is the largest pull the gutter
-   can absorb whole, and it halves the miss (41.6px -> 21.7px, measured live)
-   rather than closing it. Verified on the page, not calculated.
-
-   The mobile case was the one that mattered and the one the first attempt
-   missed: this was scoped to min-width 700px, while every screenshot of the
-   problem was a phone. Below 700px the orb is the 104px build and its core
-   sat 41.6px inboard of a 22px gutter — the widest miss of the two, on the
-   surface it was not fixed on. */
-@media (min-width: 700px) {
-  .non-somm::before,
-  .non-sommbox::before { margin-left: -30px; }
-}
-@media (max-width: 699px) {
-  .non-somm::before,
-  .non-sommbox::before { margin-left: -22px; }
-}
+   It shares the column now, so there is nothing to drag it towards. Any value
+   other than zero here is someone re-introducing the bug, which is why
+   preflight.py check 6 fails the push on a negative horizontal margin rather
+   than trusting this comment to be read. */
 
 /* MOBILE ORB — self-contained, so nothing can shave it.
 

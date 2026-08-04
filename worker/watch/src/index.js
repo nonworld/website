@@ -111,19 +111,90 @@ const CHECKS = [
   },
 ];
 
-async function notify(env, text) {
-  if (!env.SLACK_WEBHOOK) return false;
-  try {
-    const r = await fetch(env.SLACK_WEBHOOK, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ text }),
-    });
-    return r.ok;
-  } catch (e) {
-    console.error('[watch] notify failed:', e && e.message ? e.message : e);
-    return false;
+/* DIRECT TO SLACK, NOT VIA NORI.
+   ==========================================================================
+   The obvious wiring was to hand these alerts to Nori, which already has a
+   Slack bot and already talks to Aaron. It is the wrong shape: routing an
+   alert through a service makes that service a single point of failure for
+   its own alarm, so the message telling you Nori is down is the one message
+   Nori cannot send. Same bot token, same destination, no shared fate.
+
+   It also sidesteps Nori's outbound kill switch, which is OFF on purpose
+   since the reporting layer was cleared — an operational alarm is not a
+   proactive report and should not be gated behind the same flag, in either
+   direction.
+
+   DMs, resolved from email at send time. Hardcoded user ids rot silently when
+   someone is re-invited; an address is the thing Aaron actually typed. The
+   resolved ids are cached so the lookup is not repeated every quarter hour,
+   and the cache is keyed by address so changing ALERT_EMAILS invalidates
+   nothing else. */
+async function slackUserId(env, email) {
+  const cacheKey = `slack:${email}`;
+  const cached = await env.SOMM_LOG.prepare(
+    'SELECT v FROM watch_state WHERE k = ?',
+  ).bind(cacheKey).first().catch(() => null);
+  if (cached && cached.v) return cached.v;
+
+  const r = await fetch('https://slack.com/api/users.lookupByEmail', {
+    method: 'POST',
+    headers: {
+      Authorization: `Bearer ${env.SLACK_BOT_TOKEN}`,
+      'Content-Type': 'application/x-www-form-urlencoded',
+    },
+    body: new URLSearchParams({ email }),
+  });
+  const d = await r.json();
+  if (!d.ok || !d.user) {
+    console.error(`[watch] slack lookup ${email}: ${d.error}`);
+    return null;
   }
+  await setState(env, cacheKey, d.user.id);
+  return d.user.id;
+}
+
+async function notify(env, text) {
+  let sent = 0;
+
+  if (env.SLACK_BOT_TOKEN) {
+    const emails = (env.ALERT_EMAILS || '').split(',').map((e) => e.trim()).filter(Boolean);
+    for (const email of emails) {
+      try {
+        const id = await slackUserId(env, email);
+        if (!id) continue;
+        const r = await fetch('https://slack.com/api/chat.postMessage', {
+          method: 'POST',
+          headers: {
+            Authorization: `Bearer ${env.SLACK_BOT_TOKEN}`,
+            'Content-Type': 'application/json; charset=utf-8',
+          },
+          body: JSON.stringify({ channel: id, text, unfurl_links: false }),
+        });
+        const d = await r.json();
+        // Slack answers a refused post with HTTP 200 and ok:false, so res.ok
+        // alone would count every failure as a delivery.
+        if (d.ok) sent += 1;
+        else console.error(`[watch] slack post to ${email}: ${d.error}`);
+      } catch (e) {
+        console.error('[watch] slack:', e && e.message ? e.message : e);
+      }
+    }
+  }
+
+  if (!sent && env.SLACK_WEBHOOK) {
+    try {
+      const r = await fetch(env.SLACK_WEBHOOK, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ text }),
+      });
+      if (r.ok) sent += 1;
+    } catch (e) {
+      console.error('[watch] webhook:', e && e.message ? e.message : e);
+    }
+  }
+
+  return sent > 0;
 }
 
 async function state(env) {
@@ -153,13 +224,26 @@ export async function sweep(env, { force } = {}) {
     }
   }
 
-  const channel = !!env.SLACK_WEBHOOK;
+  /* Configured means a token AND someone to send to. A bot token with an
+     empty recipient list is the same silence as no token at all, and it is
+     the easier of the two to leave behind by accident. */
+  const recipients = (env.ALERT_EMAILS || '').split(',').map((e) => e.trim()).filter(Boolean);
+  const channel = (env.SLACK_BOT_TOKEN && recipients.length > 0) || !!env.SLACK_WEBHOOK;
   if (!channel) {
     results.push({
       id: 'channel',
       label: 'Alert channel',
       ok: false,
-      detail: 'SLACK_WEBHOOK is not set — this monitor can see everything and tell no one',
+      detail: env.SLACK_BOT_TOKEN
+        ? 'SLACK_BOT_TOKEN is set but ALERT_EMAILS is empty — nobody would be told'
+        : 'no SLACK_BOT_TOKEN or SLACK_WEBHOOK — this monitor can see everything and tell no one',
+    });
+  } else {
+    results.push({
+      id: 'channel',
+      label: 'Alert channel',
+      ok: true,
+      detail: recipients.length ? `DM to ${recipients.join(', ')}` : 'webhook',
     });
   }
 

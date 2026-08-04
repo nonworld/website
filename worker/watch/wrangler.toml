@@ -7,6 +7,11 @@ SOMM_URL = "https://non-somm.polished-snow-7889.workers.dev"
 LOTTO_URL = "https://non-lotto.polished-snow-7889.workers.dev"
 STORE_URL = "https://www.non.world/"
 
+# Who gets told. Addresses rather than Slack ids: an id rots silently when
+# someone is re-invited, and an address is the thing a human actually typed.
+# Resolved to ids at send time and cached.
+ALERT_EMAILS = "aaron@non.world,josh@non.world"
+
 # SOMM_URL and LOTTO_URL are kept for the record and as a fallback, but the
 # checks go through the service bindings below. A Worker fetching another
 # Worker's *.workers.dev hostname gets a 404 from inside Cloudflare's network

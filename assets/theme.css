@@ -5654,13 +5654,32 @@ select:-moz-focusring { color: transparent; text-shadow: 0 0 0 var(--non-fg); }
      - Desktop only, because below 700px the layout is centred by design and
        the phone gutter is far too small to absorb it. Mobile keeps zero.
 
-   Net: the core sits ~8px inboard of the text edge instead of 38px, which
-   reads as flush. */
+   Why a pull and not simply moving the gradient's centre left, which would
+   need no margin at all: a background is painted only inside the element's
+   box. Sliding the core from 40% to 8% does not slide the orb left, it clips
+   the left 92% of the glow off and leaves a hard-edged crescent. The core has
+   to stay near the middle of its box, so it is the box that must move. That
+   is why the original design used a negative margin, and the fix is to make
+   the number safe rather than to remove it.
+
+   TWO VALUES, ONE PER GUTTER, BOTH MEASURED. Each pulls the box exactly to
+   the page edge and not one pixel past it, so nothing can ever overflow:
+
+     desktop  gutter 46px, orb 96px,  core at 40%  ->  pull 30, core +8px
+     mobile   gutter 22px, orb 104px, core at 42%  ->  pull 22, core +0px
+
+   The mobile case was the one that mattered and the one the first attempt
+   missed: this was scoped to min-width 700px, while every screenshot of the
+   problem was a phone. Below 700px the orb is the 104px build and its core
+   sat 41.6px inboard of a 22px gutter — the widest miss of the two, on the
+   surface it was not fixed on. */
 @media (min-width: 700px) {
   .non-somm::before,
-  .non-sommbox::before {
-    margin-left: -30px;
-  }
+  .non-sommbox::before { margin-left: -30px; }
+}
+@media (max-width: 699px) {
+  .non-somm::before,
+  .non-sommbox::before { margin-left: -22px; }
 }
 
 /* MOBILE ORB — self-contained, so nothing can shave it.

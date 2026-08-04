@@ -57,11 +57,15 @@ Output ONLY a JSON object matching this shape. No prose, no markdown fence:
 }
 
 Vocabulary, use these where they fit:
-  proteins: shellfish, raw fish, white fish, oyster, poultry, red meat, beef,
-            lamb, game, mushroom, vegetable, grain, hard cheese, goat cheese,
-            cured meat, chocolate
+  proteins: shellfish, raw fish, white fish, oyster, poultry, duck, red meat,
+            beef, lamb, game, mushroom, vegetable, grain, hard cheese,
+            goat cheese, cured meat, chocolate
   cookingStyle: raw, cured, lightly cooked, steamed, poached, roasted, grilled,
             charred, braised, fried, smoked
+
+Use "duck" for duck specifically and "poultry" for chicken, turkey and guinea
+fowl. They are not interchangeable: duck is fatty and rich and takes a big
+tannic pour, chicken is lean and savoury and does not.
 
 If the description is about an occasion rather than a dish ("something for a
 picnic", "I've stopped drinking"), infer the most likely food and keep every

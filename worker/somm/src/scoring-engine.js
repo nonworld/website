@@ -232,11 +232,16 @@ const PRODUCTS = [
     body: 4,
     dominantFlavours: ['stewed cherry', 'coffee', 'bitter', 'whole spice', 'dark fruit'],
     bestWith: {
-      // Duck is NON7's plate: stewed cherry against rich poultry is the
-      // classic match, and the coffee bitterness handles the fat. Beef belongs
-      // to NON9 — 'red meat' stays here so NON7 is not blind to it, but the
-      // specific protein is what decides the winner.
-      proteins: ['red meat', 'lamb', 'poultry', 'game', 'mushroom', 'hard cheese', 'chocolate'],
+      // DUCK, not all poultry. Stewed cherry against rich duck is the classic
+      // match and the coffee bitterness handles the fat — but 'poultry' here
+      // meant a whole roast chicken inherited duck's answer, and NON7 came
+      // back top for it. A roast chicken is lean and savoury; it wants NON2's
+      // caramelised pear and kombu, not a big tannic pour. The extractor now
+      // has a separate word for duck, so the two stop sharing a verdict.
+      //
+      // Beef belongs to NON9 — 'red meat' stays here so NON7 is not blind to
+      // it, but the specific protein is what decides the winner.
+      proteins: ['red meat', 'lamb', 'duck', 'game', 'mushroom', 'hard cheese', 'chocolate'],
       fatLevel: [3, 5],
       cookingStyle: ['charred', 'grilled', 'roasted', 'braised', 'smoked'],
       dishAcid: [0, 3],

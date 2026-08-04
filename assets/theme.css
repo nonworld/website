@@ -5707,3 +5707,61 @@ select:-moz-focusring { color: transparent; text-shadow: 0 0 0 var(--non-fg); }
 /* Descriptions carry stray <br> between list items and headings, which double
    the spacing the rules above already set. */
 .non-benefit__b--rich br { display: none; }
+
+/* ASK A HUMAN — the escalation card under a Somm answer.
+   Charcoal panel on the page's own ground, one hairline, no second border
+   inside the answer box. It uses the motion tokens every other reveal uses so
+   it arrives the same way the picks do rather than appearing as a jump. */
+.non-ask {
+  margin-top: 18px;
+  border: 1px solid var(--non-line-strong, rgba(242,240,234,.28));
+  background: var(--non-panel, rgba(242,240,234,.04));
+  padding: 16px 16px 14px;
+  animation: non-somm-line-in var(--duration-reveal, 700ms) var(--ease-standard) both;
+}
+.non-ask__head { display: block; margin-bottom: 8px; }
+.non-ask__why {
+  margin: 0 0 12px;
+  font-size: var(--t-copy);
+  line-height: 1.5;
+  opacity: .82;
+}
+.non-ask__body,
+.non-ask__email {
+  width: 100%;
+  font-family: var(--non-sans);
+  font-size: var(--t-copy);
+  color: var(--non-fg);
+  background: transparent;
+  border: 1px solid var(--non-line, rgba(242,240,234,.18));
+  padding: 10px 12px;
+  line-height: 1.5;
+}
+.non-ask__body { resize: vertical; min-height: 120px; }
+.non-ask__body:focus,
+.non-ask__email:focus { outline: none; border-color: var(--non-fg); }
+.non-ask__row { display: flex; gap: 10px; margin-top: 10px; }
+.non-ask__email { flex: 1; min-width: 0; }
+.non-ask__send {
+  flex: none;
+  border: 0;
+  background: var(--non-invert-bg);
+  color: var(--non-invert-fg);
+  font-family: var(--non-sans);
+  font-size: var(--t-mono);
+  font-weight: 600;
+  letter-spacing: .14em;
+  text-transform: uppercase;
+  /* 44px, the same minimum every other tap target on the site uses. */
+  min-height: 44px;
+  padding: 0 20px;
+  cursor: pointer;
+}
+.non-ask__send[disabled] { opacity: .5; cursor: default; }
+.non-ask__msg { margin: 10px 0 0; font-size: var(--t-mono); opacity: .85; }
+.non-ask__msg--bad { color: var(--non-error, #ff8a7a); opacity: 1; }
+@media (max-width: 599px) {
+  /* The field and the button stop competing for a 320px line. */
+  .non-ask__row { flex-direction: column; }
+  .non-ask__send { width: 100%; }
+}

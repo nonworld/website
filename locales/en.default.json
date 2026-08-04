@@ -82,7 +82,17 @@
       "heading": "NON Somm",
       "placeholder": "Tell me what’s on the table tonight",
       "ask": "Ask",
-      "error": "The somm is off the floor. Try again in a moment."
+      "error": "The somm is off the floor. Try again in a moment.",
+      "ask_head": "This one needs a person",
+      "ask_why": "We've drafted it for you. Change anything you like before it goes.",
+      "ask_body_label": "Your message",
+      "ask_email": "Your email",
+      "ask_send": "Send it",
+      "ask_sending": "Sending",
+      "ask_need_email": "An email address first, so we can reply.",
+      "ask_need_body": "Add a line about what you need.",
+      "ask_sent": "Sent. We'll come back to you, usually the same day.",
+      "ask_failed": "That didn't send. Email hello@non.world and we'll pick it up."
     },
     "lotto": {
       "heading": "Scratch & reveal",

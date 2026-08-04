@@ -257,6 +257,127 @@
       picksBox.hidden = false;
     }
 
+
+    /* ------------------------------------------------------- ask a human */
+
+    /* Some questions deserve a person: an allergy the ingredient list cannot
+       clear, a wholesale enquiry, a journalist. The Worker marks those and
+       returns a drafted email; this renders it.
+
+       NOTHING IS SENT WITHOUT THE CUSTOMER PRESSING SEND. The draft is a
+       starting point in an editable field, not an outbox — a message sent in
+       someone's name that they never read is worse than no feature. The email
+       field is theirs so a reply can reach them.
+
+       It posts through Shopify's own contact form, the same endpoint the
+       contact page uses, so it lands in the store's contact inbox with no new
+       credential, no third-party sender and no deliverability setup of its
+       own. */
+    function renderEscalation(esc) {
+      if (!esc || !answerBox) return;
+      var old = answerBox.querySelector('[data-non-ask]');
+      if (old) old.parentNode.removeChild(old);
+
+      var wrap = document.createElement('div');
+      wrap.className = 'non-ask';
+      wrap.setAttribute('data-non-ask', '');
+
+      var head = document.createElement('div');
+      head.className = 'non-mono non-eyebrow non-ask__head';
+      head.textContent = NON.strings.askHead || 'This one needs a person';
+      wrap.appendChild(head);
+
+      var why = document.createElement('p');
+      why.className = 'non-ask__why';
+      why.textContent = NON.strings.askWhy || 'Send it to the team and someone will come back to you.';
+      wrap.appendChild(why);
+
+      var body = document.createElement('textarea');
+      body.className = 'non-ask__body';
+      body.setAttribute('rows', '7');
+      body.setAttribute('aria-label', NON.strings.askBodyLabel || 'Your message');
+      body.value = esc.body || '';
+      wrap.appendChild(body);
+
+      var row = document.createElement('div');
+      row.className = 'non-ask__row';
+
+      var email = document.createElement('input');
+      email.type = 'email';
+      email.className = 'non-ask__email';
+      email.setAttribute('autocomplete', 'email');
+      email.placeholder = NON.strings.askEmail || 'Your email';
+      email.setAttribute('aria-label', NON.strings.askEmail || 'Your email');
+      row.appendChild(email);
+
+      var send = document.createElement('button');
+      send.type = 'button';
+      send.className = 'non-ask__send';
+      send.textContent = NON.strings.askSend || 'Send it';
+      row.appendChild(send);
+      wrap.appendChild(row);
+
+      var msg = document.createElement('p');
+      msg.className = 'non-ask__msg';
+      msg.setAttribute('role', 'status');
+      msg.setAttribute('aria-live', 'polite');
+      msg.hidden = true;
+      wrap.appendChild(msg);
+
+      function say(text, bad) {
+        msg.textContent = text;
+        msg.hidden = false;
+        msg.className = 'non-ask__msg' + (bad ? ' non-ask__msg--bad' : '');
+      }
+
+      send.addEventListener('click', function () {
+        var addr = (email.value || '').trim();
+        // Validated here rather than trusting the input's own type, because a
+        // rejected submission loses the customer's edited message.
+        if (!addr || addr.indexOf('@') < 1 || addr.indexOf('.') < 0) {
+          say(NON.strings.askNeedEmail || 'An email address first, so we can reply.', true);
+          email.focus();
+          return;
+        }
+        if (!(body.value || '').trim()) {
+          say(NON.strings.askNeedBody || 'Add a line about what you need.', true);
+          body.focus();
+          return;
+        }
+
+        send.disabled = true;
+        send.textContent = NON.strings.askSending || 'Sending';
+
+        var form = new FormData();
+        form.append('form_type', 'contact');
+        form.append('utf8', '\u2713');
+        form.append('contact[email]', addr);
+        form.append('contact[body]', body.value);
+        // Shopify puts the subject in the notification when this field is set,
+        // which is what makes a wholesale enquiry findable in the inbox later.
+        form.append('contact[Subject]', esc.subject || 'Question from the NON site');
+
+        fetch('/contact', { method: 'POST', body: form, redirect: 'follow' })
+          .then(function (res) {
+            // Shopify answers a successful post with a redirect back to the
+            // page carrying ?contact_posted=true. An opaque or followed
+            // redirect both read as ok here; a 4xx does not.
+            if (!res.ok && res.type !== 'opaqueredirect') throw new Error('HTTP ' + res.status);
+            say(NON.strings.askSent || "Sent. We'll come back to you, usually the same day.");
+            body.disabled = true;
+            email.disabled = true;
+            send.hidden = true;
+          })
+          .catch(function () {
+            send.disabled = false;
+            send.textContent = NON.strings.askSend || 'Send it';
+            say(NON.strings.askFailed || 'That did not send. Email hello@non.world and we will pick it up.', true);
+          });
+      });
+
+      answerBox.appendChild(wrap);
+    }
+
     function fallback(query) {
       var hit = matchSeed(seeds, query);
       var first = seeds[0];
@@ -337,6 +458,7 @@
           return res.json().then(function (data) {
             endThinking(function () {
               type(data.answer || '', data.picks || []);
+              renderEscalation(data.escalate);
               history.push({ role: 'assistant', text: data.answer || '' });
             });
           });
@@ -409,8 +531,31 @@
             if (!line || line === '[DONE]') return;
             try {
               var parsed = JSON.parse(line);
-              if (parsed.picks) return renderPicks(parsed.picks);
-              if (parsed.token) text += parsed.token;
+              if (parsed.token) {
+                text += parsed.token;
+              } else {
+                /* THE TAIL FRAME. Everything that is not a token is the final
+                   payload, and it is handled as one thing rather than as a
+                   picks frame that happens to be first.
+
+                   It used to `return` on picks, which would have silently
+                   dropped an escalation riding the same frame — and the
+                   escalation always rides the same frame.
+
+                   Its `answer` is also authoritative over the tokens we
+                   accumulated. The Worker suppresses the stream from the
+                   first '[[' so the ask-a-human marker cannot type itself
+                   across the screen, which means on an escalated answer the
+                   token stream is deliberately short. Repainting from the
+                   tail is what completes the sentence. */
+                if (parsed.answer) {
+                  text = parsed.answer;
+                  if (stream) stream.textContent = text;
+                }
+                if (parsed.picks) renderPicks(parsed.picks);
+                if (parsed.escalate) renderEscalation(parsed.escalate);
+                return;
+              }
             } catch (e) {
               text += line;
             }

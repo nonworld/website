@@ -102,7 +102,22 @@
           cartEmpty: {{ 'cart.general.empty' | t | json }},
           soldOut: {{ 'products.product.sold_out' | t | json }},
           freeShippingProgress: {{ 'cart.general.free_shipping_progress' | t: amount: '[amount]' | json }},
-          freeShippingMet: {{ 'cart.general.free_shipping_met' | t | json }}
+          freeShippingMet: {{ 'cart.general.free_shipping_met' | t | json }},
+          {%- comment -%}
+            Ask-a-human. Every one of these is a locale key rather than a
+            literal in somm.js, which has no access to the locale files — the
+            same reason the lotto's done-label is passed in from Liquid.
+          {%- endcomment -%}
+          askHead: {{ 'sections.somm.ask_head' | t | json }},
+          askWhy: {{ 'sections.somm.ask_why' | t | json }},
+          askBodyLabel: {{ 'sections.somm.ask_body_label' | t | json }},
+          askEmail: {{ 'sections.somm.ask_email' | t | json }},
+          askSend: {{ 'sections.somm.ask_send' | t | json }},
+          askSending: {{ 'sections.somm.ask_sending' | t | json }},
+          askNeedEmail: {{ 'sections.somm.ask_need_email' | t | json }},
+          askNeedBody: {{ 'sections.somm.ask_need_body' | t | json }},
+          askSent: {{ 'sections.somm.ask_sent' | t | json }},
+          askFailed: {{ 'sections.somm.ask_failed' | t | json }}
         }
       };
     </script>

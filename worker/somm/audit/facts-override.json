@@ -1,0 +1,9 @@
+{
+  "_source": "data-non-somm-facts embedded by sections/main-product.liquid on theme 198370820256, read 2026-08-04. These are metafields that appear nowhere in product.description, so the storefront .js endpoint cannot see them. The preview theme needs a cookie handshake curl cannot perform, so they are cached here rather than fetched per run. Regenerate whenever the metafields change.",
+  "NON1": { "sits": "A dry rosé sat" },
+  "NON2": { "sits": "A rich white sat" },
+  "NON3": { "sits": "An aromatic white sat" },
+  "NON5": { "sits": "A dry sparkling sat" },
+  "NON7": { "sits": "A big red sat", "storageMetafield": "consume within 7 days" },
+  "NON9": { "sits": "A pinot noir sat" }
+}

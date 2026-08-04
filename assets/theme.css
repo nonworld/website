@@ -5680,3 +5680,30 @@ select:-moz-focusring { color: transparent; text-shadow: 0 0 0 var(--non-fg); }
     margin-bottom: 6px;
   }
 }
+
+/* A benefit card whose body came from a parsed Shopify description rather than
+   from a metafield line. The metafield form is one sentence in a <p>; this one
+   arrives carrying its own lists and paragraphs, so the elements the author
+   actually used have to be styled instead of assumed away.
+
+   Bullets are dashes rather than discs: a disc inside a bordered card reads as
+   a second level of decoration, and the set contents list is the one place on
+   the site where a list is doing real work. */
+.non-benefit__b--rich { font-size: var(--t-copy); line-height: 1.55; }
+.non-benefit__b--rich p { margin: 0 0 8px; }
+.non-benefit__b--rich p:last-child { margin-bottom: 0; }
+.non-benefit__b--rich ul,
+.non-benefit__b--rich ol { margin: 0; padding: 0; list-style: none; }
+.non-benefit__b--rich li { position: relative; padding-left: 14px; margin-bottom: 6px; }
+.non-benefit__b--rich li:last-child { margin-bottom: 0; }
+.non-benefit__b--rich ul li::before { content: "—"; position: absolute; left: 0; opacity: .55; }
+.non-benefit__b--rich ol { counter-reset: n; }
+.non-benefit__b--rich ol li { counter-increment: n; }
+.non-benefit__b--rich ol li::before {
+  content: counter(n) ".";
+  position: absolute; left: 0; opacity: .55;
+  font-family: var(--non-mono); font-size: 11px;
+}
+/* Descriptions carry stray <br> between list items and headings, which double
+   the spacing the rules above already set. */
+.non-benefit__b--rich br { display: none; }

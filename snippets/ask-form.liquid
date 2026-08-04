@@ -21,13 +21,26 @@
   the DOM from page load either way, so Shopify's own script binds to it before
   anyone asks a question.
 {%- endcomment -%}
-<div class="non-ask" data-non-ask-card hidden>
+{%- comment -%}
+  Hidden until an escalation arrives — EXCEPT on the way back from a submit.
+  Shopify redirects to the page the form was posted from, and the card was
+  being re-hidden on arrival, so the customer landed on a page that looked
+  exactly as it had before they pressed send. Success and failure were equally
+  invisible. Both states now force it open.
+{%- endcomment -%}
+<div class="non-ask" data-non-ask-card
+  {% unless form.posted_successfully? or form.errors %}hidden{% endunless %}>
   <div class="non-mono non-eyebrow non-ask__head">{{ 'sections.somm.ask_head' | t }}</div>
   <p class="non-ask__why">{{ 'sections.somm.ask_why' | t }}</p>
 
   {%- form 'contact', id: 'non-ask-form', class: 'non-ask__form' -%}
     {%- if form.posted_successfully? -%}
-      <p class="non-ask__msg">{{ 'sections.somm.ask_sent' | t }}</p>
+      {%- comment -%}
+        The whole card becomes the confirmation. Leaving the fields and the
+        button in place alongside a line of text invites a second send, and a
+        customer who cannot tell whether the first one worked will press it.
+      {%- endcomment -%}
+      <p class="non-ask__msg non-ask__msg--sent">{{ 'sections.somm.ask_sent' | t }}</p>
     {%- else -%}
       {%- if form.errors -%}
         <p class="non-ask__msg non-ask__msg--bad">{{ form.errors | default_errors }}</p>
@@ -39,6 +52,20 @@
       {%- endcomment -%}
       <input type="hidden" name="contact[name]" value="NON Somm" data-non-ask-name>
       <input type="hidden" name="contact[Subject]" value="Question from the NON site" data-non-ask-subject>
+      {%- comment -%}
+        A real timestamp, sent as its own field.
+
+        The notification email arrived showing the literal string
+        "%{creation_date}" where a date belongs. That is Ruby i18n syntax from
+        SHOPIFY'S "Contact customer" notification template, not from this theme
+        — nothing in the theme contains it, and it cannot be fixed from here.
+        It needs correcting in Settings > Notifications.
+
+        This does not fix that. It puts a date in the email anyway, from the
+        one place that reliably knows it, so an enquiry is timestamped while
+        the template is still wrong.
+      {%- endcomment -%}
+      <input type="hidden" name="contact[Sent]" value="{{ 'now' | date: '%d %b %Y, %-I:%M %p' }}">
 
       <label class="visually-hidden" for="non-ask-body">{{ 'sections.somm.ask_body_label' | t }}</label>
       <textarea

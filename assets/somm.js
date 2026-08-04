@@ -286,6 +286,10 @@
          rendered. So the human does. */
       var card = document.querySelector('[data-non-ask-card]');
       if (!card) return;
+      /* A card already showing a sent or failed state is the result of a
+         submit the customer just made. Asking another question must not
+         overwrite the confirmation they came back to read. */
+      if (card.querySelector('.non-ask__msg--sent, .non-ask__msg--bad')) return;
 
       var body = card.querySelector('[data-non-ask-message]');
       var subject = card.querySelector('[data-non-ask-subject]');

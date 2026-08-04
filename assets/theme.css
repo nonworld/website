@@ -5769,3 +5769,20 @@ select:-moz-focusring { color: transparent; text-shadow: 0 0 0 var(--non-fg); }
 /* The card is Shopify's contact form now, so its own submit button is the one
    that sends. No proxy, no off-screen clone. */
 .non-ask__form { margin: 0; }
+
+/* The sent state. Deliberately unmissable — the complaint that produced it was
+   that pressing send looked identical to not pressing it. */
+.non-ask__msg--sent {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  margin: 0;
+  font-size: var(--t-copy);
+  line-height: 1.5;
+}
+.non-ask__msg--sent::before {
+  content: "\2713";
+  font-size: 14px;
+  opacity: .9;
+}
+.non-ask__msg--bad { color: var(--non-error, #ff8a7a); }

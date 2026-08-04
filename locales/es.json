@@ -104,7 +104,12 @@
       "saved": "Guardado ✓",
       "no_thanks": "No, gracias",
       "while_stocks_last": "Hasta agotar existencias",
-      "unavailable": "NON Lotto está cerrado ahora mismo."
+      "unavailable": "NON Lotto está cerrado ahora mismo.",
+      "done": "Listo"
     }
+  },
+  "localization": {
+    "language_label": "Idioma",
+    "update": "Actualizar"
   }
 }

@@ -95,7 +95,12 @@
       "saved": "Saved ✓",
       "no_thanks": "No thanks",
       "while_stocks_last": "While stocks last",
-      "unavailable": "NON Lotto is closed right now."
+      "unavailable": "NON Lotto is closed right now.",
+      "done": "Done"
     }
+  },
+  "localization": {
+    "language_label": "Language",
+    "update": "Update"
   }
 }

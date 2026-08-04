@@ -40,7 +40,7 @@
     <input type="hidden" name="return_to" value="{{ request.path | escape }}">
 
     <label class="visually-hidden" for="loc-language-{{ id }}">
-        {{ 'localization.language_label' | t | default: 'Language' }}
+        {{ 'localization.language_label' | t }}
       </label>
     <select
     id="loc-language-{{ id }}"
@@ -58,7 +58,7 @@
     </select>
 
     <button type="submit" class="non-loc__go" data-non-loc-go>
-      {{ 'localization.update' | t | default: 'Update' }}
+      {{ 'localization.update' | t }}
     </button>
   </form>
 {%- endif -%}

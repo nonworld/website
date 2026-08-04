@@ -144,7 +144,13 @@
         type="button"
         class="non-lotto__no"
         data-non-lotto-close
-        data-done-label="{{ 'sections.lotto.done' | t | default: 'Done' }}">
+        {%- comment -%}
+          No `| default:` after `| t`. A missing key returns the literal
+          "Translation missing: en.sections.lotto.done", which is not blank, so
+          default never fires and the string ships to the customer. It did:
+          this button carried it on every page until the key was added.
+        {%- endcomment -%}
+        data-done-label="{{ 'sections.lotto.done' | t }}">
         {{ 'sections.lotto.no_thanks' | t }}
       </button>
     </div>

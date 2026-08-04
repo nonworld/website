@@ -198,7 +198,7 @@
             <p class="non-stock-nominate__body">{{ section.settings.nominate_body }}</p>
           {%- endif -%}
           {%- if section.settings.nominate_cta != blank -%}
-            <a class="non-btn" href="{{ section.settings.nominate_url | default: '/pages/trade' }}">
+            <a class="non-btn" href="{{ section.settings.nominate_url | default: '/pages/contact' }}">
               {{ section.settings.nominate_cta }}
             </a>
           {%- endif -%}

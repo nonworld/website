@@ -33,7 +33,14 @@
       data-density="{{ section.settings.field_density }}"
       data-ink="{{ section.settings.field_ink | default: '242,240,234' }}"
       data-envelope-x="{{ section.settings.field_envelope_x | divided_by: 100.0 }}"
-      data-envelope-scale="{{ section.settings.field_envelope_scale | divided_by: 100.0 }}"
+      {%- comment -%}
+        A real on/off, not a 0 on the size slider. That slider has min: 60, so
+        a 0 written into the template is out of range — and an out-of-range
+        range value is one of the ways Shopify rejects a template silently.
+      {%- endcomment -%}
+      {%- assign env_scale = section.settings.field_envelope_scale | divided_by: 100.0 -%}
+      {%- unless section.settings.show_envelope -%}{%- assign env_scale = 0 -%}{%- endunless -%}
+      data-envelope-scale="{{ env_scale }}"
       {%- comment -%}
         Contact was the one instance never passing a gain, so it ran at 1.0 while
         the pairing field ran at 2.2. The ripple sweeps at the same rate on both —
@@ -225,6 +232,13 @@
       "default": 70,
       "unit": "%",
       "info": "Across the section. 50 centres it, which puts it under the form."
+    },
+    {
+      "type": "checkbox",
+      "id": "show_envelope",
+      "label": "Show the envelope",
+      "default": true,
+      "info": "The dash field stays either way. This is only the envelope drawn in it."
     },
     {
       "type": "range",

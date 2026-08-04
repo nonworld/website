@@ -75,8 +75,21 @@
       if (state.region !== 'all' && v.region !== state.region) return false;
       if (state.type !== 'all' && v.bucket !== state.type) return false;
       if (q) {
-        var hay = (v.name + ' ' + v.suburb + ' ' + (v.type || '')).toLowerCase();
-        if (hay.indexOf(q) === -1) return false;
+        /* Every WORD has to appear, not the whole string as one substring.
+         *
+         * `hay.indexOf(q)` meant "austin texas" found nothing while "austin"
+         * found nineteen venues: the feed stores suburb and country, so the
+         * haystack reads "Austin US" and the typed phrase is not a substring
+         * of it. Splitting on whitespace lets a natural query work, and the
+         * suggestion list below stops people having to guess the wording at
+         * all. Region is in the haystack now too, which it never was. */
+        var hay = (
+          v.name + ' ' + (v.suburb || '') + ' ' + (v.region || '') + ' ' + (v.type || '')
+        ).toLowerCase();
+        var words = q.split(/\s+/);
+        for (var w = 0; w < words.length; w++) {
+          if (words[w] && hay.indexOf(words[w]) === -1) return false;
+        }
       }
       return true;
     });
@@ -342,11 +355,134 @@
 
     var debounce;
     queryInput.addEventListener('input', function () {
+      suggest(queryInput.value);
       clearTimeout(debounce);
       debounce = setTimeout(function () {
         state.query = queryInput.value;
         applyFilters();
       }, 220);
+    });
+
+    /* --- place suggestions ------------------------------------------------
+       Type "aus", get "Austin, US — 19 venues", click it and the search is
+       locked to a place that definitely exists.
+
+       This is here because free text cannot be made to work reliably against
+       this feed. It carries a suburb and a country and nothing between, so
+       "austin texas" and "austin, tx" both find nothing while the venues sit
+       there under "Austin US". Rather than teach the matcher every way a
+       person might name a place, the page offers the places it actually has.
+
+       Built from the loaded feed, so it can never suggest somewhere with no
+       stockists — the failure mode of a hand-written list. */
+
+    var sugEl = null;
+    var sugItems = [];
+    var sugIndex = -1;
+
+    function placeIndex() {
+      var seen = {};
+      for (var i = 0; i < all.length; i++) {
+        var v = all[i];
+        if (!v.suburb) continue;
+        var label = v.suburb + (v.region ? ', ' + v.region : '');
+        var key = label.toLowerCase();
+        if (!seen[key]) seen[key] = { label: label, term: v.suburb, count: 0 };
+        seen[key].count++;
+      }
+      return Object.keys(seen).map(function (k) { return seen[k]; });
+    }
+
+    function closeSuggest() {
+      if (sugEl) { sugEl.remove(); sugEl = null; }
+      sugItems = [];
+      sugIndex = -1;
+      queryInput.setAttribute('aria-expanded', 'false');
+    }
+
+    function choose(item) {
+      queryInput.value = item.term;
+      state.query = item.term;
+      closeSuggest();
+      applyFilters();
+    }
+
+    function suggest(raw) {
+      var q = (raw || '').trim().toLowerCase();
+      // Two characters, because one letter matches most of the directory and
+      // a list of forty places is not a suggestion, it is a phone book.
+      if (q.length < 2 || !all.length) return closeSuggest();
+
+      // Match on the first word only: someone typing "austin tex" is still
+      // looking for Austin, and the second word is them trying to help.
+      var head = q.split(/\s+/)[0];
+      var hits = placeIndex()
+        .filter(function (p) { return p.label.toLowerCase().indexOf(head) !== -1; })
+        .sort(function (a, b) {
+          // Places whose name STARTS with what was typed first, then by how
+          // many venues are there. "Austin" should beat "Port Augusta".
+          var as = a.label.toLowerCase().indexOf(head) === 0 ? 0 : 1;
+          var bs = b.label.toLowerCase().indexOf(head) === 0 ? 0 : 1;
+          if (as !== bs) return as - bs;
+          return b.count - a.count;
+        })
+        .slice(0, 6);
+
+      if (!hits.length) return closeSuggest();
+
+      if (!sugEl) {
+        sugEl = document.createElement('div');
+        sugEl.className = 'non-stock-suggest';
+        sugEl.setAttribute('role', 'listbox');
+        queryInput.parentNode.appendChild(sugEl);
+      }
+      sugItems = hits;
+      sugIndex = -1;
+      sugEl.innerHTML = hits
+        .map(function (p, i) {
+          return (
+            '<button type="button" role="option" aria-selected="false" ' +
+            'class="non-stock-suggest__item" data-i="' + i + '">' +
+            '<span>' + escapeHTML(p.label) + '</span>' +
+            '<span class="non-stock-suggest__n">' + p.count + '</span>' +
+            '</button>'
+          );
+        })
+        .join('');
+      queryInput.setAttribute('aria-expanded', 'true');
+    }
+
+    // Pointerdown, not click: the input's blur would tear the list down
+    // before a click ever landed on it.
+    document.addEventListener('pointerdown', function (e) {
+      var item = e.target.closest('.non-stock-suggest__item');
+      if (item && sugEl && sugEl.contains(item)) {
+        e.preventDefault();
+        choose(sugItems[Number(item.getAttribute('data-i'))]);
+        return;
+      }
+      if (sugEl && !queryInput.contains(e.target)) closeSuggest();
+    });
+
+    queryInput.addEventListener('keydown', function (e) {
+      if (!sugItems.length) return;
+      if (e.key === 'ArrowDown' || e.key === 'ArrowUp') {
+        e.preventDefault();
+        sugIndex += e.key === 'ArrowDown' ? 1 : -1;
+        if (sugIndex < 0) sugIndex = sugItems.length - 1;
+        if (sugIndex >= sugItems.length) sugIndex = 0;
+        [].forEach.call(sugEl.children, function (c, i) {
+          c.classList.toggle('is-on', i === sugIndex);
+          c.setAttribute('aria-selected', i === sugIndex ? 'true' : 'false');
+        });
+        return;
+      }
+      if (e.key === 'Enter' && sugIndex > -1) {
+        e.preventDefault();
+        choose(sugItems[sugIndex]);
+        return;
+      }
+      if (e.key === 'Escape') closeSuggest();
     });
   }
 

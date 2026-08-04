@@ -1601,6 +1601,53 @@ button { font-family: inherit; }
 .non-stockists__list > [data-non-venues] { flex: 1 1 auto; }
 .non-stockists__aside { display: flex; flex-direction: column; gap: 0; min-width: 0; }
 .non-stock-search { margin-top: 0; }
+/* Place suggestions under the stockist search.
+
+   Anchored to .non-somm__bar, which is the bordered row the input sits in, so
+   the list lines up with the field rather than the section. */
+.non-stock-search .non-somm__bar { position: relative; }
+.non-stock-suggest {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  z-index: 20;
+  background: var(--non-panel);
+  border: 1px solid var(--non-line-strong);
+  border-top: 0;
+  max-height: 264px;
+  overflow-y: auto;
+}
+.non-stock-suggest__item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  width: 100%;
+  /* 44px of target, because this is a touch surface first. */
+  min-height: 44px;
+  padding: 0 16px;
+  border: 0;
+  border-bottom: 1px solid var(--non-line);
+  background: none;
+  color: var(--non-fg);
+  font-family: var(--non-sans);
+  font-size: 15px;
+  text-align: left;
+  cursor: pointer;
+}
+.non-stock-suggest__item:last-child { border-bottom: 0; }
+.non-stock-suggest__item:hover,
+.non-stock-suggest__item.is-on { background: var(--non-panel-alt); }
+/* The venue count, which is the whole reason to show a list rather than
+   autocomplete silently: it says what you get before you commit. */
+.non-stock-suggest__n {
+  font-family: var(--non-mono);
+  font-size: var(--t-mono);
+  color: var(--non-fg-mute);
+  flex: none;
+}
+
 .non-stock-filters { display: flex; flex-direction: column; gap: 10px; }
 .non-stock-filters .non-filters { margin-top: 0; gap: 9px; }
 /* Same chip as the Somm seeds and the recipe pickers — white, square, #c6c2b8

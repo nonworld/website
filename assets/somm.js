@@ -170,12 +170,19 @@
       if (!stream) return;
 
       if (!on) {
+        // The reset belongs BEFORE the return, and did not use to be.
+        // `if (!on) thinkingSince = 0` sat after this early return, so it was
+        // unreachable: thinkingSince never went back to zero once the dots had
+        // been shown. That is harmless while the answer arrives as JSON, and
+        // fatal once it streams, because the paint below is guarded on
+        // `!thinkingSince` — streamed text accumulated and was never written
+        // to the panel. Pick cards rendered, the words never did.
+        thinkingSince = 0;
         if (thinkingEl) { thinkingEl.remove(); thinkingEl = null; }
         return;
       }
 
-      if (on && !thinkingSince) thinkingSince = Date.now();
-      if (!on) thinkingSince = 0;
+      if (!thinkingSince) thinkingSince = Date.now();
 
       if (!thinkingEl) {
         thinkingEl = document.createElement('div');
@@ -386,6 +393,10 @@
       function pump() {
         return reader.read().then(function (chunk) {
           if (chunk.done) {
+            // A stream shorter than MIN_THINK would otherwise finish with the
+            // dots still up and nothing painted.
+            thinking(false);
+            if (stream && text) stream.textContent = text;
             history.push({ role: 'assistant', text: text });
             return;
           }

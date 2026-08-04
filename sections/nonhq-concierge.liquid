@@ -152,22 +152,22 @@
 
       <div class="non-grid non-grid--3" style="margin-top:24px;gap:18px">
         <div>
-          <label class="non-label" for="hq-name">Name</label>
+          <label class="non-label" for="hq-name">{{ section.settings.label_name }}</label>
           <input class="non-field" type="text" id="hq-name" name="contact[name]" required>
         </div>
 
         <div>
-          <label class="non-label" for="hq-email">Email</label>
+          <label class="non-label" for="hq-email">{{ section.settings.label_email }}</label>
           <input class="non-field" type="email" id="hq-email" name="contact[email]" required>
         </div>
 
         <div>
-          <label class="non-label" for="hq-size">How many</label>
+          <label class="non-label" for="hq-size">{{ section.settings.label_size }}</label>
           <input class="non-field" type="number" id="hq-size" name="contact[party_size]" min="1" max="40">
         </div>
 
         <div>
-          <label class="non-label" for="hq-exp">Experience</label>
+          <label class="non-label" for="hq-exp">{{ section.settings.label_experience }}</label>
           <select class="non-field" id="hq-exp" name="contact[experience]">
             {%- for block in section.blocks -%}
               {%- if block.type == 'experience' -%}
@@ -178,23 +178,32 @@
         </div>
 
         <div>
-          <label class="non-label" for="hq-date">Preferred date</label>
+          <label class="non-label" for="hq-date">{{ section.settings.label_date }}</label>
           <input class="non-field" type="date" id="hq-date" name="contact[preferred_date]">
         </div>
 
         <div>
-          <label class="non-label" for="hq-window">Time of day</label>
+          <label class="non-label" for="hq-window">{{ section.settings.label_window }}</label>
           <select class="non-field" id="hq-window" name="contact[preferred_window]">
-            <option value="A morning">A morning</option>
-            <option value="Around lunch">Around lunch</option>
-            <option value="Afternoon">Afternoon</option>
-            <option value="Early evening">Early evening</option>
+            {%- comment -%}
+              Value and label are the same setting on purpose. Splitting them
+              lets the words a customer picks drift from the words the enquiry
+              email carries, and nobody finds out until an enquiry reads
+              "Around lunch" for a window that was renamed months ago.
+            {%- endcomment -%}
+            {%- assign windows = section.settings.time_windows | split: ',' -%}
+            {%- for w in windows -%}
+              {%- assign win = w | strip -%}
+              {%- if win != blank -%}
+                <option value="{{ win | escape }}">{{ win }}</option>
+              {%- endif -%}
+            {%- endfor -%}
           </select>
         </div>
       </div>
 
       <div style="margin-top:18px">
-        <label class="non-label" for="hq-body">Anything we should know</label>
+        <label class="non-label" for="hq-body">{{ section.settings.label_notes }}</label>
         <textarea class="non-field" id="hq-body" name="contact[body]" rows="4"
           placeholder="Dietaries, occasion, whether anyone needs converting."></textarea>
       </div>
@@ -209,7 +218,7 @@
         value="NONHQ booking request">
 
       <p class="non-mono non-eyebrow" style="margin-top:16px;letter-spacing:.12em">
-        Goes to {{ shop.email | default: 'hello@non.world' }}
+        {{ section.settings.goes_to_label }} {{ shop.email | default: 'hello@non.world' }}
       </p>
 
       <button type="submit" class="non-btn" style="margin-top:20px">
@@ -446,6 +455,66 @@
       "unit": "px",
       "default": 0,
       "info": "0 keeps the section's own spacing."
+    },
+    {
+      "type": "header",
+      "content": "Form labels"
+    },
+    {
+      "type": "text",
+      "id": "label_name",
+      "label": "Name field",
+      "default": "Name"
+    },
+    {
+      "type": "text",
+      "id": "label_email",
+      "label": "Email field",
+      "default": "Email"
+    },
+    {
+      "type": "text",
+      "id": "label_size",
+      "label": "Party size field",
+      "default": "How many"
+    },
+    {
+      "type": "text",
+      "id": "label_experience",
+      "label": "Experience field",
+      "default": "Experience"
+    },
+    {
+      "type": "text",
+      "id": "label_date",
+      "label": "Date field",
+      "default": "Preferred date"
+    },
+    {
+      "type": "text",
+      "id": "label_window",
+      "label": "Time of day field",
+      "default": "Time of day"
+    },
+    {
+      "type": "text",
+      "id": "time_windows",
+      "label": "Time of day options",
+      "default": "A morning, Around lunch, Afternoon, Early evening",
+      "info": "Comma separated. Each one is both what the customer sees and what the enquiry email carries."
+    },
+    {
+      "type": "text",
+      "id": "label_notes",
+      "label": "Notes field",
+      "default": "Anything we should know"
+    },
+    {
+      "type": "text",
+      "id": "goes_to_label",
+      "label": "Delivery note prefix",
+      "default": "Goes to",
+      "info": "Followed by the store contact email."
     }
   ],
   "blocks": [

@@ -63,7 +63,7 @@
               theme editor is told which block is empty and why.
             {%- endcomment -%}
             <div class="non-card non-card--missing">
-              <span class="non-mono non-card__flag non-card__flag--out">Not available here</span>
+              <span class="non-mono non-card__flag non-card__flag--out">{{ section.settings.unavailable_label }}</span>
               <p class="non-card__name">This block has no product, or the product is not published to the market being previewed.</p>
               <p class="non-mono">Check the block in the sidebar, and Markets &rarr; catalog membership.</p>
             </div>
@@ -130,10 +130,22 @@
       "id": "columns",
       "label": "Columns",
       "options": [
-        { "value": "3", "label": "3" },
-        { "value": "4", "label": "4" },
-        { "value": "5", "label": "5" },
-        { "value": "6", "label": "6" }
+        {
+          "value": "3",
+          "label": "3"
+        },
+        {
+          "value": "4",
+          "label": "4"
+        },
+        {
+          "value": "5",
+          "label": "5"
+        },
+        {
+          "value": "6",
+          "label": "6"
+        }
       ],
       "default": "5",
       "info": "Match the shop grid above so every card on the page is the same size."
@@ -143,10 +155,22 @@
       "id": "image_ratio",
       "label": "Image shape",
       "options": [
-        { "value": "square", "label": "Square (1:1)" },
-        { "value": "portrait", "label": "Portrait (3:4)" },
-        { "value": "tall", "label": "Tall (4:5)" },
-        { "value": "landscape", "label": "Landscape (4:3)" }
+        {
+          "value": "square",
+          "label": "Square (1:1)"
+        },
+        {
+          "value": "portrait",
+          "label": "Portrait (3:4)"
+        },
+        {
+          "value": "tall",
+          "label": "Tall (4:5)"
+        },
+        {
+          "value": "landscape",
+          "label": "Landscape (4:3)"
+        }
       ],
       "default": "square"
     },
@@ -175,9 +199,18 @@
       "id": "font_family",
       "label": "Font",
       "options": [
-        { "value": "", "label": "Theme default" },
-        { "value": "sans", "label": "Helvetica (all text)" },
-        { "value": "mono", "label": "JetBrains Mono (all text)" }
+        {
+          "value": "",
+          "label": "Theme default"
+        },
+        {
+          "value": "sans",
+          "label": "Helvetica (all text)"
+        },
+        {
+          "value": "mono",
+          "label": "JetBrains Mono (all text)"
+        }
       ],
       "default": ""
     },
@@ -201,6 +234,13 @@
       "unit": "px",
       "default": 0,
       "info": "0 keeps the section's own spacing."
+    },
+    {
+      "type": "text",
+      "id": "unavailable_label",
+      "label": "Unavailable flag",
+      "default": "Not available here",
+      "info": "Shown on a bottle that is not sold in the market the visitor is browsing."
     }
   ],
   "blocks": [

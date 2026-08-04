@@ -96,17 +96,17 @@
 
           <div style="display:grid;grid-template-columns:1fr;gap:18px;max-width:560px">
             <div>
-              <label class="non-label" for="c-name">Name</label>
+              <label class="non-label" for="c-name">{{ section.settings.label_name }}</label>
               <input class="non-field" type="text" id="c-name" name="contact[name]" required>
             </div>
 
             <div>
-              <label class="non-label" for="c-email">Email</label>
+              <label class="non-label" for="c-email">{{ section.settings.label_email }}</label>
               <input class="non-field" type="email" id="c-email" name="contact[email]" required>
             </div>
 
             <div>
-              <label class="non-label" for="c-topic">What's it about</label>
+              <label class="non-label" for="c-topic">{{ section.settings.label_topic }}</label>
               <select class="non-field" id="c-topic" name="contact[topic]">
                 {%- for block in section.blocks -%}
                   <option value="{{ block.settings.label | escape }}">{{ block.settings.label }}</option>
@@ -115,7 +115,7 @@
             </div>
 
             <div>
-              <label class="non-label" for="c-body">Message</label>
+              <label class="non-label" for="c-body">{{ section.settings.label_message }}</label>
               <textarea class="non-field" id="c-body" name="contact[body]" rows="6" required></textarea>
             </div>
           </div>
@@ -125,7 +125,7 @@
           </button>
 
           <p class="non-mono non-eyebrow" style="margin-top:14px;letter-spacing:.12em">
-            Goes to {{ settings.contact_email | default: 'hello@non.world' }}
+            {{ section.settings.goes_to_label }} {{ settings.contact_email | default: 'hello@non.world' }}
           </p>
         {%- endif -%}
       {%- endform -%}
@@ -325,6 +325,41 @@
       "unit": "px",
       "default": 0,
       "info": "0 keeps the section's own spacing."
+    },
+    {
+      "type": "header",
+      "content": "Form labels"
+    },
+    {
+      "type": "text",
+      "id": "label_name",
+      "label": "Name field",
+      "default": "Name"
+    },
+    {
+      "type": "text",
+      "id": "label_email",
+      "label": "Email field",
+      "default": "Email"
+    },
+    {
+      "type": "text",
+      "id": "label_topic",
+      "label": "Topic field",
+      "default": "What's it about"
+    },
+    {
+      "type": "text",
+      "id": "label_message",
+      "label": "Message field",
+      "default": "Message"
+    },
+    {
+      "type": "text",
+      "id": "goes_to_label",
+      "label": "Delivery note prefix",
+      "default": "Goes to",
+      "info": "Followed by the store contact email."
     }
   ],
   "blocks": [

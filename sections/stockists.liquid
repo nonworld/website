@@ -118,7 +118,7 @@
       </div>
 
       <div data-non-venues>
-        <p class="non-note" style="padding:20px 0">Loading stockists…</p>
+        <p class="non-note" style="padding:20px 0">{{ section.settings.loading_label }}</p>
       </div>
 
       {%- comment -%}
@@ -649,6 +649,12 @@
       "unit": "px",
       "default": 0,
       "info": "0 keeps the section's own spacing."
+    },
+    {
+      "type": "text",
+      "id": "loading_label",
+      "label": "Loading message",
+      "default": "Loading stockists…"
     }
   ],
   "blocks": [

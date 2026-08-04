@@ -24,7 +24,7 @@
   hidden>
   <div class="non-lotto__card" role="dialog" aria-modal="true" aria-labelledby="lotto-title">
     <div class="non-lotto__head">
-      <span class="non-mono non-eyebrow">NON Lotto</span>
+      <span class="non-mono non-eyebrow">{{ section.settings.eyebrow }}</span>
       <span class="non-lotto__ref" data-non-lotto-ref></span>
     </div>
 
@@ -293,6 +293,13 @@
       "unit": "px",
       "default": 0,
       "info": "0 keeps the section's own spacing."
+    },
+    {
+      "type": "text",
+      "id": "eyebrow",
+      "label": "Eyebrow",
+      "default": "NON Lotto",
+      "info": "The small label at the top of the card."
     }
   ]
 }

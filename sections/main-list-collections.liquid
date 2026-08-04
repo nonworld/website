@@ -1,7 +1,7 @@
 {% render 'section-style', section: section %}
 <div class="non-section">
   <div class="non-section__head">
-    <h1 class="non-section__title">Collections</h1>
+    <h1 class="non-section__title">{{ section.settings.heading }}</h1>
   </div>
 
   <div class="non-grid non-grid--3">
@@ -13,7 +13,7 @@
           {%- endif -%}
         </span>
         <span class="non-card__name">{{ collection.title }}</span>
-        <span class="non-card__note">{{ collection.products_count }} products</span>
+        <span class="non-card__note">{{ collection.products_count }} {{ section.settings.count_word }}</span>
       </a>
     {%- endfor -%}
   </div>
@@ -78,6 +78,19 @@
       "unit": "px",
       "default": 0,
       "info": "0 keeps the section's own spacing."
+    },
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Heading",
+      "default": "Collections"
+    },
+    {
+      "type": "text",
+      "id": "count_word",
+      "label": "Product count word",
+      "default": "products",
+      "info": "Follows the number, e.g. \"12 products\"."
     }
   ]
 }

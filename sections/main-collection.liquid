@@ -66,7 +66,7 @@
 
   {%- if section.settings.show_filters -%}
     <div class="non-filters" role="group" aria-label="What's on the table">
-      <button type="button" class="non-filter" data-non-filter="all" aria-pressed="true">Everything</button>
+      <button type="button" class="non-filter" data-non-filter="all" aria-pressed="true">{{ section.settings.filter_all_label }}</button>
       {%- for block in section.blocks -%}
         <button
           type="button"
@@ -146,7 +146,7 @@
       {%- endfor -%}
     </div>
   {%- else -%}
-    <p class="non-note" style="margin-top:24px">Nothing in this collection yet.</p>
+    <p class="non-note" style="margin-top:24px">{{ section.settings.empty_message }}</p>
   {%- endif -%}
 
   {%- if paginate.pages > 1 -%}
@@ -428,6 +428,22 @@
       "unit": "px",
       "default": 0,
       "info": "0 keeps the section's own spacing."
+    },
+    {
+      "type": "header",
+      "content": "Labels"
+    },
+    {
+      "type": "text",
+      "id": "filter_all_label",
+      "label": "\"All\" filter chip",
+      "default": "Everything"
+    },
+    {
+      "type": "text",
+      "id": "empty_message",
+      "label": "Empty collection message",
+      "default": "Nothing in this collection yet."
     }
   ],
   "blocks": [

@@ -24,7 +24,7 @@
     <div class="non-matrix" style="--matrix-cols: {{ columns.size }}">
       <div class="non-matrix__row non-matrix__row--head">
         <div class="non-matrix__cell non-matrix__cell--corner">
-          <span class="non-spec__k">Course</span>
+          <span class="non-spec__k">{{ section.settings.course_label }}</span>
         </div>
         {%- for col in columns -%}
           <div class="non-matrix__cell non-matrix__cell--head" {{ col.shopify_attributes }}>
@@ -50,7 +50,7 @@
             {%- if text != blank -%}
               <div class="non-matrix__cell{% if is_pick %} is-pick{% endif %}">
                 {{ text }}
-                {%- if is_pick -%}<span class="non-matrix__pick">the pick</span>{%- endif -%}
+                {%- if is_pick -%}<span class="non-matrix__pick">{{ section.settings.pick_label }}</span>{%- endif -%}
               </div>
             {%- endif -%}
           {%- endfor -%}
@@ -156,6 +156,19 @@
       "unit": "px",
       "default": 0,
       "info": "0 keeps the section's own spacing."
+    },
+    {
+      "type": "text",
+      "id": "course_label",
+      "label": "Course column heading",
+      "default": "Course"
+    },
+    {
+      "type": "text",
+      "id": "pick_label",
+      "label": "\"The pick\" flag",
+      "default": "the pick",
+      "info": "Shown on a cell flagged with \"— the pick\". Changing this does NOT change the marker you type in the cell text."
     }
   ],
   "blocks": [

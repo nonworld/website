@@ -190,6 +190,30 @@ if css.exists():
                     f"assets/theme.css:{line}: sets {', '.join(hits)} on the orb "
                     f"outside its owner block — move it into '{OWNER}'")
 
+# 7. EDITABILITY — copy a merchant cannot reach from the theme editor.
+#
+#    Not a Shopify rejection mode either. It is here because "can Josh change
+#    this without a developer" is a question that only stays answered if
+#    something asks it on every push. Thirty-seven strings had drifted out of
+#    reach before anyone looked, and the largest cluster was the labels on the
+#    two enquiry forms — the copy most likely to be argued about.
+#
+#    Delegated to scripts/editable_audit.py rather than reimplemented, so the
+#    report a human reads and the gate a push passes are the same code and
+#    cannot disagree. It fails only on strings not in that file's ACCEPTED
+#    baseline, which holds CSS property names, metaobject types and hints shown
+#    only inside the editor.
+audit = root / 'scripts' / 'editable_audit.py'
+if audit.exists():
+    import subprocess
+    r = subprocess.run([sys.executable, str(audit), '--check'],
+                       capture_output=True, text=True, cwd=str(root))
+    if r.returncode != 0:
+        for line in (r.stdout or '').strip().splitlines():
+            line = line.strip()
+            if line.startswith('✗'):
+                errors.append(line[1:].strip() + "  — see preflight.py check 7")
+
 if errors:
     print("PREFLIGHT FAILED — Shopify would reject these silently:\n")
     for e in errors:

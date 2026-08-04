@@ -17,3 +17,25 @@ RATE_LIMIT_PER_MINUTE = "20"
 # [[kv_namespaces]]
 # binding = "SOMM_KV"
 # id = "<namespace id>"
+
+# ---------------------------------------------------------------- capture
+#
+# Every Somm exchange is written here. Until 2026-08-04 nothing was: the Worker
+# answered, streamed, and forgot, so the only record of what customers actually
+# ask was whatever happened to be in a `wrangler tail` window at the time. The
+# stated goal has always been to see where the Somm is wrong, and that is not
+# possible from an empty log.
+#
+# D1 rather than KV because the point of this data is to be queried — most
+# asked, worst rated, which intents fall through — and KV cannot answer any of
+# those without reading every key.
+#
+# NOTHING IDENTIFYING IS STORED. No IP, no email, no customer id, no session
+# that could be joined to one. That is not incidental, it is what the privacy
+# policy commits to ("we do not link Somm queries to your identity"), and the
+# schema is built so that keeping the promise is the default rather than a
+# discipline someone has to remember.
+[[d1_databases]]
+binding = "SOMM_LOG"
+database_name = "non-somm-log"
+database_id = "42c8b78c-5c21-42ef-9b99-639a954ebe2a"

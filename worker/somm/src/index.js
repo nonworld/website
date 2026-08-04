@@ -928,7 +928,7 @@ async function rateLimited(env, request) {
 
 /* -------------------------------------------------------------- handler */
 
-export default {
+const handler = {
   async fetch(request, env) {
     if (request.method === 'OPTIONS') {
       return new Response(null, { status: 204, headers: cors() });
@@ -1236,5 +1236,202 @@ export default {
       dish,
       context,
     });
+  },
+};
+
+
+/* ---------------------------------------------------------------- capture
+
+   Until 2026-08-04 this Worker answered, streamed, and forgot. The stated
+   purpose of the Somm log — see where it is wrong, unhelpful, or missing
+   information — was unservable, because the only record of what anyone had
+   ever asked was whatever happened to be in a `wrangler tail` window at the
+   time. Reports of heavy testing could not be checked against anything.
+
+   Logging is a WRAPPER around the handler rather than a call at each return.
+   The handler has fourteen exit points across four routes plus a fallback per
+   route, and instrumenting each one means the fifteenth, added later by
+   someone in a hurry, is silently unlogged. Wrapping means a new return is
+   logged by construction. It also means the log records what the customer was
+   actually sent, not what we believed we were sending — which is the only
+   version worth reviewing.
+
+   NOTHING IDENTIFYING IS WRITTEN. No IP, no headers, no cookie, no session.
+   The privacy policy commits to not linking Somm queries to a person, and the
+   cheapest way to keep that promise is to never hold the means to break it.
+*/
+
+// Reading the answer must never cost the customer their answer. Every failure
+// path here degrades to logging less, never to breaking the response.
+async function logExchange(env, row) {
+  if (!env.SOMM_LOG) return; // unbound in dev; capture is optional, answers are not
+  try {
+    await env.SOMM_LOG.prepare(
+      `INSERT INTO somm_log
+         (at, question, answer, context, product, route, intent, picks, locale, ms, fallback, error)
+       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+    ).bind(
+      row.at, row.question, row.answer ?? null, row.context ?? null,
+      row.product ?? null, row.route ?? null, row.intent ?? null,
+      row.picks ?? null, row.locale ?? null, row.ms ?? null,
+      row.fallback ? 1 : 0, row.error ?? null,
+    ).run();
+  } catch (e) {
+    console.error('[somm] log:', e && e.message ? e.message : e);
+  }
+}
+
+// Our own SSE, not Anthropic's: `data: {"token":"..."}` frames followed by one
+// tail frame carrying the finished payload. Reassembles both.
+function readOurStream(stream, onDone) {
+  const dec = new TextDecoder();
+  let buffer = '';
+  let text = '';
+  let tail = null;
+  const reader = stream.getReader();
+  return (async () => {
+    try {
+      for (;;) {
+        const { value, done } = await reader.read();
+        if (done) break;
+        buffer += dec.decode(value, { stream: true });
+        const frames = buffer.split('\n\n');
+        buffer = frames.pop();
+        for (const frame of frames) {
+          const line = frame.split('\n').find((l) => l.startsWith('data:'));
+          if (!line) continue;
+          const payload = line.slice(5).trim();
+          if (!payload || payload === '[DONE]') continue;
+          let evt;
+          try { evt = JSON.parse(payload); } catch { continue; }
+          if (typeof evt.token === 'string') text += evt.token;
+          // Any non-token frame is the tail. Last one wins.
+          else tail = evt;
+        }
+      }
+    } catch (e) {
+      console.error('[somm] capture read:', e && e.message ? e.message : e);
+    }
+    /* AWAITED. onDone writes to D1, and the promise this function returns is
+       what waitUntil is holding the isolate open for. Calling onDone without
+       awaiting it resolves the drain the moment the INSERT is *started*, and
+       Cloudflare is then free to tear the isolate down mid-write. Nothing
+       errors, nothing logs, and the row simply never appears. */
+    await onDone(text.trim(), tail);
+  })();
+}
+
+/* The two paths disagree about what a pick is, so this accepts both rather
+   than making either one change shape for the benefit of a log. The streaming
+   tail sends `picks: ["NON7"]` — bare strings. The JSON pairing response has
+   no picks array at all; it names one bottle at the top level as productId /
+   productName and optionally a runner-up under `alternative`. Handling only
+   the object form, as the first version did, logged null for every row on
+   both paths, which looks exactly like "the Somm recommended nothing". */
+function picksOf(payload) {
+  if (!payload) return null;
+  const out = [];
+  if (Array.isArray(payload.picks)) {
+    for (const x of payload.picks) {
+      if (typeof x === 'string') out.push(x);
+      else if (x) out.push(x.productId || x.productName || x.name);
+    }
+  }
+  if (!out.length && payload.productId) out.push(payload.productId);
+  if (payload.alternative && payload.alternative.productId) out.push(payload.alternative.productId);
+  /* De-duplicated: the runner-up appended above is often already in the picks
+     array, and "NON7, NON9, NON9" in a column meant for counting which bottles
+     get recommended would quietly inflate one of them. */
+  const names = [...new Set(out.filter(Boolean))];
+  return names.length ? names.join(', ') : null;
+}
+
+export default {
+  async fetch(request, env, ctx) {
+    const started = Date.now();
+
+    // Only the ask path is worth logging. Health, CORS preflight and the
+    // cached suggestions lookup would be pure noise in a table whose value is
+    // that every row is a real question from a real person.
+    const url = new URL(request.url);
+    const isAsk = request.method === 'POST'
+      && (url.pathname === '/somm' || url.pathname === '/');
+
+    if (!isAsk) return handler.fetch(request, env);
+
+    // Read the body here, before the handler consumes it, and hand the
+    // handler an untouched clone. Parsing failures are the handler's business
+    // to report — this only wants the fields, and shrugs if they are absent.
+    let body = {};
+    let forward = request;
+    try {
+      const copy = request.clone();
+      body = await copy.json();
+    } catch { /* handler will return its own 400 */ }
+
+    let res;
+    try {
+      res = await handler.fetch(forward, env);
+    } catch (e) {
+      // A throw that escapes the handler is the single most important thing
+      // this table can hold: a question that produced nothing at all.
+      await logExchange(env, {
+        at: started, question: String(body.query || ''), context: body.context || null,
+        product: body.product || null, locale: body.locale || null,
+        ms: Date.now() - started, error: `handler: ${e && e.message ? e.message : e}`,
+      });
+      throw e;
+    }
+
+    const base = {
+      at: started,
+      question: String(body.query || ''),
+      context: body.context || null,
+      product: body.product || null,
+      locale: body.locale || null,
+    };
+
+    const type = res.headers.get('Content-Type') || '';
+
+    if (type.includes('text/event-stream')) {
+      // Tee rather than clone: the customer's copy must keep flowing while the
+      // second branch is drained. Draining happens after the response is
+      // returned, so nothing here delays a token reaching the screen.
+      const [toClient, toLog] = res.body.tee();
+      const drain = readOurStream(toLog, (text, tailPayload) => logExchange(env, {
+        ...base,
+        answer: text || (tailPayload && tailPayload.answer) || null,
+        route: (tailPayload && tailPayload.route) || 'stream',
+        intent: tailPayload && tailPayload.intent ? JSON.stringify(tailPayload.intent) : null,
+        picks: picksOf(tailPayload),
+        ms: Date.now() - started,
+        fallback: tailPayload && tailPayload.fallback ? 1 : 0,
+      }));
+      if (ctx && ctx.waitUntil) ctx.waitUntil(drain);
+      return new Response(toClient, { status: res.status, headers: res.headers });
+    }
+
+    // JSON path. Clone before reading — res is still the customer's response.
+    const finish = (async () => {
+      let payload = {};
+      try { payload = await res.clone().json(); } catch { /* non-JSON, log what we have */ }
+      await logExchange(env, {
+        ...base,
+        answer: payload.answer || null,
+        /* `intent` is what the JSON path calls its branch — pairing, facts,
+           brand, decline. The streaming path calls the same thing `route`.
+           Reading only `route` here left the column empty for every non-
+           streaming answer, which is most of them. */
+        route: payload.route || payload.intent || null,
+        intent: payload.intent ? JSON.stringify(payload.intent) : (payload.dish ? JSON.stringify({ dish: payload.dish }) : null),
+        picks: picksOf(payload),
+        ms: Date.now() - started,
+        fallback: payload.fallback ? 1 : 0,
+        error: payload.error || (res.status >= 400 ? `http ${res.status}` : null),
+      });
+    })();
+    if (ctx && ctx.waitUntil) ctx.waitUntil(finish);
+
+    return res;
   },
 };

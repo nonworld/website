@@ -13,6 +13,24 @@ warning about it in section 1.
 
 ## 1. READ THIS FIRST — the traps that cost the most time
 
+**`preflight.py` is the gate, and it grew two checks on 2026-08-04.** Check 6b:
+`grid-template-columns` may be declared on `.non-somm` exactly once — two
+blocks ninety lines apart both set it, the later won silently, and moving the
+children into column 1 crammed the whole component into a 96px track on every
+page. Check 7: no customer-facing string may be hardcoded; it runs
+`scripts/editable_audit.py --check` so the report a human reads and the gate a
+push passes cannot drift apart.
+
+**A Worker cannot fetch another Worker's `*.workers.dev` hostname.** It returns
+404 from inside Cloudflare's network while the same URL returns 200 from
+anywhere else. Use service bindings. `non-watch` reported both Workers down on
+its first sweep because of this.
+
+**TOML keys belong to the last table header above them.** `SHEET_ID` appended
+to the end of `wrangler.toml` landed inside `[[d1_databases]]`; wrangler
+accepted the file, deployed it, and bound nothing. Read the binding list, never
+the exit code.
+
 **Shopify silently rejects files. Git reports success either way.** Five
 deploys were rejected without a word during this work. Every one was caught
 only by byte-comparing local against deployed. A clean push means nothing, and
@@ -83,6 +101,10 @@ Worker deploys work from this machine.
 | Live theme | `Ven Shopify Theme cache refresh 2026-07-08 fresh` (MAIN) — **a different theme. None of this work is live.** |
 | Preview | `https://www.non.world/<path>?preview_theme_id=198370820256` |
 | Somm worker | `worker/somm/` → `non-somm.polished-snow-7889.workers.dev` |
+| Lotto worker | `worker/lotto/` → `non-lotto.polished-snow-7889.workers.dev`. `/health?deep=1&codes=1` audits every prize code against Shopify — and today reports it cannot, because `SHOPIFY_ADMIN_TOKEN` is unset |
+| Watch worker | `worker/watch/` → `non-watch.polished-snow-7889.workers.dev`. Six checks every 15 min, DMs aaron@ and josh@ via Slack. `/status` is open. **Alerts on transitions, not state; sends a daily digest so silence is evidence** |
+| Somm log | D1 `non-somm-log`, table `somm_log`. One row per answered question, both transports. No IP, no identity — the privacy policy commits to that. Purged at 24 months by the somm worker's hourly cron |
+| Sheet export | Hourly, append-only, watermarked in D1. Sheet `1MaKIe_a7kgNVPqYQrfktUYzW6p5pt8KNgGMzGK_FnZo`, gid `183822213`. `POST /somm/export` with `X-Export-Token` triggers it by hand |
 | Design source of truth | `design-reference/*.html` |
 | Animation source | `scratchpad/procanim/`, from `~/Desktop/Process animation sequence.zip` |
 
@@ -188,12 +210,26 @@ CSS, instrumentation, process animation, currency suffix, oyster scoring.
 | # | Status | |
 |---|---|---|
 | 11 | in progress | **es: 241 strings registered.** All section prose done except About process data. Next: `p_b1..p_b6` x titles/bodies/captions — NEWLINE-ALIGNED lists, assert identical line counts or steps desync from captions. Then product copy, then the somm worker prompt. See `docs/translations/README.md`. **es stays UNPUBLISHED** until product copy and the somm land |
-| 14 | blocked | Log somm queries to D1 → Drive. **Nothing is logged today.** Needs a privacy-policy line first |
+| 14 | DONE | Somm queries logged to D1 and exported hourly to the sheet. Retention enforced at 24 months by cron, not by a comment |
 | 18 | Aaron | Uninstall Instant — 261KB, and it monkey-patches `window.fetch`. I cannot: the API denies `scriptTags` and `appInstallations` |
 | 19 | Aaron | **No reviews exist anywhere** — no app, no metafields, no markup. Use press quotes and venue logos on PDPs instead, or install a review app |
 
+| 20 | Aaron | **Publish the theme.** Everything above is on the Draft. Anonymous visitors still get theme `197808783520` |
+| 21 | Aaron | **Privacy policy.** The live one is stock Shopify boilerplate — no Somm, no Anthropic — and publishing the theme starts sending customer free text to a US processor undisclosed. Draft ready in `docs/privacy-policy-draft.md`: check the ACN against ASIC, then a lawyer |
+| 22 | Aaron | `/pages/visit-us` 404s and is linked from the homepage. Only broken link in 25 |
+| 23 | Aaron | Paste `docs/pdp-benefits-draft.md` into `custom.benefits` on the six bottles. Needs the Shopify connector, which was invalidated all session |
+| 24 | Aaron | Lotto: set `SHOPIFY_ADMIN_TOKEN`, flip `CODE_CHECK` to `live`, and decide the discount **combinations** so codes can stack |
+| 25 | Aaron | Confirm one real scratch-to-email end to end. None has been seen to succeed |
+| 26 | queued | Site speed check — run against the PUBLISHED theme. Preview injects the admin bar and distorts every number |
+| 27 | queued | Thumbs up/down and pick click-through on Somm answers. The two fields that turn the log into something you can improve the model with; both need theme work |
+| 28 | queued | Languages. No second language is published, so the picker correctly hides and Shopify's preview selector appears to do nothing. Theme ships `en` + `es` only. Section copy translates via Translate & Adapt — which today's editability work is what makes possible. **Test Thai and CJK: the mono face has no coverage** |
+| 29 | queued | A real Nori liveness check. Socket Mode reports `presence: away` while running, so that signal is useless; needs a Fly API token |
+
 Also outstanding: Microsoft Clarity install, week-on-week feature alerting, the
-app-friendliness half of #12, and the press-quote translation decision.
+app-friendliness half of #12, and the press-quote translation decision. Plus a
+stale secret named `e3381329f26ad6d0e5f245927be80f089e220c4b` on `non-somm`
+holding a revoked Google key — nothing reads it; the delete needs an
+interactive confirm.
 
 ---
 

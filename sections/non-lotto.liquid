@@ -71,7 +71,20 @@
       aria-label="{{ 'general.accessibility.close' | t | default: 'Close' }}">&#215;</button>
     <div class="non-lotto__panel" data-non-lotto-panel>
       <div class="non-lotto__prize">
-        {%- comment -%} What is under the foil before the claim. {%- endcomment -%}
+        {%- comment -%}
+          What is under the foil before the claim.
+
+          This line was "One pour, with your name on it." It is the moment a
+          person has just scratched a card and wants to know what they have
+          won, and it told them nothing — not what the prize is, not that
+          there is another step before they find out. A poetic line here reads
+          as the prize itself, so people stop, having "won" a sentence.
+
+          It cannot name the actual prize: no draw has happened yet, the code
+          is issued by the API only once the email is in. So it names the pool
+          instead, which is true whatever comes up, and it says out loud that
+          claiming is what reveals it.
+        {%- endcomment -%}
         <div class="non-lotto__teaser" data-non-lotto-teaser>
           <div class="non-lotto__won">{{ section.settings.teaser_eyebrow }}</div>
           <div class="non-lotto__win">{{ section.settings.teaser_text }}</div>
@@ -186,8 +199,8 @@
       "type": "text",
       "id": "teaser_text",
       "label": "Under the foil — line",
-      "default": "One pour, with your name on it.",
-      "info": "Shown after the scratch, before the email. No code exists at this point."
+      "default": "Money off, free shipping, or something extra in the box. Claim it to find out which.",
+      "info": "Shown after the scratch, before the email. No code exists at this point, so this cannot name a specific prize — it has not been drawn yet. Describe the POOL, not a prize. It also has to carry the instruction that the reveal comes after the email, because nothing else on the card says so."
     },
     {
       "type": "text",

@@ -133,6 +133,20 @@ function drawWeighted(pool) {
 // A code is only handed out if Shopify says it is live right now. This is the
 // difference between "we think this works" and "this works".
 async function codeIsLive(env, code) {
+  return (await codeStatus(env, code)).status === 'ACTIVE';
+}
+
+/* The same Admin lookup, returning what Shopify actually said rather than a
+   boolean. codeIsLive answers "may I hand this out", which is the only thing
+   the draw needs. This answers "what is the state of the pool", which is what
+   you need when a code turns out not to exist, or exists and refuses to stack.
+   One query, two callers, so the audit cannot drift from the live check.
+
+   combinesWith is included because "the code did not apply" has two completely
+   different causes that look identical to a customer: the code is inactive, or
+   the code is fine and Shopify refused the combination. The second one is
+   invisible from outside and cost us a live cart. */
+async function codeStatus(env, code) {
   // No "unconfigured, so allow" branch. Missing credentials here would silently
   // downgrade the one guarantee this function exists to make — that the code
   // handed over actually works — and it would do it invisibly, on a Worker that
@@ -143,9 +157,19 @@ async function codeIsLive(env, code) {
     query CheckCode($code: String!) {
       codeDiscountNodeByCode(code: $code) {
         codeDiscount {
-          ... on DiscountCodeBasic { status }
-          ... on DiscountCodeFreeShipping { status }
-          ... on DiscountCodeBxgy { status }
+          __typename
+          ... on DiscountCodeBasic {
+            status
+            combinesWith { orderDiscounts productDiscounts shippingDiscounts }
+          }
+          ... on DiscountCodeFreeShipping {
+            status
+            combinesWith { orderDiscounts productDiscounts shippingDiscounts }
+          }
+          ... on DiscountCodeBxgy {
+            status
+            combinesWith { orderDiscounts productDiscounts shippingDiscounts }
+          }
         }
       }
     }`;
@@ -183,7 +207,19 @@ async function codeIsLive(env, code) {
   }
 
   const node = data?.data?.codeDiscountNodeByCode;
-  return node?.codeDiscount?.status === 'ACTIVE';
+
+  /* A null node means no discount with that code exists in the shop at all,
+     which is a different fault from one that exists and is expired — the first
+     is a typo or a code nobody ever created, the second is a date. Naming them
+     separately is the whole point of this function. */
+  if (!node) return { status: 'MISSING' };
+
+  const d = node.codeDiscount || {};
+  return {
+    status: d.status || 'UNKNOWN',
+    type: d.__typename,
+    combinesWith: d.combinesWith,
+  };
 }
 
 /* --------------------------------------------------------------- klaviyo */
@@ -454,9 +490,54 @@ export default {
         };
       }
 
+      /* `?codes=1` checks every prize in the pool, not just the token.
+         CODE_CHECK is "trusted" in production, which means nothing verifies
+         these codes on a draw — the pool is taken at its word, and the only
+         record that it was ever true is a POOL_VERIFIED_AT date typed in by
+         hand. That is fine as a runtime posture and useless as an assurance:
+         a code deleted in Admin the day after that date fails silently, and
+         the first person to find out is a customer holding a dead prize.
+
+         So the assurance is made re-runnable. One curl reports every code's
+         real state, and it works in trusted mode precisely because trusted
+         mode is when you cannot see it any other way. */
+      /* An unanswerable check must not read as a passed one.
+
+         Both deep probes are guarded on the token being present, and when it
+         is absent they simply omitted their key — so /health?deep=1&codes=1
+         returned `ok: true` with no `shopify` and no `codes` on a Worker that
+         has no Shopify token at all and therefore cannot verify a single
+         thing. Asking the hardest question available and being told "ok" is
+         worse than not asking: it launders "I could not look" into "I looked
+         and it was fine". Found 2026-08-04, by asking it.
+
+         Now the answer is the reason. */
+      const wantsShopify = url.searchParams.get('deep') === '1'
+        || url.searchParams.get('codes') === '1';
+      const noToken = wantsShopify && !env.SHOPIFY_ADMIN_TOKEN;
+      if (noToken) shopify = 'no SHOPIFY_ADMIN_TOKEN set — nothing can be verified';
+
+      let codes;
+      if (url.searchParams.get('codes') === '1' && env.SHOPIFY_ADMIN_TOKEN) {
+        const pool = loadPool(env);
+        codes = await Promise.all(pool.map(async (p) => {
+          try {
+            const s = await codeStatus(env, p.code);
+            return { code: p.code, description: p.description, ...s };
+          } catch (e) {
+            // Reported per code rather than failing the whole report: one bad
+            // lookup should not hide the five that answered.
+            return { code: p.code, description: p.description, status: `error: ${e.message}` };
+          }
+        }));
+      }
+
       return json({
-        ok: missing.length === 0 && (shopify === undefined || shopify === 'ok'),
+        ok: missing.length === 0
+          && (shopify === undefined || shopify === 'ok')
+          && (codes === undefined || codes.every((c) => c.status === 'ACTIVE')),
         prizes: loadPool(env).length,
+        ...(codes === undefined ? {} : { codes }),
         missing, // named explicitly, so a half-configured deploy is one curl away
         codeCheck: mode,
         ...(mode === 'trusted' ? { poolVerifiedAt: env.POOL_VERIFIED_AT || 'unrecorded' } : {}),

@@ -6,11 +6,31 @@ compatibility_date = "2026-07-01"
 # The prize pool. Odds are weights, not percentages — they are normalised, so
 # they do not have to sum to 100. Editable here without touching code; move to
 # KV if you want to change them without a deploy.
+#
+# Checked against the original Scratchie design, 2026-08-04. Six prizes, same
+# order, weights identical and summing to 100. Descriptions match the design
+# word for word.
+#
+# ONE DISAGREEMENT, UNRESOLVED ON PURPOSE. The design names the percentage
+# codes NON15 and NON10. This pool says LOTTO15 and LOTTO10, and the evidence
+# says the pool is right about what exists: a live checkout returned "LOTTO15
+# couldn't be used with your existing discounts", which is Shopify refusing a
+# COMBINATION — a code it does not have would have been refused as invalid.
+#
+# So LOTTO15 exists in Shopify and NON15 has not been shown to. Renaming these
+# two here to match the design would put a code we have never seen on 38% of
+# all draws, and it would fail at the customer's checkout rather than here.
+# Left as they are until someone confirms which names the shop actually holds:
+#
+#   curl '<worker>/health?deep=1&codes=1'
+#
+# which reports every code's real status, and today reports that it cannot,
+# because this Worker has no SHOPIFY_ADMIN_TOKEN.
 LOTTO_POOL = '''[
   {"code":"LOTTO15","weight":28,"description":"15% off your first case","terms":"Use it at checkout."},
   {"code":"FREESTOPPER","weight":24,"description":"A free NON stopper","terms":"Add a bottle and the stopper is on us."},
   {"code":"FREEPOUR","weight":20,"description":"Complimentary shipping","terms":"Use it at checkout."},
-  {"code":"ONEONUS","weight":14,"description":"A second bottle, on us","terms":"Add a bottle and the second is on us."},
+  {"code":"ONEONUS","weight":14,"description":"A bottle of NON, on us","terms":"Add a bottle and the second is on us."},
   {"code":"LOTTO10","weight":10,"description":"10% off","terms":"Use it at checkout."},
   {"code":"THEHOUSE","weight":4,"description":"25% off plus free shipping","terms":"Use it at checkout."}
 ]'''

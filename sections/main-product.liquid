@@ -502,6 +502,7 @@
 
         <div class="non-somm__answer" data-non-somm-answer hidden>
           <div class="non-somm__picks" data-non-somm-picks hidden></div>
+          {% render 'ask-form' %}
         </div>
       </div>
     {%- endif -%}
@@ -701,8 +702,6 @@
 
 <script src="{{ 'somm.js' | asset_url }}" defer></script>
 <script src="{{ 'product.js' | asset_url }}" defer></script>
-
-{% render 'ask-form' %}
 
 {% schema %}
 {

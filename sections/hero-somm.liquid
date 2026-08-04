@@ -81,6 +81,7 @@
       <div class="non-mono non-eyebrow">{{ 'sections.somm.heading' | t }}</div>
       <p class="non-somm__stream" data-non-somm-stream></p>
       <div class="non-somm__picks" data-non-somm-picks hidden></div>
+          {% render 'ask-form' %}
     </div>
   </div>
 
@@ -238,8 +239,6 @@
 
 <script src="{{ 'somm.js' | asset_url }}" defer></script>
 <script src="{{ 'carousel.js' | asset_url }}" defer></script>
-
-{% render 'ask-form' %}
 
 {% schema %}
 {

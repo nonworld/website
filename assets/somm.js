@@ -274,121 +274,30 @@
        credential, no third-party sender and no deliverability setup of its
        own. */
     function renderEscalation(esc) {
-      if (!esc || !answerBox) return;
-      var old = answerBox.querySelector('[data-non-ask]');
-      if (old) old.parentNode.removeChild(old);
+      if (!esc) return;
+      /* The card is Shopify's own contact form, rendered by ask-form.liquid
+         and sitting in the DOM from page load. This only fills it in and shows
+         it — it does not build a form and it never submits one.
 
-      var wrap = document.createElement('div');
-      wrap.className = 'non-ask';
-      wrap.setAttribute('data-non-ask', '');
+         Everything else was tried: a hand-built payload to /contact (400), the
+         same inside a hidden iframe (400), and a scripted .submit() on the real
+         form, which Shopify answered with a page titled "Missing CAPTCHA
+         token". The token is issued when a human interacts with a form Shopify
+         rendered. So the human does. */
+      var card = document.querySelector('[data-non-ask-card]');
+      if (!card) return;
 
-      var head = document.createElement('div');
-      head.className = 'non-mono non-eyebrow non-ask__head';
-      head.textContent = NON.strings.askHead || 'This one needs a person';
-      wrap.appendChild(head);
+      var body = card.querySelector('[data-non-ask-message]');
+      var subject = card.querySelector('[data-non-ask-subject]');
+      var name = card.querySelector('[data-non-ask-name]');
 
-      var why = document.createElement('p');
-      why.className = 'non-ask__why';
-      why.textContent = NON.strings.askWhy || 'Send it to the team and someone will come back to you.';
-      wrap.appendChild(why);
+      // Never overwrite something the customer has already started editing.
+      // An answer arriving while they type would otherwise wipe it.
+      if (body && !body.value.trim()) body.value = esc.body || '';
+      if (subject) subject.value = esc.subject || 'Question from the NON site';
+      if (name) name.value = 'NON Somm' + (esc.about ? ' \u2014 ' + esc.about : '');
 
-      var body = document.createElement('textarea');
-      body.className = 'non-ask__body';
-      body.setAttribute('rows', '7');
-      body.setAttribute('aria-label', NON.strings.askBodyLabel || 'Your message');
-      body.value = esc.body || '';
-      wrap.appendChild(body);
-
-      var row = document.createElement('div');
-      row.className = 'non-ask__row';
-
-      var email = document.createElement('input');
-      email.type = 'email';
-      email.className = 'non-ask__email';
-      email.setAttribute('autocomplete', 'email');
-      email.placeholder = NON.strings.askEmail || 'Your email';
-      email.setAttribute('aria-label', NON.strings.askEmail || 'Your email');
-      row.appendChild(email);
-
-      var send = document.createElement('button');
-      send.type = 'button';
-      send.className = 'non-ask__send';
-      send.textContent = NON.strings.askSend || 'Send it';
-      row.appendChild(send);
-      wrap.appendChild(row);
-
-      var msg = document.createElement('p');
-      msg.className = 'non-ask__msg';
-      msg.setAttribute('role', 'status');
-      msg.setAttribute('aria-live', 'polite');
-      msg.hidden = true;
-      wrap.appendChild(msg);
-
-      function say(text, bad) {
-        msg.textContent = text;
-        msg.hidden = false;
-        msg.className = 'non-ask__msg' + (bad ? ' non-ask__msg--bad' : '');
-      }
-
-      send.addEventListener('click', function () {
-        var addr = (email.value || '').trim();
-        // Validated here rather than trusting the input's own type, because a
-        // rejected submission loses the customer's edited message.
-        if (!addr || addr.indexOf('@') < 1 || addr.indexOf('.') < 0) {
-          say(NON.strings.askNeedEmail || 'An email address first, so we can reply.', true);
-          email.focus();
-          return;
-        }
-        if (!(body.value || '').trim()) {
-          say(NON.strings.askNeedBody || 'Add a line about what you need.', true);
-          body.focus();
-          return;
-        }
-
-        send.disabled = true;
-        send.textContent = NON.strings.askSending || 'Sending';
-
-        /* SUBMIT SHOPIFY'S OWN FORM, NOT A PAYLOAD WE BUILT.
-
-           The first version posted its own FormData to /contact with exactly
-           the fields the contact page uses, and Shopify returned 400 every
-           time — by fetch and by a native form in a hidden iframe alike. No
-           email arrived; checked in the inbox, not inferred from a status
-           code.
-
-           Shopify injects invisible spam protection into forms rendered by
-           the {% form %} tag and rejects contact posts that arrive without
-           it, so a hand-built payload could never have worked no matter how
-           correct its fields were. snippets/ask-form.liquid renders the real
-           one, hidden; this fills it in and submits it. Full page navigation,
-           the same as pressing send on the contact page, because that is what
-           this now is. */
-        var shopForm = document.querySelector('#non-ask-form')
-          || document.querySelector('.non-ask-form__form');
-        if (!shopForm) {
-          say(NON.strings.askFailed || 'That did not send. Email hello@non.world and we will pick it up.', true);
-          send.disabled = false;
-          send.textContent = NON.strings.askSend || 'Send it';
-          return;
-        }
-
-        var set = function (sel, val) {
-          var el = shopForm.querySelector(sel);
-          if (el) el.value = val;
-        };
-        set('[data-non-ask-email]', addr);
-        set('[data-non-ask-message]', body.value);
-        set('[data-non-ask-subject]', esc.subject || 'Question from the NON site');
-        // A name is required by some contact-form configurations and is never
-        // asked for here, so it says where the message came from instead of
-        // arriving blank.
-        set('[data-non-ask-name]', 'NON Somm — ' + (esc.about || 'site'));
-
-        say(NON.strings.askSending || 'Sending');
-        shopForm.submit();
-      });
-
-      answerBox.appendChild(wrap);
+      card.hidden = false;
     }
 
     function fallback(query) {

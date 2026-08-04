@@ -1,31 +1,67 @@
 {%- comment -%}
-  The real Shopify contact form, hidden, for the Somm's ask-a-human card.
+  The ask-a-human card. It IS Shopify's contact form, not a proxy to one.
 
-  WHY THIS EXISTS RATHER THAN A fetch(). The card first posted its own payload
-  to /contact — correct fields, correct shape, matching the contact page's form
-  exactly — and Shopify answered 400 every time, by fetch and by a native form
-  in a hidden iframe alike. No email arrived. Verified by checking the inbox,
-  not by trusting the status code.
+  THE ROUTE HERE WAS EARNED. The card first built its own UI and posted its own
+  payload to /contact with exactly the fields the contact page emits. Shopify
+  returned 400. Posting a hand-built form inside a hidden iframe: 400. Filling
+  in a real {% form %}-rendered form and calling .submit() on it from script:
+  Shopify navigated to a page titled, in as many words, "Missing CAPTCHA token".
 
-  The cause is Shopify's spam protection: it injects invisible bot detection
-  into forms rendered by the {% form %} TAG, and rejects contact posts that
-  arrive without it. A hand-built form can never carry that token, so no amount
-  of getting the fields right was ever going to work.
+  That is the whole answer. Shopify issues the token when a human interacts
+  with a form Shopify rendered, and a scripted submit never gets one. No amount
+  of correct fields, correct encoding or correct endpoint substitutes for it.
 
-  So the card fills in this one and submits it. Shopify's own protection rides
-  along because Shopify rendered it, and delivery is the same path the contact
-  page already uses — which is the "no new credentials, no separate
-  deliverability setup" the plan called for, arrived at properly.
+  So the customer edits and submits the real form themselves. The Somm's draft
+  is prefilled into its real fields; everything below the eyebrow is Shopify's
+  markup wearing the site's clothes. It ships with no new credential and no
+  separate deliverability path, which is what the plan asked for, and it cannot
+  send anything the customer has not read — which is what the plan required.
 
-  Hidden with a class rather than the `hidden` attribute: a hidden attribute on
-  the wrapper would make the fields unfocusable, and Shopify's own protection
-  watches for interaction.
+  Hidden by attribute on the wrapper and revealed by somm.js. The FORM is in
+  the DOM from page load either way, so Shopify's own script binds to it before
+  anyone asks a question.
 {%- endcomment -%}
-<div class="non-ask-form" aria-hidden="true">
-  {%- form 'contact', id: 'non-ask-form', class: 'non-ask-form__form' -%}
-    <input type="hidden" name="contact[name]" value="" data-non-ask-name>
-    <input type="hidden" name="contact[email]" value="" data-non-ask-email>
-    <input type="hidden" name="contact[Subject]" value="" data-non-ask-subject>
-    <textarea name="contact[body]" data-non-ask-message></textarea>
+<div class="non-ask" data-non-ask-card hidden>
+  <div class="non-mono non-eyebrow non-ask__head">{{ 'sections.somm.ask_head' | t }}</div>
+  <p class="non-ask__why">{{ 'sections.somm.ask_why' | t }}</p>
+
+  {%- form 'contact', id: 'non-ask-form', class: 'non-ask__form' -%}
+    {%- if form.posted_successfully? -%}
+      <p class="non-ask__msg">{{ 'sections.somm.ask_sent' | t }}</p>
+    {%- else -%}
+      {%- if form.errors -%}
+        <p class="non-ask__msg non-ask__msg--bad">{{ form.errors | default_errors }}</p>
+      {%- endif -%}
+
+      {%- comment -%}
+        The name is not asked for. It says where the message came from so the
+        inbox can tell a Somm escalation from a contact-page enquiry.
+      {%- endcomment -%}
+      <input type="hidden" name="contact[name]" value="NON Somm" data-non-ask-name>
+      <input type="hidden" name="contact[Subject]" value="Question from the NON site" data-non-ask-subject>
+
+      <label class="visually-hidden" for="non-ask-body">{{ 'sections.somm.ask_body_label' | t }}</label>
+      <textarea
+        id="non-ask-body"
+        class="non-ask__body"
+        name="contact[body]"
+        rows="7"
+        required
+        data-non-ask-message></textarea>
+
+      <div class="non-ask__row">
+        <label class="visually-hidden" for="non-ask-email">{{ 'sections.somm.ask_email' | t }}</label>
+        <input
+          id="non-ask-email"
+          class="non-ask__email"
+          type="email"
+          name="contact[email]"
+          required
+          autocomplete="email"
+          placeholder="{{ 'sections.somm.ask_email' | t | escape }}"
+          data-non-ask-email>
+        <button type="submit" class="non-ask__send">{{ 'sections.somm.ask_send' | t }}</button>
+      </div>
+    {%- endif -%}
   {%- endform -%}
 </div>

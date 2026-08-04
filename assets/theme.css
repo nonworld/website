@@ -5766,15 +5766,6 @@ select:-moz-focusring { color: transparent; text-shadow: 0 0 0 var(--non-fg); }
   .non-ask__send { width: 100%; }
 }
 
-/* The Somm's hidden contact form. Off-screen rather than display:none —
-   Shopify's spam protection watches the form, and a display:none form is not
-   one it will vouch for. */
-.non-ask-form {
-  position: absolute;
-  width: 1px;
-  height: 1px;
-  overflow: hidden;
-  clip: rect(0 0 0 0);
-  clip-path: inset(50%);
-  white-space: nowrap;
-}
+/* The card is Shopify's contact form now, so its own submit button is the one
+   that sends. No proxy, no off-screen clone. */
+.non-ask__form { margin: 0; }

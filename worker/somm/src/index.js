@@ -153,7 +153,14 @@ brand    — asks about NON itself: who started it, why, where the name came
            — the same question, two answers, one of them wrong.
 other    — anything else (shipping, orders, stockists, wholesale, careers)
 
-If it asks both, answer pairing.`;
+If it asks both, answer pairing.
+
+If the question asks what a bottle REPLACES, what it is CLOSEST TO, what to
+drink INSTEAD OF wine, or whether it is a SUBSTITUTE for wine, answer: brand.
+Those are positioning questions about where a bottle sits at the table, not
+requests for a food match, and routing them to pairing returns a list of dishes
+to someone who asked about wine.
+`;
 
 const FACTS_SYSTEM = `You are NON Somm. You answer factual questions about the
 NON range using ONLY the data sheet you are given.
@@ -199,6 +206,15 @@ Voice: a sommelier who knows the spec sheet. Precise and unfussy.`;
 const HOUSE_RULES = `
 
 House rules. These override anything above them:
+
+- "SITS WHERE X SAT" IS THE OCCASION, NOT THE FLAVOUR. Every bottle's sheet
+  carries one — "a dry rose sat", "a big red sat". It means this is what you
+  reach for in the moment that wine would have been opened. Use it whenever
+  someone asks what a bottle replaces, what it is closest to, or what to drink
+  instead of their usual glass, and say plainly that it is about the moment
+  rather than a taste-alike. Never answer that question by denying any wine
+  connection at all: that contradicts the sheet on the same page, and the
+  answer a customer gets must not depend on how they phrased the question.
 
 - NON is a WINE ALTERNATIVE. It is never "wine". Never call the range "the
   wines" or "our wines", never call a bottle "a wine", and never describe NON
@@ -1027,6 +1043,27 @@ async function rateLimited(env, request) {
 }
 
 
+
+/* The bottle the customer is standing on, for the BRAND route.
+   ==========================================================================
+   The brand route answers from the knowledge base and was given no product
+   context at all — so "what wine does this replace", asked on NON3's page,
+   came back "which bottle are you asking about?" while the code for NON3 was
+   in the request. The route knew the answer's SHAPE and not its subject.
+
+   Only the sits line and the title. The brand route must keep answering from
+   the knowledge base rather than from the product sheet — handing it the full
+   sheet would turn every brand question into a spec answer, which is the
+   separation the routing exists to create. */
+function brandContext(code, facts) {
+  if (!facts || typeof facts !== 'object') return '';
+  const bits = [];
+  if (facts.title) bits.push(`The customer is on the page for ${facts.title}.`);
+  if (facts.sits) bits.push(`That bottle's own sheet says it sits where ${facts.sits.replace(/^An |^A /i, '').replace(/ sat$/i, '')} sat.`);
+  if (!bits.length) return '';
+  return `\n\n${bits.join(' ')} If the question is what this bottle replaces, what it is closest to, or what to drink instead of a usual glass, answer with THAT line and explain it is the moment rather than the flavour. Do not ask which bottle they mean — you have been told.`;
+}
+
 /* --------------------------------------------------------------- escalate */
 
 /* The model marks a question as needing a person by ending its reply with
@@ -1134,7 +1171,7 @@ const handler = {
           return await claudeStreamResponse(env, {
             model: env.EXPLAIN_MODEL || 'claude-sonnet-5',
             maxTokens: 700,
-            system: BRAND_SYSTEM + HOUSE_RULES + lang,
+            system: BRAND_SYSTEM + HOUSE_RULES + brandContext(context, body.facts) + lang,
             messages: [{ role: 'user', content: query }],
             escalationMeta: { query, code: context, page: body.page, title: body.facts && body.facts.title },
             tail: (answer) => ({
@@ -1158,7 +1195,7 @@ const handler = {
           // there is no reason the brand path should be one bad question away
           // from the same failure.
           maxTokens: 700,
-          system: BRAND_SYSTEM + HOUSE_RULES + lang,
+          system: BRAND_SYSTEM + HOUSE_RULES + brandContext(context, body.facts) + lang,
           messages: [{ role: 'user', content: query }],
         });
         // The bottle the customer is standing on, not null. "What wine does

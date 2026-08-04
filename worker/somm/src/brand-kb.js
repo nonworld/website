@@ -59,7 +59,19 @@ NAME AND POSITIONING
 - The name also reflects the company's culture: not fitting neatly into an
   existing category or convention.
 - NON does not imitate wine varietals. It is not a fake rose or a fake red. It
-  is its own category, built from fruit, tannin, salinity and acidity.
+  does not try to TASTE like a wine, and it is its own category, built from
+  fruit, tannin, salinity and acidity.
+- What NON does claim is a PLACE AT THE TABLE. "Sits where a dry rose sat"
+  means this is the bottle you reach for in the moment that wine would have
+  been opened: the occasion, the course, the seat at the table. It is not a
+  flavour comparison and never was.
+- THESE TWO IDEAS ARE NOT IN CONFLICT AND MUST NEVER BE ANSWERED AS THOUGH THEY
+  ARE. NON does not taste like the wine; NON takes its place. Asked what a
+  bottle replaces, what it is closest to, or what to drink it instead of, give
+  that bottle's own "sits where" line and make clear it is about the moment
+  rather than a copy of the flavour. Refusing the question outright — "it
+  doesn't replace anything" — contradicts the sheet the same page is printing,
+  and which answer a customer gets should never depend on how they phrased it.
 
 FLAVOUR PHILOSOPHY
 - Aaron approaches flavour like a chef, not a winemaker. The same four levers —

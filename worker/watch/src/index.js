@@ -249,11 +249,33 @@ export async function sweep(env, { force } = {}) {
 
   const prev = await state(env);
   const changed = [];
+  const stuck = [];
   for (const r of results) {
     const was = prev[`check:${r.id}`];
+
+    if (r.unknown) {
+      // Hold the last known state rather than flipping it, and count how long
+      // this check has been unreadable.
+      const runs = Number(prev[`unknown:${r.id}`] || 0) + 1;
+      await setState(env, `unknown:${r.id}`, runs);
+      // Four sweeps is an hour at the 15-minute cadence: long enough that a
+      // blip has cleared, short enough that a genuinely blind monitor is not
+      // blind all day.
+      if (runs === 4) stuck.push({ ...r, runs });
+      r.ok = was !== 'fail';
+      continue;
+    }
+
+    await setState(env, `unknown:${r.id}`, 0);
     const now = r.ok ? 'ok' : 'fail';
     if (was !== undefined && was !== now) changed.push({ ...r, was, now });
     await setState(env, `check:${r.id}`, now);
+  }
+
+  if (stuck.length) {
+    await notify(env, 'NON watch\n' + stuck.map((c) => (
+      `:warning: *${c.label}* has been unreadable for an hour — ${c.detail}`
+    )).join('\n'));
   }
 
   const failing = results.filter((r) => !r.ok);

@@ -22,6 +22,31 @@
   var resetBtn = root.querySelector('[data-non-pair-reset]');
   var buyEl = root.querySelector('[data-non-pair-buy]');
 
+  /* The other result surface in this box: the free-text Somm answer, rendered
+     by somm.js, which is shared with the homepage and the product page and so
+     knows nothing about the questionnaire. The coordination lives here, on the
+     page that has both. */
+  var sommAnswerEl = root.querySelector('[data-non-somm-answer]');
+
+  function hideSomm() {
+    if (sommAnswerEl) sommAnswerEl.hidden = true;
+    if (picksEl) picksEl.hidden = true;
+  }
+
+  /* And the other direction. somm.js reveals its answer by clearing `hidden`,
+     so watching that attribute is enough — no event to add, and no change to
+     a file three other surfaces depend on. Without this, typing a dish after
+     answering the questions left the questionnaire's verdict sitting above the
+     Somm's, which is the stacking as it was reported. */
+  if (sommAnswerEl && typeof MutationObserver === 'function') {
+    new MutationObserver(function () {
+      if (!sommAnswerEl.hidden) {
+        resultEl.hidden = true;
+        if (buyEl) { buyEl.hidden = true; buyEl.innerHTML = ''; }
+      }
+    }).observe(sommAnswerEl, { attributes: true, attributeFilter: ['hidden'] });
+  }
+
   var reasons = {};
   var catalogue = {};
 
@@ -186,6 +211,19 @@
     // answered to reveal a verdict leaves nothing to change your mind with.
     resultEl.hidden = false;
 
+    /* ONE ANSWER IN THE BOX AT A TIME.
+       ---------------------------------------------------------------------
+       The verdict column holds two independent result surfaces as siblings:
+       this questionnaire verdict, and the free-text Somm answer with its own
+       pick cards. Each managed its own `hidden` and neither knew the other
+       existed, so answering the questions and then typing a dish printed both
+       — one bottle, a START AGAIN button, and then a second heading naming a
+       different bottle underneath it. Two answers to the same question,
+       stacked, with nothing to say which one was current.
+
+       They are alternatives, not sections. Showing one closes the other. */
+    hideSomm();
+
     var product = catalogue[code];
     titleEl.textContent = product ? product.title + ' is your bottle.' : 'Here is your bottle.';
 
@@ -316,6 +354,7 @@
       trace = [];
       if (buyEl) { buyEl.hidden = true; buyEl.innerHTML = ''; }
       resultEl.hidden = true;
+      hideSomm();
       if (picksEl) picksEl.hidden = true;
       lastRevealed = 0;
       refresh();

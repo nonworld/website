@@ -1,0 +1,82 @@
+{%- comment -%}
+  Render a Shopify product description as the same bordered card grid the
+  bottles use for custom.benefits.
+
+  WHY THIS EXISTS. The sets carry their copy in Shopify's description field,
+  written years ago as CONTAINS / ABOUT / PROFILE with lists beneath each. When
+  the page finally printed it, it printed it as what it is — a wall of headings
+  and bullets, which is the one thing on the site that looks like a different
+  website. The Stopper's page next to it reads as designed, because its copy
+  lives in custom.benefits and gets the card grid.
+
+  Rather than ask someone to retype six descriptions into a metafield, this
+  reads the structure that is already in the HTML: every heading becomes a card
+  title, everything under it becomes that card's body. The copy stays where it
+  is, editable where it has always been editable, and the page stops looking
+  like two different pages.
+
+  HOW THE PARSE WORKS, AND ITS ONE ASSUMPTION. Liquid has no HTML parser, so
+  the heading levels are normalised to a single sentinel and the string is
+  split on it. The assumption is that a heading contains text and not nested
+  markup — `<h2>CONTAINS</h2>`, not `<h2><span>CONTAINS</span></h2>`. If that
+  ever stops being true the title renders as the inner text anyway, because
+  `split: '>' | last` takes whatever follows the final opening tag.
+
+  Anything before the first heading is kept as an untitled lead card rather
+  than dropped, because silently discarding copy is how a page loses a
+  paragraph nobody notices for a year.
+
+  Accepts: html (required), label (optional eyebrow).
+{%- endcomment -%}
+
+{%- liquid
+  assign src = html
+
+  # Normalise every heading level to one sentinel so a single split finds them
+  # all. Done open and close separately: the open tag may carry attributes.
+  assign src = src | replace: '<h1', '<hX' | replace: '<h2', '<hX' | replace: '<h3', '<hX' | replace: '<h4', '<hX' | replace: '<h5', '<hX' | replace: '<h6', '<hX'
+  assign src = src | replace: '</h1>', '</hX>' | replace: '</h2>', '</hX>' | replace: '</h3>', '</hX>' | replace: '</h4>', '</hX>' | replace: '</h5>', '</hX>' | replace: '</h6>', '</hX>'
+
+  assign chunks = src | split: '<hX'
+-%}
+
+{%- capture cards -%}
+  {%- for chunk in chunks -%}
+    {%- if chunk contains '</hX>' -%}
+      {%- assign parts = chunk | split: '</hX>' -%}
+      {%- assign title = parts[0] | split: '>' | last | strip_html | strip -%}
+      {%- assign body = parts[1] | strip -%}
+    {%- else -%}
+      {%- comment -%} Copy sitting above the first heading. Kept, untitled. {%- endcomment -%}
+      {%- assign title = '' -%}
+      {%- assign body = chunk | strip -%}
+    {%- endif -%}
+
+    {%- assign plain = body | strip_html | strip -%}
+    {%- if title != blank or plain != blank -%}
+      <div class="non-benefit">
+        {%- if title != blank -%}
+          <div class="non-benefit__t">{{ title }}</div>
+        {%- endif -%}
+        {%- if plain != blank -%}
+          <div class="non-benefit__b non-benefit__b--rich">{{ body }}</div>
+        {%- endif -%}
+      </div>
+    {%- endif -%}
+  {%- endfor -%}
+{%- endcapture -%}
+
+{%- comment -%}
+  An empty grid is worse than no grid — it renders as a stray border. Counting
+  the cards that actually came out is the only honest test, because a
+  description of pure whitespace still splits into chunks.
+{%- endcomment -%}
+{%- assign card_count = cards | split: 'class="non-benefit"' | size | minus: 1 -%}
+{%- if card_count > 0 -%}
+  <div class="non-benefits">
+    {%- if label != blank -%}
+      <div class="non-mono non-eyebrow">{{ label }}</div>
+    {%- endif -%}
+    <div class="non-benefits__list">{{ cards }}</div>
+  </div>
+{%- endif -%}

@@ -201,8 +201,17 @@
         Gated on has_spec so bottles are untouched. Gated on blurb being empty
         so a product with a proper short blurb is not given both.
       {%- endcomment -%}
+      {%- comment -%}
+        Rendered as the same card grid the bottles use for custom.benefits,
+        not as a wall of prose. Printing the description raw was the right
+        first move — the copy existed and the page was not showing it — but
+        what it showed was CONTAINS / ABOUT / PROFILE with bullets underneath,
+        which reads as a different website sitting next to the Stopper's page.
+        desc-cards turns each heading into a card. See that snippet for how,
+        and for its one assumption about heading markup.
+      {%- endcomment -%}
       {%- if has_spec == false and m.blurb == blank and product.description != blank -%}
-        <div class="non-rte non-buy__desc">{{ product.description }}</div>
+        {% render 'desc-cards', html: product.description, label: section.settings.benefits_label %}
       {%- endif -%}
     </div>
 

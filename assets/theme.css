@@ -4003,7 +4003,6 @@ select:-moz-focusring { color: transparent; text-shadow: 0 0 0 var(--non-fg); }
   /* No `auto` on the horizontal slots: it centres, and the orb's placement
      is owned by the block at the end of this file. Zeroes here so the
      shorthand cannot quietly re-centre what that block left-aligns. */
-  margin: 10px 0 26px;
   border-radius: 50%;
   background:
     radial-gradient(circle at 42% 36%,
@@ -4064,7 +4063,6 @@ select:-moz-focusring { color: transparent; text-shadow: 0 0 0 var(--non-fg); }
 .non-sommbox::before {
   width: clamp(72px, 7vw, 96px);
   /* Horizontal slots zeroed — see the owner block at the end of the file. */
-  margin: 4px 0 20px;
   background:
     radial-gradient(circle at 40% 34%,
       rgba(242, 240, 234, .92) 0%,
@@ -4120,7 +4118,6 @@ select:-moz-focusring { color: transparent; text-shadow: 0 0 0 var(--non-fg); }
   width: clamp(72px, 7vw, 96px);
   aspect-ratio: 1 / 1;
   /* Horizontal slots zeroed — see the owner block at the end of the file. */
-  margin: 4px 0 20px;
   border-radius: 50%;
   background:
     radial-gradient(circle at 40% 34%,
@@ -4204,7 +4201,6 @@ select:-moz-focusring { color: transparent; text-shadow: 0 0 0 var(--non-fg); }
   height: 90px;
   border-radius: 50%;
   /* Horizontal slots zeroed — see the owner block at the end of the file. */
-  margin: 4px 0 20px;
   background:
     radial-gradient(circle at 40% 34%,
       rgba(242, 240, 234, .92) 0%,
@@ -4405,7 +4401,6 @@ select:-moz-focusring { color: transparent; text-shadow: 0 0 0 var(--non-fg); }
   width: 84px;
   height: 84px;
   border-radius: 50%;
-  margin: 0 0 14px;
   background:
     radial-gradient(circle at 40% 34%,
       rgba(242, 240, 234, .92) 0%,
@@ -4425,7 +4420,6 @@ select:-moz-focusring { color: transparent; text-shadow: 0 0 0 var(--non-fg); }
   justify-content: center;
   gap: 10px;
   width: auto;
-  margin: 0 0 14px;
   padding: 0;
   border: 0;
 }
@@ -4464,7 +4458,6 @@ select:-moz-focusring { color: transparent; text-shadow: 0 0 0 var(--non-fg); }
   justify-content: center;
   gap: 10px;
   width: 100%;
-  margin: 0 0 14px;
   padding: 0;
   border: 0;
   background: transparent;
@@ -4657,24 +4650,6 @@ select:-moz-focusring { color: transparent; text-shadow: 0 0 0 var(--non-fg); }
      whatever follows it. */
   .non-somm::before,
   .non-sommbox::before {
-    grid-column: 1;
-    /* SPANS THREE ROWS, PINNED TO THE TOP OF THE FIRST.
-
-       On a single row the orb SET that row's height: 96px of orb beside a
-       16px eyebrow made row 1 96px tall, so the opening line began below the
-       orb rather than below the heading it belongs to. That is the gap — the
-       heading was not floating, the row was.
-
-       Spanning three rows lets the orb's height fall across the head, the
-       copy and the field instead of inflating any one of them, and
-       align-self: start in the owner block keeps it level with the first line
-       whatever those rows turn out to be.
-
-       `span 3` and not `1 / -1`: -1 means the last line of the EXPLICIT grid,
-       and the rows here are implicit, so it silently resolves back to row 1 —
-       which is the bug this comment is about, wearing a different hat. */
-    grid-row: 1 / span 3;
-    margin: 0;
     width: 96px;
     height: 96px;
   }
@@ -5340,7 +5315,6 @@ select:-moz-focusring { color: transparent; text-shadow: 0 0 0 var(--non-fg); }
 .non-verdict__answer {
   position: relative;
   z-index: 1;
-  margin: 0 0 14px;
   min-height: 0;
   border-top: 0;
   padding-top: 0;
@@ -5650,6 +5624,51 @@ select:-moz-focusring { color: transparent; text-shadow: 0 0 0 var(--non-fg); }
   align-self: start;
 }
 
+/* EVERY REMAINING PLACEMENT DECLARATION, GATHERED HERE.
+   ==========================================================================
+   The owner block used to own only the horizontal pull. Five other rules
+   across seven hundred lines still set the orb's margins and its grid cell,
+   which is how "the orb moved again and nothing explains it" kept being true
+   even with a check guarding the file — the check was watching one property
+   family while four others sat outside it.
+
+   So placement is now one block, and preflight check 6 scans the WHOLE file
+   for any of it rather than only the region above this sentinel. Size,
+   colour, blur and animation are still free to live wherever they read best.
+   Only "where is it" lives here. */
+.non-somm::before,
+.non-sommbox::before {
+  /* Vertical rhythm. The horizontal slots stay zero; the pull below is what
+     moves it sideways, and it is the only thing that may. */
+  margin-block: 0 14px;
+}
+
+@media (max-width: 699px) {
+  .non-somm::before,
+  .non-sommbox::before {
+    /* Space under the orb on a phone, which was the other half of an early
+       complaint: it sat hard on the input with 14px between them. Lived in
+       the MOBILE ORB block until placement was gathered here. */
+    margin-block: 0 6px;
+  }
+}
+
+@media (min-width: 700px) {
+  .non-somm::before,
+  .non-sommbox::before {
+    grid-column: 1;
+    /* Three rows, pinned to the top of the first. On a single row the orb SET
+       that row's height — 96px of orb beside a 16px eyebrow — so the opening
+       line began below the orb rather than below its heading.
+
+       `span 3`, never `1 / -1`: -1 is the last line of the EXPLICIT grid and
+       these rows are implicit, so it resolves back to row 1, which is the bug
+       it looks like it fixes. */
+    grid-row: 1 / span 3;
+    margin-block: 0;
+  }
+}
+
 /* NO PULL. NOT ON ANY SURFACE, NOT AT ANY WIDTH.
    ==========================================================================
    There was a negative margin here, twice — once as a percentage, once as two
@@ -5696,9 +5715,6 @@ select:-moz-focusring { color: transparent; text-shadow: 0 0 0 var(--non-fg); }
         rgba(242, 240, 234, .20) 52%,
         rgba(242, 240, 234, .05) 62%,
         transparent 68%);
-    /* Space, which was the other half of the complaint: the orb sat hard on
-       the input with 14px between them. */
-    margin-bottom: 6px;
   }
 }
 

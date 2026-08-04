@@ -158,10 +158,15 @@ OWNER = 'THE ORB — single owner'
 #    outside the owner block would move it horizontally while every property
 #    this check knew about stayed at zero, which is precisely the "it moved
 #    again and nothing explains it" failure the owner block exists to end.
+#    Widened a third time, and this one is the point: EVERY property that can
+#    move the orb, not the subset that had bitten us so far. Margins were
+#    guarded while grid-column, grid-row and align-self sat in other blocks
+#    seven hundred lines away — which is how "it moved again and nothing
+#    explains it" stayed true even with a check watching the file.
 PULL = re.compile(
-    r'(?<![-\w])(margin-left|margin-right|margin-inline(?:-start|-end)?'
-    r'|align-self)\s*:'
-    r'|(?<![-\w])(margin)\s*:[^;}]*\bauto\b',
+    r'(?<![-\w])(margin[-a-z]*|align-self|justify-self|place-self'
+    r'|grid-column[-a-z]*|grid-row[-a-z]*|grid-area|order'
+    r'|position|top|right|bottom|left|inset[-a-z]*|transform|translate)\s*:',
     re.I)
 css = root / 'assets' / 'theme.css'
 if css.exists():
@@ -177,8 +182,14 @@ if css.exists():
             # Compare at the declaration body, not the selector: a rule's match
             # starts at the previous rule's closing brace, so the owner rule
             # would otherwise appear to start before its own comment header.
-            if m.start(2) > owner_at:
-                continue  # the owner block itself, and anything after it
+            # ONLY the owner block is exempt — not "everything after it".
+            # Appending a rule to the end of the file used to bypass this
+            # check entirely, which is a hole wide enough to drive the
+            # original bug back through.
+            owner_end = text.find('\n}', owner_at)
+            owner_end = text.find('*/', owner_at) if owner_end == -1 else owner_end
+            if owner_at < m.start(2) < text.find('/* MOBILE ORB', owner_at):
+                continue  # inside the owner block's own rules
             # Comments are prose, not declarations. Explaining in a comment WHY
             # align-self lives in the owner block used to trip this check, so
             # the guard punished the documentation that made it understandable.

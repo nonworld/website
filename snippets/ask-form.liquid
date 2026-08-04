@@ -22,14 +22,22 @@
   anyone asks a question.
 {%- endcomment -%}
 {%- comment -%}
-  Hidden until an escalation arrives — EXCEPT on the way back from a submit.
-  Shopify redirects to the page the form was posted from, and the card was
-  being re-hidden on arrival, so the customer landed on a page that looked
-  exactly as it had before they pressed send. Success and failure were equally
-  invisible. Both states now force it open.
+  Hidden until an escalation arrives — EXCEPT on the way back from a submit,
+  where the result has to be visible or the customer lands on a page that looks
+  exactly as it did before they pressed send.
+
+  That reveal is CSS, not Liquid, and the reason is a real trap: `form` only
+  exists inside the {% form %} block. A `{% unless form.posted_successfully? %}`
+  on this wrapper reads a nil object, is therefore always true, and re-hid the
+  card on every return — while the success message rendered correctly inside
+  the form, invisible. It looked like the conditional worked because the thing
+  it guarded did.
+
+  So the state is expressed where the truth is — inside the form — and the
+  wrapper reacts to it with :has(). One rule, no Liquid gymnastics, and it
+  cannot go stale against a variable that is not in scope.
 {%- endcomment -%}
-<div class="non-ask" data-non-ask-card
-  {% unless form.posted_successfully? or form.errors %}hidden{% endunless %}>
+<div class="non-ask" data-non-ask-card hidden>
   <div class="non-mono non-eyebrow non-ask__head">{{ 'sections.somm.ask_head' | t }}</div>
   <p class="non-ask__why">{{ 'sections.somm.ask_why' | t }}</p>
 

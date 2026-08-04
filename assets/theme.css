@@ -5786,3 +5786,12 @@ select:-moz-focusring { color: transparent; text-shadow: 0 0 0 var(--non-fg); }
   opacity: .9;
 }
 .non-ask__msg--bad { color: var(--non-error, #ff8a7a); }
+
+/* A card carrying a result outranks its own hidden attribute.
+   `form.posted_successfully?` is only in scope inside {% form %}, so the
+   wrapper cannot ask whether it was posted — but it can see that a result
+   rendered inside it. See snippets/ask-form.liquid. */
+.non-ask[hidden]:has(.non-ask__msg--sent),
+.non-ask[hidden]:has(.non-ask__msg--bad) {
+  display: block;
+}

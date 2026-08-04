@@ -4628,45 +4628,45 @@ select:-moz-focusring { color: transparent; text-shadow: 0 0 0 var(--non-fg); }
   .non-somm,
   .non-sommbox {
     display: grid;
-    /* ONE COLUMN. The orb used to have its own 84px column beside everything
-       else, and that is the reason it never stayed put.
+    /* TWO COLUMNS: the orb, then the conversation beside it. This is the
+       design, and the ONLY declaration of it in this file.
 
-       In a column of its own, the orb's left edge is a function of the column
-       width, the column gap and a negative pull — three numbers, none of which
-       has anything to do with where the heading starts. Every attempt to align
-       it was tuning those three against each other by eye, on one page, at one
-       width. It then disagreed with the text on every other page, and the next
-       fix moved it again.
+       It was briefly collapsed to a single column with the orb above the
+       words. That was an overcorrection: the actual bug was that two blocks
+       ninety lines apart each declared these columns and the later one won
+       silently. The fix for a duplicate declaration is to delete the
+       duplicate, not to delete the layout.
 
-       Sharing the content column removes the question rather than answering
-       it. The orb starts where the heading starts because it is in the same
-       column as the heading, and there is no number left to get wrong. */
-    grid-template-columns: minmax(0, 1fr);
+       Declared once, here. preflight check 6b fails the push on a second one,
+       so the thing that made this hard to reason about cannot come back. */
+    grid-template-columns: 96px minmax(0, 1fr);
+    column-gap: 44px;
     align-items: start;
     text-align: left;
     max-width: 720px;
     padding: 18px 0;
   }
 
-  /* First row of the single column, above the words rather than beside them.
+  /* Column 1, first row, top-aligned.
 
-     grid-row: 1 / -1 used to make it span the whole stack, which meant its
-     apparent position depended on how tall that stack happened to be — head
-     plus three lines of copy plus a field plus chips on the product page,
-     versus a field alone elsewhere. Same element, different place on every
-     surface, and nothing in the CSS said so.
-
-     One row, first in the flow, and it moves only when the block moves. */
+     NOT grid-row: 1 / -1. Spanning every row made the orb's apparent position
+     depend on how tall the stack happened to be — head plus copy plus field
+     plus chips on a product page, a field alone elsewhere — so the same
+     element sat in a different place on every surface with nothing in the CSS
+     saying why. Pinned to the first row it sits level with the first line,
+     whatever follows it. */
   .non-somm::before,
   .non-sommbox::before {
     grid-column: 1;
-    margin: 0 0 10px;
-    width: 84px;
-    height: 84px;
+    grid-row: 1;
+    margin: 0;
+    width: 96px;
+    height: 96px;
   }
 
+  /* Everything else stacks in column 2, beside the orb. */
   .non-somm > *,
-  .non-sommbox > * { grid-column: 1; }
+  .non-sommbox > * { grid-column: 2; }
 
   /* Left-aligned and tightened — this is the compact version. */
   .non-sommbox__head {

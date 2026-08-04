@@ -179,6 +179,10 @@ if css.exists():
             # would otherwise appear to start before its own comment header.
             if m.start(2) > owner_at:
                 continue  # the owner block itself, and anything after it
+            # Comments are prose, not declarations. Explaining in a comment WHY
+            # align-self lives in the owner block used to trip this check, so
+            # the guard punished the documentation that made it understandable.
+            body = re.sub(r'/\*.*?\*/', ' ', body, flags=re.S)
             # group(1) is the longhand branch, group(2) the `margin: … auto`
             # shorthand branch; exactly one of the two matches per hit.
             hits = sorted(set(

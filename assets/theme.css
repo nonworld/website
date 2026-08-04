@@ -4658,11 +4658,32 @@ select:-moz-focusring { color: transparent; text-shadow: 0 0 0 var(--non-fg); }
   .non-somm::before,
   .non-sommbox::before {
     grid-column: 1;
-    grid-row: 1;
+    /* SPANS THREE ROWS, PINNED TO THE TOP OF THE FIRST.
+
+       On a single row the orb SET that row's height: 96px of orb beside a
+       16px eyebrow made row 1 96px tall, so the opening line began below the
+       orb rather than below the heading it belongs to. That is the gap — the
+       heading was not floating, the row was.
+
+       Spanning three rows lets the orb's height fall across the head, the
+       copy and the field instead of inflating any one of them, and
+       align-self: start in the owner block keeps it level with the first line
+       whatever those rows turn out to be.
+
+       `span 3` and not `1 / -1`: -1 means the last line of the EXPLICIT grid,
+       and the rows here are implicit, so it silently resolves back to row 1 —
+       which is the bug this comment is about, wearing a different hat. */
+    grid-row: 1 / span 3;
     margin: 0;
     width: 96px;
     height: 96px;
   }
+
+  /* Now that the row no longer holds the copy down, the heading and its line
+     need to read as one block rather than two. */
+  .non-sommbox__head,
+  .non-somm__head { margin-bottom: 10px; }
+  .non-sommbox__opener { margin-top: 0; }
 
   /* Everything else stacks in column 2, beside the orb. */
   .non-somm > *,

@@ -5628,6 +5628,41 @@ select:-moz-focusring { color: transparent; text-shadow: 0 0 0 var(--non-fg); }
   align-self: start;
 }
 
+/* THE PULL, RESTORED — with the number that broke it last time removed.
+   ==========================================================================
+   Measured on the homepage at 1280px, after the align-self fix above: the
+   somm's box starts at x=46 and the H1 starts at x=46. The orb IS aligned.
+   It does not look aligned, and both of those things are true at once.
+
+   The orb is a radial gradient centred at 40% of its own box. On a 96px box
+   that puts the bright core 38px inboard, so the light lands well right of
+   where every line of text begins and the eye reads it as indented. Aligning
+   the BOX was never the goal; the goal was aligning the MARK, and a blurred
+   circle's mark is its core, not its border box.
+
+   Hence a pull — the thing the owner block above was written to abolish. What
+   made the old pull dangerous was not its existence but its units and its
+   homes: it was a PERCENTAGE, which resolves against the containing block, so
+   it grew as the page grew and threw the orb 116px off-screen on a phone; and
+   it was declared in several places that each thought they were last.
+
+   This one is a fixed pixel value, in the owner block, on desktop only:
+
+     - 30px against a 46px gutter, so the box edge lands at x=16 and the orb
+       cannot leave the viewport at any width. The gutter cannot shrink below
+       this without the H1 moving too, at which point both move together.
+     - Desktop only, because below 700px the layout is centred by design and
+       the phone gutter is far too small to absorb it. Mobile keeps zero.
+
+   Net: the core sits ~8px inboard of the text edge instead of 38px, which
+   reads as flush. */
+@media (min-width: 700px) {
+  .non-somm::before,
+  .non-sommbox::before {
+    margin-left: -30px;
+  }
+}
+
 /* MOBILE ORB — self-contained, so nothing can shave it.
 
    On a phone the orb rendered with a round top and a flat bottom: the blur

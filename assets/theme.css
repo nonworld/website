@@ -5765,3 +5765,16 @@ select:-moz-focusring { color: transparent; text-shadow: 0 0 0 var(--non-fg); }
   .non-ask__row { flex-direction: column; }
   .non-ask__send { width: 100%; }
 }
+
+/* The Somm's hidden contact form. Off-screen rather than display:none —
+   Shopify's spam protection watches the form, and a display:none form is not
+   one it will vouch for. */
+.non-ask-form {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  clip-path: inset(50%);
+  white-space: nowrap;
+}

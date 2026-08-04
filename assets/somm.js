@@ -348,31 +348,44 @@
         send.disabled = true;
         send.textContent = NON.strings.askSending || 'Sending';
 
-        var form = new FormData();
-        form.append('form_type', 'contact');
-        form.append('utf8', '\u2713');
-        form.append('contact[email]', addr);
-        form.append('contact[body]', body.value);
-        // Shopify puts the subject in the notification when this field is set,
-        // which is what makes a wholesale enquiry findable in the inbox later.
-        form.append('contact[Subject]', esc.subject || 'Question from the NON site');
+        /* SUBMIT SHOPIFY'S OWN FORM, NOT A PAYLOAD WE BUILT.
 
-        fetch('/contact', { method: 'POST', body: form, redirect: 'follow' })
-          .then(function (res) {
-            // Shopify answers a successful post with a redirect back to the
-            // page carrying ?contact_posted=true. An opaque or followed
-            // redirect both read as ok here; a 4xx does not.
-            if (!res.ok && res.type !== 'opaqueredirect') throw new Error('HTTP ' + res.status);
-            say(NON.strings.askSent || "Sent. We'll come back to you, usually the same day.");
-            body.disabled = true;
-            email.disabled = true;
-            send.hidden = true;
-          })
-          .catch(function () {
-            send.disabled = false;
-            send.textContent = NON.strings.askSend || 'Send it';
-            say(NON.strings.askFailed || 'That did not send. Email hello@non.world and we will pick it up.', true);
-          });
+           The first version posted its own FormData to /contact with exactly
+           the fields the contact page uses, and Shopify returned 400 every
+           time — by fetch and by a native form in a hidden iframe alike. No
+           email arrived; checked in the inbox, not inferred from a status
+           code.
+
+           Shopify injects invisible spam protection into forms rendered by
+           the {% form %} tag and rejects contact posts that arrive without
+           it, so a hand-built payload could never have worked no matter how
+           correct its fields were. snippets/ask-form.liquid renders the real
+           one, hidden; this fills it in and submits it. Full page navigation,
+           the same as pressing send on the contact page, because that is what
+           this now is. */
+        var shopForm = document.querySelector('#non-ask-form')
+          || document.querySelector('.non-ask-form__form');
+        if (!shopForm) {
+          say(NON.strings.askFailed || 'That did not send. Email hello@non.world and we will pick it up.', true);
+          send.disabled = false;
+          send.textContent = NON.strings.askSend || 'Send it';
+          return;
+        }
+
+        var set = function (sel, val) {
+          var el = shopForm.querySelector(sel);
+          if (el) el.value = val;
+        };
+        set('[data-non-ask-email]', addr);
+        set('[data-non-ask-message]', body.value);
+        set('[data-non-ask-subject]', esc.subject || 'Question from the NON site');
+        // A name is required by some contact-form configurations and is never
+        // asked for here, so it says where the message came from instead of
+        // arriving blank.
+        set('[data-non-ask-name]', 'NON Somm — ' + (esc.about || 'site'));
+
+        say(NON.strings.askSending || 'Sending');
+        shopForm.submit();
       });
 
       answerBox.appendChild(wrap);

@@ -1,0 +1,31 @@
+{%- comment -%}
+  The real Shopify contact form, hidden, for the Somm's ask-a-human card.
+
+  WHY THIS EXISTS RATHER THAN A fetch(). The card first posted its own payload
+  to /contact — correct fields, correct shape, matching the contact page's form
+  exactly — and Shopify answered 400 every time, by fetch and by a native form
+  in a hidden iframe alike. No email arrived. Verified by checking the inbox,
+  not by trusting the status code.
+
+  The cause is Shopify's spam protection: it injects invisible bot detection
+  into forms rendered by the {% form %} TAG, and rejects contact posts that
+  arrive without it. A hand-built form can never carry that token, so no amount
+  of getting the fields right was ever going to work.
+
+  So the card fills in this one and submits it. Shopify's own protection rides
+  along because Shopify rendered it, and delivery is the same path the contact
+  page already uses — which is the "no new credentials, no separate
+  deliverability setup" the plan called for, arrived at properly.
+
+  Hidden with a class rather than the `hidden` attribute: a hidden attribute on
+  the wrapper would make the fields unfocusable, and Shopify's own protection
+  watches for interaction.
+{%- endcomment -%}
+<div class="non-ask-form" aria-hidden="true">
+  {%- form 'contact', id: 'non-ask-form', class: 'non-ask-form__form' -%}
+    <input type="hidden" name="contact[name]" value="" data-non-ask-name>
+    <input type="hidden" name="contact[email]" value="" data-non-ask-email>
+    <input type="hidden" name="contact[Subject]" value="" data-non-ask-subject>
+    <textarea name="contact[body]" data-non-ask-message></textarea>
+  {%- endform -%}
+</div>

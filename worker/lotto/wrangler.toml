@@ -11,21 +11,26 @@ compatibility_date = "2026-07-01"
 # order, weights identical and summing to 100. Descriptions match the design
 # word for word.
 #
-# ONE DISAGREEMENT, UNRESOLVED ON PURPOSE. The design names the percentage
-# codes NON15 and NON10. This pool says LOTTO15 and LOTTO10, and the evidence
-# says the pool is right about what exists: a live checkout returned "LOTTO15
-# couldn't be used with your existing discounts", which is Shopify refusing a
-# COMBINATION — a code it does not have would have been refused as invalid.
+# ONE DISAGREEMENT, DECIDED. The design names the percentage codes NON15 and
+# NON10. This pool says LOTTO15 and LOTTO10, and the evidence says the pool is
+# right about what exists: a live checkout returned "LOTTO15 couldn't be used
+# with your existing discounts", which is Shopify refusing a COMBINATION — a
+# code it does not have would have been refused as invalid.
 #
-# So LOTTO15 exists in Shopify and NON15 has not been shown to. Renaming these
-# two here to match the design would put a code we have never seen on 38% of
-# all draws, and it would fail at the customer's checkout rather than here.
-# Left as they are until someone confirms which names the shop actually holds:
+# Aaron's call, 2026-08-04: keep LOTTO15 and LOTTO10. The design table is the
+# stale side of this disagreement. Do not "fix" these to match it — renaming
+# them would put a code nobody has seen on 38% of all draws, and it would fail
+# at the customer's checkout rather than here.
+#
+# Everything else matches the design exactly: six prizes, same order, weights
+# summing to 100, descriptions word for word.
+#
+# To re-verify the pool against the shop at any time:
 #
 #   curl '<worker>/health?deep=1&codes=1'
 #
-# which reports every code's real status, and today reports that it cannot,
-# because this Worker has no SHOPIFY_ADMIN_TOKEN.
+# which reports every code's real status and combinesWith. Today it reports
+# that it cannot, because this Worker has no SHOPIFY_ADMIN_TOKEN set.
 LOTTO_POOL = '''[
   {"code":"LOTTO15","weight":28,"description":"15% off your first case","terms":"Use it at checkout."},
   {"code":"FREESTOPPER","weight":24,"description":"A free NON stopper","terms":"Add a bottle and the stopper is on us."},

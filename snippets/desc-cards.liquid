@@ -15,12 +15,13 @@
   is, editable where it has always been editable, and the page stops looking
   like two different pages.
 
-  HOW THE PARSE WORKS, AND ITS ONE ASSUMPTION. Liquid has no HTML parser, so
-  the heading levels are normalised to a single sentinel and the string is
-  split on it. The assumption is that a heading contains text and not nested
-  markup — `<h2>CONTAINS</h2>`, not `<h2><span>CONTAINS</span></h2>`. If that
-  ever stops being true the title renders as the inner text anyway, because
-  `split: '>' | last` takes whatever follows the final opening tag.
+  HOW THE PARSE WORKS. Liquid has no HTML parser, so the heading levels are
+  normalised to a single sentinel and the string is split on it. Nested markup
+  inside a heading is fine and expected — Shopify's own editor writes
+  `<h2 dir="ltr"><span>CONTAINS</span></h2>` — because the title is recovered
+  by rebuilding the element and running strip_html over the whole thing, not
+  by slicing the string at a bracket. See the note beside that code for the
+  two ways slicing got it wrong first.
 
   Anything before the first heading is kept as an untitled lead card rather
   than dropped, because silently discarding copy is how a page loses a
@@ -45,23 +46,28 @@
     {%- if chunk contains '</hX>' -%}
       {%- assign parts = chunk | split: '</hX>' -%}
       {%- comment -%}
-        REBUILD THE HEADING BEFORE STRIPPING IT.
+        PUT THE OPENING BRACKET BACK, THEN STRIP.
 
-        parts[0] is a fragment, not an element: splitting on `<hX` ate the
-        opening bracket and splitting on `</hX>` ate the closing one, so what
-        is left looks like ` dir="ltr"><span>CONTAINS</span`. strip_html only
-        removes COMPLETE tags, so the unterminated `</span` at the end of that
-        survives it — and an unterminated tag inside the title div makes the
-        browser swallow the card's body into its heading. That is exactly what
-        shipped: six cards whose titles contained their own contents.
+        parts[0] is the heading's insides plus its own attributes, missing only
+        the `<` that the split consumed: ` dir="ltr"><span>CONTAINS</span>`.
+        Prepending `<hX` makes that a well-formed element again and strip_html
+        removes all of it cleanly.
 
-        Putting the brackets back makes it a well-formed element again, and
-        strip_html then does what it looked like it was already doing. It also
-        removes the earlier assumption that a heading holds no nested markup —
-        Shopify's editor writes `<h2 dir="ltr"><span>CONTAINS</span></h2>`, so
-        that assumption was already false on every set.
+        The first attempt took `split: '>' | last` instead, which cut the
+        string mid-tag and produced `CONTAINS</span`. strip_html only removes
+        COMPLETE tags, so the unterminated `</span` survived — and an
+        unterminated tag inside the title div makes the browser parser swallow
+        the following siblings, so every card's heading contained its own body.
+
+        The second attempt fixed that and appended a `>` as well, which
+        parts[0] already ends with, so every title rendered as `CONTAINS>`.
+        Nothing to append: the closing bracket was never eaten.
+
+        This also retires the note further up about headings holding no nested
+        markup. Shopify's editor writes `<h2 dir="ltr"><span>X</span></h2>`, so
+        that was false on every set the moment it was written.
       {%- endcomment -%}
-      {%- capture heading -%}<hX{{ parts[0] }}>{%- endcapture -%}
+      {%- capture heading -%}<hX{{ parts[0] }}{%- endcapture -%}
       {%- assign title = heading | strip_html | strip -%}
       {%- assign body = parts[1] | strip -%}
     {%- else -%}

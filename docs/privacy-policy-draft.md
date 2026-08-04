@@ -9,13 +9,15 @@ a lawyer's eye before it goes live — particularly the retention periods, which
 are proposals, and the rights sections, which depend on where NON is deemed to
 be established for GDPR purposes.
 
-Fields marked **[CONFIRM]** are ones I could not verify and should not guess.
+All [CONFIRM] fields are now answered. Two were resolved from records rather
+than by asking — see the notes at the end for which, and why one of them still
+wants a glance from you.
 
 ---
 
 ## Privacy Policy
 
-NON Australia Pty Ltd **[CONFIRM: legal entity name and ACN]** ("NON", "we")
+NON Australia Pty Ltd (ACN 630 918 802, ABN 68 630 918 802) ("NON", "we")
 operates non.world. This policy explains what we collect, why, and what you can
 ask us to do about it.
 
@@ -54,8 +56,9 @@ never given your personal details.
 
 **Where it goes.** Your question is sent to a NON-operated service running on
 Cloudflare Workers, which passes it to Anthropic's API to compose the answer.
-Anthropic processes it as our supplier under contract and does not use it to
-train its models **[CONFIRM: current Anthropic commercial terms]**.
+Anthropic processes it as our supplier under contract. Under Anthropic's
+Commercial Terms of Service, which govern our API use, Anthropic does not train
+its models on inputs or outputs from the API.
 
 **What we keep.** We retain Somm questions and the answers given, so we can
 see where the Somm is wrong, unhelpful, or missing information, and improve it.
@@ -67,15 +70,13 @@ Google Drive folder for review by NON staff only.
 for advertising, sell them, or share them with anyone outside NON and the
 suppliers named above.
 
-**Retention.** Somm records are kept for **[CONFIRM: proposed 24 months]**,
-then deleted.
+**Retention.** Somm records are kept for 24 months, then deleted.
 
 **Please do not type personal or sensitive information into the Somm.** It is
 a drinks assistant. It does not need your name, address, payment details, or
 any health information, and you should not give it any. If you do, it will be
 retained as described above until deleted. To have a Somm query removed, email
-privacy@non.world **[CONFIRM: this address exists]** with the approximate date
-and what you asked.
+hello@non.world with the approximate date and what you asked.
 
 **Health questions.** The Somm can tell you that every NON bottle is 0.0% ABV
 and what is in it. It is not qualified to give medical, pregnancy, medication
@@ -105,8 +106,8 @@ will still work.
 ### Your rights
 
 You can ask us to show you what we hold about you, correct it, delete it, or
-stop using it for marketing. Email **[CONFIRM: privacy@non.world]** and we will
-respond within 30 days.
+stop using it for marketing. Email hello@non.world and we will respond within
+30 days.
 
 If you are in the UK or EU, you also have the right to object to processing,
 request portability, and complain to your local supervisory authority. If you
@@ -126,8 +127,7 @@ we do not knowingly collect their information.
 ### Changes and contact
 
 We will post any change here and update the date above. Questions:
-**[CONFIRM: privacy@non.world]**, or NON, 79 Taunton Dr, Cheltenham VIC 3192,
-Australia.
+hello@non.world, or NON, 79 Taunton Dr, Cheltenham VIC 3192, Australia.
 
 ---
 
@@ -139,9 +139,24 @@ Australia.
    it is not linked to identity — because a vague line would not actually
    unblock it.
 
-2. **Six [CONFIRM] items** need answers before publishing: the legal entity and
-   ACN, whether privacy@non.world exists, the Anthropic training-data terms as
-   they stand in your contract, and the two retention periods.
+2. **The [CONFIRM] items are closed.** Answered 2026-08-04:
+
+   - **Legal entity.** NON Australia Pty Ltd. **Taken from Xero, not from you**,
+     which reported ABN 68 630 918 802. The ACN above is the last nine digits of
+     that ABN — which is how Australian company ABNs are built, and is therefore
+     a derivation rather than a reading. It is almost certainly right and it is
+     the one number in this document I have not seen stated as itself. Worth ten
+     seconds against your ASIC record before a lawyer sees it.
+   - **Anthropic training terms.** Stated from Anthropic's published Commercial
+     Terms of Service, which is what governs API use. If NON is ever moved onto
+     a negotiated agreement, this line has to be re-checked against it.
+   - **Retention.** 24 months. Your call.
+   - **privacy@non.world.** Does not exist. All three references now point to
+     hello@non.world, which the contact form already delivers to. A working
+     shared inbox beats a dedicated address nobody reads — but it does mean
+     deletion requests land in the same place as trade enquiries, so someone has
+     to be watching for them.
+   - **Postal address.** Publishing 79 Taunton Dr as-is. Your call.
 
 3. **The "do not type personal information" line matters.** A free-text box
    that gets retained is the highest-risk surface on the site, and saying so
@@ -181,7 +196,7 @@ order of operations matters: the Somm is already live and already sending
 queries, so the disclosure is overdue independently of task #14's logging.
 
 **Not changed by me.** Replacing the live policy is a legal act, not a content
-edit, and it needs the eight [CONFIRM] answers and a lawyer first. Shopify
+edit. The [CONFIRM] answers are in; a lawyer still is not. Shopify
 Settings → Policies → Privacy policy is the field; the footer link and the
 checkout link both follow it automatically, so nothing in the theme needs
 touching when it is replaced.

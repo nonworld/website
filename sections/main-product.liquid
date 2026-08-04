@@ -35,11 +35,38 @@
   assign tastes = m.profile | metafield_text | default: m.tastes | metafield_text
   assign sits = m.sits | metafield_text
 
+  # IS THIS ONE BOTTLE?
+  #
+  # not_a_drink already excused the Cap and the Stopper. It does not excuse the
+  # sets, and the sets are drinks — so every bottle-shaped assumption on this
+  # page fired on them and was wrong in a different way each time:
+  #
+  #   The Everyday Set is three 750ml bottles. Its eyebrow read
+  #   "SET - 0.0% ABV - 750ml", which is the volume of a third of it.
+  #   Its spec strip rendered exactly one cell, "Serve: Chilled, wine glass",
+  #   because that cell is a hardcoded default rather than data, so a strip
+  #   designed for four cells shipped holding one.
+  #   And its Somm panel opened "I've read the whole spec sheet for THIS
+  #   BOTTLE", then, asked about sugar, replied "which bottle did you have in
+  #   mind?" — a dead end on a page that names its three bottles six lines up.
+  #
+  # The distinguishing fact is not the product type or the title; it is whether
+  # this product carries a single bottle's spec data. Bottles have profile,
+  # sits, ingredients and nutrition. Sets, accessories and the gift card have
+  # none of them. So that is the test, and it is read from the data rather than
+  # guessed from a name — nothing here breaks when a set is called The Spice
+  # Set instead of Spice Pack.
+  assign has_spec = false
+  if m.profile != blank or m.tastes != blank or m.sits != blank or m.ingredients != blank
+    assign has_spec = true
+  endif
+
   # 'Chilled, wine glass' is a hardcoded house default for a field that is null
   # on every product, so it was never this bottle's instruction - and on an
   # accessory it is simply wrong. Accessories get nothing rather than a guess.
+  # Sets too: a one-cell spec strip reads as a broken four-cell one.
   assign serve = m.serve | metafield_text
-  if serve == blank and not_drink == blank
+  if serve == blank and not_drink == blank and has_spec
     assign serve = 'Chilled, wine glass'
   endif
   assign ingredients = m.ingredients | metafield_text
@@ -132,9 +159,17 @@
         {%- endcomment -%}
         {%- assign not_drink = product.metafields.custom.not_a_drink | metafield_text -%}
         {%- assign spec_line = product.metafields.custom.spec_line | metafield_text -%}
+        {%- comment -%}
+          has_spec, not just not_drink. The suffix is one bottle's ABV and
+          volume, so it belongs only to products that ARE one bottle. A set of
+          three 750ml bottles printing "750ml" is the same class of error as
+          the Stopper printing an ABV, and it was live on five set pages.
+          A per-product custom.spec_line still overrides everything, which is
+          where "3 x 750ml" should go once someone writes it.
+        {%- endcomment -%}
         {%- if spec_line != blank -%}
           &middot; {{ spec_line }}
-        {%- elsif not_drink == blank and section.settings.eyebrow_suffix != blank -%}
+        {%- elsif not_drink == blank and has_spec and section.settings.eyebrow_suffix != blank -%}
           &middot; {{ section.settings.eyebrow_suffix }}
         {%- endif -%}
       </div>
@@ -351,7 +386,14 @@
       still answer confidently, and be wrong. Off for anything not a drink
       until it has a brief for one.
     {%- endcomment -%}
-    {%- if section.settings.show_somm and not_drink == blank -%}
+    {%- comment -%}
+      has_spec for the same reason the opener gives: the panel says it has read
+      the spec sheet for THIS BOTTLE, and on a set there is no such sheet. Asked
+      a spec question with code SET the Worker correctly refuses to guess and
+      replies "which bottle did you have in mind?" — safe, and a dead end. Off
+      until a set has a brief of its own, exactly as accessories are.
+    {%- endcomment -%}
+    {%- if section.settings.show_somm and not_drink == blank and has_spec -%}
       <div class="non-sommbox" style="{% if section.settings.somm_dot_colour != blank %}--non-somm-dot: {{ section.settings.somm_dot_colour }};{% endif %}{% if section.settings.somm_bg != blank %}--non-somm-bg: {{ section.settings.somm_bg }};{% endif %}{% if section.settings.somm_border != blank %}--non-somm-border: {{ section.settings.somm_border }};{% endif %}">
         {%- comment -%}
           One label, not two. The head printed the locale string "NON Somm" and

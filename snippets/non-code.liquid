@@ -27,7 +27,14 @@
 {%- liquid
   assign code = ''
 
-  if product.metafields.custom.non_code != blank
+  # A gift card has no NON code and never will. Its SKU falls through the
+  # pattern matching below to `first`, which on the live store is the literal
+  # string GIFTCARD40 — printed as the eyebrow on the gift card PDP, where a
+  # customer reads an internal SKU fragment where the range's name goes.
+  # Blank here means the eyebrow renders nothing rather than something wrong.
+  if product.gift_card?
+    assign code = ''
+  elsif product.metafields.custom.non_code != blank
     assign code = product.metafields.custom.non_code | metafield_text | strip | upcase
   else
     assign sku = product.selected_or_first_available_variant.sku | default: product.variants.first.sku | upcase

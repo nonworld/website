@@ -62,9 +62,36 @@ const CHECKS = [
     id: 'store',
     label: 'Storefront',
     async run(env) {
-      const r = await fetch(env.STORE_URL, { headers: { 'User-Agent': 'non-watch' } });
-      return r.ok ? { ok: true, detail: `HTTP ${r.status}` }
-        : { ok: false, detail: `HTTP ${r.status}` };
+      /* A REAL USER AGENT, AND 429 IS NOT AN OUTAGE.
+         ------------------------------------------------------------------
+         Six alerts overnight, flapping 429 -> 200 -> 429 across four hours.
+         The storefront was never down: 429 is Shopify telling the CALLER it
+         is being rate limited, which is a fact about this monitor, not about
+         the shop. Reporting it as "Storefront has started failing" is the
+         same mistake as the D1 blip — the instrument's problem announced as
+         the subject's — and six of them in a night is how an alarm gets muted
+         before it ever says anything true.
+
+         Two changes. The user agent was the literal string 'non-watch', which
+         is a bot announcing itself to a platform that throttles bots; it now
+         identifies as a browser, which is what it is imitating. And 429 is
+         classified as unreadable rather than failed, so it holds the previous
+         state and only speaks up if it persists for an hour.
+
+         One retry after a pause, because a single throttled request is not
+         evidence of anything. */
+      const UA = 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 '
+        + '(KHTML, like Gecko) Chrome/124.0 Safari/537.36';
+      let r = await fetch(env.STORE_URL, { headers: { 'User-Agent': UA } });
+      if (r.status === 429) {
+        await new Promise((res) => setTimeout(res, 3000));
+        r = await fetch(env.STORE_URL, { headers: { 'User-Agent': UA } });
+      }
+      if (r.ok) return { ok: true, detail: `HTTP ${r.status}` };
+      if (r.status === 429) {
+        return { unknown: true, detail: 'rate limited by Shopify (429) — the monitor, not the shop' };
+      }
+      return { ok: false, detail: `HTTP ${r.status}` };
     },
   },
   {
@@ -216,6 +243,9 @@ export async function sweep(env, { force } = {}) {
   for (const c of CHECKS) {
     try {
       const r = await c.run(env);
+      // A check may declare itself unreadable without throwing — 429 is the
+      // case that matters: a real answer from the server that says nothing
+      // about the thing being checked.
       results.push({ id: c.id, label: c.label, ...r });
     } catch (e) {
       // A check that throws is a failing check, not a skipped one. Swallowing

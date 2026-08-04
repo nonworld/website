@@ -5666,7 +5666,13 @@ select:-moz-focusring { color: transparent; text-shadow: 0 0 0 var(--non-fg); }
    the page edge and not one pixel past it, so nothing can ever overflow:
 
      desktop  gutter 46px, orb 96px,  core at 40%  ->  pull 30, core +8px
-     mobile   gutter 22px, orb 104px, core at 42%  ->  pull 22, core +0px
+     mobile   gutter 22px, orb 104px, core at 42%  ->  pull 22, core +22px
+
+   Mobile does not reach flush and cannot. Flush would need a 44px pull, which
+   puts the box 22px off the left edge, and .non-shell clips there — that is
+   the flat-edged orb reported earlier. 22px is the largest pull the gutter
+   can absorb whole, and it halves the miss (41.6px -> 21.7px, measured live)
+   rather than closing it. Verified on the page, not calculated.
 
    The mobile case was the one that mattered and the one the first attempt
    missed: this was scoped to min-width 700px, while every screenshot of the

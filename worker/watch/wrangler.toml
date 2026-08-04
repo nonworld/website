@@ -1,0 +1,52 @@
+name = "non-watch"
+main = "src/index.js"
+compatibility_date = "2026-07-01"
+
+[vars]
+SOMM_URL = "https://non-somm.polished-snow-7889.workers.dev"
+LOTTO_URL = "https://non-lotto.polished-snow-7889.workers.dev"
+STORE_URL = "https://www.non.world/"
+
+# SOMM_URL and LOTTO_URL are kept for the record and as a fallback, but the
+# checks go through the service bindings below. A Worker fetching another
+# Worker's *.workers.dev hostname gets a 404 from inside Cloudflare's network
+# while the same URL returns 200 from anywhere else — so the first sweep
+# reported both Workers down while both were serving customers perfectly.
+# A monitor that cries wolf on day one is a monitor that gets muted.
+
+# SLACK_WEBHOOK is a secret, never a var:
+#   wrangler secret put SLACK_WEBHOOK
+#
+# Without it this Worker can see everything and tell no one, so its own check
+# list treats an absent channel as a FAILING check rather than as an option.
+# A half-configured monitor must not be able to report healthy.
+
+# Reads the Somm's log directly. The health endpoints say whether the Workers
+# are up; the log says whether customers are being answered, and those are not
+# the same question. Same database as non-somm, not a copy.
+[[d1_databases]]
+binding = "SOMM_LOG"
+database_name = "non-somm-log"
+database_id = "42c8b78c-5c21-42ef-9b99-639a954ebe2a"
+
+# Every fifteen minutes. Frequent enough that a Sunday-night outage is caught
+# before Monday, rare enough to stay inside the free tier.
+#
+# NOTE: keys added below this point belong to [triggers], not to [vars] — TOML
+# keys attach to the last table header above them. Adding a var down here binds
+# nothing and warns about nothing. This already happened once, on non-somm.
+[triggers]
+crons = ["*/15 * * * *"]
+
+# Worker-to-Worker, done the way Cloudflare intends. Direct fetches to a
+# *.workers.dev hostname do not resolve correctly from inside the network;
+# service bindings call the target Worker in-process, with no DNS, no TLS and
+# no egress cost. They also fail at DEPLOY time if the target does not exist,
+# which is strictly better than discovering it in a 3am alert.
+[[services]]
+binding = "SOMM_SVC"
+service = "non-somm"
+
+[[services]]
+binding = "LOTTO_SVC"
+service = "non-lotto"

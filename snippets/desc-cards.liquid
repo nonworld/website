@@ -44,7 +44,25 @@
   {%- for chunk in chunks -%}
     {%- if chunk contains '</hX>' -%}
       {%- assign parts = chunk | split: '</hX>' -%}
-      {%- assign title = parts[0] | split: '>' | last | strip_html | strip -%}
+      {%- comment -%}
+        REBUILD THE HEADING BEFORE STRIPPING IT.
+
+        parts[0] is a fragment, not an element: splitting on `<hX` ate the
+        opening bracket and splitting on `</hX>` ate the closing one, so what
+        is left looks like ` dir="ltr"><span>CONTAINS</span`. strip_html only
+        removes COMPLETE tags, so the unterminated `</span` at the end of that
+        survives it — and an unterminated tag inside the title div makes the
+        browser swallow the card's body into its heading. That is exactly what
+        shipped: six cards whose titles contained their own contents.
+
+        Putting the brackets back makes it a well-formed element again, and
+        strip_html then does what it looked like it was already doing. It also
+        removes the earlier assumption that a heading holds no nested markup —
+        Shopify's editor writes `<h2 dir="ltr"><span>CONTAINS</span></h2>`, so
+        that assumption was already false on every set.
+      {%- endcomment -%}
+      {%- capture heading -%}<hX{{ parts[0] }}>{%- endcapture -%}
+      {%- assign title = heading | strip_html | strip -%}
       {%- assign body = parts[1] | strip -%}
     {%- else -%}
       {%- comment -%} Copy sitting above the first heading. Kept, untitled. {%- endcomment -%}

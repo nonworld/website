@@ -3355,6 +3355,32 @@ select:-moz-focusring { color: transparent; text-shadow: 0 0 0 var(--non-fg); }
   }
   .non-header__cart { flex: none; }
 
+  /* The process infographic: stack it, and align the drawing left.
+
+     The row is inline-styled inside the process-anim snippet as
+     `minmax(230px,1fr) minmax(230px,0.8fr)` with a 24px gap. That needs 484px
+     and a phone gives it 312, so the browser overflowed the tracks: the copy
+     was crushed into 266px and the drawing shoved against the right edge with
+     nothing around it.
+
+     One column below 860, drawing under the copy, both hard left. The !important
+     is unavoidable — the declaration it overrides is an inline style, and this
+     is a raw HTML snippet where a Liquid conditional cannot reach. */
+  .non-procrow {
+    grid-template-columns: 1fr !important;
+    gap: 28px !important;
+    align-items: start !important;
+    justify-items: start !important;
+  }
+  /* The drawing's own wrapper is width:100% with a 4/3 ratio, which at full
+     width makes it taller than the copy above it. Cap it and let it sit left
+     rather than centring in the column. */
+  .non-procrow > * + * {
+    width: 72% !important;
+    max-width: 260px;
+    margin-left: 0;
+  }
+
   /* The hamburger. Three 1px bars in an 18px box, inside the 44px target the
      button already carried, so nothing about the tap area changes — only what
      is drawn in it. */
@@ -5526,4 +5552,44 @@ select:-moz-focusring { color: transparent; text-shadow: 0 0 0 var(--non-fg); }
   margin-left: 0;
   margin-right: 0;
   justify-self: start;
+}
+
+/* MOBILE ORB — self-contained, so nothing can shave it.
+
+   On a phone the orb rendered with a round top and a flat bottom: the blur
+   extends well past the element box and something in the ancestry cuts it off
+   there. Reproduced at 390px on the pairing page.
+
+   Rather than hunt the clipping ancestor across engines — .non-shell alone
+   carries `overflow: clip visible`, and engines disagree about what that
+   computes to on the visible axis — the orb is made to fit inside its own box.
+   The box grows, the gradient is pulled in so it reaches full transparency at
+   68% of the radius instead of 90%, and the blur drops to 5px. The painted
+   form then ends short of the border box, so a clip at that boundary has
+   nothing left to remove.
+
+   Roughly the same apparent size as before, because the box grew by about what
+   the blur used to add outside it. Desktop is untouched: it has the room, and
+   the blur there is doing what it was designed to do.
+
+   Sits after the owner block on purpose. It sets no horizontal margin, so it
+   does not breach the single-owner rule that preflight.py check 6 enforces. */
+@media (max-width: 859px) {
+  .non-somm::before,
+  .non-sommbox::before {
+    width: 104px;
+    height: 104px;
+    filter: blur(5px);
+    background:
+      radial-gradient(circle at 42% 36%,
+        #ffffff 0%,
+        rgba(242, 240, 234, .95) 20%,
+        rgba(242, 240, 234, .55) 38%,
+        rgba(242, 240, 234, .20) 52%,
+        rgba(242, 240, 234, .05) 62%,
+        transparent 68%);
+    /* Space, which was the other half of the complaint: the orb sat hard on
+       the input with 14px between them. */
+    margin-bottom: 6px;
+  }
 }

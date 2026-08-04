@@ -23,6 +23,11 @@ RATE_LIMIT_PER_MINUTE = "20"
 SHEET_ID = "1MaKIe_a7kgNVPqYQrfktUYzW6p5pt8KNgGMzGK_FnZo"
 SHEET_GID = "183822213"
 
+# Retention, in months, matching what the privacy policy states. One number in
+# one place: changing the policy and changing the code is a single edit rather
+# than two that can quietly disagree. The purge runs on the hourly tick.
+RETENTION_MONTHS = "24"
+
 # ANTHROPIC_API_KEY is a secret, never a var:
 #   wrangler secret put ANTHROPIC_API_KEY
 

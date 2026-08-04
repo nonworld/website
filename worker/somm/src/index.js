@@ -1366,6 +1366,35 @@ export default {
         throw e;
       }
     })());
+
+    /* RETENTION, ENFORCED RATHER THAN PROMISED.
+       -------------------------------------------------------------------
+       The published privacy policy says Somm records are kept for 24 months
+       and then deleted. Until now the only thing implementing that sentence
+       was a DELETE statement written in a comment in schema.sql, to be run by
+       hand by someone who remembered — which is not a retention policy, it is
+       an intention. A commitment in a legal document with no mechanism behind
+       it is worse than no commitment, because it is the one a regulator reads
+       back to you.
+
+       Runs on the same hourly tick as the export. Deleting nothing is the
+       normal case and costs one indexed query. */
+    ctx.waitUntil((async () => {
+      if (!env.SOMM_LOG) return;
+      const months = Number(env.RETENTION_MONTHS || 24);
+      // Derived from the policy's own number rather than a magic constant, so
+      // changing the policy and changing the code is one edit, not two that
+      // can disagree.
+      const cutoff = Date.now() - months * 30.44 * 24 * 60 * 60 * 1000;
+      try {
+        const r = await env.SOMM_LOG.prepare('DELETE FROM somm_log WHERE at < ?')
+          .bind(Math.floor(cutoff)).run();
+        const n = r.meta && r.meta.changes ? r.meta.changes : 0;
+        if (n) console.log(`[somm] retention: deleted ${n} rows older than ${months} months`);
+      } catch (e) {
+        console.error('[somm] retention failed:', e && e.message ? e.message : e);
+      }
+    })());
   },
 
   async fetch(request, env, ctx) {

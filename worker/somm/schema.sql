@@ -33,10 +33,14 @@ CREATE TABLE IF NOT EXISTS somm_log (
   error       TEXT
 );
 
--- Retention is 24 months per the published policy. The delete is a query, not
--- a cron, so it must actually be run:
---   wrangler d1 execute non-somm-log --remote \
---     --command "DELETE FROM somm_log WHERE at < strftime('%s','now','-24 months')*1000"
+-- Retention is 24 months per the published policy, and it is ENFORCED — the
+-- Worker's hourly scheduled handler purges anything older, using
+-- RETENTION_MONTHS from wrangler.toml so the policy's number and the code's
+-- number are the same number.
+--
+-- This used to be a DELETE written here as a comment, for a human to run when
+-- they remembered. That is not a retention policy, it is an intention, and it
+-- is the sentence a regulator reads back to you.
 CREATE INDEX IF NOT EXISTS somm_log_at      ON somm_log (at);
 CREATE INDEX IF NOT EXISTS somm_log_route   ON somm_log (route);
 CREATE INDEX IF NOT EXISTS somm_log_context ON somm_log (context);

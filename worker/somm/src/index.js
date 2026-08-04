@@ -1240,6 +1240,8 @@ const handler = {
 };
 
 
+import { exportToSheet } from './export-sheet.js';
+
 /* ---------------------------------------------------------------- capture
 
    Until 2026-08-04 this Worker answered, streamed, and forgot. The stated
@@ -1350,6 +1352,22 @@ function picksOf(payload) {
 }
 
 export default {
+  /* The cron. Runs whether or not anyone asks, which is the point — an export
+     that only happens when someone remembers to trigger it is a manual process
+     with extra steps. Failures throw so they land in the Worker's error rate
+     rather than being swallowed into a silent no-op. */
+  async scheduled(event, env, ctx) {
+    ctx.waitUntil((async () => {
+      try {
+        const r = await exportToSheet(env);
+        console.log('[somm] export', JSON.stringify(r));
+      } catch (e) {
+        console.error('[somm] export failed:', e && e.message ? e.message : e);
+        throw e;
+      }
+    })());
+  },
+
   async fetch(request, env, ctx) {
     const started = Date.now();
 
@@ -1359,6 +1377,24 @@ export default {
     const url = new URL(request.url);
     const isAsk = request.method === 'POST'
       && (url.pathname === '/somm' || url.pathname === '/');
+
+    /* Manual trigger for the export, so the first run can be watched instead
+       of waited for, and so a failure can be read as a response rather than
+       dug out of a tail. POST-only and admin-gated: it is not destructive, but
+       it does move customer questions to a Google Sheet and that is not a
+       thing any passer-by should be able to set off. */
+    if (url.pathname === '/somm/export') {
+      if (request.method !== 'POST') return json({ error: 'method not allowed' }, 405);
+      if (!env.EXPORT_TOKEN) return json({ error: 'export not configured' }, 503);
+      if (request.headers.get('X-Export-Token') !== env.EXPORT_TOKEN) {
+        return json({ error: 'unauthorised' }, 401);
+      }
+      try {
+        return json(await exportToSheet(env));
+      } catch (e) {
+        return json({ error: e && e.message ? e.message : String(e) }, 500);
+      }
+    }
 
     if (!isAsk) return handler.fetch(request, env);
 

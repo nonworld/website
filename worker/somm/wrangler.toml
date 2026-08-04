@@ -10,6 +10,19 @@ EXTRACT_MODEL = "claude-haiku-4-5-20251001"
 EXPLAIN_MODEL = "claude-sonnet-5"
 RATE_LIMIT_PER_MINUTE = "20"
 
+# The sheet the log is read in. The tab is addressed by gid because that is
+# what the URL carries; its NAME is resolved per run, so renaming the tab does
+# not silently send rows somewhere else.
+#
+# These live HERE, under [vars], and that is not a style point. Appended at the
+# end of the file they landed inside the [[d1_databases]] table instead —
+# TOML keys belong to the last table header above them — and wrangler accepted
+# the file, deployed it, and bound neither. No warning, no error, just a Worker
+# whose export could never find the sheet. Anything added below the D1 block
+# from now on is a D1 property, whatever it looks like.
+SHEET_ID = "1MaKIe_a7kgNVPqYQrfktUYzW6p5pt8KNgGMzGK_FnZo"
+SHEET_GID = "183822213"
+
 # ANTHROPIC_API_KEY is a secret, never a var:
 #   wrangler secret put ANTHROPIC_API_KEY
 
@@ -39,3 +52,8 @@ RATE_LIMIT_PER_MINUTE = "20"
 binding = "SOMM_LOG"
 database_name = "non-somm-log"
 database_id = "42c8b78c-5c21-42ef-9b99-639a954ebe2a"
+
+# Hourly. Frequent enough that the sheet is never meaningfully behind, rare
+# enough that a backlog drains in order rather than racing itself.
+[triggers]
+crons = ["0 * * * *"]

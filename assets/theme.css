@@ -6168,8 +6168,17 @@ select:-moz-focusring { color: transparent; text-shadow: 0 0 0 var(--non-fg); }
      first thing under the hero it is the page's shop front, and at 2.2 a
      bottle is 150px wide on a 375px screen — a thumbnail. 1.35 gives it 250px
      and still cuts the next card off mid-tile, which is the part that tells a
-     thumb there is more. */
-  .non-row { --non-row-cols: 1.35; }
+     thumb there is more.
+
+     PHONES ONLY. 1.35 columns of a 768px tablet is a 530px product card, which
+     is larger than the same card gets on a 1440px desktop — the ratio is right
+     for a hand and absurd for a tablet held in two. 700–859 keeps the 2.2 it
+     has today, which is also the width band where the two-column grid it was
+     matched to still applies. 699 is the theme's own phone tier, not a new
+     boundary. */
+  @media (max-width: 699px) {
+    .non-row { --non-row-cols: 1.35; }
+  }
 
   /* Arrows are a desktop control. They are already opacity:0 until a script
      turns them on, but on a phone the swipe is the control and a 44px button

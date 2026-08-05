@@ -153,16 +153,41 @@
         Translated here rather than hardcoded in lotto.js, which has no access
         to the locale files.
       {%- endcomment -%}
+      {%- comment -%}
+        THE COMMENT LIVES OUT HERE NOW, and that is the whole fix.
+
+        It used to sit between `data-non-lotto-close` and `data-done-label`,
+        written as a whitespace-stripping comment tag — the form with a hyphen
+        after the opening brace. That hyphen strips the whitespace BEFORE the
+        tag, including the newline separating the two attributes, so the
+        rendered markup read:
+
+            data-non-lotto-closedata-done-label="Done"
+
+        One attribute with a nonsense name. `data-non-lotto-close` did not
+        exist on the button, so the only exit from this modal on a phone did
+        nothing. Escape still worked, and a phone has no Escape key.
+
+        It survived a previous repair because the symptom — one control working
+        and its twin not — reads as a JavaScript binding problem, and the JS was
+        rewritten to delegate. Delegation is the better pattern and it is kept,
+        but it was never the bug: the handler was correct and looking for an
+        attribute the page never had.
+
+        A whitespace-stripping tag has no business inside an attribute list. It
+        is only safe after a QUOTED value, where the closing quote separates the
+        tokens by itself; after a valueless attribute it silently welds two
+        names together.
+
+        (Also, on the `| t` below: no `| default:` after it. A missing key
+        returns the literal "Translation missing: en.sections.lotto.done", which
+        is not blank, so default never fires and the string ships to the
+        customer. It did, until the key was added.)
+      {%- endcomment -%}
       <button
         type="button"
         class="non-lotto__no"
         data-non-lotto-close
-        {%- comment -%}
-          No `| default:` after `| t`. A missing key returns the literal
-          "Translation missing: en.sections.lotto.done", which is not blank, so
-          default never fires and the string ships to the customer. It did:
-          this button carried it on every page until the key was added.
-        {%- endcomment -%}
         data-done-label="{{ 'sections.lotto.done' | t }}">
         {{ 'sections.lotto.no_thanks' | t }}
       </button>

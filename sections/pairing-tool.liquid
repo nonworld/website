@@ -129,16 +129,30 @@
             {%- if dishes.size > 0 -%}
               <div class="non-somm__seeds">
                 {%- for block in dishes -%}
+                  {%- comment -%}
+                    No data-answer. It used to be the dish label itself, which
+                    made somm.js type the label back instead of asking — the
+                    chips looked dead. Without it the seed falls through to a
+                    real request, which is what naming a dish should do.
+
+                    THIS COMMENT SITS OUTSIDE THE TAG, and that matters. As a
+                    whitespace-stripping comment between `data-non-somm-seed`
+                    and `shopify_attributes`, the leading hyphen strips the
+                    newline that separates them. On the storefront that is harmless,
+                    because shopify_attributes renders empty and the attribute
+                    is simply followed by `>`. Inside the THEME EDITOR it does
+                    not render empty, and the two weld into
+                    `data-non-somm-seeddata-shopify-editor-block=...` — so the
+                    dish chips are dead in the editor and alive on the live
+                    page, which is the hardest possible version of this bug to
+                    believe. Found by grep after the identical mistake was
+                    traced in non-lotto.liquid, where the attribute after it is
+                    never empty and the control was dead everywhere.
+                  {%- endcomment -%}
                   <button
                     type="button"
                     class="non-somm__seed"
                     data-non-somm-seed
-                    {%- comment -%}
-                      No data-answer. It used to be the dish label itself, which
-                      made somm.js type the label back instead of asking — the
-                      chips looked dead. Without it the seed falls through to a
-                      real request, which is what naming a dish should do.
-                    {%- endcomment -%}
                     {{ block.shopify_attributes }}>
                     {{ block.settings.label }}
                   </button>

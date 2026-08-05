@@ -81,6 +81,48 @@ for f in liquid_files():
                 continue
             errors.append(f"{f.relative_to(root)}: {t} setting '{x.get('id')}' has an empty default; omit the key")
 
+# 3c. a whitespace-stripping tag directly after a VALUELESS attribute.
+#
+#     `{%- comment -%}` strips the whitespace before it, INCLUDING the newline
+#     that was separating two attributes. After a quoted value that is
+#     harmless — the closing quote separates the tokens by itself. After a
+#     valueless attribute the two names weld into one:
+#
+#         data-non-lotto-close
+#         {%- comment -%} … {%- endcomment -%}
+#         data-done-label="Done"
+#
+#     renders as `data-non-lotto-closedata-done-label="Done"`, so
+#     `data-non-lotto-close` is not on the element at all.
+#
+#     That shipped. It was the only way out of the lotto modal on a phone,
+#     which has no Escape key, and it survived one repair because the symptom —
+#     one control working, its twin not — reads as a JavaScript binding fault.
+#     The handler was correct the whole time and looking for an attribute the
+#     page never had. A grep afterwards found the same mistake in
+#     pairing-tool.liquid, where the welded attribute is `shopify_attributes`:
+#     empty on the storefront, non-empty in the theme editor, so those chips
+#     were dead in the editor and alive on the live page.
+#
+#     Nothing about the rendered HTML looks wrong in a diff, so a human is not
+#     going to catch this one. Put the comment outside the tag.
+WELD = re.compile(
+    r'(?<![-\w=."\'])\b([a-zA-Z][\w-]*)\s*\n\s*\{%-\s*(comment|if|unless|liquid|for)\b')
+for f in liquid_files():
+    s = f.read_text(encoding='utf-8')
+    for m in WELD.finditer(s):
+        # Only inside an open tag: find the last unclosed '<' before the match.
+        before = s[:m.start()]
+        lt, gt = before.rfind('<'), before.rfind('>')
+        if lt <= gt:
+            continue
+        ln = before.count('\n') + 1
+        errors.append(
+            f"{f.relative_to(root)}:{ln}: attribute '{m.group(1)}' has no value and is "
+            f"immediately followed by a whitespace-stripping {{%- {m.group(2)} — they will "
+            f"render welded into one attribute name. Move the tag outside the element. "
+            f"See preflight.py check 3c")
+
 # 4. every template setting id must exist in the section's schema
 schemas = {}
 for f in (root / 'sections').glob('*.liquid'):

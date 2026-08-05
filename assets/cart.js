@@ -351,7 +351,24 @@
       var raw = localStorage.getItem(PRIZE_KEY);
       if (!raw) return null;
       var prize = JSON.parse(raw);
+      /* A PRIZE NEEDS A CODE AND A NAME. Both, or it is not a prize.
+
+         "YOU WON", a blank line, and "APPLY TO THIS ORDER" appeared in the
+         cart of a customer who had DISMISSED the scratch card without
+         revealing anything. A record with a code and an empty description is
+         enough to satisfy a code-only guard, and the renderer then filled the
+         blank with a cheerful fallback — so an absent prize was presented as a
+         won one, immediately before checkout, with nothing to show for it.
+
+         Requiring the description here is what makes the panel's presence mean
+         something. A partial record is deleted rather than tolerated: it can
+         only have come from a failed reveal or an older build, and leaving it
+         in storage means the same empty panel returns on the next page. */
       if (!prize || !prize.code) return null;
+      if (!prize.description || !String(prize.description).trim()) {
+        localStorage.removeItem(PRIZE_KEY);
+        return null;
+      }
       // A prize older than the Worker would still honour is stale; drop it
       // rather than showing a code that has since been retired.
       if (prize.at && Date.now() - prize.at > PRIZE_TTL) {
@@ -375,7 +392,11 @@
     var code = box.querySelector('[data-non-cart-prize-code]');
     var apply = box.querySelector('[data-non-cart-prize-apply]');
 
-    if (desc) desc.textContent = prize.description || 'A gift from NON';
+    /* No fallback. 'A gift from NON' invented a prize whenever the real one
+       was missing, which is precisely how a blank record rendered as a win —
+       the fallback hid the very condition that should have hidden the panel.
+       readPrize now guarantees this is non-empty. */
+    if (desc) desc.textContent = prize.description;
     if (code) code.textContent = prize.code;
     if (apply) {
       // encodeURIComponent on the code: it comes from storage, and storage is

@@ -321,11 +321,16 @@
         // Remember the prize so the cart can show it. A code that only ever
         // existed in a dismissed modal is a code nobody uses — the moment it
         // matters is checkout, which is exactly when the card is long gone.
-        if (data.code) {
+        /* Both, or neither. Storing a code with an empty description is what
+           produced a cart panel reading "YOU WON" above a blank line: the
+           record satisfied every guard downstream while describing nothing.
+           If the API did not name the prize, there is nothing for the cart to
+           show and nothing worth remembering. */
+        if (data.code && data.description && String(data.description).trim()) {
           try {
             localStorage.setItem(PRIZE_KEY, JSON.stringify({
               code: data.code,
-              description: data.description || '',
+              description: String(data.description).trim(),
               terms: data.terms || '',
               at: Date.now()
             }));

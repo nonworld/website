@@ -127,6 +127,12 @@
       </a>
     {%- endif -%}
   </div>
+
+  {%- comment -%}
+    Inside the guard: with no product configured there is no band, and nothing
+    for the script to observe or report on.
+  {%- endcomment -%}
+  <script src="{{ 'featured-set.js' | asset_url }}" defer></script>
 {%- endif -%}
 
 {% schema %}

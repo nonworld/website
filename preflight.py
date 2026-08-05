@@ -150,6 +150,59 @@ for f in liquid_files():
             f"render welded into one attribute name. Move the tag outside the element. "
             f"See preflight.py check 3c")
 
+# 3d. HTML container balance in sections and snippets.
+#
+#     Removing a block of markup is easy to get one tag wrong, and Liquid will
+#     not complain: the file renders, Shopify accepts it, and the browser
+#     silently re-parents everything after the orphan.
+#
+#     That shipped. Cutting the hero's inline Somm left one extra </div>, which
+#     closed .non-hero early — so the hero photograph fell OUT of the hero and
+#     landed between two sections, and the hero measured 515px instead of 673.
+#     Nothing errored. It was found by measuring the deployed page, which is a
+#     poor substitute for a check that takes a millisecond.
+#
+#     SECTIONS ONLY. A section is a self-contained unit that Shopify renders
+#     on its own, so its containers must balance. A SNIPPET need not: the four
+#     process-anim snippets are one DOM tree deliberately split across four
+#     files to stay under the size at which Shopify started rejecting them, and
+#     each is unbalanced by design. Checking those would produce three
+#     permanent failures, which is how a gate gets switched off.
+#
+#     Counted with comments, scripts, styles and the schema stripped, and the
+#     whole file skipped when a container tag shares a line with a Liquid
+#     conditional — opening a div in an {% if %} and closing it in the
+#     {% else %} is legitimate and this cannot reason about it. Silent beats
+#     wrong.
+CONTAINERS = ('div', 'section', 'article', 'aside', 'form', 'ul', 'ol', 'li',
+              'button', 'a', 'span', 'p')
+for f in sorted((root / 'sections').glob('*.liquid')):
+    s = f.read_text(encoding='utf-8')
+    s = re.sub(r'\{%-?\s*comment\s*-?%\}.*?\{%-?\s*endcomment\s*-?%\}', ' ', s, flags=re.S)
+    s = re.sub(r'\{%-?\s*schema\s*-?%\}.*?\{%-?\s*endschema\s*-?%\}', ' ', s, flags=re.S)
+    s = re.sub(r'<script\b.*?</script>', ' ', s, flags=re.S)
+    s = re.sub(r'<style\b.*?</style>', ' ', s, flags=re.S)
+
+    # Only the tags that are unconditionally present. A container opened or
+    # closed on a line carrying a Liquid conditional is skipped, along with the
+    # whole file if any are found — being silent beats being wrong here.
+    lines = s.split('\n')
+    conditional = any(
+        re.search(r'\{%-?\s*(if|unless|else|elsif|for|case|when)\b', ln)
+        and re.search(r'</?(?:' + '|'.join(CONTAINERS) + r')\b', ln)
+        for ln in lines)
+    if conditional:
+        continue
+
+    for tag in ('div', 'section'):
+        o = len(re.findall(r'<' + tag + r'[\s>]', s))
+        c = len(re.findall(r'</' + tag + r'>', s))
+        if o != c:
+            errors.append(
+                f"{f.relative_to(root)}: <{tag}> unbalanced ({o} open, {c} close). "
+                f"An orphan closing tag re-parents everything after it and Liquid "
+                f"will not complain. See preflight.py check 3d")
+
 # 4. every template setting id must exist in the section's schema
 schemas = {}
 for f in (root / 'sections').glob('*.liquid'):

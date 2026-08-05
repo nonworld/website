@@ -5832,3 +5832,32 @@ select:-moz-focusring { color: transparent; text-shadow: 0 0 0 var(--non-fg); }
 .non-ask[hidden]:has(.non-ask__msg--bad) {
   display: block;
 }
+
+/* Hero actions. Shopping first, asking second — the second is a ghost button
+   so the hierarchy is legible at a glance rather than by reading the labels. */
+.non-hero__ctas {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 26px;
+}
+.non-hero__cta {
+  /* 44px, the tap-target floor used everywhere else on the site. */
+  min-height: 44px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+.non-btn--ghost {
+  background: transparent;
+  color: var(--non-fg);
+  border: 1px solid var(--non-line-strong, rgba(242, 240, 234, .28));
+}
+.non-btn--ghost:hover,
+.non-btn--ghost:focus-visible { border-color: var(--non-fg); }
+@media (max-width: 599px) {
+  /* Full width and stacked: two half-width buttons on a 320px line leave the
+     primary looking like one of a pair rather than the obvious next step. */
+  .non-hero__ctas { flex-direction: column; }
+  .non-hero__cta { width: 100%; }
+}

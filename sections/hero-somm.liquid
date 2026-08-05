@@ -27,6 +27,36 @@
     {%- endif -%}
 
     {%- comment -%}
+      THE WAY IN, ahead of the way to ask.
+
+      The hero explained the proposition well and then offered exactly one
+      interaction: the Somm. A customer who already knew they wanted a bottle
+      had no obvious path to one, and a customer who did not want to talk to an
+      assistant had none at all. The Somm is the interesting thing here; it
+      should not be the only apparent thing.
+
+      So: shopping first, asking second, and the second is a real button rather
+      than a hint that the field below exists. It focuses the Somm rather than
+      navigating, because the Somm is already on this page — sending someone
+      elsewhere to reach something six inches down would be theatre.
+
+      Rendered only when a link is set, so an unconfigured store shows what it
+      showed before rather than a button going nowhere.
+    {%- endcomment -%}
+    {%- if section.settings.cta_shop_url != blank -%}
+      <div class="non-hero__ctas">
+        <a class="non-btn non-hero__cta" href="{{ section.settings.cta_shop_url }}">
+          {{ section.settings.cta_shop_label }}
+        </a>
+        {%- if section.settings.cta_ask_label != blank -%}
+          <button type="button" class="non-btn non-btn--ghost non-hero__cta" data-non-somm-focus>
+            {{ section.settings.cta_ask_label }}
+          </button>
+        {%- endif -%}
+      </div>
+    {%- endif -%}
+
+    {%- comment -%}
       NON Somm. The query goes to an external endpoint (a Cloudflare Worker);
       the seeds below are the canned answers from the design and are used both
       as one-tap prompts and as the offline fallback when no endpoint is set.
@@ -394,6 +424,29 @@
       "unit": "px",
       "default": 0,
       "info": "0 keeps the section's own spacing."
+    },
+    {
+      "type": "header",
+      "content": "Hero buttons"
+    },
+    {
+      "type": "url",
+      "id": "cta_shop_url",
+      "label": "Shop link",
+      "info": "The primary action. Leave empty to hide both buttons."
+    },
+    {
+      "type": "text",
+      "id": "cta_shop_label",
+      "label": "Shop button",
+      "default": "Shop the range"
+    },
+    {
+      "type": "text",
+      "id": "cta_ask_label",
+      "label": "Ask button",
+      "default": "Ask the Somm",
+      "info": "Moves focus to the Somm field below rather than opening a page. Leave empty to hide it."
     }
   ],
   "blocks": [

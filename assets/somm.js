@@ -507,6 +507,24 @@
       ask(input.value);
     });
 
+    /* The hero's "Ask the Somm" button. It scrolls the field into view and
+       focuses it rather than navigating anywhere — the Somm is on this page,
+       and a button that reloads the page to reach something six inches down
+       would be theatre.
+
+       Bound here rather than in the section so it shares the controller that
+       already knows which input belongs to which surface; the product page has
+       its own, and a document-wide selector would focus the wrong one. */
+    var focusBtn = root.querySelector('[data-non-somm-focus]');
+    if (focusBtn && input) {
+      focusBtn.addEventListener('click', function () {
+        // Focus first, then scroll: focus() alone jumps abruptly on some
+        // engines, and preventScroll lets the smooth scroll own the movement.
+        input.focus({ preventScroll: true });
+        input.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      });
+    }
+
     root.querySelectorAll('[data-non-somm-seed]').forEach(function (btn) {
       btn.addEventListener('click', function () {
         if (input) input.value = btn.textContent.trim();

@@ -367,7 +367,35 @@
     observer.observe(canvas.parentElement);
   }
 
+  var lastFocus = null;
+
+  /* Tab stays inside the card while it is open. A modal that lets focus walk
+     out into the page behind it is, to a keyboard or screen-reader user, not a
+     modal at all — they tab into content that is visually covered and cannot
+     tell what has focus. */
+  function trapTab(e) {
+    if (e.key !== 'Tab' || root.hidden) return;
+    var card = root.querySelector('.non-lotto__card');
+    if (!card) return;
+    var focusable = card.querySelectorAll(
+      'button:not([disabled]), [href], input:not([disabled]), textarea, select, [tabindex]:not([tabindex="-1"])'
+    );
+    if (!focusable.length) return;
+    var first = focusable[0];
+    var last = focusable[focusable.length - 1];
+    if (e.shiftKey && document.activeElement === first) {
+      e.preventDefault();
+      last.focus();
+    } else if (!e.shiftKey && document.activeElement === last) {
+      e.preventDefault();
+      first.focus();
+    }
+  }
+
   function open() {
+    // Remembered so it can be handed back on close. Dismissing a modal should
+    // return a keyboard user to where they were, not to the top of the page.
+    lastFocus = document.activeElement;
     root.hidden = false;
     revealed = false;
     claimed = false;
@@ -379,6 +407,16 @@
     if (errorEl) errorEl.hidden = true;
     watchFoil();
     requestAnimationFrame(function () { requestAnimationFrame(paintFoil); });
+
+    // Focus the close control, not the foil: the first thing a screen-reader
+    // user needs from an unrequested overlay is the way out of it.
+    var x = root.querySelector('.non-lotto__x');
+    if (x) x.focus({ preventScroll: true });
+    document.addEventListener('keydown', trapTab, true);
+    // The page behind is inert while this is up, so a screen reader does not
+    // read a card and a product page as one document.
+    var shell = document.querySelector('.non-shell');
+    if (shell) shell.setAttribute('aria-hidden', 'true');
   }
 
   function close(remember) {
@@ -388,6 +426,13 @@
       } catch (e) {}
     }
     root.hidden = true;
+    document.removeEventListener('keydown', trapTab, true);
+    var shell = document.querySelector('.non-shell');
+    if (shell) shell.removeAttribute('aria-hidden');
+    if (lastFocus && typeof lastFocus.focus === 'function') {
+      lastFocus.focus({ preventScroll: true });
+      lastFocus = null;
+    }
   }
 
   function suppressed() {
@@ -509,8 +554,18 @@
    * nothing else to press.
    *
    * querySelectorAll, so the new × in the card is wired by the same line. */
-  root.querySelectorAll('[data-non-lotto-close]').forEach(function (el) {
-    el.addEventListener('click', function () { close(true); });
+  /* DELEGATED, not bound per element. Both controls were wired by the line
+     that used to be here, and "No thanks" still did not close the card in
+     testing while the x did. A per-element listener depends on the element
+     existing and surviving unchanged at bind time; delegation on the root
+     cannot miss one, whatever happens to the markup in between. Since the
+     symptom was one control working and its twin not, the fix is to stop
+     having two bindings that can diverge. */
+  root.addEventListener('click', function (e) {
+    if (e.target.closest('[data-non-lotto-close]')) {
+      e.preventDefault();
+      close(true);
+    }
   });
 
   /* Tap the scrim to dismiss. The root IS the scrim — position: fixed, inset 0
@@ -561,8 +616,74 @@
     open();
   }
 
+  /* --- WHEN IT IS ALLOWED TO APPEAR ----------------------------------------
+   *
+   * It used to be `setTimeout(autoOpen, 1400)` — 1.4 seconds into the FIRST
+   * page a visitor ever sees. On a phone it covered the product image and the
+   * buy button before anyone had read what NON is, which means the strongest
+   * thing on the site was competing with a scratch card and losing.
+   *
+   * Now it waits for a reason to believe the person is interested:
+   *
+   *   - never on the first page view of a session. A second page is itself the
+   *     signal — they came back for more.
+   *   - on that second page, still not immediately: either real scroll depth
+   *     (half the page), real dwell (25s), or exit intent.
+   *   - never while the cart is open, which was already true and still is.
+   *
+   * Whichever fires first wins, and it fires once. The page-view count is
+   * sessionStorage, so it resets with the visit rather than following someone
+   * around for a fortnight — the point is "engaged NOW", not "has been here
+   * before".
+   */
+  var VIEWS_KEY = 'non-lotto-views';
+
+  function bumpViews() {
+    try {
+      var n = Number(sessionStorage.getItem(VIEWS_KEY) || 0) + 1;
+      sessionStorage.setItem(VIEWS_KEY, String(n));
+      return n;
+    } catch (e) {
+      // Private browsing: treat every view as the first, which errs towards
+      // not interrupting. Showing nothing is the safe failure here.
+      return 1;
+    }
+  }
+
+  function armTriggers() {
+    var fired = false;
+    var timers = [];
+
+    function go(why) {
+      if (fired || suppressed()) return;
+      fired = true;
+      timers.forEach(clearTimeout);
+      window.removeEventListener('scroll', onScroll);
+      document.removeEventListener('mouseout', onExit);
+      if (window.NON && NON.track) NON.track('lotto_trigger', { why: why });
+      autoOpen();
+    }
+
+    function onScroll() {
+      var h = document.documentElement;
+      var depth = (h.scrollTop + window.innerHeight) / Math.max(h.scrollHeight, 1);
+      if (depth >= 0.5) go('scroll');
+    }
+
+    // Exit intent, desktop only in practice: the pointer leaving through the
+    // top of the window. relatedTarget null means it left the document rather
+    // than moving between elements.
+    function onExit(e) {
+      if (!e.relatedTarget && e.clientY <= 0) go('exit');
+    }
+
+    window.addEventListener('scroll', onScroll, { passive: true });
+    document.addEventListener('mouseout', onExit);
+    timers.push(setTimeout(function () { go('dwell'); }, 25000));
+  }
+
   if (AUTO && ENDPOINT && !suppressed()) {
-    setTimeout(autoOpen, DELAY);
+    if (bumpViews() >= 2) armTriggers();
   }
 
   window.NON.lotto = { open: open, close: close };

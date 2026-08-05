@@ -6909,6 +6909,24 @@ select:-moz-focusring { color: transparent; text-shadow: 0 0 0 var(--non-fg); }
    optional chips — and no second form competing beneath them. */
 .non-somm-entry { margin-top: 22px; }
 
+@media (max-width: 859px) {
+  /* ONE SOMM OPENER ON A PHONE, not two.
+     The hero's ghost "Ask the Somm" button and the field-shaped button below it
+     open the same sheet and say the same thing. On a desktop the ghost button
+     is the opener and the field is hidden; on a phone it is the other way
+     round, because a field is the shape a thumb expects and it carries the
+     prompt text.
+
+     This rule existed, was removed with the inline form it used to sit beside,
+     and cost 62px: both buttons appeared and stacked, which pushed the Core
+     Range past its target. Restored, and measured. */
+  .non-hero__ctas [data-non-somm-open] { display: none; }
+
+  /* The mobile spacing, which the base rule above was overriding by virtue of
+     coming later in the file. */
+  .non-somm-entry { margin-top: 16px; }
+}
+
 @media (min-width: 860px) {
   /* The field-shaped button is a phone affordance. On a desktop the hero
      already has a labelled "Ask the Somm" button two lines up, so a second

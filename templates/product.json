@@ -16,21 +16,24 @@
           "type": "seed",
           "settings": {
             "label": "What does it replace?",
-            "answer": ""
+            "answer": "",
+            "short_label": "What does it replace?"
           }
         },
         "seed-2": {
           "type": "seed",
           "settings": {
             "label": "Is it sweet?",
-            "answer": ""
+            "answer": "",
+            "short_label": "Is it sweet?"
           }
         },
         "seed-3": {
           "type": "seed",
           "settings": {
             "label": "How is this different from de-alcoholised wine?",
-            "answer": ""
+            "answer": "",
+            "short_label": "vs de-alcoholised?"
           }
         },
         "seed-4": {

@@ -346,32 +346,39 @@
 
       Three bordered cards of prose stacked down a narrow column is three
       paragraphs about food with no food in them — and this is the one band on
-      the page whose whole job is to make someone hungry. The homepage already
-      has the answer in the "Made for" strip, so this is the same component
-      with the same crops and the same scrim: three plates, side by side, in
-      one glance.
+      the page whose whole job is to make someone hungry.
 
-      THE IMAGES ARE PRODUCT DATA, not new content. custom.perfect_for_images
-      and its two caption lists are already on the products and were already
-      being rendered by product-perfect-for.liquid — a section that is not in
-      product.json and therefore has never appeared. Nothing here is invented;
-      it is photography the store already holds, finally on the page.
+      WHERE THE TWO HALVES COME FROM, and why they can be joined.
 
-      The lists are POSITIONAL — image[i] belongs to caption[i] — and nothing
-      links them beyond order. A mismatched count would pair the wrong caption
-      to the wrong plate, so a mismatch renders nothing at all and the prose
-      cards below stay: silently wrong is worse than plainly absent.
+      The PICTURES are custom.perfect_for_images, which is per-product,
+      per-course photography that was already on the products and already being
+      rendered — by a section that is not in product.json and has therefore
+      never appeared. On NON1 the three files are literally named
+      non1-perfect-for-starters, -mains and -dessert.
 
-      When there is no imagery the strip does not render and the phone gets the
-      prose cards exactly as it does today. That is the fallback, and on a
-      product with no perfect_for data it is the only thing that happens.
+      The WORDS are custom.pairings, the same approved copy the prose cards
+      below print: "Oysters & cured fish", "Chilli and heat", "Goat cheese,
+      stone fruit". Starter, main, dessert — the same three courses in the same
+      order.
+
+      The first attempt used the images' OWN captions and produced tiles
+      reading "Made For Starters" over a bottle's most specific claim about
+      food. Technically correct, and it threw away the only interesting thing
+      on the band. The pairing titles are what a customer came for.
+
+      IT IS STILL A POSITIONAL JOIN, so it is guarded like one: three images,
+      three pairings, or nothing. A mismatched count would put the dessert
+      pairing over the starter photograph, which is a factual error about food
+      presented as a recommendation. Silently wrong is worse than plainly
+      absent, and "absent" here means the prose cards below simply stay.
     {%- endcomment -%}
     {%- liquid
       assign pf_images = product.metafields.custom.perfect_for_images.value
-      assign pf_caps = product.metafields.custom.perfect_for_captions.value
-      assign pf_subs = product.metafields.custom.perfect_for_subcaptions.value
       assign pf_ok = false
-      if pf_images.size >= 3 and pf_caps.size >= pf_images.size
+      # pair_blocks.size == 0 as well: the tiles are labelled from `pairings`,
+      # so a product whose cards are coming from editor blocks instead would
+      # get tiles saying one thing and expansions saying another.
+      if pf_images.size >= 3 and pairings.size >= 3 and pair_blocks.size == 0
         assign pf_ok = true
       endif
     -%}
@@ -379,40 +386,31 @@
     {%- if pf_ok -%}
       <div class="non-trip non-trip--pairing" data-non-pair-trip>
         {%- for img in pf_images limit: 3 -%}
-          {%- assign cap = pf_caps[forloop.index0] -%}
-          {%- assign sub = pf_subs[forloop.index0] -%}
+          {%- assign pair = pairings[forloop.index0] -%}
           <div class="non-trip__cell">
             {%- comment -%}
-              Opens the Somm rather than navigating. The brief is explicit that
-              a pairing must not take the customer off the product page, and
-              the Somm is the one place that can explain a pairing against THIS
-              bottle's approved data rather than in general.
+              Tapping EXPANDS, it does not navigate and it does not ask the
+              Somm. The explanation is two vetted sentences that are already on
+              the page — going to the model for a fact we hold would be slower,
+              could fail, and could answer differently on two consecutive taps.
+
+              aria-controls points at the matching prose card below, which is
+              why those cards are still rendered rather than replaced: they ARE
+              the expansion. pairing-triptych.js wires the pair up and owns the
+              expanded state.
             {%- endcomment -%}
             <button
               type="button"
               class="non-trip__hit"
-              data-non-somm-open
-              data-non-somm-pdp
-              data-somm-surface="product_pairing"
-              data-somm-context="product"
-              data-somm-code="{{ code }}"
-              data-somm-product="{{ product.id }}"
-              data-somm-variant="{{ product.selected_or_first_available_variant.id }}"
-              data-somm-product-title="{{ product.title | escape }}"
-              data-somm-product-price="{{ product.selected_or_first_available_variant.price | money }}"
-              data-somm-product-available="{{ product.selected_or_first_available_variant.available }}"
-              data-somm-meal="{{ cap | escape }}"
-              data-somm-position="{{ forloop.index0 }}"
-              data-somm-prompt="{{ section.settings.pair_prompt }} {{ cap | escape }}?">
-              <span class="visually-hidden">
-                {{- section.settings.pair_prompt }} {{ cap -}}
-              </span>
+              data-non-pair-tile
+              data-pair-index="{{ forloop.index0 }}"
+              aria-expanded="false">
+              <span class="visually-hidden">{{ pair.title }}</span>
             </button>
 
             {%- comment -%}
-              The alt describes the plate. It deliberately does NOT repeat the
-              caption, which is rendered as text a few lines down — a screen
-              reader given both reads the same two words twice.
+              The alt describes the photograph. It deliberately does not repeat
+              the pairing title, which is rendered as text directly below it.
             {%- endcomment -%}
             {{
               img
@@ -426,8 +424,7 @@
             }}
 
             <div class="non-trip__cap" aria-hidden="true">
-              <div class="non-trip__title">{{ cap }}</div>
-              {%- if sub != blank -%}<div class="non-trip__sub">{{ sub }}</div>{%- endif -%}
+              <div class="non-trip__title">{{ pair.title }}</div>
             </div>
           </div>
         {%- endfor -%}
@@ -444,7 +441,16 @@
         {%- endfor -%}
       {%- else -%}
         {%- for pair in pairings -%}
-          <div class="non-pair-card">
+          {%- comment -%}
+            id and index so a tile above can point at its own card. On desktop
+            these attributes are inert — the cards are simply three cards, as
+            they have always been.
+          {%- endcomment -%}
+          <div
+            class="non-pair-card"
+            id="non-pair-card-{{ section.id }}-{{ forloop.index0 }}"
+            data-non-pair-card
+            data-pair-index="{{ forloop.index0 }}">
             <div class="non-pair-card__t">{{ pair.title }}</div>
             <p class="non-pair-card__b">{{ pair.body }}</p>
           </div>
@@ -460,6 +466,9 @@
 {%- endcomment -%}
 {%- if steps != blank or prose != blank -%}
   <script src="{{ 'steps-accordion.js' | asset_url }}" defer></script>
+{%- endif -%}
+{%- if pf_ok -%}
+  <script src="{{ 'pairing-triptych.js' | asset_url }}" defer></script>
 {%- endif -%}
 
 {% schema %}
@@ -478,13 +487,7 @@
       "label": "Pairings heading",
       "default": "Pour it with"
     },
-    {
-      "type": "text",
-      "id": "pair_prompt",
-      "label": "Pairing question",
-      "default": "Why does this work with",
-      "info": "What the Somm is asked when someone taps a pairing photo on a phone. The pairing's own caption is appended, so this reads \"Why does this work with oysters?\"."
-    },
+
     {
       "type": "header",
       "content": "Media"

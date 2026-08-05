@@ -6067,9 +6067,14 @@ select:-moz-focusring { color: transparent; text-shadow: 0 0 0 var(--non-fg); }
      hero ends around 720 and the top of the Core Range is on screen — which
      is the whole point of moving the range up in the first place.
 
-     250 is still a band rather than a thumbnail, and it is the LCP element, so
-     it keeps its eager load and its priority. */
-  .non-hero__media img { height: 250px; }
+     Measured again after the first attempt at 250: the hero came to 703px and
+     its bottom edge landed at 814 against an 812 viewport — two pixels short,
+     which is the same as not doing it. 220 puts the bottom at ~784 and leaves
+     a visible band of the Core Range on screen at 375x812.
+
+     Still a band rather than a thumbnail, and it is the LCP element, so it
+     keeps its eager load and its priority. */
+  .non-hero__media img { height: 220px; }
 
   /* The inline Somm, and the ghost button that focuses it, are the desktop
      component. Both are replaced by .non-somm-entry below. */
@@ -6096,8 +6101,16 @@ select:-moz-focusring { color: transparent; text-shadow: 0 0 0 var(--non-fg); }
     width: 100%;
     min-height: 52px;
     padding: 0 16px;
-    background: var(--non-somm-bg, rgba(242, 240, 234, .05));
-    border: 1px solid var(--non-somm-border, var(--non-line));
+    /* NOT var(--non-somm-bg). That token is the Somm PANEL's background and is
+       set to #c9c7c1 in theme settings — a light grey. Used here it painted a
+       near-white slab across a black hero with the placeholder in mute grey on
+       top of it: low contrast, and nothing else on the page that shape.
+
+       These are the values the real .non-somm__input resolves to, so the
+       button that stands in for the field looks like the field it stands in
+       for, on every page and under every section colour override. */
+    background: rgba(242, 240, 234, .05);
+    border: 1px solid var(--non-line-strong);
     color: var(--non-fg);
     font-family: var(--non-sans);
     /* 16px floor, same reason as the real field: below it iOS Safari zooms the
@@ -6812,11 +6825,29 @@ select:-moz-focusring { color: transparent; text-shadow: 0 0 0 var(--non-fg); }
     margin-top: 14px;
   }
 
-  /* The prose cards, once the pictures are there. They are the SAME copy —
-     keeping both would be the pairing text twice, once under a photograph and
-     once in a bordered box. Only hidden when the strip actually rendered;
-     .non-pairs--has-trip is written by Liquid and only when it did. */
+  /* The prose cards, once the pictures are there.
+
+     Not deleted and not duplicated: they ARE the expansion. A tapped tile
+     moves its card into the slot below the strip and moves it back on close,
+     so the explanation exists exactly once in the document and a screen reader
+     meets it exactly once. Everything still in the list is out of the way.
+
+     .non-pairs--has-trip is written by Liquid and only when the strip actually
+     rendered, so a product without the photography keeps three readable cards
+     rather than three hidden ones.
+
+     Hiding the CONTAINER rather than the cards, because a container with three
+     display:none children still contributes its own padding and gaps — an
+     empty band under the strip that nothing explains. An expanded card is
+     moved out of it entirely, so a hidden parent cannot hide it. */
   .non-pairs--has-trip { display: none; }
+  .non-pair-slot .non-pair-card.is-expanded {
+    display: block;
+    margin-top: 2px;
+    border: 1px solid var(--non-line);
+    border-top: 0;
+    padding: 14px var(--non-pad);
+  }
 
   /* --------------------------------------------------- how it's made */
 

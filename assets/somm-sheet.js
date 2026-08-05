@@ -231,8 +231,20 @@
     btn.type = 'button';
     btn.className = 'non-sheet__ctx-add';
     if (ctx.product_available) {
-      btn.setAttribute('data-non-add', '');
+      /* data-non-somm-add, NOT data-non-add.
+       *
+       * Both end at NON.cart.add, but they are counted differently and this
+       * one is a Somm conversion: the customer opened the sheet, had a
+       * conversation, and bought the bottle it was about. Routed through
+       * cart.js's generic handler it landed in the cart and in no report —
+       * somm_add_to_cart never fired, so the one number the brief exists to
+       * produce would have been missing exactly the purchases it is for.
+       *
+       * Only one of the two attributes, ever: both would be two handlers on
+       * one click and two units in the cart. */
+      btn.setAttribute('data-non-somm-add', '');
       btn.setAttribute('data-variant-id', ctx.variant_id);
+      btn.setAttribute('data-code', ctx.code || '');
       btn.setAttribute('data-non-sheet-add', '');
       btn.textContent = strings.sommRecAdd || 'Add';
     } else {

@@ -597,6 +597,13 @@
                 class="non-somm__seed"
                 data-non-somm-seed
                 data-answer="{{ block.settings.answer | escape }}"
+                {%- comment -%}
+                  The short form, for the sheet, which clones these rather than
+                  re-rendering the blocks. Without it a chip inside a 360px
+                  sheet read "How is this different from de-alcoholised wine?"
+                  — a sentence with a border round it.
+                {%- endcomment -%}
+                data-short="{{ block.settings.short_label | default: block.settings.label | escape }}"
                 {{ block.shopify_attributes }}>
                 {{ block.settings.label }}
               </button>

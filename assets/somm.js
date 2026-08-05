@@ -98,6 +98,30 @@
     });
   }
 
+  /* DECODE FIRST, THEN ESCAPE.
+   *
+   * The product metafields hold HTML entities, not characters: NON3's profile
+   * is stored as "Bright, tart &amp; balanced". The desktop pick card writes
+   * it straight into innerHTML, so the browser decodes it and a customer reads
+   * "tart & balanced". Escaping it — which the recommendation card must do,
+   * because it also writes innerHTML — turned the ampersand into &amp;amp; and
+   * put the literal text "tart &amp; balanced" on the card.
+   *
+   * Decoding through a textarea and re-escaping fixes the display without
+   * weakening anything: a genuine "<script>" in the data survives decode
+   * unchanged and is escaped on the way out, and an encoded "&lt;script&gt;"
+   * decodes to "<script>" and is escaped straight back. Either way it lands as
+   * text. The textarea is never in the document and its content is never
+   * parsed as markup — assigning to .innerHTML on a detached textarea only
+   * resolves character references, it does not build elements.
+   */
+  var decoder = document.createElement('textarea');
+  function txt(s) {
+    if (s == null || s === '') return '';
+    decoder.innerHTML = String(s);
+    return esc(decoder.value);
+  }
+
   function t(key, fallback) {
     return (NON.strings && NON.strings[key]) || fallback;
   }
@@ -120,7 +144,7 @@
       ? '<button type="button" class="non-rec__add" data-non-somm-add ' +
         'data-variant-id="' + esc(p.variantId) + '" ' +
         'data-code="' + esc(code) + '">' +
-        esc(t('sommRecAdd', 'Add')) + ' &mdash; ' + esc(p.price) +
+        esc(t('sommRecAdd', 'Add')) + ' &mdash; ' + txt(p.price) +
         '</button>'
       : '<span class="non-rec__add non-rec__add--out">' + esc(t('soldOut', 'Sold out')) + '</span>';
 
@@ -134,9 +158,9 @@
       '<div class="non-rec__body">' +
       '<div class="non-mono non-rec__code">' + esc(code) + '</div>' +
       '<h3 class="non-rec__name">' +
-      '<a href="' + esc(p.url) + '" data-non-somm-view data-code="' + esc(code) + '">' + esc(p.title) + '</a>' +
+      '<a href="' + esc(p.url) + '" data-non-somm-view data-code="' + esc(code) + '">' + txt(p.title) + '</a>' +
       '</h3>' +
-      (p.note ? '<p class="non-rec__note">' + esc(p.note) + '</p>' : '') +
+      (p.note ? '<p class="non-rec__note">' + txt(p.note) + '</p>' : '') +
       '<div class="non-rec__actions">' +
       action +
       '<a class="non-rec__see" href="' + esc(p.url) + '" data-non-somm-view data-code="' + esc(code) + '">' +
@@ -468,8 +492,30 @@
       endThinking(function () { type(answer, picks); });
     }
 
-    function ask(query) {
+    function ask(query, promptType) {
       if (!query.trim()) return;
+
+      /* EVERY question, from every surface, passes through here — typed,
+       * seeded, chipped, retried, or asked by a "Why this one?" button. So
+       * this is where the question is counted.
+       *
+       * It was counted in the sheet's own ask() wrapper first, which only
+       * covers questions the sheet initiates. A customer who tapped a
+       * follow-up chip or typed into the field went through somm.js directly
+       * and was never recorded, so somm_question_submitted would have
+       * undercounted the two commonest paths while looking like it worked. */
+      if (NON.sommTrack) {
+        NON.sommTrack('somm_question_submitted', {
+          surface: (form.__nonSommSurface || {}).surface || context,
+          intent: (form.__nonSommSurface || {}).intent || '',
+          meal_category: (form.__nonSommSurface || {}).meal_category || '',
+          prompt_type: promptType || 'typed',
+          /* The LENGTH, never the words. Capturing what a customer typed is a
+             data-collection decision with a privacy-policy consequence, and
+             the brief rules out sending raw conversation text. */
+          chars: query.trim().length
+        });
+      }
 
       /* Length and surface only — never the question itself. Capturing what a
          customer typed is a data-collection decision with a privacy-policy
@@ -874,9 +920,9 @@
      * a question to THIS controller — the one that owns the surface they are
      * displayed on — rather than to whichever one happens to be first in the
      * document. */
-    form.__nonSommAsk = function (text) {
+    form.__nonSommAsk = function (text, promptType) {
       if (input) input.value = text;
-      ask(text);
+      ask(text, promptType);
     };
   }
 

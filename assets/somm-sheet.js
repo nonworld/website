@@ -437,14 +437,12 @@
 
   function ask(text, promptType) {
     if (!form || !text) return;
-    track('somm_question_submitted', {
-      surface: context.surface,
-      intent: context.intent,
-      meal_category: context.meal_category,
-      prompt_type: promptType || 'typed',
-      chars: String(text).trim().length
-    });
-    if (form.__nonSommAsk) form.__nonSommAsk(text);
+    /* The question is counted in somm.js, where EVERY surface's questions pass
+       through one function. Counting it here as well would double every
+       question the sheet initiates and single-count the ones a customer types,
+       which is worse than not counting either. The prompt type travels with
+       the call so the one counter can still tell them apart. */
+    if (form.__nonSommAsk) form.__nonSommAsk(text, promptType || 'prompt_chip');
   }
   /* Exposed so somm.js's "Show me another" and the recommendation card's
      follow-ups can drive the same conversation. */

@@ -204,7 +204,7 @@ caught in this repo was found by diffing computed properties, so that is the gat
 
 | state | result |
 |---|---|
-| Homepage 1440 | **identical** |
+| Homepage 1440 | identical in every computed property; see the note below on one rect |
 | Homepage 1024 | **identical** |
 | PDP 1440 | **identical** |
 | PDP 1024 | **identical** |
@@ -213,6 +213,34 @@ caught in this repo was found by diffing computed properties, so that is the gat
 Press quotes rotate on a timer, so which pair is mounted varies between
 captures; the diffs were run with the rotation pinned to the baseline's pair.
 Desktop rotation still runs — verified separately.
+
+**The one measurement that did not reconcile, and why it is not a regression.**
+
+On a fully settled homepage at 1440 the product card measures 399.29px tall
+against the baseline's 391.49 — 7.8px, which then shifts everything below it.
+Chased properly rather than waved through:
+
+- **Zero authored CSS properties differ** anywhere on desktop. The only two
+  "CSS" lines in the whole diff are `gridTemplateRows` on `.non-row`, which is
+  a computed track size derived from the tallest card, not a rule.
+- **The same component matched exactly on the PDP.** `.non-card` in the related
+  -products row is byte-identical to its baseline at both widths. If a rule of
+  mine had changed the card, that row would have moved too.
+- **Removing my CSS entirely does not change it.** Deleting all seven top-level
+  rules of the mobile-first block through the CSSOM and re-measuring leaves the
+  card at 399.29 — the same number. The block is not participating.
+- Font metrics, webfont load state and image load state were each tested and
+  each ruled out.
+
+So the 391.49 in the baseline reflects a condition present at that one capture
+and not reproducible since. It is recorded here rather than quietly rounded
+away, because a regression suite that reports a number nobody can explain is
+worth less than one that says which number it could not explain.
+
+The marquee's `.non-poured__set` also appears in some runs at 1141px against
+the baseline's 448 — that one **is** load state, and it reads 448 again on a
+normal load. It moves only after lazy images are force-loaded, which is
+something the test harness did, not the page.
 
 **Three real desktop regressions were introduced and fixed during the build**,
 all caught by this baseline and none visible in a code diff:

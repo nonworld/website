@@ -809,8 +809,22 @@ button { font-family: inherit; }
   height: auto;
   aspect-ratio: 1 / 1;
   object-fit: cover;
-  background: #f2f0ea;
+  /* The blurred low-res shot sits under the real one; cream is the base for
+     the instant before even that arrives. scale(1.06) hides the soft edge a
+     blur leaves at the boundary of a 32px source. See main-product.liquid. */
+  background-color: #f2f0ea;
+  background-image: var(--non-ph, none);
+  background-size: cover;
+  background-position: center;
   display: block;
+}
+@supports (backdrop-filter: blur(1px)) {
+  /* Blurring a background-image needs its own layer, and a pseudo-element on
+     a replaced element is not painted — so the blur rides a wrapper-free
+     approach: the 32px source is already so soft that upscaling IS the blur.
+     This block only exists to document that the absence of filter here is
+     deliberate, not an omission. */
+  .non-gallery__main { image-rendering: auto; }
 }
 /* Aligned UNDER the main shot, not against the column edge. The main image is
    capped at 560px and centred, so a full-width flex row of thumbs began to its

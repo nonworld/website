@@ -25,6 +25,9 @@ ACCEPTED = {
         "Pick a collection for this section in the theme editor.",
     },
     "sections/logo-marquee.liquid": {"--logo-scale:"},
+    # A CSS custom property carrying a per-product placeholder URL, captured in
+    # Liquid because a stylesheet cannot know the product. Not copy.
+    "sections/main-product.liquid": {"--non-ph: url("},
     "sections/pairing-recipes.liquid": {
         "metaobject entries — see docs/recipes.md.",
         "No recipes yet. Create",

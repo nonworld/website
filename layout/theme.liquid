@@ -138,6 +138,30 @@
     <script src="{{ 'cart.js' | asset_url }}" defer></script>
 
     {{ content_for_header }}
+
+    {%- comment -%}
+      PRELOAD THE PRODUCT'S FIRST IMAGE.
+
+      It is the largest thing on a product page and the thing a customer is
+      waiting for, but the browser cannot find it until it has parsed the
+      section that renders it. Announcing it in the head starts the download
+      with the stylesheet rather than after it.
+
+      imagesrcset and imagesizes mirror the img exactly. If they drift, the
+      browser downloads one file for the preload and a different one for the
+      tag, which is slower than not preloading at all — so the sizes string
+      here and the one in main-product.liquid are the same string, and any
+      change to one has to be made to both.
+    {%- endcomment -%}
+    {%- if template.name == 'product' and product.featured_media -%}
+      <link
+        rel="preload"
+        as="image"
+        fetchpriority="high"
+        href="{{ product.featured_media | image_url: width: 900, format: 'webp' }}"
+        imagesrcset="{{ product.featured_media | image_url: width: 400, format: 'webp' }} 400w, {{ product.featured_media | image_url: width: 600, format: 'webp' }} 600w, {{ product.featured_media | image_url: width: 900, format: 'webp' }} 900w, {{ product.featured_media | image_url: width: 1200, format: 'webp' }} 1200w, {{ product.featured_media | image_url: width: 1400, format: 'webp' }} 1400w"
+        imagesizes="(min-width: 860px) 46vw, 100vw">
+    {%- endif -%}
   </head>
 
   <body class="template-{{ template.name | handle }}">

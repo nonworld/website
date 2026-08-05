@@ -90,15 +90,38 @@
   {%- comment -%} ── gallery ───────────────────────────────────────────── {%- endcomment -%}
   <div class="non-gallery">
     {%- if product.media.size > 0 -%}
+      {%- comment -%}
+        A LOW-RESOLUTION VERSION OF THE ACTUAL SHOT, behind the real one.
+
+        The space was already reserved, so nothing jumped — but what filled it
+        was a flat cream rectangle, and on a phone that rectangle sat there long
+        enough to read as a broken image rather than a loading one. A blank
+        placeholder and a failure look identical; a blurred bottle does not.
+
+        32px wide is roughly 400 bytes and arrives with the HTML's own
+        connection, so it paints effectively immediately. The full image loads
+        on top of it and covers it — no fade, no JavaScript, nothing to go
+        wrong. The cream stays underneath as the base colour for the moment
+        before even that lands.
+
+        Passed as a style attribute rather than a class because the URL is
+        per-product, and a CSS variable is the only way to hand Liquid data to
+        a stylesheet without writing a rule per bottle.
+      {%- endcomment -%}
+      {%- capture ph_style -%}
+        --non-ph: url({{ product.featured_media | image_url: width: 32, format: 'webp' }});
+      {%- endcapture -%}
       {{
         product.featured_media
         | image_url: width: 1400, format: 'webp'
         | image_tag:
           loading: 'eager',
           fetchpriority: 'high',
-          widths: '600,900,1200,1400',
+          widths: '400,600,900,1200,1400',
+          sizes: '(min-width: 860px) 46vw, 100vw',
           class: 'non-gallery__main',
           data-non-gallery-main: '',
+          style: ph_style,
           alt: product.featured_media.alt
           | default: product.title
       }}

@@ -117,7 +117,24 @@
           askNeedEmail: {{ 'sections.somm.ask_need_email' | t | json }},
           askNeedBody: {{ 'sections.somm.ask_need_body' | t | json }},
           askSent: {{ 'sections.somm.ask_sent' | t | json }},
-          askFailed: {{ 'sections.somm.ask_failed' | t | json }}
+          askFailed: {{ 'sections.somm.ask_failed' | t | json }},
+          {%- comment -%}
+            The mobile sheet's own copy. Same reason as the block above: the
+            recommendation card is built in JavaScript, which cannot reach the
+            locale files, so every word it prints is handed to it from here.
+          {%- endcomment -%}
+          sommSlow: {{ 'sections.somm.slow' | t | json }},
+          sommFailHead: {{ 'sections.somm.fail_head' | t | json }},
+          sommFailBody: {{ 'sections.somm.fail_body' | t | json }},
+          sommRetry: {{ 'sections.somm.retry' | t | json }},
+          sommShopRange: {{ 'sections.somm.shop_range' | t | json }},
+          sommRecAdd: {{ 'sections.somm.rec_add' | t | json }},
+          sommRecAdding: {{ 'sections.somm.rec_adding' | t | json }},
+          sommRecAdded: {{ 'sections.somm.rec_added' | t | json }},
+          sommRecAddFailed: {{ 'sections.somm.rec_add_failed' | t | json }},
+          sommRecSee: {{ 'sections.somm.rec_see' | t | json }},
+          sommRecWhy: {{ 'sections.somm.rec_why' | t | json }},
+          sommRecAnother: {{ 'sections.somm.rec_another' | t | json }}
         }
       };
     </script>
@@ -178,6 +195,23 @@
     </div>
 
     {% render 'cart-drawer' %}
+
+    {%- comment -%}
+      The mobile Somm sheet, on the templates that carry an entry point.
+
+      Gated rather than global because the brief asks that Somm code load only
+      where something can open it: the homepage hero and triptych, and the
+      product page's contextual entry. On every other template the snippet and
+      its script are simply absent — not hidden, absent.
+
+      One sheet, after the cart drawer in source order so the drawer wins the
+      stacking context if both are ever up. The sheet closes itself when the
+      drawer opens, so that should not happen; this is the belt to that braces.
+    {%- endcomment -%}
+    {%- if template.name == 'index' or template.name == 'product' -%}
+      {% render 'somm-sheet' %}
+    {%- endif -%}
+
     {% section 'non-lotto' %}
   </body>
 </html>

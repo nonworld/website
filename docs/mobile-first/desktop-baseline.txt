@@ -1,0 +1,364 @@
+# Desktop regression baseline — captured 2026-08-06, BEFORE the mobile-first build
+#
+# Theme: website/staging, gid://shopify/OnlineStoreTheme/198370820256 (unpublished)
+# Method: computed-style fingerprint, not screenshots. Screenshots from the
+# browser pane render fine but are downscaled to 800x500, which is far too
+# coarse to catch a 2px spacing change. The regression that actually got caught
+# in this repo before was found by diffing computed properties, so that is the
+# gate here too. Screenshots are kept alongside as the visual record.
+#
+# Format:  selector[index] | x,y,w,h | hash-of-31-computed-properties
+# Properties hashed: display position order gridTemplateColumns gridTemplateRows
+#   gridAutoColumns gridAutoFlow flexDirection gap margin{Top,Right,Bottom,Left}
+#   padding{Top,Right,Bottom,Left} fontFamily fontSize fontWeight lineHeight
+#   letterSpacing color backgroundColor aspectRatio objectFit objectPosition
+#   overflowX overflowY visibility opacity
+#
+# KNOWN NON-DETERMINISM — do not treat these as regressions:
+#   .non-press__item / __quote / __cite — press-rotate.js rotates which pair is
+#     mounted, so which indices carry a rect varies between captures. Compare
+#     the hashes, not the rects, and not the index they land on.
+#   .non-press[0] height follows from that (576 vs 792/933 at 1024).
+#   The Shopify preview admin bar occupies the bottom of the viewport, so
+#     innerHeight is short of the nominal 900. It is present in both captures.
+#
+# Re-dump from the browser at any time with the snippet in
+# docs/mobile-first/README.md (localStorage keys NONFP::*).
+
+### NONFP::before/home@1440  / @1440 scrollW=1440 clientW=1440
+main > *[0]|0,106,1440,726|28a1pl-ckgnf3
+main > *[1]|0,832,1440,152|28a1pl-ckgnf3
+main > *[2]|0,984,1440,546|28a1pl-ckgnf3
+main > *[3]|0,1530,1440,525|28a1pl-ckgnf3
+main > *[4]|0,2055,1440,392|28a1pl-ckgnf3
+main > *[5]|0,2447,1440,576|28a1pl-ckgnf3
+.non-hero[0]|0,106,1440,726|18d9foc-g7pu1e
+.non-hero__copy[0]|0,106,893,726|1se1qh0-36vt4g
+.non-hero__title[0]|46,205,492,129|1rr1kha-x5doa2
+.non-hero__blurb[0]|46,354,428,81|j3wq9z-6944eh
+.non-hero__ctas[0]|46,462,801,44|1460op-1jec18n
+.non-hero__cta[0]|46,462,157,44|113fsnj-zesf75
+.non-hero__cta[1]|213,462,144,44|g9vy3b-1rmkl15
+.non-hero__media[0]|893,106,547,726|1jbbros-l8kn14
+.non-somm[0]|46,540,801,234|xyzigw-1csf7k8
+.non-somm__bar[0]|186,574,661,52|1ytf1md-eagvc7
+.non-somm__input[0]|186,574,475,52|1b8kc3l-1m6nvpz
+.non-somm__submit[0]|673,574,79,52|1v3mhau-16ywf1y
+.non-somm__seeds[0]|186,646,661,98|1wyen0p-1nylqtj
+.non-somm__seed[0]|186,646,192,44|exhzo1-13sv1i7
+.non-somm__seed[1]|388,646,167,44|exhzo1-13sv1i7
+.non-somm__seed[2]|566,646,153,44|exhzo1-13sv1i7
+.non-somm__seed[3]|728,646,113,44|exhzo1-13sv1i7
+.non-somm__seed[4]|186,700,152,44|exhzo1-13sv1i7
+.non-section[0]|0,984,1440,546|1u882kp-grydtd
+.non-section[1]|0,1530,1440,525|1u882kp-grydtd
+.non-section__head[0]|64,1032,1312,31|l576jm-p4pg6s
+.non-section__head[1]|64,1578,1312,31|l576jm-p4pg6s
+.non-section__title[0]|64,1032,99,15|145123z-1suw6q9
+.non-section__title[1]|64,1578,38,15|145123z-1suw6q9
+.non-row-wrap[0]|64,1086,1312,395|1uob7hv-i4fdwj
+.non-row-wrap[1]|64,1632,1312,375|1uob7hv-i4fdwj
+.non-row[0]|64,1086,1312,395|184aih1-17vqnbl
+.non-row[1]|64,1632,1312,375|1qscxhr-fclpzn
+.non-card[0]|64,1086,246,391|tf0fr1-1xmhu4v
+.non-card[1]|330,1086,246,391|tf0fr1-1xmhu4v
+.non-card[2]|597,1086,246,391|tf0fr1-1xmhu4v
+.non-card[3]|863,1086,246,391|tf0fr1-1xmhu4v
+.non-card[4]|1130,1086,246,391|tf0fr1-1xmhu4v
+.non-card[5]|1396,1086,246,391|tf0fr1-1xmhu4v
+.non-card[6]|64,1632,246,371|tf0fr1-1xmhu4v
+.non-card[7]|330,1632,246,371|tf0fr1-1xmhu4v
+.non-card[8]|597,1632,246,371|tf0fr1-1xmhu4v
+.non-card[9]|863,1632,246,371|tf0fr1-1xmhu4v
+.non-card[10]|1130,1632,246,371|tf0fr1-1xmhu4v
+.non-card[11]|1396,1632,246,371|tf0fr1-1xmhu4v
+.non-card__media[0]|64,1086,246,246|19tqpn0-1wqkwzk
+.non-card__media[1]|330,1086,246,246|19tqpn0-1wqkwzk
+.non-card__media[2]|597,1086,246,246|19tqpn0-1wqkwzk
+.non-card__media[3]|863,1086,246,246|19tqpn0-1wqkwzk
+.non-card__media[4]|1130,1086,246,246|19tqpn0-1wqkwzk
+.non-card__media[5]|1396,1086,246,246|19tqpn0-1wqkwzk
+.non-card__media[6]|64,1632,246,246|19tqpn0-1wqkwzk
+.non-card__media[7]|330,1632,246,246|19tqpn0-1wqkwzk
+.non-card__media[8]|597,1632,246,246|19tqpn0-1wqkwzk
+.non-card__media[9]|863,1632,246,246|19tqpn0-1wqkwzk
+.non-card__media[10]|1130,1632,246,246|19tqpn0-1wqkwzk
+.non-card__media[11]|1396,1632,246,246|19tqpn0-1wqkwzk
+.non-trip[0]|130,2055,1180,392|c3a4ze-q56c1a
+.non-trip__cell[0]|130,2055,392,392|1i2hyj0-7m6hzq
+.non-trip__cell[1]|524,2055,392,392|1i2hyj0-7m6hzq
+.non-trip__cell[2]|918,2055,392,392|1i2hyj0-7m6hzq
+.non-trip__img[0]|130,2055,392,392|1iusi2z-1c7zhb3
+.non-trip__img[1]|524,2055,392,392|1iusi2z-1c7zhb3
+.non-trip__img[2]|918,2055,392,392|1iusi2z-1c7zhb3
+.non-trip__cap[0]|130,2354,392,93|p0k09y-1volloc
+.non-trip__cap[1]|524,2354,392,93|p0k09y-1volloc
+.non-trip__cap[2]|918,2354,392,93|p0k09y-1volloc
+.non-trip__title[0]|152,2376,348,29|19ojjqg-ilviyo
+.non-trip__title[1]|546,2376,348,29|19ojjqg-ilviyo
+.non-trip__title[2]|940,2376,348,29|19ojjqg-ilviyo
+.non-poured[0]|0,832,1440,152|1hvpa7x-wqfgzj
+.non-poured__label[0]|0,860,1440,16|yggxqu-1byzddo
+.non-poured__track[0]|0,893,1792,67|1y5ybpl-u4g8u9
+.non-poured__set[0]|0,893,448,67|lce0pn-2brnaf
+.non-poured__set[1]|448,893,448,67|lce0pn-2brnaf
+.non-poured__set[2]|896,893,448,67|lce0pn-2brnaf
+.non-poured__set[3]|1344,893,448,67|lce0pn-2brnaf
+.non-press[0]|0,2447,1440,576|9b99eo-1hl0ltk
+.non-press__list[0]|250,2640,575,190|yffoy9-n23sql
+.non-press__item[0]|250,2640,575,97|28a1pl-ckgnf3
+.non-press__item[1]|250,2768,575,62|28a1pl-ckgnf3
+.non-press__item[2]|0,0,0,0|d298qy-1o40t8w
+.non-press__item[3]|0,0,0,0|d298qy-1o40t8w
+.non-press__quote[0]|250,2640,575,70|6fpsxc-8ph6de
+.non-press__quote[1]|250,2768,575,35|6fpsxc-8ph6de
+.non-press__quote[2]|0,0,0,0|6fpsxc-8ph6de
+.non-press__quote[3]|0,0,0,0|6fpsxc-8ph6de
+.non-press__cite[0]|250,2722,575,15|6zk5n5-u3qmvb
+.non-press__cite[1]|250,2816,575,15|6zk5n5-u3qmvb
+.non-press__cite[2]|0,0,0,0|6zk5n5-u3qmvb
+.non-press__cite[3]|0,0,0,0|6zk5n5-u3qmvb
+.non-split[0]|0,3023,1440,331|1fodq4g-ykr1ma
+.non-split__cell[0]|0,3024,720,330|1i2hyj0-7m6hzq
+.non-split__cell[1]|720,3024,720,330|1i2hyj0-7m6hzq
+.non-atc[0]|0,0,0,0|1eyi1k2-wwi6qq
+.non-drawer[0]|0,0,0,0|1mme1m8-fopcda
+.non-header[0]|0,34,1440,72|jno1nz-1e9m3qb
+.non-footer[0]|0,3354,1440,77|1sqd1hs-5g5dm8
+
+### NONFP::before/home@1024  / @1024 scrollW=1024 clientW=1024
+main > *[0]|0,98,1024,780|28a1pl-ckgnf3
+main > *[1]|0,878,1024,152|28a1pl-ckgnf3
+main > *[2]|0,1030,1024,489|28a1pl-ckgnf3
+main > *[3]|0,1519,1024,452|28a1pl-ckgnf3
+main > *[4]|0,1971,1024,340|28a1pl-ckgnf3
+main > *[5]|0,2311,1024,792|28a1pl-ckgnf3
+.non-hero[0]|0,98,1024,780|8ek8mp-upbtg5
+.non-hero__copy[0]|0,98,604,780|1se1qh0-36vt4g
+.non-hero__title[0]|46,197,492,129|1rr1kha-x5doa2
+.non-hero__blurb[0]|46,346,428,81|j3wq9z-6944eh
+.non-hero__ctas[0]|46,454,512,44|1460op-1jec18n
+.non-hero__cta[0]|46,454,157,44|113fsnj-zesf75
+.non-hero__cta[1]|213,454,144,44|g9vy3b-1rmkl15
+.non-hero__media[0]|604,98,420,780|1jbbros-l8kn14
+.non-somm[0]|46,532,512,288|1sosg2q-wwtqie
+.non-somm__bar[0]|186,566,372,52|1ytf1md-eagvc7
+.non-somm__input[0]|186,566,187,52|1b8kc3l-1m6nvpz
+.non-somm__submit[0]|385,566,79,52|1v3mhau-16ywf1y
+.non-somm__seeds[0]|186,638,372,152|1wyen0p-1nylqtj
+.non-somm__seed[0]|186,638,192,44|exhzo1-13sv1i7
+.non-somm__seed[1]|388,638,167,44|exhzo1-13sv1i7
+.non-somm__seed[2]|186,692,153,44|exhzo1-13sv1i7
+.non-somm__seed[3]|349,692,113,44|exhzo1-13sv1i7
+.non-somm__seed[4]|186,746,152,44|exhzo1-13sv1i7
+.non-section[0]|0,1030,1024,489|15dvwqx-1a6mhgl
+.non-section[1]|0,1519,1024,452|15dvwqx-1a6mhgl
+.non-section__head[0]|40,1078,944,31|l576jm-p4pg6s
+.non-section__head[1]|40,1567,944,31|l576jm-p4pg6s
+.non-section__title[0]|40,1078,99,15|145123z-1suw6q9
+.non-section__title[1]|40,1568,38,15|145123z-1suw6q9
+.non-row-wrap[0]|40,1132,944,339|1uob7hv-i4fdwj
+.non-row-wrap[1]|40,1622,944,301|1uob7hv-i4fdwj
+.non-row[0]|40,1132,944,339|dlbnet-1yju2yh
+.non-row[1]|40,1622,944,301|1o0s280-7y6o0
+.non-card[0]|40,1132,173,335|tf0fr1-1xmhu4v
+.non-card[1]|233,1132,173,335|tf0fr1-1xmhu4v
+.non-card[2]|426,1132,173,335|tf0fr1-1xmhu4v
+.non-card[3]|618,1132,173,335|tf0fr1-1xmhu4v
+.non-card[4]|811,1132,173,335|tf0fr1-1xmhu4v
+.non-card[5]|1004,1132,173,335|tf0fr1-1xmhu4v
+.non-card[6]|40,1622,173,297|tf0fr1-1xmhu4v
+.non-card[7]|233,1622,173,297|tf0fr1-1xmhu4v
+.non-card[8]|426,1622,173,297|tf0fr1-1xmhu4v
+.non-card[9]|618,1622,173,297|tf0fr1-1xmhu4v
+.non-card[10]|811,1622,173,297|tf0fr1-1xmhu4v
+.non-card[11]|1004,1622,173,297|tf0fr1-1xmhu4v
+.non-card__media[0]|40,1132,173,173|19tqpn0-1wqkwzk
+.non-card__media[1]|233,1132,173,173|19tqpn0-1wqkwzk
+.non-card__media[2]|426,1132,173,173|19tqpn0-1wqkwzk
+.non-card__media[3]|618,1132,173,173|19tqpn0-1wqkwzk
+.non-card__media[4]|811,1132,173,173|19tqpn0-1wqkwzk
+.non-card__media[5]|1004,1132,173,173|19tqpn0-1wqkwzk
+.non-card__media[6]|40,1622,173,173|19tqpn0-1wqkwzk
+.non-card__media[7]|233,1622,173,173|19tqpn0-1wqkwzk
+.non-card__media[8]|426,1622,173,173|19tqpn0-1wqkwzk
+.non-card__media[9]|618,1622,173,173|19tqpn0-1wqkwzk
+.non-card__media[10]|811,1622,173,173|19tqpn0-1wqkwzk
+.non-card__media[11]|1004,1622,173,173|19tqpn0-1wqkwzk
+.non-trip[0]|0,1971,1024,340|ejzbfe-2at7t4
+.non-trip__cell[0]|0,1971,340,340|1i2hyj0-7m6hzq
+.non-trip__cell[1]|342,1971,340,340|1i2hyj0-7m6hzq
+.non-trip__cell[2]|684,1971,340,340|1i2hyj0-7m6hzq
+.non-trip__img[0]|0,1971,340,340|1iusi2z-1c7zhb3
+.non-trip__img[1]|342,1971,340,340|1iusi2z-1c7zhb3
+.non-trip__img[2]|684,1971,340,340|1iusi2z-1c7zhb3
+.non-trip__cap[0]|0,2223,340,88|p0k09y-1volloc
+.non-trip__cap[1]|342,2223,340,88|p0k09y-1volloc
+.non-trip__cap[2]|684,2223,340,88|p0k09y-1volloc
+.non-trip__title[0]|22,2245,296,24|8c0gq6-1kln1dk
+.non-trip__title[1]|364,2245,296,24|8c0gq6-1kln1dk
+.non-trip__title[2]|706,2245,296,24|8c0gq6-1kln1dk
+.non-poured[0]|0,878,1024,152|1hvpa7x-wqfgzj
+.non-poured__label[0]|0,906,1024,16|yggxqu-1byzddo
+.non-poured__track[0]|0,939,1792,67|1y5ybpl-u4g8u9
+.non-poured__set[0]|0,939,448,67|lce0pn-2brnaf
+.non-poured__set[1]|448,939,448,67|lce0pn-2brnaf
+.non-poured__set[2]|896,939,448,67|lce0pn-2brnaf
+.non-poured__set[3]|1344,939,448,67|lce0pn-2brnaf
+.non-press[0]|0,2311,1024,792|1jnn3i3-1dxpbdj
+.non-press__list[0]|226,2359,758,190|yffoy9-n23sql
+.non-press__item[0]|226,2359,758,97|28a1pl-ckgnf3
+.non-press__item[1]|226,2487,758,62|28a1pl-ckgnf3
+.non-press__item[2]|0,0,0,0|d298qy-1o40t8w
+.non-press__item[3]|0,0,0,0|d298qy-1o40t8w
+.non-press__quote[0]|226,2359,661,70|6fpsxc-8ph6de
+.non-press__quote[1]|226,2487,661,35|6fpsxc-8ph6de
+.non-press__quote[2]|0,0,0,0|6fpsxc-8ph6de
+.non-press__quote[3]|0,0,0,0|6fpsxc-8ph6de
+.non-press__cite[0]|226,2441,758,15|6zk5n5-u3qmvb
+.non-press__cite[1]|226,2535,758,15|6zk5n5-u3qmvb
+.non-press__cite[2]|0,0,0,0|6zk5n5-u3qmvb
+.non-press__cite[3]|0,0,0,0|6zk5n5-u3qmvb
+.non-split[0]|0,3103,1024,331|2vi2f4-npw15a
+.non-split__cell[0]|0,3104,512,330|1i2hyj0-7m6hzq
+.non-split__cell[1]|512,3104,512,330|1i2hyj0-7m6hzq
+.non-atc[0]|0,0,0,0|1eyi1k2-wwi6qq
+.non-drawer[0]|0,0,0,0|1mme1m8-fopcda
+.non-header[0]|0,34,1024,64|1lmlcdr-oxm6yf
+.non-footer[0]|0,3434,1024,77|1s9cf68-ovl27s
+
+### NONFP::before/pdp@1440  /products/salted-raspberry-chamomile @1440 scrollW=1440 clientW=1440
+main > *[0]|0,106,1440,1155|28a1pl-ckgnf3
+main > *[1]|0,1260,1440,870|28a1pl-ckgnf3
+main > *[2]|0,2130,1440,577|28a1pl-ckgnf3
+.non-somm__input[0]|924,822,361,52|jer9ce-18ivhru
+.non-somm__seed[0]|924,894,161,44|exhzo1-13sv1i7
+.non-somm__seed[1]|1095,894,100,44|exhzo1-13sv1i7
+.non-somm__seed[2]|924,948,306,44|exhzo1-13sv1i7
+.non-somm__seed[3]|924,1002,155,44|exhzo1-13sv1i7
+.non-section[0]|0,1871,1440,259|1u882kp-grydtd
+.non-section[1]|0,2130,1440,577|1u882kp-grydtd
+.non-card[0]|64,2217,313,441|tf0fr1-1xmhu4v
+.non-card[1]|397,2217,313,441|tf0fr1-1xmhu4v
+.non-card[2]|730,2217,313,441|tf0fr1-1xmhu4v
+.non-card__media[0]|64,2217,313,313|19tqpn0-1wqkwzk
+.non-card__media[1]|397,2217,313,313|19tqpn0-1wqkwzk
+.non-card__media[2]|730,2217,313,313|19tqpn0-1wqkwzk
+.non-product[0]|0,106,1440,1004|1stykoo-qk9u9c
+.non-gallery[0]|0,106,720,1004|1e3baa2-s7e75q
+.non-gallery__main[0]|64,134,576,576|x2kt75-1pdp3x9
+.non-gallery__thumbs[0]|652,134,68,388|sf73sw-ckicc6
+.non-gallery__thumb[0]|652,134,68,68|1ai6g30-16qxu00
+.non-gallery__thumb[1]|652,214,68,68|1fsxwwz-ewo74t
+.non-gallery__thumb[2]|652,294,68,68|1fsxwwz-ewo74t
+.non-gallery__thumb[3]|652,374,68,68|1fsxwwz-ewo74t
+.non-gallery__thumb[4]|652,454,68,68|1fsxwwz-ewo74t
+.non-ingr[0]|64,740,576,70|1wle487-1uz4rd5
+.non-buy[0]|720,106,720,1004|momk61-9ag90l
+.non-buy__name[0]|784,167,343,90|10woi9b-75rne9
+.non-buy__blurb[0]|784,271,428,54|x72x6o-s81chm
+.non-buy__trust[0]|784,618,592,16|7xxqsg-krbzpk
+.non-variants[0]|784,343,592,219|109s0dk-18bl54w
+.non-variant[0]|784,343,592,68|1l327wn-1bs4k3h
+.non-variant[1]|784,419,592,68|wof7zg-f6h0xa
+.non-variant[2]|784,494,592,68|wof7zg-f6h0xa
+.non-atc[0]|784,562,592,47|swdoag-331zfc
+.non-atc[1]|0,0,0,0|1eyi1k2-wwi6qq
+.non-sommbox[0]|784,665,592,411|zxuy0p-any92l
+.non-sommbox__head[0]|924,699,452,16|1uhrrmi-n0z8k2
+.non-sommbox__body[0]|924,726,452,76|1i2q7yd-1oesw1v
+.non-sommbox__ask[0]|924,822,452,52|hyni8p-1063k2t
+.non-sommbox__seeds[0]|924,894,452,152|1wyen0p-1nylqtj
+.non-specstrip[0]|0,1110,1440,150|lkr68o-rown6a
+.non-specstrip__cell[0]|0,1111,360,148|10x670p-1fnyjsl
+.non-specstrip__cell[1]|360,1111,360,148|10x670p-1fnyjsl
+.non-specstrip__cell[2]|720,1111,360,148|10x670p-1fnyjsl
+.non-specstrip__cell[3]|1080,1111,360,148|10x670p-1fnyjsl
+.non-process[0]|0,1260,1440,611|1csfec5-15znw2f
+.non-process__copy[0]|0,1260,619,611|ole7w4-1wgmat6
+.non-process__media[0]|619,1335,821,462|1ik2y0i-1ms6nci
+.non-steps[0]|64,1358,490,457|1vg69bp-pzzb53
+.non-step[0]|64,1358,490,112|1icblwi-kkng5g
+.non-step[1]|64,1487,490,68|4j2367-5n0qc3
+.non-step[2]|64,1574,490,68|4j2367-5n0qc3
+.non-step[3]|64,1660,490,68|4j2367-5n0qc3
+.non-step[4]|64,1747,490,68|4j2367-5n0qc3
+.non-pairs[0]|64,1957,1312,124|odojty-2xrrmo
+.non-pair-card[0]|64,1957,424,124|m7ex-11nq08x
+.non-pair-card[1]|508,1957,424,124|m7ex-11nq08x
+.non-pair-card[2]|952,1957,424,124|m7ex-11nq08x
+.non-drawer[0]|0,0,0,0|1mme1m8-fopcda
+.non-header[0]|0,34,1440,72|jno1nz-1e9m3qb
+.non-footer[0]|0,2706,1440,77|1sqd1hs-5g5dm8
+
+### NONFP::before/pdp@1024  /products/salted-raspberry-chamomile @1024 scrollW=1024 clientW=1024
+main > *[0]|0,98,1024,1167|28a1pl-ckgnf3
+main > *[1]|0,1264,1024,926|28a1pl-ckgnf3
+main > *[2]|0,2190,1024,509|28a1pl-ckgnf3
+.non-somm__input[0]|692,802,201,52|jer9ce-18ivhru
+.non-somm__seed[0]|692,874,161,44|exhzo1-13sv1i7
+.non-somm__seed[1]|863,874,100,44|exhzo1-13sv1i7
+.non-somm__seed[2]|692,928,292,44|exhzo1-13sv1i7
+.non-somm__seed[3]|692,982,155,44|exhzo1-13sv1i7
+.non-section[0]|0,1935,1024,255|15dvwqx-1a6mhgl
+.non-section[1]|0,2190,1024,509|15dvwqx-1a6mhgl
+.non-card[0]|40,2278,221,374|tf0fr1-1xmhu4v
+.non-card[1]|281,2278,221,374|tf0fr1-1xmhu4v
+.non-card[2]|522,2278,221,374|tf0fr1-1xmhu4v
+.non-card__media[0]|40,2278,221,221|19tqpn0-1wqkwzk
+.non-card__media[1]|281,2278,221,221|19tqpn0-1wqkwzk
+.non-card__media[2]|522,2278,221,221|19tqpn0-1wqkwzk
+.non-product[0]|0,98,1024,992|rp1g9q-1y154oc
+.non-gallery[0]|0,98,512,992|1gg7e3-yz0n17
+.non-gallery__main[0]|40,126,392,392|x2kt75-1pdp3x9
+.non-gallery__thumbs[0]|444,126,68,388|sf73sw-ckicc6
+.non-gallery__thumb[0]|444,126,68,68|1ai6g30-16qxu00
+.non-gallery__thumb[1]|444,206,68,68|1fsxwwz-ewo74t
+.non-gallery__thumb[2]|444,286,68,68|1fsxwwz-ewo74t
+.non-gallery__thumb[3]|444,366,68,68|1fsxwwz-ewo74t
+.non-gallery__thumb[4]|444,446,68,68|1fsxwwz-ewo74t
+.non-ingr[0]|40,548,392,67|1wle487-1uz4rd5
+.non-buy[0]|512,98,512,992|1uq5fa1-jepmyd
+.non-buy__name[0]|552,159,244,64|1nhqj4f-vttb8v
+.non-buy__blurb[0]|552,237,428,54|x72x6o-s81chm
+.non-buy__trust[0]|552,584,432,16|7xxqsg-krbzpk
+.non-variants[0]|552,309,432,219|109s0dk-18bl54w
+.non-variant[0]|552,309,432,68|1l327wn-1bs4k3h
+.non-variant[1]|552,385,432,68|wof7zg-f6h0xa
+.non-variant[2]|552,460,432,68|wof7zg-f6h0xa
+.non-atc[0]|552,528,432,47|swdoag-331zfc
+.non-atc[1]|0,0,0,0|1eyi1k2-wwi6qq
+.non-sommbox[0]|552,631,432,425|1do9v7i-1v8lzmi
+.non-sommbox__head[0]|692,665,292,16|1uhrrmi-n0z8k2
+.non-sommbox__body[0]|692,692,292,90|1i2q7yd-1oesw1v
+.non-sommbox__ask[0]|692,802,292,52|hyni8p-1063k2t
+.non-sommbox__seeds[0]|692,874,292,152|1wyen0p-1nylqtj
+.non-specstrip[0]|0,1090,1024,175|165g8gs-oe3iia
+.non-specstrip__cell[0]|0,1091,256,173|10x670p-1fnyjsl
+.non-specstrip__cell[1]|256,1091,256,173|10x670p-1fnyjsl
+.non-specstrip__cell[2]|512,1091,256,173|10x670p-1fnyjsl
+.non-specstrip__cell[3]|768,1091,256,173|10x670p-1fnyjsl
+.non-process[0]|0,1264,1024,671|111rub1-pvby0z
+.non-process__copy[0]|0,1264,440,671|s79aes-y42tg2
+.non-process__media[0]|440,1436,584,328|1ik2y0i-1ms6nci
+.non-steps[0]|40,1362,359,517|1vg69bp-pzzb53
+.non-step[0]|40,1362,359,132|1wyna4k-1mc9yv4
+.non-step[1]|40,1512,359,89|1whi4o5-1o30nij
+.non-step[2]|40,1620,359,67|1yr0gfh-gy73gz
+.non-step[3]|40,1705,359,67|1yr0gfh-gy73gz
+.non-step[4]|40,1790,359,89|1whi4o5-1o30nij
+.non-pairs[0]|40,2022,944,120|okmel1-jaxft
+.non-pair-card[0]|40,2022,301,120|m7ex-11nq08x
+.non-pair-card[1]|361,2022,301,120|m7ex-11nq08x
+.non-pair-card[2]|683,2022,301,120|m7ex-11nq08x
+.non-drawer[0]|0,0,0,0|1mme1m8-fopcda
+.non-header[0]|0,34,1024,64|1lmlcdr-oxm6yf
+.non-footer[0]|0,2700,1024,77|1s9cf68-ovl27s
+
+### NONFP::before/cart-drawer@1440  / @1440 scrollW=1440 clientW=1440
+# Same page as home@1440 with the drawer open. The only intended differences
+# are .non-drawer[0] (0,0,1440,900 instead of 0,0,0,0) and .non-atc[0], which
+# is the drawer's checkout button becoming measurable at 1047,801,368,46.
+# Everything else must match home@1440 exactly.
+.non-drawer[0]|0,0,1440,900|1bnjcgc-1mgev9s
+.non-atc[0]|1047,801,368,46|1eyi1k2-wwi6qq

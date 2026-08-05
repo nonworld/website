@@ -8,7 +8,10 @@
           "settings": {
             "label": "Roast chicken, Friday night",
             "answer": "Roast chicken wants grip and a little sweetness to meet the skin.\n\nNON3 — toasted cinnamon, yuzu and orange pith, with enough grip to hold the fat. Serve it cold in a wine glass, not a tumbler.\n\nIf the bird comes with something green and bitter, pour NON1 alongside.",
-            "picks": "NON3,NON1"
+            "picks": "NON3,NON1",
+            "short_label": "Dinner",
+            "intent": "dinner",
+            "show_on_mobile": true
           }
         },
         "seed-2": {
@@ -24,7 +27,10 @@
           "settings": {
             "label": "Off wine for a month",
             "answer": "Then you need the ritual intact: cold bottle, real glass, something to talk about.\n\nStart with the Everyday Set — three bottles, three seats at the table: rosé, white, red. A month is roughly six bottles if you drink on weekends, so the mixed six is the cheaper way in.",
-            "picks": "SET,NON1"
+            "picks": "SET,NON1",
+            "short_label": "Going dry",
+            "intent": "going_dry",
+            "show_on_mobile": true
           }
         },
         "seed-4": {
@@ -32,7 +38,10 @@
           "settings": {
             "label": "Gift for a chef",
             "answer": "Chefs taste for structure, so lead with NON2 — caramelised pear and kombu, savoury enough to be interesting on its own.\n\nPut it in the Stopper Set so nothing is wasted between services. Seven days of carbonation, kept cold.",
-            "picks": "NON2,SET"
+            "picks": "NON2,SET",
+            "short_label": "Gift",
+            "intent": "gift",
+            "show_on_mobile": true
           }
         },
         "slide-1": {
@@ -101,7 +110,8 @@
         "slide_interval": 6,
         "cta_shop_url": "shopify://collections/the-range",
         "cta_shop_label": "Shop the range",
-        "cta_ask_label": "Ask the Somm"
+        "cta_ask_label": "Ask the Somm",
+        "mobile_order": 1
       }
     },
     "poured-at": {
@@ -174,7 +184,8 @@
         "v7"
       ],
       "settings": {
-        "heading": "Poured at"
+        "heading": "Poured at",
+        "mobile_order": 5
       }
     },
     "range": {
@@ -188,7 +199,8 @@
         "columns": "5",
         "show_add": true,
         "link_label": "All bottles",
-        "link_url": "/collections/the-range"
+        "link_url": "/collections/the-range",
+        "mobile_order": 2
       }
     },
     "made-for": {
@@ -200,7 +212,12 @@
             "image_url": "https://www.non.world/cdn/shop/files/NON3-5.jpg?v=1750016712&width=900",
             "image_alt": "Oysters, radicchio and cured fish, plated",
             "title": "Made for starters",
-            "subtitle": "oysters, radicchio, cured fish"
+            "subtitle": "oysters, radicchio, cured fish",
+            "meal_category": "starters",
+            "somm_question": "What are you starting with?",
+            "somm_options": "Oysters|Cured fish|Something raw|A cheese plate",
+            "tile_label": "Find a NON for starters",
+            "focal": "50% 45%"
           }
         },
         "c2": {
@@ -209,7 +226,12 @@
             "image_url": "https://www.non.world/cdn/shop/files/NON9-6.jpg?v=1750016874&width=900",
             "image_alt": "Charred lamb with mushroom and soy",
             "title": "Made for mains",
-            "subtitle": "charred lamb, mushroom, soy"
+            "subtitle": "charred lamb, mushroom, soy",
+            "meal_category": "mains",
+            "somm_question": "What's the main event?",
+            "somm_options": "Roast chicken|Lamb|Mushroom|Something spicy",
+            "tile_label": "Find a NON for mains",
+            "focal": "50% 50%"
           }
         },
         "c3": {
@@ -218,7 +240,12 @@
             "image_url": "https://www.non.world/cdn/shop/files/NON7-5.jpg?v=1750016848&width=900",
             "image_alt": "Stone fruit, chocolate and cheese",
             "title": "Made for dessert",
-            "subtitle": "stone fruit, chocolate, cheese"
+            "subtitle": "stone fruit, chocolate, cheese",
+            "meal_category": "dessert",
+            "somm_question": "Sweet, or the cheese board?",
+            "somm_options": "Chocolate|Stone fruit|Cheese|Just coffee",
+            "tile_label": "Find a NON for dessert",
+            "focal": "50% 55%"
           }
         }
       },
@@ -227,7 +254,9 @@
         "c2",
         "c3"
       ],
-      "settings": {}
+      "settings": {
+        "mobile_order": 3
+      }
     },
     "press": {
       "type": "press-quotes",
@@ -268,7 +297,8 @@
         "q4"
       ],
       "settings": {
-        "heading": "Press"
+        "heading": "Press",
+        "mobile_order": 6
       }
     },
     "sets": {
@@ -282,7 +312,23 @@
         "columns": "5",
         "show_add": true,
         "link_label": "All sets",
-        "link_url": "/collections/non-sets"
+        "link_url": "/collections/non-sets",
+        "mobile_order": 9
+      }
+    },
+    "first-buy": {
+      "type": "featured-set",
+      "settings": {
+        "product": "mixed-6-pack",
+        "eyebrow": "New to NON?",
+        "heading": "Start with the Mixed 6 Pack.",
+        "body": "Six bottles across the range — the simplest way to find what belongs on your table.",
+        "cta_label": "Shop the Mixed 6 Pack",
+        "sold_out_cta": "See the set",
+        "save_word": "Save",
+        "link_label": "View all sets",
+        "link_url": "/collections/non-sets",
+        "mobile_order": 4
       }
     }
   },
@@ -292,6 +338,7 @@
     "range",
     "sets",
     "made-for",
-    "press"
+    "press",
+    "first-buy"
   ]
 }

@@ -602,15 +602,49 @@
     return !!d && !d.hidden;
   }
 
+  /* The Somm sheet outranks this for the same reason the cart drawer does: it
+   * is a modal the customer opened on purpose, and this is an offer nobody
+   * asked for. Dropping a scratch card over a conversation someone is having
+   * about which bottle to buy interrupts the exact intent the offer exists to
+   * encourage. */
+  function sommIsOpen() {
+    return !!(window.NON && NON.somm && NON.somm.isOpen && NON.somm.isOpen());
+  }
+
+  /* And not while an Add to Cart is in flight. The window is short — a few
+   * hundred milliseconds — but it is precisely the moment when a full-screen
+   * overlay is most expensive, because the customer is mid-purchase and the
+   * card lands between their tap and the drawer opening. */
+  var adding = 0;
+  document.addEventListener('click', function (e) {
+    if (e.target.closest('[data-non-add], [data-non-somm-add], .non-atc, [data-non-upsell-add]')) {
+      adding = Date.now();
+    }
+  }, true);
+  function midPurchase() {
+    return Date.now() - adding < 4000;
+  }
+
   function autoOpen() {
     if (suppressed()) return;
-    if (cartIsOpen()) {
-      // Wait for the drawer rather than dropping the offer entirely — try
-      // again once, after it closes.
-      document.addEventListener('non:cart:closed', function once() {
-        document.removeEventListener('non:cart:closed', once);
-        if (!suppressed()) setTimeout(open, 600);
-      });
+    if (cartIsOpen() || sommIsOpen() || midPurchase()) {
+      /* Wait for whichever it was rather than dropping the offer entirely —
+         try again once, after the coast is clear. Both events are listened for
+         because either could be the thing in the way, and `once` removes both
+         so a later close cannot fire a second attempt. */
+      var retry = function () {
+        document.removeEventListener('non:cart:closed', retry);
+        document.removeEventListener('non:somm:closed', retry);
+        if (suppressed()) return;
+        setTimeout(function () {
+          if (!cartIsOpen() && !sommIsOpen() && !midPurchase()) open();
+        }, 600);
+      };
+      document.addEventListener('non:cart:closed', retry);
+      document.addEventListener('non:somm:closed', retry);
+      /* Nothing is open — we are only inside the add-to-cart window — so no
+         close event is coming. Come back after it lapses. */
+      if (!cartIsOpen() && !sommIsOpen()) setTimeout(retry, 4200);
       return;
     }
     open();

@@ -5987,3 +5987,723 @@ select:-moz-focusring { color: transparent; text-shadow: 0 0 0 var(--non-fg); }
     min-height: 40px;
   }
 }
+
+/* ==========================================================================
+   MOBILE-FIRST COMMERCE — the phone reads this page differently
+   ==========================================================================
+
+   EVERY RULE IN THIS FILE SECTION IS INSIDE `@media (max-width: 859px)`, with
+   the single exception of the three "hidden until mobile" declarations that
+   open it — and those hide new elements that do not exist on the desktop page
+   at all. Nothing here can reach a desktop layout, which is the brief's one
+   non-negotiable.
+
+   859 and not 749: 859 is this theme's own mobile ceiling. It is what 17 other
+   blocks in this file already use and what `main` is laid out against, and
+   inventing a second boundary at 749 would leave a 110px band where the page
+   is half of each. The cost is that a 768px tablet gets the phone layout;
+   that is the right call for a page whose desktop layout is a 50/50 split
+   that does not fit in 768.
+
+   Nothing here declares grid-template-columns on .non-somm (preflight check
+   6b) and nothing here positions the orb (check 6).
+   ========================================================================== */
+
+/* The three mobile-only components, absent above the breakpoint.
+
+   display:none rather than visibility or a clip: it takes them out of the
+   accessibility tree as well as off the screen, so a desktop screen reader
+   never meets the mobile Somm entry AND the desktop Somm, or the featured set
+   AND the sets carousel. The brief asks for exactly that. */
+.non-somm-entry,
+.non-firstbuy,
+.non-sheet { display: none; }
+
+@media (max-width: 859px) {
+
+  /* ---------------------------------------------------------------- order */
+
+  /* `main` becomes a flex column so sections can carry a mobile position.
+     Each section writes its own `order` from its own settings — see
+     snippets/section-style.liquid for why it is done there and not here.
+
+     Safe because every section on this page has zero margin: they sit flush,
+     so there is no collapsed margin for flex to stop collapsing. Verified
+     against the captured baseline, where each section's y is exactly the
+     previous one's y + height. */
+  main {
+    display: flex;
+    flex-direction: column;
+  }
+  /* A flex item's default min-height:auto lets a tall child push a section
+     past its box; and min-width:auto is what lets one horizontal rail give
+     the whole document a scrollbar. Both are closed here rather than per
+     section, because both apply to every one of them. */
+  main > * { min-width: 0; }
+
+  /* ------------------------------------------------------------- the hero */
+
+  /* Target: 650–750px, against 984 measured at 375px before this.
+
+     The saving is not compression — the type is untouched. It is that the
+     conversation moved to the sheet, so the hero carries a button where it
+     used to carry a field, five chips, a submit and a live dot. */
+  .non-hero__copy { padding-bottom: 4px; }
+
+  /* The inline Somm, and the ghost button that focuses it, are the desktop
+     component. Both are replaced by .non-somm-entry below. */
+  .non-hero .non-somm,
+  .non-hero [data-non-somm-focus] { display: none; }
+
+  .non-somm-entry {
+    display: block;
+    margin-top: 22px;
+  }
+  .non-somm-entry__label {
+    margin-bottom: 10px;
+    color: var(--non-fg-mute);
+  }
+
+  /* A BUTTON DRESSED AS A FIELD. It is not an input — see the section for why
+     — so it has to be given the affordances an input gets for free: the full
+     width, the left-aligned prompt, the caret at the end. */
+  .non-somm-entry__field {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    width: 100%;
+    min-height: 52px;
+    padding: 0 16px;
+    background: var(--non-somm-bg, rgba(242, 240, 234, .05));
+    border: 1px solid var(--non-somm-border, var(--non-line));
+    color: var(--non-fg);
+    font-family: var(--non-sans);
+    /* 16px floor, same reason as the real field: below it iOS Safari zooms the
+       viewport, and here it would zoom against a control that cannot even be
+       typed into. */
+    font-size: 16px;
+    text-align: left;
+    cursor: pointer;
+  }
+  .non-somm-entry__field:hover,
+  .non-somm-entry__field:focus-visible { border-color: var(--non-fg); }
+  .non-somm-entry__ph { color: var(--non-fg-mute); }
+  .non-somm-entry__go { flex: none; opacity: .7; }
+
+  /* ONE ROW, ALWAYS. `flex-wrap: nowrap` is the requirement — three chips
+     that wrap into two rows on a 320px screen read as a menu to work through
+     rather than a hint to flick past. The row scrolls instead. */
+  .non-somm-entry__chips {
+    display: flex;
+    flex-wrap: nowrap;
+    gap: 8px;
+    margin-top: 12px;
+    overflow-x: auto;
+    /* Bleeds to both edges so the row visibly continues off screen, which is
+       what says "swipe" without a caption saying it. */
+    margin-inline: calc(var(--non-pad) * -1);
+    padding-inline: var(--non-pad);
+    scroll-snap-type: x proximity;
+    scrollbar-width: none;
+  }
+  .non-somm-entry__chips::-webkit-scrollbar { display: none; }
+  .non-somm-entry__chip {
+    flex: none;
+    scroll-snap-align: start;
+    white-space: nowrap;
+    min-height: 44px;
+  }
+
+  /* ------------------------------------------------------- the core range */
+
+  /* 1.35 cards, against 2.2 before.
+
+     2.2 was chosen to match the two-column grid on the same page, which was
+     right when the row was one band among several. Now that the range is the
+     first thing under the hero it is the page's shop front, and at 2.2 a
+     bottle is 150px wide on a 375px screen — a thumbnail. 1.35 gives it 250px
+     and still cuts the next card off mid-tile, which is the part that tells a
+     thumb there is more. */
+  .non-row { --non-row-cols: 1.35; }
+
+  /* Arrows are a desktop control. They are already opacity:0 until a script
+     turns them on, but on a phone the swipe is the control and a 44px button
+     floating over the first card is just something to hit by accident. */
+  .non-row-arrow { display: none; }
+
+  /* ---------------------------------------------------- the "Made for" strip */
+
+  /* THREE ACROSS, NOT THREE STACKED.
+
+     Stacked, this section was 1,129px at 375px — three full-width squares and
+     three captions, which is two and a half screens of scrolling to see three
+     pictures that mean the same thing. As a strip it is one glance, and the
+     three routes are visibly alternatives to each other rather than a list.
+
+     28/44/28 rather than equal thirds: the middle tile carries the plated main
+     course, which is the widest subject of the three, and a centre panel with
+     more room reads as the primary route without needing to be labelled one. */
+  .non-trip {
+    grid-template-columns: 28% 44% 28%;
+    gap: 2px;
+    /* The band is a fixed height so the three crops are predictable. Clamped
+       rather than fixed so a 320px screen does not get a band taller than the
+       pictures inside it deserve. */
+    height: clamp(280px, 78vw, 340px);
+  }
+  .non-trip__cell {
+    /* Its own stacking context, so the caption's gradient cannot escape it and
+       the hit area cannot be covered by the next tile's. */
+    position: relative;
+    overflow: hidden;
+    isolation: isolate;
+  }
+  .non-trip__img {
+    /* The ratio has to go. Every tile is now the same HEIGHT and three
+       different widths, so an aspect-ratio would fight the row and win — which
+       is the same trap documented at .non-trip__img above, from the other
+       direction. Fill the cell and crop. */
+    aspect-ratio: auto;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: var(--non-trip-pos, 50% 50%);
+  }
+
+  /* The tile control. Above the picture, below nothing — it is the whole
+     tile, so there is no part of it that looks tappable and is not. */
+  .non-trip__hit {
+    position: absolute;
+    inset: 0;
+    z-index: 2;
+    display: block;
+    width: 100%;
+    background: transparent;
+    border: 0;
+    padding: 0;
+    cursor: pointer;
+    /* Removes the 300ms tap delay and the grey flash on Android, both of which
+       make a full-tile target feel unresponsive rather than instant. */
+    -webkit-tap-highlight-color: transparent;
+    touch-action: manipulation;
+  }
+  /* PRESSED, HOVER AND FOCUS, all visible and all distinct. A tile with no
+     pressed state on a phone is indistinguishable from a dead one for the
+     200ms before the sheet opens, which is exactly long enough to tap twice. */
+  .non-trip__hit:active { background: rgba(0, 0, 0, .18); }
+  .non-trip__hit:hover { background: rgba(0, 0, 0, .08); }
+  .non-trip__hit:focus-visible {
+    outline: 2px solid var(--non-fg);
+    outline-offset: -3px;
+  }
+
+  .non-trip__cap {
+    /* Under the control, so it never intercepts the tap. */
+    z-index: 1;
+    padding: 12px 10px;
+    /* A stronger, taller scrim than the desktop one: the type sits over a
+       third of a phone rather than a 392px square, so it has less room to find
+       a dark part of the photograph to sit on. */
+    background: linear-gradient(to top, rgba(0, 0, 0, .82) 0%, rgba(0, 0, 0, .45) 45%, transparent 100%);
+  }
+  .non-trip__title {
+    font-family: var(--non-mono);
+    font-size: 11px;
+    letter-spacing: .14em;
+    text-transform: uppercase;
+    line-height: 1.2;
+  }
+  .non-trip__sub {
+    font-size: 11.5px;
+    line-height: 1.25;
+    margin-top: 3px;
+    /* Two lines, then stop. A third line pushes the title off the scrim and
+       into the middle of the photograph. */
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+  /* The narrow outer tiles cannot carry the subtitle at all below 360px —
+     "oysters, radicchio, cured fish" in a 90px column is five lines. */
+  @media (max-width: 359px) {
+    .non-trip__sub { display: none; }
+  }
+
+  /* --------------------------------------------------- the first purchase */
+
+  .non-firstbuy {
+    display: grid;
+    grid-template-columns: 1fr 38%;
+    align-items: center;
+    gap: 16px;
+    padding: 32px var(--non-pad);
+    border-top: 1px solid var(--non-line);
+    border-bottom: 1px solid var(--non-line);
+  }
+  .non-firstbuy__title {
+    font-size: 24px;
+    line-height: 1.15;
+    letter-spacing: -.02em;
+    margin: 10px 0 0;
+  }
+  .non-firstbuy__body {
+    font-size: var(--t-body);
+    color: var(--non-fg-mute);
+    margin: 8px 0 0;
+    text-wrap: pretty;
+  }
+  .non-firstbuy__price {
+    display: flex;
+    align-items: baseline;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-top: 14px;
+  }
+  .non-firstbuy__now { font-size: 18px; font-weight: 600; }
+  .non-firstbuy__was { color: var(--non-fg-faint); font-size: 14px; }
+  .non-firstbuy__save {
+    font-family: var(--non-mono);
+    font-size: 11px;
+    letter-spacing: .1em;
+    text-transform: uppercase;
+  }
+  .non-firstbuy__actions {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+    margin-top: 16px;
+  }
+  .non-firstbuy__cta {
+    min-height: 48px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .non-firstbuy__more {
+    font-family: var(--non-mono);
+    font-size: 11px;
+    letter-spacing: .1em;
+    text-transform: uppercase;
+    min-height: 44px;
+    display: inline-flex;
+    align-items: center;
+  }
+  .non-firstbuy__media { display: block; align-self: stretch; }
+  .non-firstbuy__img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center;
+    display: block;
+  }
+  /* Below 360 the picture costs more than it earns — it squeezes the price and
+     the button into a column narrower than the button's own label. */
+  @media (max-width: 359px) {
+    .non-firstbuy { grid-template-columns: 1fr; }
+    .non-firstbuy__media { display: none; }
+  }
+
+  /* ------------------------------------------------------- the proof band */
+
+  /* "Poured at" and Press, read as one thing.
+
+     They were 132px and 866px, separated, with the logo marquee running its
+     full animation before a quote carousel. Together they are a logo strip and
+     ONE quote: the reassurance without the intermission. */
+  .non-poured { padding: 22px 0 16px; }
+  /* No bottom rule between them — they are one band now, and two adjacent
+     sections each drawing their own edge is what made them read as two. */
+  .non-poured + * .non-press,
+  .non-press { padding-top: 22px; }
+
+  /* NOT A CAROUSEL, AND NOT AUTOMATIC.
+
+     press-rotate.js stands down below this width (see the file), so `is-on`
+     is never applied and every quote is in the row. The row scroll-snaps one
+     quote at a time, so a second quote is available to a swipe and to nobody
+     who does not want it. */
+  .non-press__list {
+    flex-direction: row;
+    flex-wrap: nowrap;
+    gap: 0;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    scrollbar-width: none;
+    margin-inline: calc(var(--non-pad) * -1);
+    padding-inline: var(--non-pad);
+    overscroll-behavior-inline: contain;
+  }
+  .non-press__list::-webkit-scrollbar { display: none; }
+  .non-press__item {
+    /* Beats the .is-on gating that the rotator would otherwise own. It is not
+       running here, but a resize from desktop can leave its classes behind. */
+    display: block;
+    opacity: 1;
+    flex: 0 0 100%;
+    width: 100%;
+    scroll-snap-align: start;
+    padding-right: var(--non-pad);
+  }
+  .non-press__quote {
+    font-size: 18px;
+    line-height: 1.35;
+    /* Long quotes are the reason the section was 866px. Four lines is enough
+       to carry a claim; the rest is available on the press page. */
+    display: -webkit-box;
+    -webkit-line-clamp: 4;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+  /* Attribution stays visible whatever the quote does — an unattributed pull
+     quote is not proof of anything. */
+  .non-press__cite { margin-top: 10px; }
+  .non-press .non-globe { display: none; }
+}
+
+/* ==========================================================================
+   THE NON SOMM SHEET — mobile only
+   ==========================================================================
+   Opened by every mobile entry point on the page and shared by all of them, so
+   there is one conversation rather than one per component.
+
+   Z-INDEX 92, and the number is load-bearing. The cart drawer is 95 and the
+   lotto is 100. Sitting under the drawer means the brief's "do not cover an
+   active cart drawer" holds even if every behavioural guard in somm-sheet.js
+   were removed — the stacking order alone enforces it. It sits above the
+   sticky header at 90, which it has to, being a modal.
+   ========================================================================== */
+@media (max-width: 859px) {
+  .non-sheet {
+    display: block;
+    position: fixed;
+    inset: 0;
+    z-index: 92;
+  }
+  .non-sheet[hidden] { display: none; }
+
+  .non-sheet__scrim {
+    position: absolute;
+    inset: 0;
+    background: var(--non-scrim);
+    opacity: 0;
+    transition: opacity var(--duration-hover, .2s) var(--ease-hover, ease);
+  }
+  .non-sheet.is-open .non-sheet__scrim { opacity: 1; }
+
+  .non-sheet__panel {
+    position: absolute;
+    left: 0;
+    right: 0;
+    /* Pinned to the visual viewport, not the layout viewport.
+
+       --non-sheet-vh and --non-sheet-top are written by somm-sheet.js from
+       window.visualViewport on every resize and scroll of it. That is the only
+       number that tells the truth while a phone keyboard is open: on iOS the
+       keyboard does not change innerHeight, so a sheet sized in dvh keeps its
+       full height and slides its own input underneath the keyboard.
+
+       The fallbacks are what a browser without visualViewport gets, and dvh is
+       the closest honest approximation there. */
+    top: var(--non-sheet-top, 0px);
+    height: var(--non-sheet-vh, 100dvh);
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    pointer-events: none;
+  }
+  .non-sheet__panel > * { pointer-events: auto; }
+
+  .non-sheet__panel {
+    /* The panel itself is the bottom 94% of that box. Slides up from below and
+       back down, which is the gesture a phone user already expects from a
+       sheet — and the one the drag handle reverses. */
+    transform: translateY(100%);
+    transition: transform .26s var(--non-ease, cubic-bezier(.2, .7, .3, 1));
+  }
+  .non-sheet.is-open .non-sheet__panel { transform: translateY(0); }
+
+  /* Anyone who has asked for less motion gets the sheet without the slide. It
+     still appears and disappears; it just does not travel. */
+  @media (prefers-reduced-motion: reduce) {
+    .non-sheet__panel,
+    .non-sheet.is-open .non-sheet__panel { transition: none; }
+    .non-sheet__scrim { transition: none; }
+  }
+
+  .non-sheet__inner,
+  .non-sheet__panel {
+    background: var(--non-bg);
+  }
+  .non-sheet__panel {
+    max-height: 94%;
+    border-top: 1px solid var(--non-line);
+    /* The home indicator on a modern iPhone sits inside the sheet's bottom
+       edge. Without this the send button is under it and the OS wins the tap. */
+    padding-bottom: env(safe-area-inset-bottom, 0px);
+    overflow: hidden;
+  }
+
+  .non-sheet__grab {
+    flex: none;
+    height: 22px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: grab;
+    touch-action: none;
+  }
+  .non-sheet__grab::after {
+    content: "";
+    width: 38px;
+    height: 3px;
+    background: var(--non-line-strong, rgba(242, 240, 234, .28));
+  }
+
+  .non-sheet__head {
+    flex: none;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 2px var(--non-pad) 10px;
+    border-bottom: 1px solid var(--non-line);
+  }
+  .non-sheet__live { margin-left: auto; display: inline-flex; align-items: center; }
+  .non-sheet__x {
+    flex: none;
+    /* 44px, the floor. A close control that is hard to hit is the one place
+       on a modal where a miss is most expensive. */
+    width: 44px;
+    height: 44px;
+    margin-right: calc(var(--non-pad) * -1 + 6px);
+    display: grid;
+    place-items: center;
+    background: none;
+    border: 0;
+    color: var(--non-fg);
+    font-size: 22px;
+    line-height: 1;
+    cursor: pointer;
+  }
+  .non-sheet__x:focus-visible { outline: 2px solid var(--non-fg); outline-offset: -4px; }
+
+  /* ONLY THIS SCROLLS. The field and the product action below stay put, so the
+     way to ask and the way to buy never scroll off. */
+  .non-sheet__scroll {
+    flex: 1 1 auto;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+    overscroll-behavior: contain;
+    padding: 16px var(--non-pad);
+  }
+  .non-sheet__opener {
+    font-size: 17px;
+    line-height: 1.35;
+    margin: 0 0 4px;
+  }
+
+  .non-sheet__foot {
+    flex: none;
+    padding: 10px var(--non-pad) 12px;
+    border-top: 1px solid var(--non-line);
+    background: var(--non-bg);
+  }
+
+  /* The bottle under discussion, kept buyable while the conversation runs. */
+  .non-sheet__ctx {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding-bottom: 10px;
+    margin-bottom: 10px;
+    border-bottom: 1px solid var(--non-line);
+  }
+  .non-sheet__ctx[hidden] { display: none; }
+  .non-sheet__ctx-name {
+    flex: 1 1 auto;
+    min-width: 0;
+    font-size: 14px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .non-sheet__ctx-add {
+    flex: none;
+    min-height: 44px;
+    padding: 0 16px;
+    background: var(--non-fg);
+    color: var(--non-bg);
+    border: 0;
+    font-family: var(--non-mono);
+    font-size: 11px;
+    letter-spacing: .1em;
+    text-transform: uppercase;
+    cursor: pointer;
+  }
+  .non-sheet__ctx-add[disabled] { opacity: .45; cursor: default; }
+
+  .non-sheet__seeds {
+    display: flex;
+    flex-wrap: nowrap;
+    gap: 8px;
+    overflow-x: auto;
+    scrollbar-width: none;
+    margin: 0 calc(var(--non-pad) * -1) 10px;
+    padding: 0 var(--non-pad);
+    scroll-snap-type: x proximity;
+  }
+  .non-sheet__seeds::-webkit-scrollbar { display: none; }
+  .non-sheet__seeds[hidden] { display: none; }
+  .non-sheet__seeds .non-somm__seed {
+    flex: none;
+    scroll-snap-align: start;
+    white-space: nowrap;
+    min-height: 44px;
+  }
+
+  .non-sheet__ask {
+    display: flex;
+    align-items: stretch;
+    gap: 8px;
+  }
+  .non-sheet__ask .non-somm__input {
+    flex: 1;
+    min-width: 0;
+    min-height: 48px;
+    /* 16px exactly, or iOS zooms the viewport on focus and the sheet's careful
+       height arithmetic is thrown away by the browser. */
+    font-size: 16px;
+  }
+  .non-sheet__send {
+    flex: none;
+    width: 48px;
+    min-height: 48px;
+    display: grid;
+    place-items: center;
+    background: var(--non-fg);
+    color: var(--non-bg);
+    border: 0;
+    font-size: 18px;
+    cursor: pointer;
+  }
+  .non-sheet__send:focus-visible { outline: 2px solid var(--non-fg); outline-offset: 2px; }
+
+  /* The orb belongs to the inline component. In a sheet the panel is already
+     the Somm, so a 104px mark on top of it is a third of the space before a
+     word is read. Hidden rather than resized — it is decoration here.
+     No position property is set: preflight check 6 owns those. */
+  .non-sheet .non-somm::before { display: none; }
+}
+
+/* --- the shoppable recommendation card ------------------------------------
+   Inside the sheet only. The desktop picks row (.non-somm__pick) is untouched
+   and still renders on every desktop surface. */
+@media (max-width: 859px) {
+  .non-sheet .non-somm__picks {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-top: 14px;
+  }
+
+  .non-rec {
+    display: grid;
+    grid-template-columns: 84px 1fr;
+    gap: 12px;
+    padding: 12px;
+    border: 1px solid var(--non-line);
+    background: var(--non-panel, rgba(242, 240, 234, .04));
+  }
+  .non-rec:has(.non-rec__body:only-child) { grid-template-columns: 1fr; }
+  .non-rec__media { display: block; background: var(--non-photo-bed); }
+  .non-rec__media img {
+    width: 100%;
+    height: 100%;
+    aspect-ratio: 1/1;
+    object-fit: cover;
+    display: block;
+  }
+  .non-rec__body { min-width: 0; }
+  .non-rec__code {
+    font-size: 10.5px;
+    letter-spacing: .16em;
+    text-transform: uppercase;
+    color: var(--non-fg-mute);
+  }
+  .non-rec__name { font-size: 16px; line-height: 1.2; margin: 4px 0 0; font-weight: 600; }
+  .non-rec__name a { color: inherit; }
+  .non-rec__note {
+    font-size: 13px;
+    line-height: 1.35;
+    color: var(--non-fg-mute);
+    margin: 5px 0 0;
+  }
+  .non-rec__actions {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-top: 10px;
+  }
+  .non-rec__add {
+    min-height: 44px;
+    padding: 0 16px;
+    background: var(--non-fg);
+    color: var(--non-bg);
+    border: 0;
+    font-family: var(--non-mono);
+    font-size: 11px;
+    letter-spacing: .08em;
+    text-transform: uppercase;
+    cursor: pointer;
+  }
+  .non-rec__add[disabled] { opacity: .5; cursor: default; }
+  /* Sold out is a state on the card, not a missing card. Rendered as a span
+     rather than a disabled button so it is not a control at all. */
+  .non-rec__add--out {
+    display: inline-flex;
+    align-items: center;
+    background: transparent;
+    color: var(--non-fg-faint);
+    border: 1px solid var(--non-line);
+  }
+  .non-rec__see,
+  .non-rec__ask {
+    min-height: 44px;
+    display: inline-flex;
+    align-items: center;
+    background: none;
+    border: 0;
+    padding: 0;
+    color: var(--non-fg-mute);
+    font-family: var(--non-mono);
+    font-size: 11px;
+    letter-spacing: .08em;
+    text-transform: uppercase;
+    text-decoration: underline;
+    text-underline-offset: 3px;
+    cursor: pointer;
+  }
+  .non-rec__more { display: flex; gap: 16px; flex-wrap: wrap; }
+  .non-rec__msg { font-size: 12.5px; margin: 8px 0 0; color: var(--non-fg); }
+  .non-rec__msg[hidden] { display: none; }
+
+  .non-rec-fail { padding: 14px 0 0; }
+  .non-rec-fail__b { font-size: 15px; margin: 0 0 12px; color: var(--non-fg-mute); }
+  .non-rec-fail__actions { display: flex; align-items: center; gap: 14px; flex-wrap: wrap; }
+}
+
+/* The slow-response note. Not inside a media query: the wait can happen on any
+   width, and a desktop customer waiting eight seconds deserves the same
+   sentence. It is additive — it appends to the thinking mark rather than
+   replacing it, so the desktop working state is unchanged when the response is
+   fast, which is almost always. */
+.non-think__slow {
+  display: inline-block;
+  margin-left: 12px;
+  font-size: 13px;
+  color: var(--non-fg-mute);
+  vertical-align: middle;
+}

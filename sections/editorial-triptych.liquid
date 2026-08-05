@@ -3,7 +3,80 @@
 <div class="non-trip non-trip--ratio-{{ ratio }}"{% if section.settings.max_height > 0 %} style="--non-trip-max: {{ section.settings.max_height }}px"{% endif %}>
   {%- for block in section.blocks -%}
     {%- assign alt_text = block.settings.image_alt | default: block.settings.title -%}
-    <div class="non-trip__cell" {{ block.shopify_attributes }}>
+    {%- comment -%}
+      The tile's accessible name. The caption is aria-hidden once the tile is a
+      control, so this is the ONLY thing a screen reader gets — it has to carry
+      what the caption was showing, not just the action. Falls back to the
+      overlay copy so a merchant who writes nothing still gets a usable name
+      rather than "button".
+    {%- endcomment -%}
+    {%- capture tile_name -%}
+      {%- if block.settings.tile_label != blank -%}
+        {{ block.settings.tile_label }}
+      {%- else -%}
+        {{ block.settings.title }}{% if block.settings.subtitle != blank %} — {{ block.settings.subtitle }}{% endif %}
+      {%- endif -%}
+    {%- endcapture -%}
+    {%- assign tile_name = tile_name | strip -%}
+
+    {%- comment -%}
+      THE WHOLE TILE IS THE CONTROL.
+
+      At 280–340px tall and a third of a phone wide, a tile has no room for a
+      button inside it that is also a 44px target — and a button inside a
+      picture that is itself tappable is two overlapping targets with different
+      outcomes. So the tile is one control, filling its own cell, and the
+      caption sits on top of it rather than beside it.
+
+      Which control it is depends on what the block is for:
+
+        - a meal category opens the Somm with that category already supplied,
+          so "mains" does not have to be typed by someone who has just tapped
+          the word MAINS
+        - a plain link stays a link
+        - neither leaves the tile as inert editorial, which is what it was
+
+      The accessible name is written for the action, not read off the picture:
+      "Find a NON for mains" says what happens. The alt text describes the food
+      and does not repeat the overlay, so a screen reader is not given the same
+      three words twice.
+    {%- endcomment -%}
+    {%- comment -%}
+      FOCAL POINT, PER TILE.
+
+      Three photographs cropped to a 28/44/28 strip on a phone are three
+      different crops, and `object-position: center` is only right by accident.
+      A plated main shot from above wants its centre; a bottle standing in a
+      frame wants its top. One shared default put the food out of frame on two
+      of the three tiles at 375px.
+
+      A custom property rather than a class per position, because the value is
+      an arbitrary pair of percentages and enumerating them in CSS would cap
+      what a merchant can choose at whatever list someone thought of.
+    {%- endcomment -%}
+    <div
+      class="non-trip__cell"
+      {% if block.settings.focal != blank %}style="--non-trip-pos: {{ block.settings.focal }}"{% endif %}
+      {{ block.shopify_attributes }}>
+      {%- if block.settings.meal_category != blank -%}
+        <button
+          type="button"
+          class="non-trip__hit"
+          data-non-somm-open
+          data-somm-surface="homepage_triptych"
+          data-somm-context="home"
+          data-somm-meal="{{ block.settings.meal_category | escape }}"
+          data-somm-position="{{ forloop.index0 }}"
+          data-somm-opener="{{ block.settings.somm_question | escape }}"
+          data-somm-options="{{ block.settings.somm_options | escape }}">
+          <span class="visually-hidden">{{ tile_name }}</span>
+        </button>
+      {%- elsif block.settings.link != blank -%}
+        <a class="non-trip__hit" href="{{ block.settings.link }}">
+          <span class="visually-hidden">{{ tile_name }}</span>
+        </a>
+      {%- endif -%}
+
       {%- if block.settings.image != blank -%}
         {{
           block.settings.image
@@ -20,10 +93,23 @@
         {{ 'lifestyle-1' | placeholder_svg_tag }}
       {%- endif -%}
 
-      <div class="non-trip__cap">
-        {%- if block.settings.link != blank -%}<a href="{{ block.settings.link }}">{%- endif -%}
+      {%- comment -%}
+        The caption sits UNDER the tile control in the stacking order and is
+        not itself clickable. It used to wrap the title in its own anchor,
+        which — now that the whole tile is a control — would be a second
+        target inside the first, reachable by tab, announcing the same
+        destination. One control per tile.
+
+        The anchor is only kept when there is no tile control at all, which is
+        the case for a block with neither a meal category nor a link: nothing
+        to click, nothing to nest.
+      {%- endcomment -%}
+      {%- assign has_hit = false -%}
+      {%- if block.settings.meal_category != blank or block.settings.link != blank -%}
+        {%- assign has_hit = true -%}
+      {%- endif -%}
+      <div class="non-trip__cap"{% if has_hit %} aria-hidden="true"{% endif %}>
         <div class="non-trip__title">{{ block.settings.title }}</div>
-        {%- if block.settings.link != blank -%}</a>{%- endif -%}
         <div class="non-trip__sub">{{ block.settings.subtitle }}</div>
       </div>
     </div>
@@ -125,6 +211,16 @@
       "unit": "px",
       "default": 0,
       "info": "0 keeps the section's own spacing."
+    },
+    {
+      "type": "range",
+      "id": "mobile_order",
+      "label": "Position on mobile",
+      "min": 0,
+      "max": 12,
+      "step": 1,
+      "default": 0,
+      "info": "Where this section sits on a phone, low to high. Desktop keeps the order in the template regardless. 0 leaves it where it is."
     }
   ],
   "blocks": [
@@ -166,6 +262,40 @@
           "type": "url",
           "id": "link",
           "label": "Link"
+        },
+        {
+          "type": "text",
+          "id": "focal",
+          "label": "Focal point",
+          "info": "Which part of the photo to keep when it is cropped, as two percentages: 50% 50% is the centre, 50% 30% keeps the upper third. Matters most on a phone, where the tile is narrow."
+        },
+        {
+          "type": "header",
+          "content": "Open the Somm instead"
+        },
+        {
+          "type": "text",
+          "id": "meal_category",
+          "label": "Meal category",
+          "info": "Fill this in — starters, mains, dessert — and tapping the tile opens the NON Somm with that already supplied instead of following the link. Leave empty to keep it a plain link."
+        },
+        {
+          "type": "text",
+          "id": "somm_question",
+          "label": "Opening question",
+          "info": "The one short question the Somm asks first, e.g. What's the main event? A category on its own is too broad to recommend from."
+        },
+        {
+          "type": "text",
+          "id": "somm_options",
+          "label": "Answers",
+          "info": "Separated by a vertical bar: Roast chicken | Lamb | Mushroom | Something spicy. Shown as chips under the question."
+        },
+        {
+          "type": "text",
+          "id": "tile_label",
+          "label": "Accessible name",
+          "info": "What a screen reader announces for the whole tile, e.g. Find a NON for mains. Falls back to the title and subtitle."
         }
       ]
     }

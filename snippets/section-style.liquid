@@ -26,7 +26,38 @@
   assign pad = section.settings.section_padding
 
   assign sel = '#shopify-section-' | append: section.id
+  assign m_order = section.settings.mobile_order
 -%}
+
+{%- comment -%}
+  MOBILE ORDER — the phone reads the page in a different sequence.
+
+  The homepage's desktop order is right for a wide screen and wrong for a
+  narrow one: it puts a logo marquee and a sets carousel between the hero and
+  the first bottle a customer can buy, which on a 390px phone is 1,226px of
+  scrolling before the range appears.
+
+  Rather than a second template, each section carries a mobile position and
+  emits one rule for itself. That keeps the two orders in the one place a
+  merchant would look — the section's own settings — and means desktop is
+  untouched by construction: the rule only exists inside the mobile query, and
+  `main` is only a flex container inside the same query.
+
+  Why per-section and not a stylesheet block: section ids are generated, so a
+  central block would have to name them and would rot the moment a section is
+  duplicated or renamed in the editor. This cannot rot — the rule is written by
+  the section it orders.
+
+  0 means "leave it where the template put it", which is what every section not
+  on the homepage does.
+{%- endcomment -%}
+{%- if m_order and m_order > 0 -%}
+  <style>
+    @media (max-width: 859px) {
+      {{ sel }} { order: {{ m_order }}; }
+    }
+  </style>
+{%- endif -%}
 
 {%- capture rules -%}
   {%- if bg != blank and bg != 'rgba(0,0,0,0)' -%}

@@ -1,0 +1,243 @@
+{% render 'section-style', section: section %}
+{%- comment -%}
+  THE FIRST PURCHASE, named.
+
+  A customer who has just met the brand does not want to choose between six
+  bottles they have never tasted; they want to be told where to start. On
+  desktop the Sets carousel does that job with room to browse. On a phone it is
+  a second horizontal rail immediately after the first one, and the two read as
+  the same thing twice.
+
+  So this is the mobile answer: ONE set, presented as the recommended way in,
+  with the carousel left exactly as it is on desktop. The section hides itself
+  above the mobile breakpoint — display:none rather than a visual hide, so a
+  screen reader on a wide viewport is not offered the same set twice.
+
+  EVERYTHING NUMERIC COMES FROM SHOPIFY. Price, compare-at price and
+  availability are read off the product on every render. Nothing here is a
+  setting a merchant could leave stale, which is the whole point: a hardcoded
+  "$150" survives a price change and lies about it.
+
+  The saving line only appears when compare_at_price is genuinely higher than
+  price. It is not derived, assumed, or written by hand — if Shopify does not
+  say there is a saving, the page does not claim one.
+
+  The body copy IS a setting, because it describes what is in the box and only
+  a person who knows the box should be writing that.
+{%- endcomment -%}
+
+{%- liquid
+  assign p = section.settings.product
+  assign v = p.selected_or_first_available_variant
+-%}
+
+{%- if p != blank -%}
+  <div class="non-firstbuy" data-non-firstbuy>
+    <div class="non-firstbuy__copy">
+      {%- if section.settings.eyebrow != blank -%}
+        <div class="non-mono non-eyebrow">{{ section.settings.eyebrow }}</div>
+      {%- endif -%}
+
+      <h2 class="non-firstbuy__title">{{ section.settings.heading }}</h2>
+
+      {%- if section.settings.body != blank -%}
+        <p class="non-firstbuy__body">{{ section.settings.body }}</p>
+      {%- endif -%}
+
+      <div class="non-firstbuy__price">
+        {%- if p.available -%}
+          <span class="non-firstbuy__now">{{ p.price | money }}</span>
+          {%- comment -%}
+            Strictly greater than. `!= blank` would print a strike-through on
+            every product where compare_at equals price, which is most of them,
+            and a crossed-out identical number reads as a discount that is not
+            there.
+          {%- endcomment -%}
+          {%- if p.compare_at_price > p.price -%}
+            <s class="non-firstbuy__was">{{ p.compare_at_price | money }}</s>
+            {%- assign saving = p.compare_at_price | minus: p.price -%}
+            <span class="non-firstbuy__save">
+              {{ section.settings.save_word }} {{ saving | money }}
+            </span>
+          {%- endif -%}
+        {%- else -%}
+          <span class="non-firstbuy__now">{{ 'products.product.sold_out' | t }}</span>
+        {%- endif -%}
+      </div>
+
+      <div class="non-firstbuy__actions">
+        {%- comment -%}
+          A LINK TO THE PRODUCT, not an add-to-cart.
+
+          A six-bottle set is a considered purchase and it has variants; adding
+          the first available one from a homepage band would be choosing on the
+          customer's behalf. The PDP is two taps from here and shows what they
+          are buying.
+        {%- endcomment -%}
+        {%- if p.available -%}
+          <a class="non-btn non-firstbuy__cta" href="{{ p.url }}">
+            {{ section.settings.cta_label }}
+          </a>
+        {%- else -%}
+          <a class="non-btn non-btn--ghost non-firstbuy__cta" href="{{ p.url }}">
+            {{ section.settings.sold_out_cta }}
+          </a>
+        {%- endif -%}
+
+        {%- if section.settings.link_label != blank and section.settings.link_url != blank -%}
+          <a class="non-firstbuy__more" href="{{ section.settings.link_url }}">
+            {{ section.settings.link_label }} &rarr;
+          </a>
+        {%- endif -%}
+      </div>
+    </div>
+
+    {%- if p.featured_image != blank -%}
+      <a class="non-firstbuy__media" href="{{ p.url }}" tabindex="-1" aria-hidden="true">
+        {{
+          p.featured_image
+          | image_url: width: 800, format: 'webp'
+          | image_tag:
+            loading: 'lazy',
+            widths: '320,480,640,800',
+            sizes: '(min-width: 860px) 0px, 45vw',
+            class: 'non-firstbuy__img',
+            alt: ''
+        }}
+      </a>
+    {%- endif -%}
+  </div>
+{%- endif -%}
+
+{% schema %}
+{
+  "name": "Featured set",
+  "settings": [
+    {
+      "type": "product",
+      "id": "product",
+      "label": "The set",
+      "info": "Price, saving and availability are read from this product every time the page renders. Nothing is copied here."
+    },
+    {
+      "type": "text",
+      "id": "eyebrow",
+      "label": "Eyebrow",
+      "default": "New to NON?"
+    },
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Heading",
+      "default": "Start with the Mixed 6 Pack."
+    },
+    {
+      "type": "textarea",
+      "id": "body",
+      "label": "Body",
+      "default": "Six bottles across the range — the simplest way to find what belongs on your table.",
+      "info": "Describes what is in the box. Change it if the set changes."
+    },
+    {
+      "type": "text",
+      "id": "cta_label",
+      "label": "Button",
+      "default": "Shop the Mixed 6 Pack"
+    },
+    {
+      "type": "text",
+      "id": "sold_out_cta",
+      "label": "Button when sold out",
+      "default": "See the set"
+    },
+    {
+      "type": "text",
+      "id": "save_word",
+      "label": "Saving word",
+      "default": "Save"
+    },
+    {
+      "type": "text",
+      "id": "link_label",
+      "label": "Secondary link label",
+      "default": "View all sets"
+    },
+    {
+      "type": "url",
+      "id": "link_url",
+      "label": "Secondary link"
+    },
+    {
+      "type": "header",
+      "content": "Appearance"
+    },
+    {
+      "type": "color",
+      "id": "bg_color",
+      "label": "Background"
+    },
+    {
+      "type": "color",
+      "id": "text_color",
+      "label": "Text colour"
+    },
+    {
+      "type": "select",
+      "id": "font_family",
+      "label": "Font",
+      "options": [
+        {
+          "value": "",
+          "label": "Theme default"
+        },
+        {
+          "value": "sans",
+          "label": "Helvetica (all text)"
+        },
+        {
+          "value": "mono",
+          "label": "JetBrains Mono (all text)"
+        }
+      ],
+      "default": ""
+    },
+    {
+      "type": "range",
+      "id": "text_scale",
+      "label": "Text size",
+      "min": 70,
+      "max": 150,
+      "step": 5,
+      "unit": "%",
+      "default": 100,
+      "info": "Scales every text size in this section together."
+    },
+    {
+      "type": "range",
+      "id": "section_padding",
+      "label": "Vertical padding",
+      "min": 0,
+      "max": 160,
+      "step": 8,
+      "unit": "px",
+      "default": 0,
+      "info": "0 keeps the section's own spacing."
+    },
+    {
+      "type": "range",
+      "id": "mobile_order",
+      "label": "Position on mobile",
+      "min": 0,
+      "max": 12,
+      "step": 1,
+      "default": 0,
+      "info": "Where this section sits on a phone, low to high. Desktop keeps the order in the template regardless. 0 leaves it where it is."
+    }
+  ],
+  "presets": [
+    {
+      "name": "Featured set"
+    }
+  ]
+}
+{% endschema %}

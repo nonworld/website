@@ -61,6 +61,79 @@
       the seeds below are the canned answers from the design and are used both
       as one-tap prompts and as the offline fallback when no endpoint is set.
     {%- endcomment -%}
+    {%- comment -%}
+      THE MOBILE ENTRY — a way in, not the whole conversation.
+
+      The inline form below is the right shape on a desktop, where it sits in a
+      wide column with room for a field, a button, a live dot and five chips.
+      On a 390px phone the same markup was 226px of the hero — the field, the
+      chips and the orb pushed the picture off the first screen and the range
+      1,226px down the page.
+
+      So on a phone the Somm is announced and opened, and the conversation
+      happens in the sheet where there is room for it. This is a BUTTON that
+      looks like a field rather than a real input: a second focusable text field
+      that only exists to open a dialog containing another text field is a trap
+      for anyone using a keyboard or a screen reader, and iOS would raise the
+      keyboard against a control that cannot receive typing.
+
+      Exactly one of this and the form below is in the document at any width —
+      the other is display:none, which takes it out of the accessibility tree
+      as well as off the screen. Nothing is announced twice.
+    {%- endcomment -%}
+    <div class="non-somm-entry" data-non-somm-entry>
+      {%- if section.settings.cta_ask_label != blank -%}
+        <div class="non-mono non-eyebrow non-somm-entry__label">{{ section.settings.cta_ask_label }}</div>
+      {%- endif -%}
+
+      <button
+        type="button"
+        class="non-somm-entry__field"
+        data-non-somm-open
+        data-somm-surface="homepage_hero"
+        data-somm-context="home">
+        <span class="non-somm-entry__ph">
+          {{- section.settings.mobile_placeholder | default: section.settings.placeholder -}}
+        </span>
+        <span class="non-somm-entry__go" aria-hidden="true">&rarr;</span>
+      </button>
+
+      {%- comment -%}
+        THREE, and no more.
+
+        Seeds flagged "Show on mobile" win; if a merchant has flagged none —
+        which is the state every existing template is in — the first three are
+        used, so this degrades to something sensible rather than to nothing.
+        Either way the loop stops at three: the brief's ceiling, and about what
+        fits on one line at 320px before the row becomes a menu.
+      {%- endcomment -%}
+      {%- assign all_seeds = section.blocks | where: 'type', 'seed' -%}
+      {%- assign flagged = all_seeds | where: 'settings.show_on_mobile', true -%}
+      {%- if flagged.size > 0 -%}
+        {%- assign mobile_seeds = flagged -%}
+      {%- else -%}
+        {%- assign mobile_seeds = all_seeds -%}
+      {%- endif -%}
+
+      {%- if mobile_seeds.size > 0 -%}
+        <div class="non-somm-entry__chips">
+          {%- for block in mobile_seeds limit: 3 -%}
+            <button
+              type="button"
+              class="non-somm__seed non-somm-entry__chip"
+              data-non-somm-open
+              data-somm-surface="homepage_hero"
+              data-somm-context="home"
+              data-somm-intent="{{ block.settings.intent | escape }}"
+              data-somm-prompt="{{ block.settings.label | escape }}"
+              {{ block.shopify_attributes }}>
+              {{ block.settings.short_label | default: block.settings.label }}
+            </button>
+          {%- endfor -%}
+        </div>
+      {%- endif -%}
+    </div>
+
     <form class="non-somm" data-non-somm data-somm-context="home" role="search" style="{% if section.settings.somm_dot_colour != blank %}--non-somm-dot: {{ section.settings.somm_dot_colour }};{% endif %}{% if section.settings.somm_bg != blank %}--non-somm-bg: {{ section.settings.somm_bg }};{% endif %}{% if section.settings.somm_border != blank %}--non-somm-border: {{ section.settings.somm_border }};{% endif %}">
       <div class="non-somm__bar">
         <span class="non-somm__caret" aria-hidden="true">&gt;</span>
@@ -99,6 +172,13 @@
               data-non-somm-seed
               data-answer="{{ block.settings.answer | escape }}"
               data-picks="{{ block.settings.picks | escape }}"
+              {%- comment -%}
+                The short form, for the sheet. It clones these buttons rather
+                than re-rendering the blocks, so the suggestions stay authored
+                in one place — and a chip that reads "Roast chicken, Friday
+                night" inside a 360px sheet is a sentence, not a chip.
+              {%- endcomment -%}
+              data-short="{{ block.settings.short_label | default: block.settings.label | escape }}"
               {{ block.shopify_attributes }}>
               {{ block.settings.label }}
             </button>
@@ -299,6 +379,13 @@
       "default": "Tell me what's on the table tonight"
     },
     {
+      "type": "text",
+      "id": "mobile_placeholder",
+      "label": "Phone prompt",
+      "info": "The line inside the Somm button on a phone. Shorter than the desktop placeholder — it sits in a 320px field. Falls back to the placeholder above.",
+      "default": "What's on the table?"
+    },
+    {
       "type": "color",
       "id": "somm_bg",
       "label": "Somm box background",
@@ -426,6 +513,16 @@
       "info": "0 keeps the section's own spacing."
     },
     {
+      "type": "range",
+      "id": "mobile_order",
+      "label": "Position on mobile",
+      "min": 0,
+      "max": 12,
+      "step": 1,
+      "default": 0,
+      "info": "Where this section sits on a phone, low to high. Desktop keeps the order in the template regardless. 0 leaves it where it is."
+    },
+    {
       "type": "header",
       "content": "Hero buttons"
     },
@@ -492,6 +589,25 @@
           "id": "picks",
           "label": "Bottle codes",
           "info": "Comma separated, e.g. NON3,NON1"
+        },
+        {
+          "type": "text",
+          "id": "short_label",
+          "label": "Short label",
+          "info": "One or two words for the phone chip — Dinner, Gift, Going dry. Falls back to the question above."
+        },
+        {
+          "type": "text",
+          "id": "intent",
+          "label": "Intent",
+          "info": "Recorded with the conversation and sent to the Somm, e.g. dinner, gift, going_dry. Not shown to anyone."
+        },
+        {
+          "type": "checkbox",
+          "id": "show_on_mobile",
+          "label": "Show on mobile",
+          "default": false,
+          "info": "The first three ticked appear in the hero on a phone. Tick none and the first three questions are used."
         }
       ]
     }

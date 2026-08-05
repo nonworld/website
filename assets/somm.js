@@ -75,6 +75,85 @@
     );
   }
 
+  /* --- the shoppable recommendation card --------------------------------- */
+
+  /* The mobile card, and ONLY the mobile card.
+   *
+   * Desktop keeps `pickCard` above, unchanged, because the brief's one
+   * non-negotiable is that the desktop storefront does not move. The two
+   * differ in what they are for: the desktop row sits under an answer someone
+   * is already reading on a wide page, while this is the end of a conversation
+   * on a phone and has to be able to finish the job — price, availability and
+   * a real Add, without leaving the sheet.
+   *
+   * EVERY FIELD COMES FROM THE LIQUID CATALOGUE. The Worker answers in bottle
+   * codes and nothing else; the price, the variant, the availability and the
+   * image are all resolved here from Shopify's own data rendered into the
+   * page. That is the whole reason the Somm cannot invent a price: it is never
+   * given one to repeat. */
+
+  function esc(s) {
+    return String(s == null ? '' : s).replace(/[&<>"']/g, function (c) {
+      return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c];
+    });
+  }
+
+  function t(key, fallback) {
+    return (NON.strings && NON.strings[key]) || fallback;
+  }
+
+  function recommendationCard(code, index) {
+    var p = catalogue[String(code).toUpperCase()];
+    if (!p) {
+      console.warn('[NON somm] "' + code + '" is not in this page\'s catalogue, so no card can be shown. Most often the product is not published to the current market.');
+      return '';
+    }
+
+    /* SOLD OUT IS A STATE, NOT A HIDDEN CARD. Dropping an unavailable bottle
+       would leave the prose naming a wine with nothing under it — the exact
+       silent gap that made the picks panel look broken before. It is shown,
+       it is honest about being unavailable, and the Add is replaced rather
+       than left there to fail. */
+    var buyable = p.available !== false && p.variantId;
+
+    var action = buyable
+      ? '<button type="button" class="non-rec__add" data-non-somm-add ' +
+        'data-variant-id="' + esc(p.variantId) + '" ' +
+        'data-code="' + esc(code) + '">' +
+        esc(t('sommRecAdd', 'Add')) + ' &mdash; ' + esc(p.price) +
+        '</button>'
+      : '<span class="non-rec__add non-rec__add--out">' + esc(t('soldOut', 'Sold out')) + '</span>';
+
+    return (
+      '<article class="non-rec" data-non-rec data-code="' + esc(code) + '">' +
+      (p.image
+        ? '<a class="non-rec__media" href="' + esc(p.url) + '" data-non-somm-view data-code="' + esc(code) + '" tabindex="-1" aria-hidden="true">' +
+          '<img src="' + esc(p.image) + '" alt="" loading="lazy" width="120" height="120">' +
+          '</a>'
+        : '') +
+      '<div class="non-rec__body">' +
+      '<div class="non-mono non-rec__code">' + esc(code) + '</div>' +
+      '<h3 class="non-rec__name">' +
+      '<a href="' + esc(p.url) + '" data-non-somm-view data-code="' + esc(code) + '">' + esc(p.title) + '</a>' +
+      '</h3>' +
+      (p.note ? '<p class="non-rec__note">' + esc(p.note) + '</p>' : '') +
+      '<div class="non-rec__actions">' +
+      action +
+      '<a class="non-rec__see" href="' + esc(p.url) + '" data-non-somm-view data-code="' + esc(code) + '">' +
+      esc(t('sommRecSee', 'See bottle')) + '</a>' +
+      '</div>' +
+      '<div class="non-rec__more">' +
+      '<button type="button" class="non-rec__ask" data-non-somm-why data-code="' + esc(code) + '">' +
+      esc(t('sommRecWhy', 'Why this one?')) + '</button>' +
+      '<button type="button" class="non-rec__ask" data-non-somm-another data-code="' + esc(code) + '">' +
+      esc(t('sommRecAnother', 'Show me another')) + '</button>' +
+      '</div>' +
+      '<p class="non-rec__msg" data-non-rec-msg role="status" aria-live="polite" hidden></p>' +
+      '</div>' +
+      '</article>'
+    );
+  }
+
   /* --- fallback seeds ---------------------------------------------------- */
 
   function seedsFor(root) {
@@ -131,6 +210,8 @@
     var seeds = seedsFor(root);
     var history = [];
     var timer = null;
+    var lastQuery = '';
+    var slowTimer = null;
 
     function show() {
       if (answerBox) answerBox.hidden = false;
@@ -178,6 +259,9 @@
         // `!thinkingSince` — streamed text accumulated and was never written
         // to the panel. Pick cards rendered, the words never did.
         thinkingSince = 0;
+        // The slow-response note belongs to this wait and nothing else. Left
+        // armed it would fire onto the NEXT question's dots four seconds early.
+        clearTimeout(slowTimer);
         if (thinkingEl) { thinkingEl.remove(); thinkingEl = null; }
         return;
       }
@@ -250,8 +334,31 @@
            reader never sees is not an answer. This fires when it is on screen. */
         NON.answered('somm', { picks: (picks || []).length, has_box: !!picksBox });
       }
+
+      /* The named-event dictionary the brief asks for, alongside the
+         started/answered/failed triple that already exists. The two measure
+         different things and both are wanted: the triple answers "is the
+         feature alive", these answer "did it sell anything". */
+      if (NON.sommTrack) {
+        NON.sommTrack('somm_recommendation_returned', {
+          surface: (form.__nonSommSurface || {}).surface || context,
+          count: (picks || []).length,
+          recommended_product_id: (picks || [])[0] || '',
+          recommendation_id: (picks || []).join('+')
+        });
+      }
+
       if (!picksBox || !picks || !picks.length) return;
-      var html = picks.map(pickCard).filter(Boolean).join('');
+
+      /* Which card. The sheet gets the shoppable one; every other surface
+         keeps the row it has today. Decided from where the panel IS rather
+         than from a viewport query, so a desktop-width theme editor preview of
+         the sheet still renders the sheet's card. */
+      var inSheet = !!picksBox.closest('[data-non-sheet]');
+      var html = picks
+        .map(function (code, i) { return inSheet ? recommendationCard(code, i) : pickCard(code); })
+        .filter(Boolean)
+        .join('');
       if (!html) return;
       picksBox.innerHTML = html;
       picksBox.hidden = false;
@@ -304,8 +411,49 @@
       card.hidden = false;
     }
 
+    /* THE SERVICE IS DOWN, AND SAYS SO.
+     *
+     * The canned fallback below is a good answer when a seed genuinely matches
+     * what was asked. When none does, it used to serve seeds[0] — so someone
+     * asking about allergens got the roast chicken answer, confidently, with
+     * nothing anywhere saying the Somm never saw the question. The file's own
+     * comment noticed: "a worker that is down looks exactly like one that is
+     * up."
+     *
+     * On the sheet that becomes this panel instead: it says the Somm is away,
+     * it does not block shopping, and it offers the two things worth offering.
+     * Desktop keeps the old path untouched — changing how the desktop Somm
+     * behaves is one of the brief's explicit regressions.
+     */
+    function failurePanel(query) {
+      if (!picksBox) return false;
+      show();
+      if (stream) stream.textContent = t('sommFailHead', 'The Somm is away from the table.');
+      picksBox.innerHTML =
+        '<div class="non-rec-fail">' +
+        '<p class="non-rec-fail__b">' + esc(t('sommFailBody', 'Browse the range or try again.')) + '</p>' +
+        '<div class="non-rec-fail__actions">' +
+        '<button type="button" class="non-rec__add" data-non-somm-retry>' +
+        esc(t('sommRetry', 'Try again')) + '</button>' +
+        '<a class="non-rec__see" href="/collections/the-range">' +
+        esc(t('sommShopRange', 'Shop the range')) + '</a>' +
+        '</div></div>';
+      picksBox.hidden = false;
+      lastQuery = query;
+      return true;
+    }
+
     function fallback(query) {
       var hit = matchSeed(seeds, query);
+
+      /* In the sheet, an unmatched question during an outage is a failure, not
+         an excuse to read out an unrelated canned answer. */
+      if (!hit && picksBox && picksBox.closest('[data-non-sheet]')) {
+        thinking(false);
+        failurePanel(query);
+        return;
+      }
+
       var first = seeds[0];
       var answer = hit ? hit.answer : (first ? first.answer : NON.strings.sommError);
       var picks = hit ? hit.picks : (first ? first.picks : []);
@@ -331,6 +479,7 @@
       }
 
       history.push({ role: 'user', text: query });
+      lastQuery = query;
 
       if (!ENDPOINT) return fallback(query);
 
@@ -338,6 +487,27 @@
       show();
       if (stream) stream.textContent = '';
       thinking(true);
+
+      /* A WORD AFTER THE WAIT STOPS BEING SHORT.
+       *
+       * The dots are the right answer for a second or two and the wrong one at
+       * eight — at that point an animation with no words is indistinguishable
+       * from a hang, and the brief rules out an indefinite typing animation
+       * for exactly that reason. This does not replace the mark; it puts a
+       * sentence beside it so the wait is accounted for.
+       *
+       * 4.5s, because the Worker's own p95 is comfortably inside that and this
+       * should be the exception rather than a caption everyone reads. */
+      clearTimeout(slowTimer);
+      slowTimer = setTimeout(function () {
+        if (!thinkingEl) return;
+        var note = thinkingEl.querySelector('.non-think__slow');
+        if (note) return;
+        note = document.createElement('span');
+        note.className = 'non-think__slow';
+        note.textContent = t('sommSlow', 'The Somm is still considering the table…');
+        thinkingEl.appendChild(note);
+      }, 4500);
 
       askOnce({
         method: 'POST',
@@ -372,6 +542,18 @@
           // rather than prose so the Worker can quote them rather than
           // paraphrase.
           facts: readFacts(),
+          // WHERE THE QUESTION CAME FROM.
+          //
+          // The Worker already knew WHAT was asked and, on a product page,
+          // which bottle. It did not know that this question arrived by
+          // tapping "Mains" on the homepage triptych — so a customer who had
+          // already told the site they were cooking a main course had to say
+          // it again in words, and the first answer was a general one.
+          //
+          // Additive: an object the Worker can ignore entirely and still
+          // behave exactly as it does today. Nothing here is required for a
+          // reply, and nothing here is free text the customer typed.
+          surface: form.__nonSommSurface || null,
           history: history.slice(-8)
         })
       })
@@ -399,6 +581,12 @@
           // that is up. Without this the somm could fail for days in silence.
           if (window.NON && NON.failed) {
             NON.failed('somm', { reason: 'endpoint_unreachable', context: context });
+          }
+          if (NON.sommTrack) {
+            NON.sommTrack('somm_recommendation_failed', {
+              surface: (form.__nonSommSurface || {}).surface || context,
+              reason: 'endpoint_unreachable'
+            });
           }
           console.warn('[NON somm] endpoint unreachable — serving the canned fallback. The customer still sees an answer, so this will not look broken.', err);
           thinking(true, true);
@@ -515,6 +703,122 @@
        Bound here rather than in the section so it shares the controller that
        already knows which input belongs to which surface; the product page has
        its own, and a document-wide selector would focus the wrong one. */
+    /* --- the recommendation card's own controls -------------------------- */
+
+    /* Delegated on the root for the same reason the seeds are: these buttons
+     * are written into the panel by renderPicks long after this runs, and they
+     * are replaced wholesale on every new answer. */
+    if (!root.__nonSommRec) {
+      root.__nonSommRec = true;
+
+      root.addEventListener('click', function (e) {
+        var surface = (form.__nonSommSurface || {}).surface || context;
+
+        /* ADD TO CART.
+         *
+         * Goes through NON.cart.add, which is Shopify's own AJAX API, and
+         * therefore reports success only when Shopify has said so. The button
+         * is disabled for the whole round trip, so a double tap cannot post
+         * twice, and the label never claims "Added" on the strength of the
+         * click alone — the brief is explicit that nothing may claim an item
+         * was added until Shopify confirms it. */
+        var add = e.target.closest('[data-non-somm-add]');
+        if (add) {
+          e.preventDefault();
+          if (add.disabled) return;
+          var variant = add.getAttribute('data-variant-id');
+          var code = add.getAttribute('data-code') || '';
+          if (!variant || !NON.cart) return;
+
+          var card = add.closest('[data-non-rec]');
+          var msg = card && card.querySelector('[data-non-rec-msg]');
+          var label = add.textContent;
+
+          add.disabled = true;
+          add.textContent = t('sommRecAdding', 'Adding…');
+          if (msg) { msg.hidden = true; msg.textContent = ''; }
+
+          NON.cart
+            .add(variant, 1)
+            .then(function (cart) {
+              add.textContent = t('sommRecAdded', 'Added');
+              /* Only here. Everything before this point is an intention. */
+              if (NON.sommTrack) {
+                NON.sommTrack('somm_add_to_cart', {
+                  surface: surface,
+                  recommended_product_id: code,
+                  recommended_variant_id: variant,
+                  currency: (cart && cart.currency) || '',
+                  position: card ? Array.prototype.indexOf.call(card.parentNode.children, card) : 0
+                });
+              }
+            })
+            .catch(function (err) {
+              add.disabled = false;
+              add.textContent = label;
+              if (msg) {
+                msg.textContent = (err && err.message) || t('sommRecAddFailed', 'That didn’t add. Try again.');
+                msg.hidden = false;
+              }
+              if (NON.sommTrack) {
+                NON.sommTrack('somm_add_to_cart_failed', {
+                  surface: surface,
+                  recommended_product_id: code,
+                  recommended_variant_id: variant,
+                  reason: (err && err.message) || 'unknown'
+                });
+              }
+            });
+          return;
+        }
+
+        /* Following a card through to the bottle. Recorded on the way out so
+           recommendation-to-PDP can be measured against recommendation-to-cart
+           — the two rates the brief asks to compare. */
+        var view = e.target.closest('[data-non-somm-view]');
+        if (view) {
+          if (NON.sommTrack) {
+            NON.sommTrack('somm_product_viewed', {
+              surface: surface,
+              recommended_product_id: view.getAttribute('data-code') || ''
+            });
+          }
+          return;
+        }
+
+        /* "Why this one?" and "Show me another" are questions, not controls.
+           They go back through ask() so the answer arrives the same way every
+           other answer does, and so the Worker keeps the thread. */
+        var why = e.target.closest('[data-non-somm-why]');
+        if (why) {
+          e.preventDefault();
+          ask(t('sommRecWhy', 'Why this one?') + ' ' + (why.getAttribute('data-code') || ''));
+          return;
+        }
+
+        var another = e.target.closest('[data-non-somm-another]');
+        if (another) {
+          e.preventDefault();
+          if (NON.sommTrack) {
+            NON.sommTrack('somm_product_compared', {
+              surface: surface,
+              recommended_product_id: another.getAttribute('data-code') || ''
+            });
+          }
+          ask(t('sommRecAnother', 'Show me another') + ' — not ' + (another.getAttribute('data-code') || ''));
+          return;
+        }
+
+        /* Retry after a failure asks the SAME question again rather than
+           clearing the box and waiting for it to be retyped. */
+        var retry = e.target.closest('[data-non-somm-retry]');
+        if (retry) {
+          e.preventDefault();
+          if (lastQuery) ask(lastQuery);
+        }
+      });
+    }
+
     var focusBtn = root.querySelector('[data-non-somm-focus]');
     if (focusBtn && input) {
       focusBtn.addEventListener('click', function () {
@@ -525,9 +829,25 @@
       });
     }
 
-    root.querySelectorAll('[data-non-somm-seed]').forEach(function (btn) {
-      btn.addEventListener('click', function () {
-        if (input) input.value = btn.textContent.trim();
+    /* DELEGATED, not bound per button.
+     *
+     * Two reasons, and the second is the one that forced it. Binding each
+     * button meant a chip added AFTER load was dead — and the mobile sheet
+     * clones its chips out of this section at open time, so every one of them
+     * would have been. It also meant a Shopify section reload re-bound every
+     * surviving button a second time, which is the duplicate-listener problem
+     * the brief calls out: one click, two requests, two analytics rows.
+     *
+     * A listener on the root has neither problem: it is installed once and it
+     * sees buttons that did not exist when it was installed. */
+    if (!root.__nonSommSeeds) {
+      root.__nonSommSeeds = true;
+      root.addEventListener('click', function (e) {
+        var btn = e.target.closest('[data-non-somm-seed]');
+        if (!btn || !root.contains(btn)) return;
+
+        var label = btn.textContent.trim();
+        if (input) input.value = label;
         // Seeds answer from their own vetted copy rather than the model, but
         // they go through the same thinking beat — this path was the reason
         // the working state was never seen, since the chips are what most
@@ -540,14 +860,24 @@
         // label straight back at you — the click worked, the request never
         // happened, and it read as a dead button. A seed without vetted copy is
         // a question, not an answer.
-        if (!answer) return ask(btn.textContent.trim());
+        if (!answer) return ask(label);
 
         show();
         if (stream) stream.textContent = '';
         thinking(true);
         endThinking(function () { type(answer, picks); });
       });
-    });
+    }
+
+    /* The way in from outside this file. The mobile sheet's prompt chips, its
+     * "Show me another", and the triptych's follow-up answers all need to put
+     * a question to THIS controller — the one that owns the surface they are
+     * displayed on — rather than to whichever one happens to be first in the
+     * document. */
+    form.__nonSommAsk = function (text) {
+      if (input) input.value = text;
+      ask(text);
+    };
   }
 
   document.querySelectorAll('[data-non-somm]').forEach(Somm);

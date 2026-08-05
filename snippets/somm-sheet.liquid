@@ -1,0 +1,111 @@
+{%- comment -%}
+  NON Somm — the mobile bottom sheet.
+
+  Rendered ONCE per page, from theme.liquid, on the templates that carry an
+  entry point. Every mobile Somm trigger on the page opens this one sheet, so
+  there is a single conversation rather than one per component: tapping the
+  hero, then a triptych tile, then the PDP entry continues the same thread
+  instead of starting three.
+
+  It is a [data-non-somm-root] in its own right. somm.js resolves a form's
+  answer panel, stream and picks by walking up to the nearest root, so the
+  sheet's form writes into the sheet and the hero's writes into the hero,
+  without either knowing the other exists.
+
+  DESKTOP IS NOT TOUCHED. The sheet is display:none above the mobile
+  breakpoint and no desktop control opens it — the desktop Somm stays the
+  inline component it has always been. display:none rather than a visual hide
+  is deliberate: it takes the sheet out of the accessibility tree too, so a
+  screen reader on a wide viewport never meets two copies of the same Somm.
+
+  It never opens by itself. Opening is always a customer action.
+{%- endcomment -%}
+
+<div class="non-sheet" data-non-sheet hidden>
+  {%- comment -%}
+    The scrim closes on tap. It is not the only way out — there is a labelled
+    close button and Escape — because a scrim tap is invisible to anyone who
+    cannot see it.
+  {%- endcomment -%}
+  <div class="non-sheet__scrim" data-non-sheet-close tabindex="-1" aria-hidden="true"></div>
+
+  <div
+    class="non-sheet__panel"
+    role="dialog"
+    aria-modal="true"
+    aria-labelledby="non-sheet-title"
+    data-non-sheet-panel
+    data-non-somm-root>
+    <div class="non-sheet__grab" data-non-sheet-grab aria-hidden="true"></div>
+
+    <div class="non-sheet__head">
+      <span class="non-mono non-eyebrow" id="non-sheet-title">{{ 'sections.somm.heading' | t }}</span>
+      {%- if settings.somm_endpoint != blank -%}
+        {%- comment -%}
+          The live dot only when an endpoint is actually configured. A store
+          with no Worker set would otherwise claim a service it does not have,
+          which the brief rules out and which would be a lie on the page.
+        {%- endcomment -%}
+        <span class="non-sheet__live" data-non-sheet-live>
+          <span class="non-sommbox__dot" aria-hidden="true"></span>
+          <span class="visually-hidden">{{ 'sections.somm.heading' | t }}</span>
+        </span>
+      {%- endif -%}
+      <button type="button" class="non-sheet__x" data-non-sheet-close>
+        <span aria-hidden="true">&times;</span>
+        <span class="visually-hidden">{{ 'sections.somm.close' | t }}</span>
+      </button>
+    </div>
+
+    {%- comment -%}
+      The scrolling half. Only this scrolls: the field and the product action
+      stay pinned, so the way to buy never scrolls away mid-conversation.
+    {%- endcomment -%}
+    <div class="non-sheet__scroll" data-non-sheet-scroll>
+      <p class="non-sheet__opener" data-non-sheet-opener hidden></p>
+
+      <div class="non-somm__answer" data-non-somm-answer hidden>
+        <p class="non-somm__stream" data-non-somm-stream></p>
+        <div class="non-somm__picks" data-non-somm-picks hidden></div>
+        {% render 'ask-form' %}
+      </div>
+    </div>
+
+    <div class="non-sheet__foot">
+      {%- comment -%}
+        PERSISTENT COMMERCE CONTEXT. On a product page the bottle being
+        discussed stays buyable while the sheet is open, so a conversation
+        cannot become a detour away from the purchase. Filled in by
+        somm-sheet.js from the trigger's context; hidden everywhere else.
+      {%- endcomment -%}
+      <div class="non-sheet__ctx" data-non-sheet-ctx hidden></div>
+
+      <div class="non-sheet__seeds" data-non-sheet-seeds></div>
+
+      <form
+        class="non-sheet__ask"
+        data-non-somm
+        data-somm-context="home"
+        role="search">
+        <label class="visually-hidden" for="non-sheet-input">
+          {{ 'sections.somm.placeholder' | t }}
+        </label>
+        <input
+          id="non-sheet-input"
+          class="non-somm__input"
+          type="search"
+          name="query"
+          autocomplete="off"
+          enterkeyhint="send"
+          data-non-somm-input
+          placeholder="{{ 'sections.somm.placeholder' | t | escape }}">
+        <button type="submit" class="non-sheet__send">
+          <span aria-hidden="true">&rarr;</span>
+          <span class="visually-hidden">{{ 'sections.somm.ask' | t }}</span>
+        </button>
+      </form>
+    </div>
+  </div>
+</div>
+
+<script src="{{ 'somm-sheet.js' | asset_url }}" defer></script>

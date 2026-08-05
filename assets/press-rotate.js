@@ -12,6 +12,20 @@
 (function () {
   'use strict';
 
+  /* NOT ON A PHONE.
+   *
+   * On mobile the quotes are a scroll-snapped row the customer swipes, and a
+   * timer moving them underneath a thumb is the worst of both — it steals the
+   * quote someone is halfway through reading, and it makes the swipe fight the
+   * script for control of the same row. The brief is explicit that press
+   * quotes must not auto-rotate on mobile.
+   *
+   * This is a live query rather than a one-off width check: the theme editor
+   * and a rotated tablet both cross the boundary without a reload, and a
+   * rotator that had already started would keep running on a layout that has
+   * no place for it. */
+  var PHONE = window.matchMedia('(max-width: 859px)');
+
   document.querySelectorAll('[data-non-press]').forEach(function (list) {
     var items = Array.prototype.slice.call(list.querySelectorAll('[data-non-press-item]'));
     var visible = Math.max(1, parseInt(list.getAttribute('data-visible'), 10) || 2);
@@ -34,7 +48,11 @@
 
     function step() { start = (start + visible) % items.length; show(); }
 
-    function play() { clearInterval(timer); timer = setInterval(step, interval); }
+    function play() {
+      clearInterval(timer);
+      if (PHONE.matches) return;   // swipe owns the row here
+      timer = setInterval(step, interval);
+    }
     function pause() { clearInterval(timer); }
 
     /* Marks the list as script-controlled. Until this lands the CSS shows
@@ -42,8 +60,22 @@
        empty box. */
     list.setAttribute('data-non-press-ready', '');
 
-    show();
-    play();
+    /* On a phone every quote is in the row and none is hidden, so `show()` —
+       which is what applies the is-on gating — must not run. Crossing the
+       boundary in either direction re-decides it. */
+    function apply() {
+      if (PHONE.matches) {
+        pause();
+        items.forEach(function (el) { el.classList.remove('is-on'); });
+      } else {
+        show();
+        play();
+      }
+    }
+
+    apply();
+    if (PHONE.addEventListener) PHONE.addEventListener('change', apply);
+    else if (PHONE.addListener) PHONE.addListener(apply);
 
     /* Stop while someone is reading it, and while the tab is hidden — a timer
        running in a background tab just burns battery to change nothing. */

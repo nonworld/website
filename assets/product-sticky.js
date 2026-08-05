@@ -79,19 +79,41 @@
     if (NON.orb) NON.orb.lift(show ? Math.round(bar.getBoundingClientRect().height) + 12 : 0);
   }
 
-  if ('IntersectionObserver' in window) {
-    new IntersectionObserver(
-      function (entries) {
-        entries.forEach(function (e) {
-          /* Only once the button has left upwards. Scrolling back up towards
-             it should retire the bar before it is reached, not after. */
-          pastAdd = !e.isIntersecting && e.boundingClientRect.top < 0;
-          apply();
-        });
-      },
-      { threshold: 0 }
-    ).observe(realAdd);
+
+  /* THE GATE IS A SCROLL POSITION, not an IntersectionObserver.
+   *
+   * IO was the obvious tool and it could not be verified: in a tab that is not
+   * painting, its callbacks do not arrive, so the orb and the sticky bar never
+   * appeared and there was no way to test either of them. A feature whose
+   * trigger cannot be exercised is a feature nobody has checked.
+   *
+   * A passive scroll listener computing the same condition is a couple of
+   * microseconds, fires everywhere, and is trivially testable. rect.bottom < 0
+   * means "this element has left upwards", which is the real condition —
+   * scrolling back UP towards the buy block should retire the orb before the
+   * block is reached, not after.
+   *
+   * Throttled with a dirty flag rather than rAF, for the same reason. */
+  var ticking = false;
+  function onScroll() {
+    if (ticking) return;
+    ticking = true;
+    setTimeout(function () {
+      ticking = false;
+      recompute();
+    }, 100);
   }
+
+  function recompute() {
+    /* The real Add button leaving upwards. Measured against the element rather
+       than a fixed offset so it stays correct whatever the gallery above it
+       does at any width. */
+    pastAdd = realAdd.getBoundingClientRect().bottom < 0;
+    apply();
+  }
+
+  window.addEventListener('scroll', onScroll, { passive: true });
+  window.addEventListener('resize', onScroll, { passive: true });
 
   function layerOpen() {
     var drawer = document.querySelector('[data-non-cart-drawer]');
@@ -130,5 +152,5 @@
   document.addEventListener('non:cart:updated', sync);
 
   sync();
-  apply();
+  recompute();
 })();

@@ -578,7 +578,23 @@ button { font-family: inherit; }
    a horizontal swipe there is unambiguous rather than accidental drift. */
 @media (pointer: fine) {
   .non-row {
-    overflow-x: hidden;
+    /* BOTH AXES. `overflow-x: hidden` with overflow-y left at `visible`
+       computes overflow-y to AUTO — that is the spec, not a browser quirk:
+       the two axes cannot disagree about whether a box is a scroll container,
+       so setting one to hidden promotes the other.
+
+       Which means the fix for horizontal trapping created a vertical one. The
+       row overflows its own box by a few pixels (padding-bottom plus card
+       hover shadow), so a wheel over it scrolled THE ROW by those few pixels
+       instead of the page, hit the end, and sprang back. From the cursor that
+       reads as the page sticking and the products bouncing — reported on
+       Sets, on both home and the shop.
+
+       `overflow: hidden` says it once for both axes and leaves nothing to be
+       promoted. The arrows are unaffected: scrollBy and scrollLeft work on a
+       hidden scroll container, which is the whole reason this approach was
+       chosen over removing the overflow entirely. */
+    overflow: hidden;
     scroll-snap-type: none;
   }
 }

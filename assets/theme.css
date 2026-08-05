@@ -6048,7 +6048,28 @@ select:-moz-focusring { color: transparent; text-shadow: 0 0 0 var(--non-fg); }
      The saving is not compression — the type is untouched. It is that the
      conversation moved to the sheet, so the hero carries a button where it
      used to carry a field, five chips, a submit and a live dot. */
-  .non-hero__copy { padding-bottom: 4px; }
+  /* Measured on the deployed page at 375px: 789px, against a 650–750 target.
+     The saving is taken from the spaces between things rather than from the
+     things — the type scale is a separate decision, already made, and shaving
+     it here would undo it.
+
+     32 → 24 above the eyebrow, 26 → 18 above the buttons, 22 → 16 above the
+     Somm entry. 22px, and none of it is legible as a loss. */
+  .non-hero__copy { padding-top: 24px; padding-bottom: 4px; }
+  .non-hero__ctas { margin-top: 18px; }
+  .non-somm-entry { margin-top: 16px; }
+
+  /* 320 → 250 on the picture.
+
+     This is the number that decides whether the customer ever sees that a
+     section follows the hero. At 375x812 the header takes 111px, so a 789px
+     hero ends 88px past the fold and the page looks like it stops. At 250 the
+     hero ends around 720 and the top of the Core Range is on screen — which
+     is the whole point of moving the range up in the first place.
+
+     250 is still a band rather than a thumbnail, and it is the LCP element, so
+     it keeps its eager load and its priority. */
+  .non-hero__media img { height: 250px; }
 
   /* The inline Somm, and the ghost button that focuses it, are the desktop
      component. Both are replaced by .non-somm-entry below. */

@@ -107,17 +107,38 @@
         Either way the loop stops at three: the brief's ceiling, and about what
         fits on one line at 320px before the row becomes a menu.
       {%- endcomment -%}
-      {%- assign all_seeds = section.blocks | where: 'type', 'seed' -%}
-      {%- assign flagged = all_seeds | where: 'settings.show_on_mobile', true -%}
-      {%- if flagged.size > 0 -%}
-        {%- assign mobile_seeds = flagged -%}
-      {%- else -%}
-        {%- assign mobile_seeds = all_seeds -%}
-      {%- endif -%}
+      {%- comment -%}
+        Counted with a loop, NOT with `where: 'settings.show_on_mobile', true`.
 
-      {%- if mobile_seeds.size > 0 -%}
+        That filter silently matched nothing — Liquid's `where` does not follow
+        a dotted path into a block's settings — so `flagged.size` was always 0,
+        the fallback always won, and the three chips rendered were simply the
+        first three blocks. It looked exactly like a working filter with the
+        wrong blocks ticked: the chips said "Dinner", "Is this just grape
+        juice?" and "Going dry", which is two thirds right and therefore not
+        obviously broken. Caught on the deployed page, not in review.
+      {%- endcomment -%}
+      {%- assign all_seeds = section.blocks | where: 'type', 'seed' -%}
+      {%- assign flagged_count = 0 -%}
+      {%- for block in all_seeds -%}
+        {%- if block.settings.show_on_mobile -%}
+          {%- assign flagged_count = flagged_count | plus: 1 -%}
+        {%- endif -%}
+      {%- endfor -%}
+
+      {%- if all_seeds.size > 0 -%}
         <div class="non-somm-entry__chips">
-          {%- for block in mobile_seeds limit: 3 -%}
+          {%- assign shown = 0 -%}
+          {%- for block in all_seeds -%}
+            {%- if shown >= 3 -%}{% break %}{%- endif -%}
+            {%- comment -%}
+              When nothing is ticked, every seed is a candidate and the first
+              three win. When something is ticked, only ticked seeds are.
+            {%- endcomment -%}
+            {%- if flagged_count > 0 and block.settings.show_on_mobile != true -%}
+              {%- continue -%}
+            {%- endif -%}
+            {%- assign shown = shown | plus: 1 -%}
             <button
               type="button"
               class="non-somm__seed non-somm-entry__chip"
@@ -179,6 +200,7 @@
                 night" inside a 360px sheet is a sentence, not a chip.
               {%- endcomment -%}
               data-short="{{ block.settings.short_label | default: block.settings.label | escape }}"
+              data-mobile="{{ block.settings.show_on_mobile | default: false }}"
               {{ block.shopify_attributes }}>
               {{ block.settings.label }}
             </button>

@@ -184,9 +184,20 @@
        silent zero-match would leave the sheet with no chips at all — and a
        selector that returns nothing looks exactly like a section with no
        seeds configured. */
-    var source = document.querySelectorAll('[data-non-somm-seed]');
+    var all = Array.prototype.slice.call(document.querySelectorAll('[data-non-somm-seed]'));
+
+    /* The same three the hero shows, not the first three in the document.
+     *
+     * A merchant who ticks "Show on mobile" on three seeds is choosing what a
+     * phone offers; the sheet honouring a different set means the chip you
+     * tapped in the hero and the chips you land among disagree. Falls back to
+     * document order when nothing is ticked, which is the same fallback the
+     * hero uses. */
+    var flagged = all.filter(function (b) { return b.getAttribute('data-mobile') === 'true'; });
+    var source = flagged.length ? flagged : all;
+
     var added = 0;
-    Array.prototype.forEach.call(source, function (btn) {
+    source.forEach(function (btn) {
       if (added >= 3) return;                       // the brief's ceiling
       if (seedBox.contains(btn)) return;
       var label = (btn.getAttribute('data-short') || btn.textContent).trim();
@@ -324,11 +335,22 @@
     lockBody();
 
     sheet.hidden = false;
-    /* Two frames: one for the sheet to exist in layout, one for the transform
-       transition to have something to move from. */
-    requestAnimationFrame(function () {
-      requestAnimationFrame(function () { sheet.classList.add('is-open'); });
-    });
+
+    /* VISIBILITY MUST NOT DEPEND ON A FRAME BEING PAINTED.
+     *
+     * `is-open` is what moves the panel up from translateY(100%), so if the
+     * class never lands the sheet is open, focused, body-locked — and off
+     * screen. Two nested requestAnimationFrames are the usual way to let a
+     * transition have a starting point to move from, and they are correct
+     * right up until the tab is not painting: rAF does not fire in a
+     * background tab, and the sheet then opens into nothing.
+     *
+     * Seen exactly that way while testing. So the frames stay — they are what
+     * makes the animation smooth — but a timer backs them up, and the class is
+     * idempotent so whichever arrives first wins and the other is a no-op. */
+    var reveal = function () { sheet.classList.add('is-open'); };
+    requestAnimationFrame(function () { requestAnimationFrame(reveal); });
+    setTimeout(reveal, 60);
 
     syncHeight();
     open = true;

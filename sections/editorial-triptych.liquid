@@ -104,11 +104,22 @@
         the case for a block with neither a meal category nor a link: nothing
         to click, nothing to nest.
       {%- endcomment -%}
-      {%- assign has_hit = false -%}
-      {%- if block.settings.meal_category != blank or block.settings.link != blank -%}
-        {%- assign has_hit = true -%}
-      {%- endif -%}
-      <div class="non-trip__cap"{% if has_hit %} aria-hidden="true"{% endif %}>
+      {%- comment -%}
+        NOT aria-hidden.
+
+        The first version hid the caption from assistive technology whenever
+        the tile was a control, on the reasoning that the control's own name
+        already carries the words. That reasoning only holds on a phone: above
+        the breakpoint the tile control is display:none, so hiding the caption
+        too would have removed "MAINS — charred lamb, mushroom" from a desktop
+        screen reader entirely. Copy that is on the page for a sighted visitor
+        and absent for a blind one is a regression, and a silent one.
+
+        A markup-level attribute cannot know the viewport, so it does not try.
+        Both are exposed: the control announces the action, the caption
+        describes the tile. Mildly redundant on a phone, complete everywhere.
+      {%- endcomment -%}
+      <div class="non-trip__cap">
         <div class="non-trip__title">{{ block.settings.title }}</div>
         <div class="non-trip__sub">{{ block.settings.subtitle }}</div>
       </div>

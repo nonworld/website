@@ -31,6 +31,26 @@
   assign v = p.selected_or_first_available_variant
 -%}
 
+{%- comment -%}
+  THE WHOLE SECTION, not just its contents.
+
+  Hiding .non-firstbuy in the stylesheet left the section WRAPPER in the
+  document — a zero-height div between Made for and Poured at on every desktop
+  page. It changed nothing visible, and it still showed up in the desktop
+  regression diff as a seventh child of `main` where there had been six, which
+  is exactly the kind of "harmless" difference that makes a diff stop being
+  trusted.
+
+  Written here rather than in theme.css because the wrapper's id is generated
+  and only the section itself knows it — the same reason mobile_order writes
+  its rule here. Above the breakpoint the section is not in the layout at all.
+{%- endcomment -%}
+<style>
+  @media (min-width: 860px) {
+    #shopify-section-{{ section.id }} { display: none; }
+  }
+</style>
+
 {%- if p != blank -%}
   <div class="non-firstbuy" data-non-firstbuy>
     <div class="non-firstbuy__copy">

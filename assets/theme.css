@@ -6020,6 +6020,15 @@ select:-moz-focusring { color: transparent; text-shadow: 0 0 0 var(--non-fg); }
 .non-trip--pairing,
 .non-sheet { display: none; }
 
+/* The triptych's tile control, above the breakpoint.
+
+   It is `position: absolute` INSIDE the mobile query and static everywhere
+   else, so on a desktop it was a normal-flow button sitting above each
+   photograph — 19px of nothing that pushed all three images down and grew the
+   band from 340px to 359. The tiles are not interactive on a desktop (they
+   never were), so it is simply absent there. */
+.non-trip__hit { display: none; }
+
 @media (max-width: 859px) {
 
   /* ---------------------------------------------------------------- order */
@@ -6212,6 +6221,7 @@ select:-moz-focusring { color: transparent; text-shadow: 0 0 0 var(--non-fg); }
     position: absolute;
     inset: 0;
     z-index: 2;
+    /* Explicit, because it is display:none above the breakpoint. */
     display: block;
     width: 100%;
     background: transparent;

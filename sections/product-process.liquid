@@ -423,7 +423,15 @@
                 alt: img.alt | default: ''
             }}
 
-            <div class="non-trip__cap" aria-hidden="true">
+            {%- comment -%}
+              Not aria-hidden. The whole strip is display:none above the
+              breakpoint, so this caption is only ever exposed alongside a live
+              control — but the same rule applies as on the homepage triptych:
+              a markup attribute cannot know the viewport, and copy that
+              disappears for a screen reader is a silent regression. The tile's
+              own name carries the pairing; this carries it again.
+            {%- endcomment -%}
+            <div class="non-trip__cap">
               <div class="non-trip__title">{{ pair.title }}</div>
             </div>
           </div>

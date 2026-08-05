@@ -5875,3 +5875,99 @@ select:-moz-focusring { color: transparent; text-shadow: 0 0 0 var(--non-fg); }
   .non-hero__ctas { flex-direction: column; }
   .non-hero__cta { width: 100%; }
 }
+
+/* ==========================================================================
+   MOBILE PASS — type down, Somm made to feel like a phone control
+   ==========================================================================
+   Two complaints, one cause each.
+
+   "Fonts too big and clunky." The scale was tuned on a desktop, where clamp's
+   FLOOR is never reached — so nobody saw what the floors actually were. On a
+   390px phone every one of them is in force at once: 17.5px body, 18px lead,
+   and a Somm opener at 20px, which is heading-sized for what is really intro
+   copy. Stacked down a narrow column that reads as shouting.
+
+   "The Somm doesn't look native on mobile." It was a desktop form scaled down:
+   a wide input beside a button, and suggestion chips laid out as a grid of
+   boxes. A phone user recognises a different shape — a full-width field with
+   its action inline, and suggestions as a single row you swipe. That is what
+   this does. Nothing is redesigned; it is the same component wearing the
+   platform's conventions.
+   ========================================================================== */
+@media (max-width: 699px) {
+  /* Type. Roughly a 12% reduction on the offenders, which lands body copy at
+     ~15.5px — the size a phone reads comfortably, and the size every native
+     iOS and Android surface uses for the same job. */
+  :root {
+    --t-body: calc(15.5px * var(--non-type-scale));
+    --t-copy: calc(16px * var(--non-type-scale));
+    --t-lead: calc(16.5px * var(--non-type-scale));
+    --t-small: calc(14px * var(--non-type-scale));
+  }
+
+  /* The Somm's opening line. 20px for three lines of explanation is a heading
+     pretending to be copy. */
+  .non-sommbox__opener {
+    font-size: 16px;
+    line-height: 1.45;
+    letter-spacing: -.01em;
+  }
+
+  /* The orb was taking a third of the first screen before a single word. */
+  .non-somm::before,
+  .non-sommbox::before { width: 72px; height: 72px; }
+
+  /* THE FIELD. One row, the action inline, 48px tall — a phone control rather
+     than a desktop form squeezed. */
+  .non-somm__bar,
+  .non-sommbox__ask {
+    display: flex;
+    align-items: stretch;
+    gap: 8px;
+  }
+  .non-somm__input {
+    flex: 1;
+    min-width: 0;
+    min-height: 48px;
+    /* 16px exactly. Anything smaller and iOS Safari zooms the viewport on
+       focus, which throws the layout and cannot be undone by the user. This
+       is the one place the type reduction above must not reach. */
+    font-size: 16px;
+  }
+  .non-somm__submit,
+  .non-sommbox__submit {
+    flex: none;
+    min-height: 48px;
+    padding: 0 18px;
+    white-space: nowrap;
+  }
+
+  /* THE SUGGESTIONS. One swipeable row, not a stacked grid of boxes. Chips
+     that wrap into three rows read as a menu the customer has to work through;
+     a single row reads as a hint they can flick past. */
+  .non-somm__seeds,
+  .non-sommbox__seeds {
+    display: flex;
+    flex-wrap: nowrap;
+    gap: 8px;
+    overflow-x: auto;
+    /* Edge-to-edge, so the row visibly continues past the screen and invites
+       the swipe rather than looking cut off. */
+    margin-inline: calc(var(--non-pad) * -1);
+    padding-inline: var(--non-pad);
+    scroll-snap-type: x proximity;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+  }
+  .non-somm__seeds::-webkit-scrollbar,
+  .non-sommbox__seeds::-webkit-scrollbar { display: none; }
+  .non-somm__seed {
+    flex: none;
+    scroll-snap-align: start;
+    /* One line each. A chip that wraps is a paragraph with a border. */
+    white-space: nowrap;
+    font-size: 14px;
+    padding: 10px 14px;
+    min-height: 40px;
+  }
+}

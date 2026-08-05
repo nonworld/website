@@ -6728,3 +6728,136 @@ select:-moz-focusring { color: transparent; text-shadow: 0 0 0 var(--non-fg); }
   color: var(--non-fg-mute);
   vertical-align: middle;
 }
+
+/* ==========================================================================
+   MOBILE PDP — the same page, read in the order a phone reads it
+   ==========================================================================
+   Desktop keeps its 50/50 split and its section order untouched: every rule
+   here is inside the mobile query, and the two mobile-only elements are
+   display:none above it.
+
+   The order the brief sets, and the reason for each move:
+
+     1 gallery              unchanged
+     2 identity             unchanged
+     3 pack size            already inside the form
+     4 add to cart          already inside the form
+     5 shipping             already inside the form
+     6 Somm entry           moved above the benefits list
+     7 taste / nutrition    the spec strip, plus the ingredient list which on a
+                            phone was interrupting between the photographs and
+                            the product's own name
+     8 pairings             moved above the process, and shown as pictures
+     9 how it's made        collapsed to its five stage names
+    10 complete the case    unchanged
+   ========================================================================== */
+
+/* The phone's Somm entry, and the ingredient list's second copy. Absent above
+   the breakpoint — display:none, so neither is in the desktop accessibility
+   tree either. */
+.non-somm-entry--pdp,
+.non-ingr--mobile { display: none; }
+
+@media (max-width: 859px) {
+  /* .non-buy is already a flex column, so `order` needs nothing set up. The
+     identity block and the form keep their source order; only the Somm and the
+     benefits swap, so the Somm sits directly under the shipping line where the
+     doubt actually happens. */
+  .non-buy > div:first-child { order: 1; }
+  .non-buy > form { order: 2; }
+  .non-somm-entry--pdp { display: block; order: 3; }
+  .non-benefits { order: 4; }
+
+  /* The desktop Somm panel is the desktop component. On a phone the sheet
+     replaces it entirely — see the entry above. Hidden rather than restyled,
+     so there is exactly one Somm on the page at any width. */
+  .non-sommbox { display: none; }
+
+  /* The ingredient list swaps copies: out of the gallery, in after the spec
+     strip. See main-product.liquid for why this is two elements and not one
+     moved by `order`. */
+  .non-gallery .non-ingr { display: none; }
+  .non-ingr--mobile { display: block; padding: 20px var(--non-pad); }
+
+  /* PAIRINGS BEFORE PROCESS.
+
+     Both are children of the same section wrapper, so this is a reorder and
+     nothing in the markup moves. The wrapper's id is generated, so it is
+     matched by what it CONTAINS rather than by name — :has() is the only way
+     to say "the section that holds the process band" without hardcoding an id
+     that changes when the template is duplicated.
+
+     Where :has() is not supported the two rules simply do not apply and the
+     bands stay in source order: how it's made, then pairings. That is the
+     order the page has today, so the fallback is the status quo rather than
+     anything broken. */
+  main > *:has(> .non-process) {
+    display: flex;
+    flex-direction: column;
+  }
+  main > *:has(> .non-process) > .non-process { order: 2; }
+  main > *:has(> .non-process) > .non-section { order: 1; }
+
+  /* ------------------------------------------------------- the pairings */
+
+  /* Reuses .non-trip wholesale — the same grid, crops, scrim, hit area and
+     focus states as the homepage strip. A pairing band that looked like a
+     different component would be a second visual language for the same idea.
+
+     Equal thirds here rather than 28/44/28: on the homepage the middle tile
+     carries the main course and earns the extra width, but three pairings are
+     peers and weighting one would say something untrue about the bottle. */
+  .non-trip--pairing {
+    grid-template-columns: repeat(3, 1fr);
+    margin-top: 14px;
+  }
+
+  /* The prose cards, once the pictures are there. They are the SAME copy —
+     keeping both would be the pairing text twice, once under a photograph and
+     once in a bordered box. Only hidden when the strip actually rendered;
+     .non-pairs--has-trip is written by Liquid and only when it did. */
+  .non-pairs--has-trip { display: none; }
+
+  /* --------------------------------------------------- how it's made */
+
+  /* Collapsed by steps-accordion.js. The five stage names stay visible — that
+     list is the argument — and the explanation is a tap away. Nothing here
+     applies until the script has added .non-step--collapsible, so a page where
+     it failed to load shows five open steps rather than five broken ones. */
+  .non-step--collapsible { align-items: start; }
+  .non-step__toggle {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    width: 100%;
+    /* 44px, like every other target. A row of five accordion headers is
+       exactly where a short one gets mis-tapped. */
+    min-height: 44px;
+    padding: 0;
+    background: none;
+    border: 0;
+    color: inherit;
+    font: inherit;
+    text-align: left;
+    cursor: pointer;
+  }
+  .non-step__toggle:focus-visible { outline: 2px solid var(--non-fg); outline-offset: 2px; }
+  .non-step__caret {
+    flex: none;
+    width: 10px;
+    height: 10px;
+    border-right: 1px solid currentColor;
+    border-bottom: 1px solid currentColor;
+    transform: rotate(45deg) translate(-2px, -2px);
+    opacity: .6;
+    transition: transform var(--duration-hover, .2s) var(--ease-hover, ease);
+  }
+  .non-step--collapsible.is-open .non-step__caret {
+    transform: rotate(225deg) translate(-2px, -2px);
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .non-step__caret { transition: none; }
+  }
+  .non-step--collapsible .non-step__b { margin-top: 6px; }
+}

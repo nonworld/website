@@ -16,6 +16,15 @@
   empty on a product with photography.
 {%- endcomment -%}
 
+{%- comment -%}
+  The bottle's code — NON1, NON3 — resolved the same way every other surface
+  resolves it, so the Somm opened from a pairing tile here is told about the
+  same bottle the buy box is selling. A render tag cannot live inside a liquid
+  block, so this capture sits outside it.
+{%- endcomment -%}
+{%- capture code %}{% render 'non-code', product: product %}{% endcapture -%}
+{%- assign code = code | strip -%}
+
 {%- liquid
   assign steps = product.metafields.custom.process_steps.value
   assign prose = product.metafields.custom.process | metafield_text | strip
@@ -332,7 +341,100 @@
   <div class="non-section" style="border-top:1px solid var(--non-line)">
     <div class="non-mono non-eyebrow">{{ section.settings.pairings_heading }}</div>
 
-    <div class="non-pairs">
+    {%- comment -%}
+      THE PAIRINGS AS PICTURES, on a phone.
+
+      Three bordered cards of prose stacked down a narrow column is three
+      paragraphs about food with no food in them — and this is the one band on
+      the page whose whole job is to make someone hungry. The homepage already
+      has the answer in the "Made for" strip, so this is the same component
+      with the same crops and the same scrim: three plates, side by side, in
+      one glance.
+
+      THE IMAGES ARE PRODUCT DATA, not new content. custom.perfect_for_images
+      and its two caption lists are already on the products and were already
+      being rendered by product-perfect-for.liquid — a section that is not in
+      product.json and therefore has never appeared. Nothing here is invented;
+      it is photography the store already holds, finally on the page.
+
+      The lists are POSITIONAL — image[i] belongs to caption[i] — and nothing
+      links them beyond order. A mismatched count would pair the wrong caption
+      to the wrong plate, so a mismatch renders nothing at all and the prose
+      cards below stay: silently wrong is worse than plainly absent.
+
+      When there is no imagery the strip does not render and the phone gets the
+      prose cards exactly as it does today. That is the fallback, and on a
+      product with no perfect_for data it is the only thing that happens.
+    {%- endcomment -%}
+    {%- liquid
+      assign pf_images = product.metafields.custom.perfect_for_images.value
+      assign pf_caps = product.metafields.custom.perfect_for_captions.value
+      assign pf_subs = product.metafields.custom.perfect_for_subcaptions.value
+      assign pf_ok = false
+      if pf_images.size >= 3 and pf_caps.size >= pf_images.size
+        assign pf_ok = true
+      endif
+    -%}
+
+    {%- if pf_ok -%}
+      <div class="non-trip non-trip--pairing" data-non-pair-trip>
+        {%- for img in pf_images limit: 3 -%}
+          {%- assign cap = pf_caps[forloop.index0] -%}
+          {%- assign sub = pf_subs[forloop.index0] -%}
+          <div class="non-trip__cell">
+            {%- comment -%}
+              Opens the Somm rather than navigating. The brief is explicit that
+              a pairing must not take the customer off the product page, and
+              the Somm is the one place that can explain a pairing against THIS
+              bottle's approved data rather than in general.
+            {%- endcomment -%}
+            <button
+              type="button"
+              class="non-trip__hit"
+              data-non-somm-open
+              data-non-somm-pdp
+              data-somm-surface="product_pairing"
+              data-somm-context="product"
+              data-somm-code="{{ code }}"
+              data-somm-product="{{ product.id }}"
+              data-somm-variant="{{ product.selected_or_first_available_variant.id }}"
+              data-somm-product-title="{{ product.title | escape }}"
+              data-somm-product-price="{{ product.selected_or_first_available_variant.price | money }}"
+              data-somm-product-available="{{ product.selected_or_first_available_variant.available }}"
+              data-somm-meal="{{ cap | escape }}"
+              data-somm-position="{{ forloop.index0 }}"
+              data-somm-prompt="{{ section.settings.pair_prompt }} {{ cap | escape }}?">
+              <span class="visually-hidden">
+                {{- section.settings.pair_prompt }} {{ cap -}}
+              </span>
+            </button>
+
+            {%- comment -%}
+              The alt describes the plate. It deliberately does NOT repeat the
+              caption, which is rendered as text a few lines down — a screen
+              reader given both reads the same two words twice.
+            {%- endcomment -%}
+            {{
+              img
+              | image_url: width: 600, format: 'webp'
+              | image_tag:
+                loading: 'lazy',
+                widths: '200,300,450,600',
+                sizes: '33vw',
+                class: 'non-trip__img',
+                alt: img.alt | default: ''
+            }}
+
+            <div class="non-trip__cap" aria-hidden="true">
+              <div class="non-trip__title">{{ cap }}</div>
+              {%- if sub != blank -%}<div class="non-trip__sub">{{ sub }}</div>{%- endif -%}
+            </div>
+          </div>
+        {%- endfor -%}
+      </div>
+    {%- endif -%}
+
+    <div class="non-pairs{% if pf_ok %} non-pairs--has-trip{% endif %}">
       {%- if pair_blocks.size > 0 -%}
         {%- for block in pair_blocks -%}
           <div class="non-pair-card" {{ block.shopify_attributes }}>
@@ -352,6 +454,14 @@
   </div>
 {%- endif -%}
 
+{%- comment -%}
+  Loaded here rather than in theme.liquid: it has nothing to do on a page with
+  no steps on it, and this is the only section that renders them.
+{%- endcomment -%}
+{%- if steps != blank or prose != blank -%}
+  <script src="{{ 'steps-accordion.js' | asset_url }}" defer></script>
+{%- endif -%}
+
 {% schema %}
 {
   "name": "Process & pairings",
@@ -367,6 +477,13 @@
       "id": "pairings_heading",
       "label": "Pairings heading",
       "default": "Pour it with"
+    },
+    {
+      "type": "text",
+      "id": "pair_prompt",
+      "label": "Pairing question",
+      "default": "Why does this work with",
+      "info": "What the Somm is asked when someone taps a pairing photo on a phone. The pairing's own caption is appended, so this reads \"Why does this work with oysters?\"."
     },
     {
       "type": "header",

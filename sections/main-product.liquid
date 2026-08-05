@@ -433,6 +433,87 @@
       </div>
     {%- endif -%}
 
+    {%- comment -%}
+      ── the somm, on a phone ──────────────────────────────────────────────
+
+      On a product page the Somm changes job. The homepage question is "find me
+      the right NON"; here it is "is THIS one right for me" — the customer has
+      already chosen something and wants it confirmed or corrected. So the
+      entry is worded for that, its prompts are about this bottle, and the
+      bottle stays buyable inside the sheet while they ask.
+
+      It sits directly under the buy controls and the shipping line, which is
+      where the doubt actually occurs: after the price, before the tap.
+
+      CONTEXT IS AUTOMATIC. Everything the Somm needs about this product is on
+      the trigger — id, variant, title, price, availability, code — so nothing
+      has to be typed and nothing has to be guessed. The variant is refreshed
+      by product.js when a pack size changes, because a conversation about a
+      six-pack should add a six-pack.
+
+      Rendered under the same guard as the desktop panel: a bottle with a spec
+      sheet, not an accessory and not a set. The panel below is display:none on
+      mobile and this is display:none above it, so exactly one Somm is offered
+      at any width and a screen reader never meets both.
+    {%- endcomment -%}
+    {%- if section.settings.show_somm and not_drink == blank and has_spec -%}
+      {%- assign pdp_variant = product.selected_or_first_available_variant -%}
+      <div class="non-somm-entry non-somm-entry--pdp" data-non-somm-entry>
+        {%- if section.settings.somm_pdp_label != blank -%}
+          <div class="non-mono non-eyebrow non-somm-entry__label">
+            {{ section.settings.somm_pdp_label }} {{ code }}?
+          </div>
+        {%- endif -%}
+
+        <button
+          type="button"
+          class="non-somm-entry__field"
+          data-non-somm-open
+          data-non-somm-pdp
+          data-somm-surface="product_page"
+          data-somm-context="product"
+          data-somm-code="{{ code }}"
+          data-somm-product="{{ product.id }}"
+          data-somm-variant="{{ pdp_variant.id }}"
+          data-somm-product-title="{{ product.title | escape }}"
+          data-somm-product-price="{{ pdp_variant.price | money }}"
+          data-somm-product-available="{{ pdp_variant.available }}">
+          <span class="non-somm-entry__ph">{{ section.settings.somm_placeholder }}</span>
+          <span class="non-somm-entry__go" aria-hidden="true">&rarr;</span>
+        </button>
+
+        {%- comment -%}
+          Three, one line, scrolling. The same ceiling as the homepage and for
+          the same reason — a fourth chip is the one that makes the row wrap
+          and turns a hint into a form.
+        {%- endcomment -%}
+        {%- assign pdp_seeds = section.blocks | where: 'type', 'seed' -%}
+        {%- if pdp_seeds.size > 0 -%}
+          <div class="non-somm-entry__chips">
+            {%- for block in pdp_seeds limit: 3 -%}
+              <button
+                type="button"
+                class="non-somm__seed non-somm-entry__chip"
+                data-non-somm-open
+                data-non-somm-pdp
+                data-somm-surface="product_page"
+                data-somm-context="product"
+                data-somm-code="{{ code }}"
+                data-somm-product="{{ product.id }}"
+                data-somm-variant="{{ pdp_variant.id }}"
+                data-somm-product-title="{{ product.title | escape }}"
+                data-somm-product-price="{{ pdp_variant.price | money }}"
+                data-somm-product-available="{{ pdp_variant.available }}"
+                data-somm-prompt="{{ block.settings.label | escape }}"
+                {{ block.shopify_attributes }}>
+                {{ block.settings.short_label | default: block.settings.label }}
+              </button>
+            {%- endfor -%}
+          </div>
+        {%- endif -%}
+      </div>
+    {%- endif -%}
+
     {%- comment -%} ── somm, as a panel ────────────────────────────────── {%- endcomment -%}
     {%- comment -%}
       The somm is briefed on a bottle - its opener promises "I've read the
@@ -645,6 +726,31 @@
 {%- endif -%}
 
 {%- comment -%}
+  INGREDIENTS, AGAIN — for the phone only.
+
+  The list belongs under the gallery on a desktop, where the buy column is
+  taller than the pictures and it fills space that was empty anyway. On a phone
+  the two columns become one, so "under the gallery" means BETWEEN the
+  photographs and the product's own name — the ingredient list interrupts the
+  page before the customer has read what the thing is called.
+
+  The brief's mobile order puts it with the other reference material, after the
+  spec strip, and CSS cannot move it there: it is inside .non-gallery and the
+  destination is outside .non-product, so no amount of `order` reaches across.
+
+  So it is rendered twice and exactly one copy is ever in the document:
+  display:none removes the other from the accessibility tree as well as from
+  the screen, which is the requirement the brief sets for hidden mobile and
+  desktop variants. The cost is one short paragraph of duplicated HTML.
+{%- endcomment -%}
+{%- if ingredients != blank -%}
+  <div class="non-ingr non-ingr--mobile">
+    <div class="non-spec__k">{{ section.settings.ingredients_label }}</div>
+    <p class="non-ingr__list">{{ ingredients }}</p>
+  </div>
+{%- endif -%}
+
+{%- comment -%}
   The bottle's own spec sheet, for the Somm.
 
   The panel's opening line promises "I've read the whole spec sheet for this
@@ -771,6 +877,13 @@
       "type": "color",
       "id": "somm_border",
       "label": "Somm box border"
+    },
+    {
+      "type": "text",
+      "id": "somm_pdp_label",
+      "label": "Phone Somm label",
+      "info": "Sits above the Somm button on a phone. The product code is appended, so \"Considering\" reads \"Considering NON1?\".",
+      "default": "Considering"
     },
     {
       "type": "text",
@@ -960,6 +1073,12 @@
           "type": "textarea",
           "id": "answer",
           "label": "Answer"
+        },
+        {
+          "type": "text",
+          "id": "short_label",
+          "label": "Short label",
+          "info": "A few words for the phone chip, e.g. Is it sweet? Falls back to the question. Only the first three questions appear on a phone."
         }
       ]
     },

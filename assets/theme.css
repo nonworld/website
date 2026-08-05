@@ -7348,3 +7348,99 @@ select:-moz-focusring { color: transparent; text-shadow: 0 0 0 var(--non-fg); }
   .non-stickybuy__add[disabled] { opacity: .45; cursor: default; }
   .non-stickybuy__add:focus-visible { outline: 2px solid var(--non-fg); outline-offset: -4px; }
 }
+
+/* ==========================================================================
+   ONE PRIMARY BUTTON
+   ==========================================================================
+   Three of them had drifted apart, and two sat side by side on the pairing
+   page looking like they came from different sites. Measured on the deployed
+   theme at 1440:
+
+     PAIR IT          JetBrains Mono  600  #EDEDE8 on #000000  52px  0 26px
+     WRITE THE DISH   NONHelvetica    700  #f2f0ea on #171513  44px  14px 22px
+     SHOP THE RANGE   NONHelvetica    600  #ffffff on #000000  auto  13px 20px
+
+   Different face, different weight, and three near-but-not-identical light
+   backgrounds — #EDEDE8, #f2f0ea and #ffffff — two of which are hardcoded hex
+   rather than tokens. On a strictly monochrome brand that is the one kind of
+   difference nobody can un-see once it is pointed out.
+
+   The house primary is Helvetica: it is what .non-btn and Add to cart already
+   use, and mono is the site's LABEL face — eyebrows, specs, meta — not its
+   button face. So the Somm's submit stops being the exception.
+
+   Declared last so it wins over the earlier per-component rules without those
+   having to be hunted down and edited one at a time; each of them keeps its
+   own layout (width, flex, position) and loses only its private opinion about
+   type and colour.
+   ========================================================================== */
+.non-btn,
+.non-atc,
+.non-somm__submit,
+.non-sommbox__submit,
+.non-recipes__write,
+.non-stickybuy__add {
+  font-family: var(--non-sans);
+  font-size: var(--t-mono);
+  font-weight: 600;
+  letter-spacing: .14em;
+  text-transform: uppercase;
+  border: 0;
+  border-radius: 0;
+  background: var(--non-invert-bg);
+  color: var(--non-invert-fg);
+  cursor: pointer;
+}
+
+/* One height floor, so a row holding two of them is level. 48px rather than
+   44: these are the loudest controls on the page and they carry two words of
+   letterspaced uppercase, which needs the room. */
+.non-btn,
+.non-somm__submit,
+.non-sommbox__submit,
+.non-recipes__write,
+.non-stickybuy__add {
+  min-height: 48px;
+  padding: 0 22px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Add to cart keeps its full width and its taller box — it is the one button
+   on the site that should be bigger than the others. */
+.non-atc { padding: 16px; min-height: 52px; }
+
+/* The ghost variant inverts: the same type, no fill, a hairline. */
+.non-btn--ghost {
+  background: transparent;
+  color: var(--non-fg);
+  border: 1px solid var(--non-line-strong);
+}
+.non-btn--ghost:hover,
+.non-btn--ghost:focus-visible { border-color: var(--non-fg); }
+
+.non-btn:focus-visible,
+.non-atc:focus-visible,
+.non-somm__submit:focus-visible,
+.non-recipes__write:focus-visible,
+.non-stickybuy__add:focus-visible {
+  outline: 2px solid var(--non-fg);
+  outline-offset: 2px;
+}
+
+/* ==========================================================================
+   CONTACT HERO — one left edge
+   ==========================================================================
+   .non-contact-section already pads by --non-pad, and the hero inside it padded
+   again, so the eyebrow and the heading began at 128px while every other thing
+   on the page — the rule beneath them, the form, the footer — began at 64.
+   The page looked like its own title was indented.
+
+   Scoped to the nested case only: .non-stock-hero shares these rules on the
+   Stockists page, where it is NOT inside a padded section and needs its own
+   padding. */
+.non-contact-section .non-contact-hero {
+  padding-left: 0;
+  padding-right: 0;
+}

@@ -66,7 +66,18 @@
       {%- if section.settings.eyebrow != blank -%}
         <div class="non-mono non-eyebrow">{{ section.settings.eyebrow }}</div>
       {%- endif -%}
-      <h1 class="non-contact-hero__title">{{ page.title | default: section.settings.heading }}</h1>
+      {%- comment -%}
+        THE SETTING WINS, the page title is the fallback.
+
+        It was the other way round, so the Heading field in the editor was
+        inert on any page that had a title — which is every page. The page is
+        called "Contact" for search and for the browser tab; the words at the
+        top of it are an invitation and should be editable as one.
+
+        The setting has no default in the schema so it CAN be blank, which is
+        what makes the fallback reachable.
+      {%- endcomment -%}
+      <h1 class="non-contact-hero__title">{{ section.settings.heading | default: page.title }}</h1>
     </div>
     {%- if section.settings.lead != blank or settings.contact_email != blank -%}
       <p class="non-contact-hero__lead">
@@ -158,7 +169,7 @@
       "type": "text",
       "id": "heading",
       "label": "Heading",
-      "default": "Contact"
+      "info": "Leave blank to use the page's own title."
     },
     {
       "type": "textarea",

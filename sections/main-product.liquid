@@ -199,6 +199,20 @@
 
       <h1 class="non-buy__name">{{ product.title | remove: code | strip }}</h1>
 
+      {%- comment -%}
+        WHAT IT DRINKS LIKE, directly under the name.
+
+        This is the sentence a customer is looking for and the page did not
+        have: not the tasting note, which is detail, but the one line that says
+        where the bottle sits — "Drinks like a dry rosé." It goes above the
+        longer blurb because it is the answer to the first question.
+      {%- endcomment -%}
+      {%- capture drinks_like %}{% render 'drinks-like', product: product %}{% endcapture -%}
+      {%- assign drinks_like = drinks_like | strip -%}
+      {%- if drinks_like != blank -%}
+        <p class="non-buy__drinks">{{ drinks_like }}</p>
+      {%- endif -%}
+
       {%- if m.blurb != blank -%}
         <p class="non-buy__blurb">{{ m.blurb | metafield_text }}</p>
       {%- elsif m.profile != blank -%}
@@ -469,6 +483,8 @@
   If no spec blocks exist the four original settings still render, so a template
   that has not been migrated looks exactly as it did before.
 {%- endcomment -%}
+{%- capture drinks_bare %}{% render 'drinks-like', product: product, bare: true %}{% endcapture -%}
+{%- assign drinks_bare = drinks_bare | strip | capitalize -%}
 {%- assign specs = section.blocks | where: 'type', 'spec' -%}
 
 {%- if specs.size > 0 -%}
@@ -486,7 +502,11 @@
             # means the cell does not render.
             assign val = tastes
           when 'sits'
-            assign val = sits
+            # The phrase, not the fragment. The cell's label supplies the lead
+            # ("Sits with"), so this wants the bare form rather than the full
+            # "Drinks like …" sentence — otherwise the strip reads
+            # "SITS WITH / Drinks like a dry rosé."
+            assign val = drinks_bare
           when 'nutrition'
             assign val = nutrition
           when 'serve'

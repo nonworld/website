@@ -7444,3 +7444,14 @@ select:-moz-focusring { color: transparent; text-shadow: 0 0 0 var(--non-fg); }
   padding-left: 0;
   padding-right: 0;
 }
+
+/* "Drinks like a dry rosé." — the answer to the first question, so it reads
+   ahead of the tasting note rather than inside it. */
+.non-buy__drinks {
+  margin: 10px 0 0;
+  font-size: var(--t-lead);
+  line-height: 1.4;
+  color: var(--non-fg);
+  max-width: 34ch;
+  text-wrap: pretty;
+}

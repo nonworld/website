@@ -67,8 +67,14 @@
   <a href="{{ product.url }}" class="non-card__name">{{ product.title }}</a>
 
   <span class="non-card__note">
-    {%- if sits != blank -%}
-      {{ sits }} &middot;
+    {%- comment -%}
+      "Drinks like a dry rosé." — a sentence, not the fragment custom.sits
+      holds. See snippets/drinks-like.liquid for what was wrong and why the
+      wording is "drinks like" rather than "tastes like".
+    {%- endcomment -%}
+    {%- capture drinks_like %}{% render 'drinks-like', product: product %}{% endcapture -%}
+    {%- if drinks_like != blank -%}
+      {{ drinks_like | strip }} &middot;
     {%- elsif tastes != blank -%}
       {{ tastes }} &middot;
     {%- endif -%}

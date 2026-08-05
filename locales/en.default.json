@@ -43,7 +43,8 @@
       "vendor": "Vendor",
       "somm_heading": "NON Somm",
       "somm_placeholder": "Ask about this bottle",
-      "ask": "Ask"
+      "ask": "Ask",
+      "drinks_like": "Drinks like {{ phrase }}."
     }
   },
   "cart": {

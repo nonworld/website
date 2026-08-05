@@ -1,0 +1,74 @@
+{%- comment -%}
+  "DRINKS LIKE …" — one construction, everywhere.
+
+  THE BUG THIS FIXES. custom.sits holds a fragment on every bottle:
+
+      NON1  "A dry rosé sat"        NON5  "A dry sparkling sat"
+      NON2  "A rich white sat"      NON7  "A big red sat"
+      NON3  "An aromatic white sat" NON9  "A pinot noir sat"
+
+  It was written to finish a sentence the page never says — something like
+  "…where a dry rosé sat" — and it was being printed on its own, as the note
+  under every product card and as a spec-strip value. "A dry rosé sat ·$30.00"
+  is not a sentence, and a customer reads it as a typo before they read it as a
+  description.
+
+  WHAT IT SAYS INSTEAD. The trailing verb is dropped and the phrase is turned
+  into a complete statement about the drinking experience:
+
+      "Drinks like a dry rosé."
+
+  "Drinks like" is doing careful work. It describes how the bottle behaves in
+  the glass and at the table without claiming the bottle IS wine — which it is
+  not, and which is the one claim this brand must never make. "Tastes like a
+  rosé" is an imitation claim; "drinks like a dry rosé" is a description of
+  weight, structure and where it sits in a meal.
+
+  PREFERRED SOURCE FIRST. custom.drinks_like, when it exists, is used verbatim
+  — that is where a properly written phrase ("a dry, savoury rosé") belongs,
+  and it lets the copy be improved per bottle without touching the theme. The
+  derivation below is the fallback, so every bottle reads as a sentence today
+  whether or not anyone has written the better version yet.
+
+  Usage:
+    {% render 'drinks-like', product: product %}                → full sentence
+    {% render 'drinks-like', product: product, bare: true %}    → phrase only
+{%- endcomment -%}
+
+{%- liquid
+  assign explicit = product.metafields.custom.drinks_like | metafield_text | strip
+  assign sits = product.metafields.custom.sits | metafield_text | strip
+
+  assign phrase = ''
+
+  if explicit != blank
+    assign phrase = explicit
+  elsif sits != blank
+    # Strip the dangling verb. Only ever at the END, and only as a whole word,
+    # so a style that legitimately contains the letters is untouched.
+    assign phrase = sits
+    if phrase contains ' sat'
+      assign parts = phrase | split: ' sat'
+      assign phrase = parts | first | strip
+    endif
+    # Lowercase the leading article so it reads inside a sentence rather than
+    # starting a new one. Done by hand: Liquid's downcase would flatten a
+    # proper noun further along the phrase too.
+    if phrase.first == 'A'
+      assign rest = phrase | remove_first: 'A ' | remove_first: 'An '
+      if phrase contains 'An '
+        assign phrase = 'an ' | append: rest
+      else
+        assign phrase = 'a ' | append: rest
+      endif
+    endif
+  endif
+-%}
+
+{%- if phrase != blank -%}
+  {%- if bare -%}
+    {{- phrase -}}
+  {%- else -%}
+    {{- 'products.product.drinks_like' | t: phrase: phrase -}}
+  {%- endif -%}
+{%- endif -%}

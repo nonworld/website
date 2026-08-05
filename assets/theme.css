@@ -6671,10 +6671,19 @@ select:-moz-focusring { color: transparent; text-shadow: 0 0 0 var(--non-fg); }
     background: var(--non-panel, rgba(242, 240, 234, .04));
   }
   .non-rec:has(.non-rec__body:only-child) { grid-template-columns: 1fr; }
-  .non-rec__media { display: block; background: var(--non-photo-bed); }
+  /* align-self: start, or the grid stretches this cell to the card's full
+     height and `height: 100%` below then resolves against 254px — a bottle
+     shot cropped to an 84x254 slot, which is a label and a sliver of glass.
+     A square thumbnail at the top of the card is the right shape, and it stays
+     square whatever the copy beside it does. */
+  .non-rec__media {
+    display: block;
+    align-self: start;
+    background: var(--non-photo-bed);
+  }
   .non-rec__media img {
     width: 100%;
-    height: 100%;
+    height: auto;
     aspect-ratio: 1/1;
     object-fit: cover;
     display: block;

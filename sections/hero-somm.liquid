@@ -49,7 +49,12 @@
           {{ section.settings.cta_shop_label }}
         </a>
         {%- if section.settings.cta_ask_label != blank -%}
-          <button type="button" class="non-btn non-btn--ghost non-hero__cta" data-non-somm-focus>
+          <button
+            type="button"
+            class="non-btn non-btn--ghost non-hero__cta"
+            data-non-somm-open
+            data-somm-surface="homepage_hero"
+            data-somm-context="home">
             {{ section.settings.cta_ask_label }}
           </button>
         {%- endif -%}
@@ -115,7 +120,7 @@
         the fallback always won, and the three chips rendered were simply the
         first three blocks. It looked exactly like a working filter with the
         wrong blocks ticked: the chips said "Dinner", "Is this just grape
-        juice?" and "Going dry", which is two thirds right and therefore not
+        juice?" and "Taking a night off", which is two thirds right and so not
         obviously broken. Caught on the deployed page, not in review.
       {%- endcomment -%}
       {%- assign all_seeds = section.blocks | where: 'type', 'seed' -%}
@@ -155,65 +160,40 @@
       {%- endif -%}
     </div>
 
-    <form class="non-somm" data-non-somm data-somm-context="home" role="search" style="{% if section.settings.somm_dot_colour != blank %}--non-somm-dot: {{ section.settings.somm_dot_colour }};{% endif %}{% if section.settings.somm_bg != blank %}--non-somm-bg: {{ section.settings.somm_bg }};{% endif %}{% if section.settings.somm_border != blank %}--non-somm-border: {{ section.settings.somm_border }};{% endif %}">
-      <div class="non-somm__bar">
-        <span class="non-somm__caret" aria-hidden="true">&gt;</span>
-        <label class="visually-hidden" for="somm-{{ section.id }}">
-          {{ 'sections.somm.heading' | t }}
-        </label>
-        <input
-          id="somm-{{ section.id }}"
-          class="non-somm__input"
-          type="search"
-          name="query"
-          autocomplete="off"
-          data-non-somm-input
-          placeholder="{{ section.settings.placeholder | escape }}">
-        {%- if section.settings.show_live -%}
-          <span class="non-somm__live">
-            <span class="non-sommbox__dot" aria-hidden="true"></span>
-            {{ section.settings.live_label }}
-          </span>
-        {%- endif -%}
-        <button type="submit" class="non-somm__submit">{{ 'sections.somm.ask' | t }}</button>
-      </div>
+    {%- comment -%}
+      THE HERO NO LONGER CONTAINS A SOMM.
 
-      {%- if section.blocks.size > 0 -%}
-        <div class="non-somm__seeds">
-          {%- comment -%}
-            Seeds only. This loop ran over ALL blocks, and the section also
-            holds the hero carousel's slides — so five slides rendered as five
-            empty chips, each one a button with nothing in it.
-          {%- endcomment -%}
-          {%- for block in section.blocks -%}
-            {%- unless block.type == 'seed' -%}{% continue %}{%- endunless -%}
-            <button
-              type="button"
-              class="non-somm__seed"
-              data-non-somm-seed
-              data-answer="{{ block.settings.answer | escape }}"
-              data-picks="{{ block.settings.picks | escape }}"
-              {%- comment -%}
-                The short form, for the sheet. It clones these buttons rather
-                than re-rendering the blocks, so the suggestions stay authored
-                in one place — and a chip that reads "Roast chicken, Friday
-                night" inside a 360px sheet is a sentence, not a chip.
-              {%- endcomment -%}
-              data-short="{{ block.settings.short_label | default: block.settings.label | escape }}"
-              data-mobile="{{ block.settings.show_on_mobile | default: false }}"
-              {{ block.shopify_attributes }}>
-              {{ block.settings.label }}
-            </button>
-          {%- endfor -%}
-        </div>
-      {%- endif -%}
-    </form>
+      It used to hold the whole thing: a field, a submit, a live dot, five
+      chips and the answer panel — while the phone opened a sheet instead. Two
+      implementations of one feature, one per breakpoint, with two transcripts
+      that knew nothing about each other. Ask on a desktop, resize, and the
+      conversation was gone.
 
-    <div class="non-somm__answer" data-non-somm-answer hidden>
-      <div class="non-mono non-eyebrow">{{ 'sections.somm.heading' | t }}</div>
-      <p class="non-somm__stream" data-non-somm-stream></p>
-      <div class="non-somm__picks" data-non-somm-picks hidden></div>
-          {% render 'ask-form' %}
+      There is one Somm now and it is the sheet, at every width. The hero keeps
+      what a hero should: the proposition, the supporting line, Shop the range,
+      Ask the Somm, and three short prompts. Everything below opens the same
+      component and continues the same transcript.
+
+      THE SEEDS SURVIVE AS DATA. They were the offline fallback and the chip
+      source, and both still need them — but as a JSON payload rather than as a
+      form full of buttons nobody can see. A hidden control is still a control;
+      a script tag is not.
+    {%- endcomment -%}
+    <script type="application/json" data-non-somm-seeds>
+      [
+        {%- assign seed_blocks = section.blocks | where: 'type', 'seed' -%}
+        {%- for block in seed_blocks -%}
+          {
+            "label": {{ block.settings.label | json }},
+            "short": {{ block.settings.short_label | default: block.settings.label | json }},
+            "answer": {{ block.settings.answer | json }},
+            "picks": {{ block.settings.picks | default: '' | split: ',' | json }},
+            "intent": {{ block.settings.intent | default: '' | json }},
+            "mobile": {{ block.settings.show_on_mobile | default: false | json }}
+          }{% unless forloop.last %},{% endunless %}
+        {%- endfor -%}
+      ]
+    </script>
     </div>
   </div>
 
@@ -535,16 +515,6 @@
       "info": "0 keeps the section's own spacing."
     },
     {
-      "type": "range",
-      "id": "mobile_order",
-      "label": "Position on mobile",
-      "min": 0,
-      "max": 12,
-      "step": 1,
-      "default": 0,
-      "info": "Where this section sits on a phone, low to high. Desktop keeps the order in the template regardless. 0 leaves it where it is."
-    },
-    {
       "type": "header",
       "content": "Hero buttons"
     },
@@ -616,13 +586,13 @@
           "type": "text",
           "id": "short_label",
           "label": "Short label",
-          "info": "One or two words for the phone chip — Dinner, Gift, Going dry. Falls back to the question above."
+          "info": "One or two words for the phone chip — Dinner, Gift, Taking a night off. Falls back to the question above."
         },
         {
           "type": "text",
           "id": "intent",
           "label": "Intent",
-          "info": "Recorded with the conversation and sent to the Somm, e.g. dinner, gift, going_dry. Not shown to anyone."
+          "info": "Recorded with the conversation and sent to the Somm, e.g. dinner, gift, night_off. Not shown to anyone."
         },
         {
           "type": "checkbox",

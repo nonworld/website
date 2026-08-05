@@ -25,11 +25,11 @@
         "seed-3": {
           "type": "seed",
           "settings": {
-            "label": "Off wine for a month",
-            "answer": "Then you need the ritual intact: cold bottle, real glass, something to talk about.\n\nStart with the Everyday Set — three bottles, three seats at the table: rosé, white, red. A month is roughly six bottles if you drink on weekends, so the mixed six is the cheaper way in.",
+            "label": "Taking a night off the drink",
+            "answer": "Then keep the ritual intact: cold bottle, real glass, something to talk about.\n\nStart with the Everyday Set — three bottles, three seats at the table: rosé, white, red. A night off is not a smaller evening, and the mixed six is the cheaper way to find the one you reach for.",
             "picks": "SET,NON1",
-            "short_label": "Going dry",
-            "intent": "going_dry",
+            "short_label": "Taking a night off",
+            "intent": "night_off",
             "show_on_mobile": true
           }
         },
@@ -110,8 +110,7 @@
         "slide_interval": 6,
         "cta_shop_url": "shopify://collections/the-range",
         "cta_shop_label": "Shop the range",
-        "cta_ask_label": "Ask the Somm",
-        "mobile_order": 1
+        "cta_ask_label": "Ask the Somm"
       }
     },
     "poured-at": {
@@ -184,8 +183,7 @@
         "v7"
       ],
       "settings": {
-        "heading": "Poured at",
-        "mobile_order": 5
+        "heading": "Poured at"
       }
     },
     "range": {
@@ -199,8 +197,7 @@
         "columns": "5",
         "show_add": true,
         "link_label": "All bottles",
-        "link_url": "/collections/the-range",
-        "mobile_order": 2
+        "link_url": "/collections/the-range"
       }
     },
     "made-for": {
@@ -254,9 +251,7 @@
         "c2",
         "c3"
       ],
-      "settings": {
-        "mobile_order": 3
-      }
+      "settings": {}
     },
     "press": {
       "type": "press-quotes",
@@ -297,8 +292,7 @@
         "q4"
       ],
       "settings": {
-        "heading": "Press",
-        "mobile_order": 6
+        "heading": "Press"
       }
     },
     "sets": {
@@ -312,8 +306,7 @@
         "columns": "5",
         "show_add": true,
         "link_label": "All sets",
-        "link_url": "/collections/non-sets",
-        "mobile_order": 9
+        "link_url": "/collections/non-sets"
       }
     },
     "first-buy": {
@@ -327,8 +320,7 @@
         "sold_out_cta": "See the set",
         "save_word": "Save",
         "link_label": "View all sets",
-        "link_url": "/collections/non-sets",
-        "mobile_order": 4
+        "link_url": "/collections/non-sets"
       }
     }
   },
@@ -336,9 +328,9 @@
     "hero",
     "poured-at",
     "range",
-    "sets",
     "made-for",
     "first-buy",
-    "press"
+    "press",
+    "sets"
   ]
 }

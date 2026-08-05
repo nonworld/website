@@ -105,6 +105,26 @@
   assign yt_id = yt_id | strip
 -%}
 
+{%- comment -%}
+  INGREDIENTS, on a phone, with the method rather than with the photographs.
+
+  The list sits under the gallery on a desktop, where the buy column is taller
+  than the pictures and it fills space that would be empty. On a phone the two
+  columns become one, so "under the gallery" put an ingredient list between the
+  photographs and the product's own name.
+
+  It reads here instead — the brief groups it with how the bottle is made — and
+  the gallery copy is hidden at this width. Two elements, exactly one of them
+  in the document at a time: display:none takes the other out of the
+  accessibility tree as well as off the screen.
+{%- endcomment -%}
+{%- if ingredients != blank -%}
+  <div class="non-ingr non-ingr--mobile">
+    <div class="non-spec__k">{{ section.settings.ingredients_label }}</div>
+    <p class="non-ingr__list">{{ ingredients }}</p>
+  </div>
+{%- endif -%}
+
 {%- if steps != blank or prose != blank -%}
   <div class="non-process">
     <div class="non-process__copy">
@@ -332,151 +352,11 @@
 {%- endif -%}
 
 {%- comment -%}
-  Pairing cards, same override rule as the steps: Pairing blocks win, the
-  metafield is the default. Pairings are per-product too — the engine derives
-  them — so blocks are for overriding one bottle, not for authoring all nine.
-{%- endcomment -%}
-{%- assign pair_blocks = section.blocks | where: 'type', 'pairing' -%}
-{%- if pair_blocks.size > 0 or pairings != blank -%}
-  <div class="non-section" style="border-top:1px solid var(--non-line)">
-    <div class="non-mono non-eyebrow">{{ section.settings.pairings_heading }}</div>
-
-    {%- comment -%}
-      THE PAIRINGS AS PICTURES, on a phone.
-
-      Three bordered cards of prose stacked down a narrow column is three
-      paragraphs about food with no food in them — and this is the one band on
-      the page whose whole job is to make someone hungry.
-
-      WHERE THE TWO HALVES COME FROM, and why they can be joined.
-
-      The PICTURES are custom.perfect_for_images, which is per-product,
-      per-course photography that was already on the products and already being
-      rendered — by a section that is not in product.json and has therefore
-      never appeared. On NON1 the three files are literally named
-      non1-perfect-for-starters, -mains and -dessert.
-
-      The WORDS are custom.pairings, the same approved copy the prose cards
-      below print: "Oysters & cured fish", "Chilli and heat", "Goat cheese,
-      stone fruit". Starter, main, dessert — the same three courses in the same
-      order.
-
-      The first attempt used the images' OWN captions and produced tiles
-      reading "Made For Starters" over a bottle's most specific claim about
-      food. Technically correct, and it threw away the only interesting thing
-      on the band. The pairing titles are what a customer came for.
-
-      IT IS STILL A POSITIONAL JOIN, so it is guarded like one: three images,
-      three pairings, or nothing. A mismatched count would put the dessert
-      pairing over the starter photograph, which is a factual error about food
-      presented as a recommendation. Silently wrong is worse than plainly
-      absent, and "absent" here means the prose cards below simply stay.
-    {%- endcomment -%}
-    {%- liquid
-      assign pf_images = product.metafields.custom.perfect_for_images.value
-      assign pf_ok = false
-      # pair_blocks.size == 0 as well: the tiles are labelled from `pairings`,
-      # so a product whose cards are coming from editor blocks instead would
-      # get tiles saying one thing and expansions saying another.
-      if pf_images.size >= 3 and pairings.size >= 3 and pair_blocks.size == 0
-        assign pf_ok = true
-      endif
-    -%}
-
-    {%- if pf_ok -%}
-      <div class="non-trip non-trip--pairing" data-non-pair-trip>
-        {%- for img in pf_images limit: 3 -%}
-          {%- assign pair = pairings[forloop.index0] -%}
-          <div class="non-trip__cell">
-            {%- comment -%}
-              Tapping EXPANDS, it does not navigate and it does not ask the
-              Somm. The explanation is two vetted sentences that are already on
-              the page — going to the model for a fact we hold would be slower,
-              could fail, and could answer differently on two consecutive taps.
-
-              aria-controls points at the matching prose card below, which is
-              why those cards are still rendered rather than replaced: they ARE
-              the expansion. pairing-triptych.js wires the pair up and owns the
-              expanded state.
-            {%- endcomment -%}
-            <button
-              type="button"
-              class="non-trip__hit"
-              data-non-pair-tile
-              data-pair-index="{{ forloop.index0 }}"
-              aria-expanded="false">
-              <span class="visually-hidden">{{ pair.title }}</span>
-            </button>
-
-            {%- comment -%}
-              The alt describes the photograph. It deliberately does not repeat
-              the pairing title, which is rendered as text directly below it.
-            {%- endcomment -%}
-            {{
-              img
-              | image_url: width: 600, format: 'webp'
-              | image_tag:
-                loading: 'lazy',
-                widths: '200,300,450,600',
-                sizes: '33vw',
-                class: 'non-trip__img',
-                alt: img.alt | default: ''
-            }}
-
-            {%- comment -%}
-              Not aria-hidden. The whole strip is display:none above the
-              breakpoint, so this caption is only ever exposed alongside a live
-              control — but the same rule applies as on the homepage triptych:
-              a markup attribute cannot know the viewport, and copy that
-              disappears for a screen reader is a silent regression. The tile's
-              own name carries the pairing; this carries it again.
-            {%- endcomment -%}
-            <div class="non-trip__cap">
-              <div class="non-trip__title">{{ pair.title }}</div>
-            </div>
-          </div>
-        {%- endfor -%}
-      </div>
-    {%- endif -%}
-
-    <div class="non-pairs{% if pf_ok %} non-pairs--has-trip{% endif %}">
-      {%- if pair_blocks.size > 0 -%}
-        {%- for block in pair_blocks -%}
-          <div class="non-pair-card" {{ block.shopify_attributes }}>
-            <div class="non-pair-card__t">{{ block.settings.title }}</div>
-            <p class="non-pair-card__b">{{ block.settings.body }}</p>
-          </div>
-        {%- endfor -%}
-      {%- else -%}
-        {%- for pair in pairings -%}
-          {%- comment -%}
-            id and index so a tile above can point at its own card. On desktop
-            these attributes are inert — the cards are simply three cards, as
-            they have always been.
-          {%- endcomment -%}
-          <div
-            class="non-pair-card"
-            id="non-pair-card-{{ section.id }}-{{ forloop.index0 }}"
-            data-non-pair-card
-            data-pair-index="{{ forloop.index0 }}">
-            <div class="non-pair-card__t">{{ pair.title }}</div>
-            <p class="non-pair-card__b">{{ pair.body }}</p>
-          </div>
-        {%- endfor -%}
-      {%- endif -%}
-    </div>
-  </div>
-{%- endif -%}
-
-{%- comment -%}
   Loaded here rather than in theme.liquid: it has nothing to do on a page with
   no steps on it, and this is the only section that renders them.
 {%- endcomment -%}
 {%- if steps != blank or prose != blank -%}
   <script src="{{ 'steps-accordion.js' | asset_url }}" defer></script>
-{%- endif -%}
-{%- if pf_ok -%}
-  <script src="{{ 'pairing-triptych.js' | asset_url }}" defer></script>
 {%- endif -%}
 
 {% schema %}

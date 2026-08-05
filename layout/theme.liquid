@@ -208,8 +208,31 @@
       stacking context if both are ever up. The sheet closes itself when the
       drawer opens, so that should not happen; this is the belt to that braces.
     {%- endcomment -%}
-    {%- if template.name == 'index' or template.name == 'product' -%}
+    {%- if template.name == 'index' or template.name == 'product' or template.name == 'collection' -%}
       {% render 'somm-sheet' %}
+
+      {%- comment -%}
+        The orb, on the same templates and for the same reason: it is a way
+        into the sheet, so it belongs exactly where the sheet does.
+
+        The product page hands it the bottle, so a conversation opened from the
+        corner of a PDP already knows which one is on screen. The code is
+        resolved the same way every other surface resolves it.
+      {%- endcomment -%}
+      {%- if template.name == 'product' -%}
+        {%- capture orb_code %}{% render 'non-code', product: product %}{% endcapture -%}
+        {% render 'somm-orb',
+           orb_surface: 'floating_orb',
+           orb_context: 'product',
+           orb_code: orb_code | strip,
+           product: product %}
+      {%- elsif template.name == 'collection' -%}
+        {% render 'somm-orb', orb_surface: 'floating_orb', orb_context: 'collection' %}
+      {%- else -%}
+        {% render 'somm-orb', orb_surface: 'floating_orb', orb_context: 'home' %}
+      {%- endif -%}
+
+      <script src="{{ 'somm-orb.js' | asset_url }}" defer></script>
     {%- endif -%}
 
     {% section 'non-lotto' %}

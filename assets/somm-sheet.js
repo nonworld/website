@@ -147,6 +147,24 @@
     opener.hidden = false;
   }
 
+  /* Parsed on demand rather than once at load: the theme editor can replace a
+     section's markup without a reload, and a stale copy would offer prompts
+     that no longer exist. Exposed on NON so somm.js's offline fallback reads
+     exactly the same list. */
+  function readSeeds() {
+    var out = [];
+    document.querySelectorAll('[data-non-somm-seeds]').forEach(function (node) {
+      try {
+        var parsed = JSON.parse(node.textContent);
+        if (parsed && parsed.length) out = out.concat(parsed);
+      } catch (e) {
+        console.warn('[NON somm] seed JSON failed to parse — the sheet will open with no suggested prompts.', e);
+      }
+    });
+    return out;
+  }
+  NON.sommSeeds = readSeeds;
+
   function chipButton(label, answer, picks) {
     var b = document.createElement('button');
     b.type = 'button';
@@ -179,30 +197,26 @@
       return;
     }
 
-    /* Filtered in JavaScript rather than with :not(… *) in the selector. The
-       complex-argument form is Selectors 4 and support is uneven enough that a
-       silent zero-match would leave the sheet with no chips at all — and a
-       selector that returns nothing looks exactly like a section with no
-       seeds configured. */
-    var all = Array.prototype.slice.call(document.querySelectorAll('[data-non-somm-seed]'));
-
-    /* The same three the hero shows, not the first three in the document.
+    /* THE SEEDS ARE DATA, NOT HIDDEN BUTTONS.
      *
-     * A merchant who ticks "Show on mobile" on three seeds is choosing what a
-     * phone offers; the sheet honouring a different set means the chip you
-     * tapped in the hero and the chips you land among disagree. Falls back to
-     * document order when nothing is ticked, which is the same fallback the
-     * hero uses. */
-    var flagged = all.filter(function (b) { return b.getAttribute('data-mobile') === 'true'; });
-    var source = flagged.length ? flagged : all;
+     * This used to clone [data-non-somm-seed] elements out of the hero's
+     * inline form. That form is gone — there is one Somm now — so the
+     * suggestions travel as a JSON payload the section renders instead. Same
+     * single source of truth (the section's blocks), without a form full of
+     * controls that exist only to be copied and never to be pressed.
+     *
+     * Seeds ticked "Show on mobile" win, so the sheet offers the same three
+     * the hero does; document order otherwise. Three, which is the ceiling
+     * everywhere. */
+    var seeds = readSeeds();
+    var flagged = seeds.filter(function (x) { return x.mobile; });
+    var source = flagged.length ? flagged : seeds;
 
     var added = 0;
-    source.forEach(function (btn) {
-      if (added >= 3) return;                       // the brief's ceiling
-      if (seedBox.contains(btn)) return;
-      var label = (btn.getAttribute('data-short') || btn.textContent).trim();
+    source.forEach(function (seed) {
+      if (added >= 3) return;
       seedBox.appendChild(
-        chipButton(label, btn.getAttribute('data-answer') || '', btn.getAttribute('data-picks') || '')
+        chipButton(seed.short || seed.label, seed.answer || '', (seed.picks || []).join(','))
       );
       added++;
     });
@@ -327,11 +341,13 @@
   }
 
   function openSheet(trigger) {
-    /* Above the breakpoint there is no sheet — the desktop Somm is the Somm.
-       Guarded here as well as in CSS so a resize mid-session cannot strand an
-       open dialog on a desktop layout. */
-    if (!MOBILE.matches) return false;
-    /* The cart drawer outranks this. Someone with the drawer open is checking
+    /* No width guard. There is ONE Somm and this is it, at every size — the
+       hero's inline form is gone, so refusing to open above the breakpoint
+       would leave a desktop customer with a button and nothing behind it.
+       The sheet presents as a bottom sheet on a phone and a centred dialog on
+       a desktop; that is styling, not two components.
+
+       The cart drawer outranks this. Someone with the drawer open is checking
        out, and a sheet over the top of it would interrupt the one flow the
        brief says must never be interrupted. */
     if (cartIsOpen()) return false;

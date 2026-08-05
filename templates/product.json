@@ -12,37 +12,6 @@
     "main": {
       "type": "main-product",
       "blocks": {
-        "seed-1": {
-          "type": "seed",
-          "settings": {
-            "label": "What does it replace?",
-            "answer": "",
-            "short_label": "What does it replace?"
-          }
-        },
-        "seed-2": {
-          "type": "seed",
-          "settings": {
-            "label": "Is it sweet?",
-            "answer": "",
-            "short_label": "Is it sweet?"
-          }
-        },
-        "seed-3": {
-          "type": "seed",
-          "settings": {
-            "label": "How is this different from de-alcoholised wine?",
-            "answer": "",
-            "short_label": "vs de-alcoholised?"
-          }
-        },
-        "seed-4": {
-          "type": "seed",
-          "settings": {
-            "label": "I'm buying it as a gift",
-            "answer": ""
-          }
-        },
         "t1": {
           "type": "trust",
           "settings": {
@@ -111,10 +80,6 @@
         "pack-1",
         "t1",
         "t2",
-        "seed-1",
-        "seed-2",
-        "seed-3",
-        "seed-4",
         "sp1",
         "sp2",
         "sp3",
@@ -139,10 +104,48 @@
         "heading": "Goes well in a case with",
         "limit": 3
       }
+    },
+    "pairings": {
+      "type": "product-pairings",
+      "settings": {}
+    },
+    "somm": {
+      "type": "product-somm",
+      "blocks": {
+        "seed-1": {
+          "type": "seed",
+          "settings": {
+            "label": "Is it sweet?",
+            "short_label": "Is it sweet?"
+          }
+        },
+        "seed-2": {
+          "type": "seed",
+          "settings": {
+            "label": "What does it replace?",
+            "short_label": "What does it replace?"
+          }
+        },
+        "seed-3": {
+          "type": "seed",
+          "settings": {
+            "label": "What should I serve it with?",
+            "short_label": "What to serve it with?"
+          }
+        }
+      },
+      "block_order": [
+        "seed-1",
+        "seed-2",
+        "seed-3"
+      ],
+      "settings": {}
     }
   },
   "order": [
     "main",
+    "pairings",
+    "somm",
     "process",
     "related"
   ]

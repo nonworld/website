@@ -6015,10 +6015,8 @@ select:-moz-focusring { color: transparent; text-shadow: 0 0 0 var(--non-fg); }
    accessibility tree as well as off the screen, so a desktop screen reader
    never meets the mobile Somm entry AND the desktop Somm, or the featured set
    AND the sets carousel. The brief asks for exactly that. */
-.non-somm-entry,
 .non-firstbuy,
-.non-trip--pairing,
-.non-sheet { display: none; }
+.non-trip--pairing { display: none; }
 
 /* The triptych's tile control, above the breakpoint.
 
@@ -6033,22 +6031,18 @@ select:-moz-focusring { color: transparent; text-shadow: 0 0 0 var(--non-fg); }
 
   /* ---------------------------------------------------------------- order */
 
-  /* `main` becomes a flex column so sections can carry a mobile position.
-     Each section writes its own `order` from its own settings — see
-     snippets/section-style.liquid for why it is done there and not here.
+  /* `main` IS NOT A FLEX CONTAINER, and that is the fix.
 
-     Safe because every section on this page has zero margin: they sit flush,
-     so there is no collapsed margin for flex to stop collapsing. Verified
-     against the captured baseline, where each section's y is exactly the
-     previous one's y + height. */
-  main {
-    display: flex;
-    flex-direction: column;
-  }
-  /* A flex item's default min-height:auto lets a tall child push a section
-     past its box; and min-width:auto is what lets one horizontal rail give
-     the whole document a scrollbar. Both are closed here rather than per
-     section, because both apply to every one of them. */
+     It was, so that sections could carry a mobile `order` and sit somewhere
+     different on a phone. It worked visually and it broke the page for anyone
+     not using their eyes: tab order and screen-reader order follow the DOM,
+     so the phone showed one sequence and read another. WCAG 2.4.3 and 1.3.2.
+
+     The homepage has one order now, in templates/index.json. Nothing here
+     rearranges it.
+
+     min-width is still worth closing: it is what stops a horizontal rail from
+     giving the whole document a scrollbar. */
   main > * { min-width: 0; }
 
   /* ------------------------------------------------------------- the hero */
@@ -6086,15 +6080,7 @@ select:-moz-focusring { color: transparent; text-shadow: 0 0 0 var(--non-fg); }
      keeps its eager load and its priority. */
   .non-hero__media img { height: 220px; }
 
-  /* The inline Somm, and the ghost button that focuses it, are the desktop
-     component. Both are replaced by .non-somm-entry below. */
-  .non-hero .non-somm,
-  .non-hero [data-non-somm-focus] { display: none; }
-
-  .non-somm-entry {
-    display: block;
-    margin-top: 22px;
-  }
+  .non-somm-entry { margin-top: 16px; }
   .non-somm-entry__label {
     margin-bottom: 10px;
     color: var(--non-fg-mute);
@@ -6797,23 +6783,13 @@ select:-moz-focusring { color: transparent; text-shadow: 0 0 0 var(--non-fg); }
 /* The phone's Somm entry, and the ingredient list's second copy. Absent above
    the breakpoint — display:none, so neither is in the desktop accessibility
    tree either. */
-.non-somm-entry--pdp,
 .non-ingr--mobile { display: none; }
 
 @media (max-width: 859px) {
-  /* .non-buy is already a flex column, so `order` needs nothing set up. The
-     identity block and the form keep their source order; only the Somm and the
-     benefits swap, so the Somm sits directly under the shipping line where the
-     doubt actually happens. */
-  .non-buy > div:first-child { order: 1; }
-  .non-buy > form { order: 2; }
-  .non-somm-entry--pdp { display: block; order: 3; }
-  .non-benefits { order: 4; }
-
-  /* The desktop Somm panel is the desktop component. On a phone the sheet
-     replaces it entirely — see the entry above. Hidden rather than restyled,
-     so there is exactly one Somm on the page at any width. */
-  .non-sommbox { display: none; }
+  /* No `order` here either. The buy column reads in source order, and the
+     source order is the order the brief specifies — see main-product.liquid,
+     where the Somm entry was moved in the markup rather than pulled up by
+     CSS. */
 
   /* The ingredient list swaps copies: out of the gallery, in after the spec
      strip. See main-product.liquid for why this is two elements and not one
@@ -6821,24 +6797,9 @@ select:-moz-focusring { color: transparent; text-shadow: 0 0 0 var(--non-fg); }
   .non-gallery .non-ingr { display: none; }
   .non-ingr--mobile { display: block; padding: 20px var(--non-pad); }
 
-  /* PAIRINGS BEFORE PROCESS.
-
-     Both are children of the same section wrapper, so this is a reorder and
-     nothing in the markup moves. The wrapper's id is generated, so it is
-     matched by what it CONTAINS rather than by name — :has() is the only way
-     to say "the section that holds the process band" without hardcoding an id
-     that changes when the template is duplicated.
-
-     Where :has() is not supported the two rules simply do not apply and the
-     bands stay in source order: how it's made, then pairings. That is the
-     order the page has today, so the fallback is the status quo rather than
-     anything broken. */
-  main > *:has(> .non-process) {
-    display: flex;
-    flex-direction: column;
-  }
-  main > *:has(> .non-process) > .non-process { order: 2; }
-  main > *:has(> .non-process) > .non-section { order: 1; }
+  /* Pairings come before "How it's made" in the MARKUP now — see
+     product-process.liquid. This used to be a :has() reorder, which put the
+     keyboard through the two bands in the opposite order to the eye. */
 
   /* ------------------------------------------------------- the pairings */
 
@@ -6927,4 +6888,463 @@ select:-moz-focusring { color: transparent; text-shadow: 0 0 0 var(--non-fg); }
     .non-step__caret { transition: none; }
   }
   .non-step--collapsible .non-step__b { margin-top: 6px; }
+}
+
+/* ==========================================================================
+   ONE SOMM, EVERY WIDTH
+   ==========================================================================
+   The hero used to carry a complete inline Somm on a desktop while a phone
+   opened a sheet: two implementations of one feature, two transcripts, and a
+   conversation that vanished if the window was resized across 859px.
+
+   There is one component now — the sheet — and one transcript. What changes
+   with width is only how the dialog is presented: docked to the bottom edge
+   on a phone, because that is where a thumb is; centred on a desktop, because
+   a 1440px window has no bottom edge worth docking to.
+   ========================================================================== */
+
+/* THE ENTRY, at every width. On a phone it is the hero's whole Somm presence.
+   On a desktop it sits under the two buttons as a short row of prompts, which
+   is what the brief keeps: proposition, copy, Shop the range, Ask the Somm,
+   optional chips — and no second form competing beneath them. */
+.non-somm-entry { margin-top: 22px; }
+
+@media (min-width: 860px) {
+  /* The field-shaped button is a phone affordance. On a desktop the hero
+     already has a labelled "Ask the Somm" button two lines up, so a second
+     control saying the same thing in a different shape is the competing UI
+     the brief asks to remove. The chips stay: they are distinct offers. */
+  .non-somm-entry__field,
+  .non-somm-entry__label { display: none; }
+
+  .non-somm-entry__chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+  .non-somm-entry__chip { min-height: 40px; }
+}
+
+/* THE SHEET AS A DESKTOP DIALOG.
+   Same markup, same focus trap, same transcript — centred and bounded rather
+   than docked full-width. */
+@media (min-width: 860px) {
+  .non-sheet {
+    display: block;
+    position: fixed;
+    inset: 0;
+    z-index: 92;
+  }
+  .non-sheet[hidden] { display: none; }
+
+  .non-sheet__scrim {
+    position: absolute;
+    inset: 0;
+    background: var(--non-scrim);
+    opacity: 0;
+    transition: opacity var(--duration-hover, .2s) var(--ease-hover, ease);
+  }
+  .non-sheet.is-open .non-sheet__scrim { opacity: 1; }
+
+  .non-sheet__panel {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    width: min(560px, calc(100vw - 80px));
+    max-height: min(720px, calc(100vh - 80px));
+    display: flex;
+    flex-direction: column;
+    background: var(--non-bg);
+    border: 1px solid var(--non-line);
+    /* Centred, then nudged down a fraction so it reads as arriving rather than
+       as having always been there. is-open removes the nudge. */
+    transform: translate(-50%, calc(-50% + 12px));
+    opacity: 0;
+    transition: transform .22s var(--non-ease, cubic-bezier(.2, .7, .3, 1)),
+                opacity .22s var(--ease-standard, ease);
+  }
+  .non-sheet.is-open .non-sheet__panel {
+    transform: translate(-50%, -50%);
+    opacity: 1;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .non-sheet__panel,
+    .non-sheet.is-open .non-sheet__panel,
+    .non-sheet__scrim { transition: none; }
+  }
+
+  /* The drag handle is a touch gesture. On a desktop it is a grey line that
+     does nothing, so it is not there. */
+  .non-sheet__grab { display: none; }
+
+  .non-sheet__head {
+    flex: none;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 16px 22px 12px;
+    border-bottom: 1px solid var(--non-line);
+  }
+  .non-sheet__live { margin-left: auto; display: inline-flex; align-items: center; }
+  .non-sheet__x {
+    flex: none;
+    width: 44px;
+    height: 44px;
+    margin-right: -10px;
+    display: grid;
+    place-items: center;
+    background: none;
+    border: 0;
+    color: var(--non-fg);
+    font-size: 22px;
+    line-height: 1;
+    cursor: pointer;
+  }
+  .non-sheet__x:focus-visible { outline: 2px solid var(--non-fg); outline-offset: -4px; }
+
+  .non-sheet__scroll {
+    flex: 1 1 auto;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    padding: 18px 22px;
+  }
+  .non-sheet__opener { font-size: 17px; line-height: 1.35; margin: 0 0 4px; }
+
+  .non-sheet__foot {
+    flex: none;
+    padding: 12px 22px 16px;
+    border-top: 1px solid var(--non-line);
+  }
+  .non-sheet__ctx {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding-bottom: 10px;
+    margin-bottom: 10px;
+    border-bottom: 1px solid var(--non-line);
+  }
+  .non-sheet__ctx[hidden] { display: none; }
+  .non-sheet__ctx-name { flex: 1 1 auto; min-width: 0; font-size: 14px; }
+  .non-sheet__ctx-add {
+    flex: none;
+    min-height: 44px;
+    padding: 0 16px;
+    background: var(--non-fg);
+    color: var(--non-bg);
+    border: 0;
+    font-family: var(--non-mono);
+    font-size: 11px;
+    letter-spacing: .1em;
+    text-transform: uppercase;
+    cursor: pointer;
+  }
+  .non-sheet__seeds {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-bottom: 10px;
+  }
+  .non-sheet__seeds[hidden] { display: none; }
+  .non-sheet__ask { display: flex; align-items: stretch; gap: 8px; }
+  .non-sheet__ask .non-somm__input { flex: 1; min-width: 0; min-height: 46px; font-size: 15px; }
+  .non-sheet__send {
+    flex: none;
+    width: 46px;
+    min-height: 46px;
+    display: grid;
+    place-items: center;
+    background: var(--non-fg);
+    color: var(--non-bg);
+    border: 0;
+    font-size: 18px;
+    cursor: pointer;
+  }
+  .non-sheet__send:focus-visible { outline: 2px solid var(--non-fg); outline-offset: 2px; }
+
+  /* The recommendation card is the same card on a desktop. It was scoped to
+     the mobile query because the sheet was mobile-only; now that the sheet is
+     the only Somm, its cards are the only cards it renders. */
+  .non-sheet .non-somm__picks { display: flex; flex-direction: column; gap: 10px; margin-top: 14px; }
+  .non-sheet .non-rec {
+    display: grid;
+    grid-template-columns: 96px 1fr;
+    gap: 14px;
+    padding: 14px;
+    border: 1px solid var(--non-line);
+    background: var(--non-panel, rgba(242, 240, 234, .04));
+  }
+  .non-sheet .non-rec__media { display: block; align-self: start; background: var(--non-photo-bed); }
+  .non-sheet .non-rec__media img { width: 100%; height: auto; aspect-ratio: 1/1; object-fit: cover; display: block; }
+  .non-sheet .non-rec__body { min-width: 0; }
+  .non-sheet .non-rec__code { font-size: 10.5px; letter-spacing: .16em; text-transform: uppercase; color: var(--non-fg-mute); }
+  .non-sheet .non-rec__name { font-size: 17px; line-height: 1.2; margin: 4px 0 0; font-weight: 600; }
+  .non-sheet .non-rec__name a { color: inherit; }
+  .non-sheet .non-rec__note { font-size: 13.5px; line-height: 1.4; color: var(--non-fg-mute); margin: 5px 0 0; }
+  .non-sheet .non-rec__actions { display: flex; align-items: center; flex-wrap: wrap; gap: 12px; margin-top: 12px; }
+  .non-sheet .non-rec__add {
+    min-height: 44px;
+    padding: 0 18px;
+    background: var(--non-fg);
+    color: var(--non-bg);
+    border: 0;
+    font-family: var(--non-mono);
+    font-size: 11px;
+    letter-spacing: .08em;
+    text-transform: uppercase;
+    cursor: pointer;
+  }
+  .non-sheet .non-rec__add[disabled] { opacity: .5; cursor: default; }
+  .non-sheet .non-rec__add--out {
+    display: inline-flex;
+    align-items: center;
+    background: transparent;
+    color: var(--non-fg-faint);
+    border: 1px solid var(--non-line);
+  }
+  .non-sheet .non-rec__see,
+  .non-sheet .non-rec__ask {
+    min-height: 44px;
+    display: inline-flex;
+    align-items: center;
+    background: none;
+    border: 0;
+    padding: 0;
+    color: var(--non-fg-mute);
+    font-family: var(--non-mono);
+    font-size: 11px;
+    letter-spacing: .08em;
+    text-transform: uppercase;
+    text-decoration: underline;
+    text-underline-offset: 3px;
+    cursor: pointer;
+  }
+  .non-sheet .non-rec__more { display: flex; gap: 18px; flex-wrap: wrap; }
+  .non-sheet .non-rec__msg { font-size: 12.5px; margin: 8px 0 0; }
+  .non-sheet .non-rec__msg[hidden] { display: none; }
+  .non-sheet .non-rec-fail { padding: 14px 0 0; }
+  .non-sheet .non-rec-fail__b { font-size: 15px; margin: 0 0 12px; color: var(--non-fg-mute); }
+  .non-sheet .non-rec-fail__actions { display: flex; align-items: center; gap: 14px; flex-wrap: wrap; }
+
+  /* The orb belongs to the inline component that no longer exists. */
+  .non-sheet .non-somm::before { display: none; }
+}
+
+/* ==========================================================================
+   THE SOMM ORB — persistent entry, subordinate to everything that sells
+   ==========================================================================
+   Fixed to the lower-right, above the safe area and above the sticky purchase
+   bar when there is one. Its vertical position is a single custom property so
+   that the bar, the safe-area inset and the preview bar can each raise it
+   without any of them knowing about the others.
+
+   It is deliberately NOT a filled, high-contrast button. Add to cart is the
+   loudest thing on a product page and it stays that way: the orb is the
+   brand's own mark on a translucent panel, legible and unmistakably tappable,
+   and quieter than the thing it must not compete with.
+   ========================================================================== */
+.non-orb {
+  position: fixed;
+  right: 16px;
+  /* 16px clear of the bottom, plus the phone's own safe area, plus whatever a
+     sticky bar has asked for. --non-orb-lift is written by product-sticky.js. */
+  bottom: calc(16px + env(safe-area-inset-bottom, 0px) + var(--non-orb-lift, 0px));
+  z-index: 80;              /* under the drawer (95), the sheet (92) and the lotto (100) */
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  /* 52px tall: inside the brief's 48–56, and comfortably past the 44px floor
+     even when the label is collapsed and the control is a circle. */
+  min-height: 52px;
+  padding: 0 18px 0 14px;
+  border: 1px solid var(--non-line-strong, rgba(242, 240, 234, .28));
+  border-radius: 999px;
+  background: rgba(23, 21, 19, .82);
+  -webkit-backdrop-filter: blur(10px);
+  backdrop-filter: blur(10px);
+  color: var(--non-fg);
+  font-family: var(--non-mono);
+  font-size: 11px;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
+  transition: opacity var(--duration-hover, .2s) var(--ease-hover, ease),
+              transform var(--duration-hover, .2s) var(--ease-hover, ease);
+}
+.non-orb[hidden] { display: none; }
+.non-orb:hover { transform: translateY(-1px); }
+.non-orb:focus-visible { outline: 2px solid var(--non-fg); outline-offset: 3px; }
+.non-orb:active { transform: translateY(0); opacity: .9; }
+
+/* The mark: the full stop out of "NON.", the same one the working state uses.
+   Its own element so the label can collapse and leave a circle behind. */
+.non-orb__mark {
+  flex: none;
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  background:
+    radial-gradient(circle at 40% 34%,
+      #ffffff 0%,
+      rgba(242, 240, 234, .92) 26%,
+      rgba(242, 240, 234, .45) 52%,
+      rgba(242, 240, 234, .12) 70%,
+      transparent 82%);
+}
+
+/* COLLAPSED AFTER FIRST USE. The words are how someone learns what the orb is;
+   once they know, they are clutter in the corner of every page. The control
+   keeps its accessible name either way — that lives on aria-label, not here. */
+.non-orb.is-used { padding: 0; width: 52px; justify-content: center; }
+.non-orb.is-used .non-orb__label { display: none; }
+
+/* Three cycles, then stop. Added and removed by somm-orb.js rather than run
+   from CSS alone, so "three" is a number rather than an animation-count that
+   restarts on every repaint. */
+@keyframes nonOrbPulse {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(242, 240, 234, 0); }
+  50%      { box-shadow: 0 0 0 6px rgba(242, 240, 234, .10); }
+}
+.non-orb.is-pulsing { animation: nonOrbPulse 1.8s var(--ease-standard, ease) 3; }
+
+@media (prefers-reduced-motion: reduce) {
+  .non-orb,
+  .non-orb.is-pulsing { animation: none; transition: none; }
+  .non-orb:hover { transform: none; }
+}
+
+/* On a narrow phone the label is most of the screen width. The mark and a
+   shorter run of the label still fit; below 360 the label goes and the orb is
+   the circle from the start. */
+@media (max-width: 359px) {
+  .non-orb { padding: 0; width: 52px; justify-content: center; }
+  .non-orb__label { display: none; }
+}
+
+/* ==========================================================================
+   MOBILE PDP — the purchase, sooner
+   ==========================================================================
+   Measured at 375x812 before this: the product's name began 701px down and the
+   Add button 1,061px — a screen and a third of photography before the customer
+   learns what the thing is called, and a second screen before they can buy it.
+
+   The photographs are not the problem; their SIZE on a phone is. A 375px-square
+   bottle shot is a poster. Capped, with the thumbnails kept to one compact row,
+   the same media is all still there and the buy block arrives a screen earlier.
+   ========================================================================== */
+@media (max-width: 859px) {
+  /* CONTAIN, not cover, and capped. These are bottles photographed on cream
+     with air around them — cropping to fill would cut the label off, and the
+     letterboxing does not show because the bed is the same cream. */
+  .non-gallery__main {
+    max-height: 280px;
+    width: 100%;
+    object-fit: contain;
+    object-position: center;
+  }
+
+  /* ONE ROW, always. The thumbnails are a grid on desktop; wrapped on a phone
+     they become a second gallery as tall as the first, which is exactly the
+     height this section is trying to give back. They scroll instead. */
+  .non-gallery__thumbs {
+    display: flex;
+    flex-wrap: nowrap;
+    gap: 8px;
+    overflow-x: auto;
+    scrollbar-width: none;
+    margin-top: 10px;
+    padding-bottom: 2px;
+    scroll-snap-type: x proximity;
+  }
+  .non-gallery__thumbs::-webkit-scrollbar { display: none; }
+  .non-gallery__thumb {
+    flex: none;
+    width: 56px;
+    height: 56px;
+    scroll-snap-align: start;
+  }
+  .non-gallery__thumb img { width: 100%; height: 100%; object-fit: contain; }
+
+  .non-gallery { padding-bottom: 0; }
+  .non-buy { padding-top: 20px; }
+
+  /* The pack rows carried desktop padding. 56px is still well past the 44px
+     floor and takes 12px off each of three rows. */
+  .non-variant { min-height: 56px; padding-top: 10px; padding-bottom: 10px; }
+}
+
+/* ==========================================================================
+   STICKY MOBILE PURCHASE BAR
+   ==========================================================================
+   Appears once the real Add button has scrolled away and retires when it comes
+   back. z-index 70: under the orb (80), and far under the drawer, the sheet and
+   the lotto — it is the quietest persistent thing on the page, and every layer
+   that takes over hides it outright.
+   ========================================================================== */
+.non-stickybuy { display: none; }
+
+@media (max-width: 859px) {
+  .non-stickybuy {
+    position: fixed;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 70;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 10px var(--non-pad);
+    /* The home indicator sits inside this bar's bottom edge on a modern
+       iPhone; without the inset the Add button is under it and the OS wins. */
+    padding-bottom: calc(10px + env(safe-area-inset-bottom, 0px));
+    background: rgba(23, 21, 19, .94);
+    -webkit-backdrop-filter: blur(12px);
+    backdrop-filter: blur(12px);
+    border-top: 1px solid var(--non-line);
+    transform: translateY(101%);
+    transition: transform .22s var(--non-ease, cubic-bezier(.2, .7, .3, 1));
+    /* Not reachable by tab or by pointer until it is actually on screen —
+       aria-hidden alone would leave it focusable. */
+    visibility: hidden;
+  }
+  .non-stickybuy.is-on { transform: translateY(0); visibility: visible; }
+
+  @media (prefers-reduced-motion: reduce) {
+    .non-stickybuy { transition: none; }
+  }
+
+  .non-stickybuy__meta {
+    flex: 1 1 auto;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+  .non-stickybuy__pack {
+    font-family: var(--non-mono);
+    font-size: 10.5px;
+    letter-spacing: .12em;
+    text-transform: uppercase;
+    color: var(--non-fg-mute);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .non-stickybuy__price { font-size: 15px; font-weight: 600; }
+  .non-stickybuy__add {
+    flex: none;
+    min-height: 48px;
+    padding: 0 22px;
+    background: var(--non-fg);
+    color: var(--non-bg);
+    border: 0;
+    font-family: var(--non-mono);
+    font-size: 11px;
+    letter-spacing: .12em;
+    text-transform: uppercase;
+    cursor: pointer;
+  }
+  .non-stickybuy__add[disabled] { opacity: .45; cursor: default; }
+  .non-stickybuy__add:focus-visible { outline: 2px solid var(--non-fg); outline-offset: -4px; }
 }

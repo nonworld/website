@@ -1,0 +1,54 @@
+{%- comment -%}
+  THE NON SOMM ORB — a persistent way in.
+
+  The Somm is the distinctive thing about this store and, until now, a customer
+  who scrolled past the hero could not reach it again without scrolling back.
+  This keeps it one tap away from anywhere on the page.
+
+  WHY IT SAYS WHAT IT IS. The desktop orb has always been a blurred light with
+  no label — beautiful, and unreadable as a control. So this carries a short
+  visible label, "Ask NON Somm", which collapses to the mark alone once someone
+  has used it. The mark stays; the explanation is only needed once.
+
+  WHAT IT MUST NOT DO. It must not compete with Add to cart, and it must not
+  sit on top of anything. Its position is driven by --non-orb-bottom, which the
+  sticky purchase bar raises when it appears and the safe-area inset raises
+  again on a notched phone. Every layer that takes over the screen — the cart
+  drawer, the Somm sheet itself, the lotto, the menu — hides it, because two
+  things asking for attention is one too many.
+
+  Rendered from theme.liquid on the templates that have a Somm to open.
+{%- endcomment -%}
+
+<button
+  type="button"
+  class="non-orb"
+  data-non-orb
+  data-non-somm-open
+  data-somm-surface="{{ orb_surface | default: 'floating_orb' }}"
+  data-somm-context="{{ orb_context | default: 'home' }}"
+  {%- comment -%}
+    On a product page the orb carries the same payload the inline entry does,
+    so a conversation opened from it already knows which bottle is on screen.
+    product.js keeps the variant in step when the pack size changes; it selects
+    on [data-non-somm-pdp], which is why that marker is here too.
+  {%- endcomment -%}
+  {%- if orb_context == 'product' and product != blank %}
+    data-non-somm-pdp
+    data-somm-code="{{ orb_code }}"
+    data-somm-product="{{ product.id }}"
+    data-somm-variant="{{ product.selected_or_first_available_variant.id }}"
+    data-somm-product-title="{{ product.title | escape }}"
+    data-somm-product-price="{{ product.selected_or_first_available_variant.price | money }}"
+    data-somm-product-available="{{ product.selected_or_first_available_variant.available }}"
+  {%- endif %}
+  aria-label="{{ 'sections.somm.orb_label' | t }}"
+  hidden>
+  {%- comment -%}
+    The mark is the full stop from "NON." — the same mark the working state
+    uses. aria-hidden because the button already has an accessible name; a
+    screen reader does not need to be told there is a dot.
+  {%- endcomment -%}
+  <span class="non-orb__mark" aria-hidden="true"></span>
+  <span class="non-orb__label" data-non-orb-label>{{ 'sections.somm.orb_label' | t }}</span>
+</button>

@@ -110,7 +110,8 @@
       "rec_see": "See bottle",
       "rec_why": "Why this one?",
       "rec_another": "Show me another",
-      "rec_heading": "The Somm suggests"
+      "rec_heading": "The Somm suggests",
+      "orb_label": "Ask NON Somm"
     },
     "lotto": {
       "heading": "Scratch & reveal",

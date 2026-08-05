@@ -108,6 +108,33 @@ for f in liquid_files():
 #     going to catch this one. Put the comment outside the tag.
 WELD = re.compile(
     r'(?<![-\w=."\'])\b([a-zA-Z][\w-]*)\s*\n\s*\{%-\s*(comment|if|unless|liquid|for)\b')
+
+#     SELF-TEST. The two shapes this has already shipped, kept as fixtures so
+#     the pattern cannot be loosened later without something failing loudly.
+#     Both are real: the first is the lotto's close control, the second is the
+#     pairing tool's dish chips.
+_WELD_MUST_CATCH = [
+    ('non-lotto',
+     '<button\n  data-non-lotto-close\n  {%- comment -%} x {%- endcomment -%}\n'
+     '  data-done-label="Done">'),
+    ('pairing-tool',
+     '<button\n  data-non-somm-seed\n  {%- comment -%} x {%- endcomment -%}\n'
+     '  {{ block.shopify_attributes }}>'),
+]
+#     And a shape it must NOT flag: after a quoted value the closing quote
+#     separates the tokens by itself, so the tag is safe there.
+_WELD_MUST_IGNORE = (
+    '<button\n  data-answer="x"\n  {%- comment -%} y {%- endcomment -%}\n'
+    '  data-short="z">')
+for _name, _fixture in _WELD_MUST_CATCH:
+    if not WELD.search(_fixture):
+        errors.append(
+            f"preflight.py check 3c no longer catches the {_name} shape it was "
+            f"written for — the pattern has been weakened")
+if WELD.search(_WELD_MUST_IGNORE):
+    errors.append(
+        "preflight.py check 3c now flags a tag after a QUOTED attribute value, "
+        "which is safe — the pattern has been over-widened")
 for f in liquid_files():
     s = f.read_text(encoding='utf-8')
     for m in WELD.finditer(s):

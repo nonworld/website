@@ -1,0 +1,213 @@
+{% render 'section-style', section: section %}
+{%- comment -%}
+  "Pour it with" — the bottle's food pairings.
+
+  Split out of product-process.liquid so the page can read in the order the
+  brief sets: purchase, facts, FOOD, then "still deciding?", then how it is
+  made. It used to be the tail of the process section and was lifted above it
+  on phones with a :has() reorder — which put the keyboard through the two
+  bands in the opposite order to the eye. Two sections in the right order need
+  no reordering at all.
+{%- endcomment -%}
+
+{%- capture code %}{% render 'non-code', product: product %}{% endcapture -%}
+{%- assign code = code | strip -%}
+{%- assign pairings = product.metafields.custom.pairings.value -%}
+
+{%- comment -%}
+  Pairing cards, same override rule as the steps: Pairing blocks win, the
+  metafield is the default. Pairings are per-product too — the engine derives
+  them — so blocks are for overriding one bottle, not for authoring all nine.
+{%- endcomment -%}
+{%- assign pair_blocks = section.blocks | where: 'type', 'pairing' -%}
+{%- if pair_blocks.size > 0 or pairings != blank -%}
+  <div class="non-section" style="border-top:1px solid var(--non-line)">
+    <div class="non-mono non-eyebrow">{{ section.settings.heading }}</div>
+
+    {%- comment -%}
+      THE PAIRINGS AS PICTURES, on a phone.
+
+      Three bordered cards of prose stacked down a narrow column is three
+      paragraphs about food with no food in them — and this is the one band on
+      the page whose whole job is to make someone hungry.
+
+      WHERE THE TWO HALVES COME FROM, and why they can be joined.
+
+      The PICTURES are custom.perfect_for_images, which is per-product,
+      per-course photography that was already on the products and already being
+      rendered — by a section that is not in product.json and has therefore
+      never appeared. On NON1 the three files are literally named
+      non1-perfect-for-starters, -mains and -dessert.
+
+      The WORDS are custom.pairings, the same approved copy the prose cards
+      below print: "Oysters & cured fish", "Chilli and heat", "Goat cheese,
+      stone fruit". Starter, main, dessert — the same three courses in the same
+      order.
+
+      The first attempt used the images' OWN captions and produced tiles
+      reading "Made For Starters" over a bottle's most specific claim about
+      food. Technically correct, and it threw away the only interesting thing
+      on the band. The pairing titles are what a customer came for.
+
+      IT IS STILL A POSITIONAL JOIN, so it is guarded like one: three images,
+      three pairings, or nothing. A mismatched count would put the dessert
+      pairing over the starter photograph, which is a factual error about food
+      presented as a recommendation. Silently wrong is worse than plainly
+      absent, and "absent" here means the prose cards below simply stay.
+    {%- endcomment -%}
+    {%- liquid
+      assign pf_images = product.metafields.custom.perfect_for_images.value
+      assign pf_ok = false
+      # pair_blocks.size == 0 as well: the tiles are labelled from `pairings`,
+      # so a product whose cards are coming from editor blocks instead would
+      # get tiles saying one thing and expansions saying another.
+      if pf_images.size >= 3 and pairings.size >= 3 and pair_blocks.size == 0
+        assign pf_ok = true
+      endif
+    -%}
+
+    {%- if pf_ok -%}
+      <div class="non-trip non-trip--pairing" data-non-pair-trip>
+        {%- for img in pf_images limit: 3 -%}
+          {%- assign pair = pairings[forloop.index0] -%}
+          <div class="non-trip__cell">
+            {%- comment -%}
+              Tapping EXPANDS, it does not navigate and it does not ask the
+              Somm. The explanation is two vetted sentences that are already on
+              the page — going to the model for a fact we hold would be slower,
+              could fail, and could answer differently on two consecutive taps.
+
+              aria-controls points at the matching prose card below, which is
+              why those cards are still rendered rather than replaced: they ARE
+              the expansion. pairing-triptych.js wires the pair up and owns the
+              expanded state.
+            {%- endcomment -%}
+            <button
+              type="button"
+              class="non-trip__hit"
+              data-non-pair-tile
+              data-pair-index="{{ forloop.index0 }}"
+              aria-expanded="false">
+              <span class="visually-hidden">{{ pair.title }}</span>
+            </button>
+
+            {%- comment -%}
+              The alt describes the photograph. It deliberately does not repeat
+              the pairing title, which is rendered as text directly below it.
+            {%- endcomment -%}
+            {{
+              img
+              | image_url: width: 600, format: 'webp'
+              | image_tag:
+                loading: 'lazy',
+                widths: '200,300,450,600',
+                sizes: '33vw',
+                class: 'non-trip__img',
+                alt: img.alt | default: ''
+            }}
+
+            {%- comment -%}
+              Not aria-hidden. The whole strip is display:none above the
+              breakpoint, so this caption is only ever exposed alongside a live
+              control — but the same rule applies as on the homepage triptych:
+              a markup attribute cannot know the viewport, and copy that
+              disappears for a screen reader is a silent regression. The tile's
+              own name carries the pairing; this carries it again.
+            {%- endcomment -%}
+            <div class="non-trip__cap">
+              <div class="non-trip__title">{{ pair.title }}</div>
+            </div>
+          </div>
+        {%- endfor -%}
+      </div>
+    {%- endif -%}
+
+    <div class="non-pairs{% if pf_ok %} non-pairs--has-trip{% endif %}">
+      {%- if pair_blocks.size > 0 -%}
+        {%- for block in pair_blocks -%}
+          <div class="non-pair-card" {{ block.shopify_attributes }}>
+            <div class="non-pair-card__t">{{ block.settings.title }}</div>
+            <p class="non-pair-card__b">{{ block.settings.body }}</p>
+          </div>
+        {%- endfor -%}
+      {%- else -%}
+        {%- for pair in pairings -%}
+          {%- comment -%}
+            id and index so a tile above can point at its own card. On desktop
+            these attributes are inert — the cards are simply three cards, as
+            they have always been.
+          {%- endcomment -%}
+          <div
+            class="non-pair-card"
+            id="non-pair-card-{{ section.id }}-{{ forloop.index0 }}"
+            data-non-pair-card
+            data-pair-index="{{ forloop.index0 }}">
+            <div class="non-pair-card__t">{{ pair.title }}</div>
+            <p class="non-pair-card__b">{{ pair.body }}</p>
+          </div>
+        {%- endfor -%}
+      {%- endif -%}
+    </div>
+  </div>
+{%- endif -%}
+
+
+{%- if pf_ok -%}
+  <script src="{{ 'pairing-triptych.js' | asset_url }}" defer></script>
+{%- endif -%}
+
+{% schema %}
+{
+  "name": "Product pairings",
+  "settings": [
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Heading",
+      "default": "Pour it with"
+    },
+    {
+      "type": "header",
+      "content": "Appearance"
+    },
+    { "type": "color", "id": "bg_color", "label": "Background" },
+    { "type": "color", "id": "text_color", "label": "Text colour" },
+    {
+      "type": "select",
+      "id": "font_family",
+      "label": "Font",
+      "options": [
+        { "value": "", "label": "Theme default" },
+        { "value": "sans", "label": "Helvetica (all text)" },
+        { "value": "mono", "label": "JetBrains Mono (all text)" }
+      ],
+      "default": ""
+    },
+    {
+      "type": "range",
+      "id": "text_scale",
+      "label": "Text size",
+      "min": 70, "max": 150, "step": 5, "unit": "%", "default": 100,
+      "info": "Scales every text size in this section together."
+    },
+    {
+      "type": "range",
+      "id": "section_padding",
+      "label": "Vertical padding",
+      "min": 0, "max": 160, "step": 8, "unit": "px", "default": 0,
+      "info": "0 keeps the section's own spacing."
+    }
+  ],
+  "blocks": [
+    {
+      "type": "pairing",
+      "name": "Pairing",
+      "settings": [
+        { "type": "text", "id": "title", "label": "Title" },
+        { "type": "textarea", "id": "body", "label": "Body" }
+      ]
+    }
+  ],
+  "presets": [ { "name": "Product pairings" } ]
+}
+{% endschema %}

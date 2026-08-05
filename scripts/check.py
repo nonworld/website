@@ -204,8 +204,39 @@ for path in liquid_files:
         )
 
 # 3. tag balance
+#
+# COMMENT BODIES ARE PROSE, NOT CODE.
+#
+# This scanned raw source, so a tag NAME written inside an explanatory comment
+# was counted as a real opening tag. snippets/ask-form.liquid explains, in
+# English, why it uses Shopify's own {% form %} and why a
+# {% unless form.posted_successfully? %} on the wrapper does not work — and
+# those two sentences were read as an unclosed form and an unclosed unless,
+# which then unbalanced the comment stack behind them. Five failures, all of
+# them documentation, and every one of them fired on a clean tree. `sync.sh`
+# runs this check, so the repo's own deploy path had been unusable.
+#
+# The fix masks comment BODIES while keeping their delimiters, so:
+#   - prose can name any tag it likes without being parsed as one
+#   - comment/endcomment balance is still checked, because the tags survive
+#   - byte offsets are preserved, so reported line numbers stay correct
+#
+# This is not a suppression: nothing is exempted, and a genuinely unclosed tag
+# outside a comment still fails exactly as before. Verified by re-running with
+# a deliberate unclosed {% if %} added to a file — still caught.
+COMMENT_BLOCK = re.compile(
+    r"(\{%-?\s*comment\s*-?%\})(.*?)(\{%-?\s*endcomment\s*-?%\})", re.S)
+
+
+def mask_comment_bodies(text):
+    """Blank the inside of every comment, keeping length and the delimiters."""
+    return COMMENT_BLOCK.sub(
+        lambda m: m.group(1) + re.sub(r"[^\n]", " ", m.group(2)) + m.group(3),
+        text)
+
+
 for path in liquid_files:
-    src = open(path).read()
+    src = mask_comment_bodies(open(path).read())
     stack = []
     for m in re.finditer(r"\{%-?\s*(\w+)", src):
         tag = m.group(1)

@@ -164,7 +164,7 @@
   </div>
 
   {%- comment -%} ── buy box ───────────────────────────────────────────── {%- endcomment -%}
-  <div class="non-buy">
+  <div class="non-buy" data-non-orb-defer>
     <div>
       <div class="non-mono non-eyebrow">
         {{ code }}
@@ -434,189 +434,20 @@
     {%- endif -%}
 
     {%- comment -%}
-      ── the somm, on a phone ──────────────────────────────────────────────
+      THE SOMM IS NOT IN THE BUY COLUMN ANY MORE.
 
-      On a product page the Somm changes job. The homepage question is "find me
-      the right NON"; here it is "is THIS one right for me" — the customer has
-      already chosen something and wants it confirmed or corrected. So the
-      entry is worded for that, its prompts are about this bottle, and the
-      bottle stays buyable inside the sheet while they ask.
+      Two things used to live here: a compact entry for phones and, below it, a
+      complete inline Somm panel for desktops — a second field, a second submit,
+      a second transcript. One feature, two implementations, and a conversation
+      that did not survive a window resize.
 
-      It sits directly under the buy controls and the shipping line, which is
-      where the doubt actually occurs: after the price, before the tap.
-
-      CONTEXT IS AUTOMATIC. Everything the Somm needs about this product is on
-      the trigger — id, variant, title, price, availability, code — so nothing
-      has to be typed and nothing has to be guessed. The variant is refreshed
-      by product.js when a pack size changes, because a conversation about a
-      six-pack should add a six-pack.
-
-      Rendered under the same guard as the desktop panel: a bottle with a spec
-      sheet, not an accessory and not a set. The panel below is display:none on
-      mobile and this is display:none above it, so exactly one Somm is offered
-      at any width and a screen reader never meets both.
+      There is one Somm now, the shared sheet, and one way in. The entry moved
+      OUT of this column into its own section (sections/product-somm.liquid) so
+      the page reads in the order the brief sets: purchase, facts, food, then
+      "still deciding?". Moving it in the markup rather than pulling it up with
+      CSS is the whole point — order the eye sees and order the keyboard takes
+      are the same order.
     {%- endcomment -%}
-    {%- if section.settings.show_somm and not_drink == blank and has_spec -%}
-      {%- assign pdp_variant = product.selected_or_first_available_variant -%}
-      <div class="non-somm-entry non-somm-entry--pdp" data-non-somm-entry>
-        {%- if section.settings.somm_pdp_label != blank -%}
-          <div class="non-mono non-eyebrow non-somm-entry__label">
-            {{ section.settings.somm_pdp_label }} {{ code }}?
-          </div>
-        {%- endif -%}
-
-        <button
-          type="button"
-          class="non-somm-entry__field"
-          data-non-somm-open
-          data-non-somm-pdp
-          data-somm-surface="product_page"
-          data-somm-context="product"
-          data-somm-code="{{ code }}"
-          data-somm-product="{{ product.id }}"
-          data-somm-variant="{{ pdp_variant.id }}"
-          data-somm-product-title="{{ product.title | escape }}"
-          data-somm-product-price="{{ pdp_variant.price | money }}"
-          data-somm-product-available="{{ pdp_variant.available }}">
-          <span class="non-somm-entry__ph">{{ section.settings.somm_placeholder }}</span>
-          <span class="non-somm-entry__go" aria-hidden="true">&rarr;</span>
-        </button>
-
-        {%- comment -%}
-          Three, one line, scrolling. The same ceiling as the homepage and for
-          the same reason — a fourth chip is the one that makes the row wrap
-          and turns a hint into a form.
-        {%- endcomment -%}
-        {%- assign pdp_seeds = section.blocks | where: 'type', 'seed' -%}
-        {%- if pdp_seeds.size > 0 -%}
-          <div class="non-somm-entry__chips">
-            {%- for block in pdp_seeds limit: 3 -%}
-              <button
-                type="button"
-                class="non-somm__seed non-somm-entry__chip"
-                data-non-somm-open
-                data-non-somm-pdp
-                data-somm-surface="product_page"
-                data-somm-context="product"
-                data-somm-code="{{ code }}"
-                data-somm-product="{{ product.id }}"
-                data-somm-variant="{{ pdp_variant.id }}"
-                data-somm-product-title="{{ product.title | escape }}"
-                data-somm-product-price="{{ pdp_variant.price | money }}"
-                data-somm-product-available="{{ pdp_variant.available }}"
-                data-somm-prompt="{{ block.settings.label | escape }}"
-                {{ block.shopify_attributes }}>
-                {{ block.settings.short_label | default: block.settings.label }}
-              </button>
-            {%- endfor -%}
-          </div>
-        {%- endif -%}
-      </div>
-    {%- endif -%}
-
-    {%- comment -%} ── somm, as a panel ────────────────────────────────── {%- endcomment -%}
-    {%- comment -%}
-      The somm is briefed on a bottle - its opener promises "I've read the
-      whole spec sheet for this bottle" and its seeded questions are about
-      sweetness and de-alcoholisation. Pointed at a stopper or a cap it will
-      still answer confidently, and be wrong. Off for anything not a drink
-      until it has a brief for one.
-    {%- endcomment -%}
-    {%- comment -%}
-      has_spec for the same reason the opener gives: the panel says it has read
-      the spec sheet for THIS BOTTLE, and on a set there is no such sheet. Asked
-      a spec question with code SET the Worker correctly refuses to guess and
-      replies "which bottle did you have in mind?" — safe, and a dead end. Off
-      until a set has a brief of its own, exactly as accessories are.
-    {%- endcomment -%}
-    {%- if section.settings.show_somm and not_drink == blank and has_spec -%}
-      <div class="non-sommbox" style="{% if section.settings.somm_dot_colour != blank %}--non-somm-dot: {{ section.settings.somm_dot_colour }};{% endif %}{% if section.settings.somm_bg != blank %}--non-somm-bg: {{ section.settings.somm_bg }};{% endif %}{% if section.settings.somm_border != blank %}--non-somm-border: {{ section.settings.somm_border }};{% endif %}">
-        {%- comment -%}
-          One label, not two. The head printed the locale string "NON Somm" and
-          the opening line printed section.settings.somm_title immediately below
-          it — the same words twice, six lines apart. The setting now drives the
-          single remaining label, so the panel is named in one place and that
-          place is editable.
-        {%- endcomment -%}
-        <div class="non-sommbox__head">
-          {%- comment -%}
-            NOT `setting | default: 'key' | t`. Liquid applies `t` to whatever
-            the chain produces, so a set value gets looked up as a translation
-            key and renders "Translation missing: en.NON Somm". The locale
-            string is only a fallback for when the setting is empty.
-          {%- endcomment -%}
-          <span class="non-mono non-eyebrow">
-            {%- if section.settings.somm_title != blank -%}
-              {{ section.settings.somm_title }}
-            {%- else -%}
-              {{ 'products.product.somm_heading' | t }}
-            {%- endif -%}
-          </span>
-          <span class="non-sommbox__live">
-            <span class="non-sommbox__dot" aria-hidden="true"></span>
-            {{ section.settings.somm_status }}
-          </span>
-        </div>
-
-        {%- comment -%}
-          The opener was wrapped in .non-chat__msg--a, a chat bubble with its own
-          border and background sitting inside the panel's border — a box in a
-          box, with the bubble's min-height leaving a large empty area beneath
-          three lines of text. It is not a message; nobody sent it. It reads as
-          the panel's own standfirst, so it is one now.
-
-          The transcript wrapper stays: somm.js appends real replies into it.
-        {%- endcomment -%}
-        <div class="non-sommbox__body" data-non-somm-transcript>
-          <p class="non-sommbox__opener">{{ section.settings.somm_opener }}</p>
-          <p class="non-somm__stream" data-non-somm-stream hidden></p>
-        </div>
-
-        <form
-          class="non-sommbox__ask"
-          data-non-somm
-          data-somm-context="product"
-          data-somm-code="{{ code }}">
-          <label class="visually-hidden" for="somm-p-{{ section.id }}">{{ section.settings.somm_placeholder }}</label>
-          <input
-            id="somm-p-{{ section.id }}"
-            class="non-somm__input"
-            type="search"
-            autocomplete="off"
-            data-non-somm-input
-            placeholder="{{ section.settings.somm_placeholder | escape }}">
-          <button type="submit" class="non-sommbox__submit">{{ 'products.product.ask' | t }}</button>
-        </form>
-
-        {%- assign seeds = section.blocks | where: 'type', 'seed' -%}
-        {%- if seeds.size > 0 -%}
-          <div class="non-sommbox__seeds">
-            {%- for block in seeds -%}
-              <button
-                type="button"
-                class="non-somm__seed"
-                data-non-somm-seed
-                data-answer="{{ block.settings.answer | escape }}"
-                {%- comment -%}
-                  The short form, for the sheet, which clones these rather than
-                  re-rendering the blocks. Without it a chip inside a 360px
-                  sheet read "How is this different from de-alcoholised wine?"
-                  — a sentence with a border round it.
-                {%- endcomment -%}
-                data-short="{{ block.settings.short_label | default: block.settings.label | escape }}"
-                {{ block.shopify_attributes }}>
-                {{ block.settings.label }}
-              </button>
-            {%- endfor -%}
-          </div>
-        {%- endif -%}
-
-        <div class="non-somm__answer" data-non-somm-answer hidden>
-          <div class="non-somm__picks" data-non-somm-picks hidden></div>
-          {% render 'ask-form' %}
-        </div>
-      </div>
-    {%- endif -%}
   </div>
 </div>
 
@@ -733,29 +564,11 @@
 {%- endif -%}
 
 {%- comment -%}
-  INGREDIENTS, AGAIN — for the phone only.
-
-  The list belongs under the gallery on a desktop, where the buy column is
-  taller than the pictures and it fills space that was empty anyway. On a phone
-  the two columns become one, so "under the gallery" means BETWEEN the
-  photographs and the product's own name — the ingredient list interrupts the
-  page before the customer has read what the thing is called.
-
-  The brief's mobile order puts it with the other reference material, after the
-  spec strip, and CSS cannot move it there: it is inside .non-gallery and the
-  destination is outside .non-product, so no amount of `order` reaches across.
-
-  So it is rendered twice and exactly one copy is ever in the document:
-  display:none removes the other from the accessibility tree as well as from
-  the screen, which is the requirement the brief sets for hidden mobile and
-  desktop variants. The cost is one short paragraph of duplicated HTML.
+  The mobile ingredient list moved to the process band — see
+  product-process.liquid. It is reference material, and the brief groups it
+  with how the bottle is made rather than leaving it between the spec strip
+  and the pairings.
 {%- endcomment -%}
-{%- if ingredients != blank -%}
-  <div class="non-ingr non-ingr--mobile">
-    <div class="non-spec__k">{{ section.settings.ingredients_label }}</div>
-    <p class="non-ingr__list">{{ ingredients }}</p>
-  </div>
-{%- endif -%}
 
 {%- comment -%}
   The bottle's own spec sheet, for the Somm.
@@ -835,6 +648,50 @@
     {%- endfor -%}
   }
 </script>
+
+{%- comment -%}
+  THE STICKY PURCHASE BAR — mobile only, and only once the real one has gone.
+
+  Everything below the buy block exists to answer a question: what does it
+  taste like, what does it go with, how is it made. When the answer is "yes,
+  this one", the reply should not be a scroll back to the top of the page.
+
+  IT MIRRORS THE FORM, it does not hold state. The pack it names and the
+  variant it adds are read off the real form on every change, so a pack chosen
+  at the top is the pack bought at the bottom — there is one source of truth
+  and it is the form, not this.
+
+  Rendered only for a product that can actually be bought this way: a single
+  buy button and a variant input have to exist for the bar to mirror anything.
+{%- endcomment -%}
+{%- if product.available -%}
+  <div
+    class="non-stickybuy"
+    data-non-sticky-buy
+    data-add-label="{{ section.settings.add_label | escape }}"
+    data-fallback-pack="{{ product.title | escape }}"
+    aria-hidden="true">
+    <div class="non-stickybuy__meta">
+      <span class="non-stickybuy__pack" data-non-sticky-pack></span>
+      <span class="non-stickybuy__price" data-non-sticky-price></span>
+    </div>
+    {%- comment -%}
+      data-non-add, so cart.js owns the add exactly as it does everywhere else:
+      one implementation, one set of pending and error states, one place that
+      decides an item is in the cart only once Shopify has said so.
+    {%- endcomment -%}
+    <button
+      type="button"
+      class="non-stickybuy__add"
+      data-non-sticky-add
+      data-non-add
+      data-variant-id="{{ product.selected_or_first_available_variant.id }}">
+      {{ section.settings.add_label }}
+    </button>
+  </div>
+
+  <script src="{{ 'product-sticky.js' | asset_url }}" defer></script>
+{%- endif -%}
 
 <script src="{{ 'somm.js' | asset_url }}" defer></script>
 <script src="{{ 'product.js' | asset_url }}" defer></script>

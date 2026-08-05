@@ -180,8 +180,22 @@
 
   /* --- fallback seeds ---------------------------------------------------- */
 
+  /* READ AT CALL TIME, from the section's JSON, not captured at construction.
+   *
+   * Two reasons it had to change. The hero's inline form is gone, so there are
+   * no seed BUTTONS left in the page to read — the suggestions ship as data.
+   * And it was captured once when the controller was built: the sheet's chips
+   * are created when it opens, long after that, so a fallback answer would
+   * have been matched against an empty list and the offline path would have
+   * had nothing to offer.
+   *
+   * Falls back to any seed buttons still in the root, which is what the
+   * pairing page's dish chips are. */
   function seedsFor(root) {
-    return Array.prototype.map.call(root.querySelectorAll('[data-non-somm-seed]'), function (btn) {
+    var fromJson = (NON.sommSeeds ? NON.sommSeeds() : []).map(function (s) {
+      return { label: s.label, answer: s.answer || '', picks: s.picks || [] };
+    });
+    var fromDom = Array.prototype.map.call(root.querySelectorAll('[data-non-somm-seed]'), function (btn) {
       return {
         label: btn.textContent.trim(),
         answer: btn.getAttribute('data-answer') || '',
@@ -191,6 +205,7 @@
           .filter(Boolean)
       };
     });
+    return fromJson.concat(fromDom);
   }
 
   // Word-overlap match, same shape as the design's seed lookup.
@@ -231,7 +246,6 @@
     var submit = form.querySelector('[type="submit"]');
     var context = form.getAttribute('data-somm-context') || 'home';
     var code = form.getAttribute('data-somm-code') || '';
-    var seeds = seedsFor(root);
     var history = [];
     var timer = null;
     var lastQuery = '';
@@ -468,6 +482,7 @@
     }
 
     function fallback(query) {
+      var seeds = seedsFor(root);
       var hit = matchSeed(seeds, query);
 
       /* In the sheet, an unmatched question during an outage is a failure, not

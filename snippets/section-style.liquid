@@ -26,38 +26,21 @@
   assign pad = section.settings.section_padding
 
   assign sel = '#shopify-section-' | append: section.id
-  assign m_order = section.settings.mobile_order
 -%}
 
 {%- comment -%}
-  MOBILE ORDER — the phone reads the page in a different sequence.
+  THERE IS NO MOBILE ORDER SETTING, AND THAT IS DELIBERATE.
 
-  The homepage's desktop order is right for a wide screen and wrong for a
-  narrow one: it puts a logo marquee and a sets carousel between the hero and
-  the first bottle a customer can buy, which on a 390px phone is 1,226px of
-  scrolling before the range appears.
+  This snippet used to emit `order: N` inside a mobile media query so a section
+  could sit somewhere different on a phone. It worked, and it was wrong: tab
+  order and screen-reader order follow the DOM, not the visual box order, so
+  the phone showed one sequence and read another. WCAG 2.4.3 and 1.3.2.
 
-  Rather than a second template, each section carries a mobile position and
-  emits one rule for itself. That keeps the two orders in the one place a
-  merchant would look — the section's own settings — and means desktop is
-  untouched by construction: the rule only exists inside the mobile query, and
-  `main` is only a flex container inside the same query.
-
-  Why per-section and not a stylesheet block: section ids are generated, so a
-  central block would have to name them and would rot the moment a section is
-  duplicated or renamed in the editor. This cannot rot — the rule is written by
-  the section it orders.
-
-  0 means "leave it where the template put it", which is what every section not
-  on the homepage does.
+  The homepage now has ONE order, in templates/index.json, and both the eye and
+  the keyboard follow it. If a section needs to move on a phone, move it in the
+  template — and accept that it moves on the desktop too. That constraint is
+  the point: an order that cannot be read is not an order.
 {%- endcomment -%}
-{%- if m_order and m_order > 0 -%}
-  <style>
-    @media (max-width: 859px) {
-      {{ sel }} { order: {{ m_order }}; }
-    }
-  </style>
-{%- endif -%}
 
 {%- capture rules -%}
   {%- if bg != blank and bg != 'rgba(0,0,0,0)' -%}

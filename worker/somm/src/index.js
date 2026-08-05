@@ -742,7 +742,7 @@ function factsPrompt(query, code, facts, lang = '') {
     // 400 truncated the trade answer mid-number ("NON9 the richest at 51 cal
     // and 12.5"). Two short paragraphs of six-bottle comparison do not fit.
     maxTokens: 700,
-    system: FACTS_SYSTEM + HOUSE_RULES + lang,
+    system: FACTS_SYSTEM + HOUSE_RULES + surface + lang,
     messages: [
       {
         role: 'user',
@@ -763,7 +763,7 @@ function picksFrom(answer) {
   return PRODUCTS.filter((p) => answer.indexOf(p.id) !== -1).map((p) => p.id).slice(0, 2);
 }
 
-async function answerFacts(env, query, code, facts, lang = '') {
+async function answerFacts(env, query, code, facts, lang = '', surface = '') {
   const prompt = factsPrompt(query, code, facts, lang);
   const answer = await claude(env, {
     model: env.EXPLAIN_MODEL || 'claude-sonnet-5',
@@ -857,13 +857,83 @@ async function extractDish(env, query) {
 /* claude(), but an empty body is an error rather than an answer. The prose
    paths all render their result directly into the panel, so a zero-length
    string is indistinguishable from a broken deploy to the person reading it. */
+
+/* ==========================================================================
+   WHERE THE QUESTION CAME FROM
+
+   The theme has been sending a `surface` object for a while and this Worker
+   ignored it, so a customer who tapped "Mains" on the homepage triptych and
+   then answered "Roast chicken" was asked, in effect, to say "a main course"
+   twice — once with their thumb and once in words. The first answer was
+   general because the model was never told the first half.
+
+   This turns it into two short lines of prompt. Deliberately two: it is
+   context, not instruction, and the pairing engine's own scoring is still what
+   picks the bottle.
+
+   IT MUST NOT OVER-CONSTRAIN. Arriving from a product page means the customer
+   is LOOKING at that bottle, not that they have agreed to buy it — so the
+   directive says the bottle is on screen and explicitly permits naming a
+   different one. A Somm that can only ever recommend the page you are already
+   on is a mirror, not a sommelier.
+   ========================================================================== */
+
+const SURFACE_LABELS = {
+  homepage_hero: 'the homepage, from the Somm field',
+  homepage_triptych: 'the homepage, by tapping a meal category',
+  product_page: 'a product page, from the "still deciding" entry',
+  product_pairing: 'a product page, by tapping one of its food pairings',
+  floating_orb: 'the floating Somm button',
+  collection: 'a collection page',
+  cart: 'the cart',
+};
+
+function surfaceDirective(surface) {
+  if (!surface || typeof surface !== 'object') return '';
+
+  const known = [];
+
+  const where = SURFACE_LABELS[surface.surface];
+  if (where) known.push(`The customer opened the Somm from ${where}.`);
+
+  /* Already supplied — so do not ask for it again. This is the line that stops
+     the conversation restarting from zero after a tap that already said a lot. */
+  if (surface.meal_category) {
+    known.push(
+      `They have ALREADY told us the course: ${surface.meal_category}. ` +
+      'Do not ask what kind of meal it is.'
+    );
+  }
+  if (surface.intent) {
+    const intents = {
+      dinner: 'they are choosing something for dinner',
+      gift: 'they are buying it as a gift, so who it is for matters more than what they are eating',
+      night_off: 'they are taking a night off the drink, not giving it up — keep the occasion intact',
+    };
+    if (intents[surface.intent]) known.push(`Context: ${intents[surface.intent]}.`);
+  }
+
+  if (surface.product_title) {
+    known.push(
+      `${surface.product_title} is on screen in front of them` +
+      (surface.product_price ? ` at ${surface.product_price}` : '') + '. ' +
+      'Answer about that bottle first. If a different one genuinely suits them ' +
+      'better, say so and name it — do not recommend this one just because it ' +
+      'is the page they are on.'
+    );
+  }
+
+  if (!known.length) return '';
+  return '\n\nWHAT THEY HAVE ALREADY TOLD US\n' + known.join('\n');
+}
+
 async function claudeNonEmpty(env, opts) {
   const text = await claude(env, opts);
   if (!text || !text.trim()) throw new Error('empty answer');
   return text;
 }
 
-async function explain(env, { query, product, reasons, score, lang = '' }) {
+async function explain(env, { query, product, reasons, score, lang = '', surface = '' }) {
   // Same guard as answerFacts. This is the path that actually produced the
   // blank panel: "Pint of guiness" routed to pairing, scored a bottle, and the
   // sentence came back empty — so the customer got a pick card with no words
@@ -871,7 +941,7 @@ async function explain(env, { query, product, reasons, score, lang = '' }) {
   return claudeNonEmpty(env, {
     model: env.EXPLAIN_MODEL || 'claude-sonnet-5',
     maxTokens: 150,
-    system: EXPLAIN_SYSTEM + HOUSE_RULES + lang,
+    system: EXPLAIN_SYSTEM + HOUSE_RULES + surface + lang,
     messages: [
       {
         role: 'user',
@@ -906,7 +976,7 @@ function fitBucket(score) {
   return 'weak';
 }
 
-async function verdict(env, { query, product, reasons, score, fit, instead, lang = '' }) {
+async function verdict(env, { query, product, reasons, score, fit, instead, lang = '', surface = '' }) {
   const lines = [
     `The customer said: "${query}"`,
     '',
@@ -934,7 +1004,7 @@ async function verdict(env, { query, product, reasons, score, fit, instead, lang
   return claudeNonEmpty(env, {
     model: env.EXPLAIN_MODEL || 'claude-sonnet-5',
     maxTokens: 150,
-    system: VERDICT_SYSTEM + HOUSE_RULES + lang,
+    system: VERDICT_SYSTEM + HOUSE_RULES + surface + lang,
     messages: [{ role: 'user', content: lines.join('\n') }],
   });
 }
@@ -1159,6 +1229,10 @@ const handler = {
     // prompts get it appended; the two classifiers never do.
     const lang = languageDirective(body.locale);
 
+    // The entry point, as prompt context. Empty for a request that sends no
+    // surface, which is every older caller — nothing here is required.
+    const surface = surfaceDirective(body.surface);
+
     // ---- route: factual questions never reach the pairing engine ---------
     const intent = await routeQuery(env, query);
 
@@ -1171,7 +1245,7 @@ const handler = {
           return await claudeStreamResponse(env, {
             model: env.EXPLAIN_MODEL || 'claude-sonnet-5',
             maxTokens: 700,
-            system: BRAND_SYSTEM + HOUSE_RULES + brandContext(context, body.facts) + lang,
+            system: BRAND_SYSTEM + HOUSE_RULES + brandContext(context, body.facts) + surface + lang,
             messages: [{ role: 'user', content: query }],
             escalationMeta: { query, code: context, page: body.page, title: body.facts && body.facts.title },
             tail: (answer) => ({
@@ -1195,7 +1269,7 @@ const handler = {
           // there is no reason the brand path should be one bad question away
           // from the same failure.
           maxTokens: 700,
-          system: BRAND_SYSTEM + HOUSE_RULES + brandContext(context, body.facts) + lang,
+          system: BRAND_SYSTEM + HOUSE_RULES + brandContext(context, body.facts) + surface + lang,
           messages: [{ role: 'user', content: query }],
         });
         // The bottle the customer is standing on, not null. "What wine does
@@ -1236,7 +1310,7 @@ const handler = {
         }
       }
       try {
-        const result = await answerFacts(env, query, context, body.facts, lang);
+        const result = await answerFacts(env, query, context, body.facts, lang, surface);
         return json({
           intent: intent,
           answer: result.answer,
@@ -1308,7 +1382,7 @@ const handler = {
        the bottle actually sells. */
     if (context && dish && !(dish.proteins || []).length && !(dish.flavourNotes || []).length) {
       try {
-        const result = await answerFacts(env, query, context, body.facts, lang);
+        const result = await answerFacts(env, query, context, body.facts, lang, surface);
         return json({
           intent: 'facts',
           answer: result.answer,
@@ -1349,6 +1423,7 @@ const handler = {
         try {
           sentence = await verdict(env, {
             query, product, reasons: scored.reasons, score: scored.score, fit, instead, lang,
+            surface,
           });
         } catch (e) {
           return json(fallbackResponse('verdict', e, env, 'pairing', body.locale), 200);
@@ -1387,6 +1462,7 @@ const handler = {
         reasons: top.reasons,
         score: top.score,
         lang,
+            surface,
       });
     } catch (e) {
       return json(fallbackResponse('explanation', e, env, 'pairing', body.locale), 200);
@@ -1451,6 +1527,28 @@ import { exportToSheet } from './export-sheet.js';
 
 // Reading the answer must never cost the customer their answer. Every failure
 // path here degrades to logging less, never to breaking the response.
+/* THE ENTRY POINT, in a column that already exists.
+
+   `context` has always held the surface TYPE — 'home' or 'product' — and the
+   entry point is a refinement of exactly that, so it rides along as
+   "home:homepage_triptych" rather than needing a column of its own.
+
+   Deliberately not a migration. somm_log is a live table on a live Worker, and
+   adding a column to it is a schema change on production data in exchange for
+   a value that is a short enum. Anything already reading `context` keeps
+   working: the old value is the prefix, so `context LIKE 'home%'` is unchanged
+   and `context = 'home'` matches every row written before today.
+
+   NEVER free text. The surface name is one of a fixed set the theme writes,
+   and anything not matching that shape is dropped rather than stored. */
+function logContext(body) {
+  const base = body.context || null;
+  const entry = body.surface && body.surface.surface;
+  if (!entry || typeof entry !== 'string') return base;
+  if (!/^[a-z_]{1,32}$/.test(entry)) return base;
+  return base ? `${base}:${entry}` : entry;
+}
+
 async function logExchange(env, row) {
   if (!env.SOMM_LOG) return; // unbound in dev; capture is optional, answers are not
   try {
@@ -1630,7 +1728,7 @@ export default {
       // A throw that escapes the handler is the single most important thing
       // this table can hold: a question that produced nothing at all.
       await logExchange(env, {
-        at: started, question: String(body.query || ''), context: body.context || null,
+        at: started, question: String(body.query || ''), context: logContext(body),
         product: body.product || null, locale: body.locale || null,
         page: body.page || null,
         ms: Date.now() - started, error: `handler: ${e && e.message ? e.message : e}`,
@@ -1664,7 +1762,7 @@ export default {
     const base = {
       at: started,
       question: String(body.query || ''),
-      context: body.context || null,
+      context: logContext(body),
       product: body.product || null,
       locale: body.locale || null,
       page: body.page || null,

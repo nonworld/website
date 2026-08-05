@@ -6017,6 +6017,7 @@ select:-moz-focusring { color: transparent; text-shadow: 0 0 0 var(--non-fg); }
    AND the sets carousel. The brief asks for exactly that. */
 .non-somm-entry,
 .non-firstbuy,
+.non-trip--pairing,
 .non-sheet { display: none; }
 
 @media (max-width: 859px) {
@@ -6820,7 +6821,14 @@ select:-moz-focusring { color: transparent; text-shadow: 0 0 0 var(--non-fg); }
      Equal thirds here rather than 28/44/28: on the homepage the middle tile
      carries the main course and earns the extra width, but three pairings are
      peers and weighting one would say something untrue about the bottle. */
+  /* `display: grid` explicitly, because this component is display:none above
+     the breakpoint — see the hidden-until-mobile list at the top of the mobile
+     section. It is not enough to style it here and assume it inherits .non-trip's
+     display: the first version did exactly that, the strip rendered at every
+     width, and it pushed the desktop PDP down 411px. Caught by the computed-style
+     baseline, which is what that baseline is for. */
   .non-trip--pairing {
+    display: grid;
     grid-template-columns: repeat(3, 1fr);
     margin-top: 14px;
   }

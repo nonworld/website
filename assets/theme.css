@@ -7287,9 +7287,12 @@ select:-moz-focusring { color: transparent; text-shadow: 0 0 0 var(--non-fg); }
   .non-gallery { padding-bottom: 0; }
   .non-buy { padding-top: 20px; }
 
-  /* The pack rows carried desktop padding. 56px is still well past the 44px
-     floor and takes 12px off each of three rows. */
-  .non-variant { min-height: 56px; padding-top: 10px; padding-bottom: 10px; }
+  /* The pack rows carried desktop padding. Measured after the first pass: the
+     10px I left on top and bottom held each row at 66px, so three rows put Add
+     to cart at 919 against a 900 ceiling. 6px lands them on the 56px floor —
+     still comfortably past the 44px tap-target minimum — and brings Add inside
+     target without touching the type. */
+  .non-variant { min-height: 56px; padding-top: 6px; padding-bottom: 6px; }
 }
 
 /* ==========================================================================

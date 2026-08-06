@@ -3599,6 +3599,31 @@ select:-moz-focusring { color: transparent; text-shadow: 0 0 0 var(--non-fg); }
   box-shadow: inset 0 -2px 0 var(--non-proc-accent);
 }
 
+/* THE PROCESS ANIMATION'S STEP RAIL — 01 FRUIT … 05 BALANCE.
+   ==========================================================================
+   Five equal columns, inline-styled by the animation's own markup. On a phone
+   the stage is zoom-scaled to about 320px, so each column computed to 86px and
+   each label box to 59px — not enough for "03 SALINITY", which wrapped between
+   the number and its word. The number then sat on its own line under the
+   previous step's, which is what "03 below 02" is.
+
+   Three columns below 860 gives each label ~93px against the ~82px the longest
+   one needs, so number and word stay together and the five steps read as 3 + 2.
+   `white-space: nowrap` is the guarantee rather than the arithmetic: if a step
+   is ever renamed longer, it will overflow visibly instead of silently
+   splitting in half again.
+
+   `!important` is unavoidable and has precedent here — see `.non-procrow`. The
+   declaration being overridden is an inline style inside a {% raw %} block, so
+   there is no Liquid conditional that can reach it and no stylesheet
+   specificity that can beat it. The class it hangs on was added to that markup
+   for this rule; a class is plain HTML and survives raw untouched.
+   ========================================================================== */
+@media (max-width: 859px) {
+  .non-proc-steps { grid-template-columns: repeat(3, 1fr) !important; }
+  .non-proc-steps__t { white-space: nowrap; }
+}
+
 .non-proc__rail {
   display: grid; gap: 2px; margin-top: 30px;
   grid-template-columns: 1fr;

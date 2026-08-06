@@ -42,33 +42,33 @@
     </div>
   </div>
 
-  <div style="display:grid;grid-template-columns:repeat(5,1fr);gap:10px;border-top:1px solid #232320;padding-top:10px">
+  <div class="non-proc-steps" style="display:grid;grid-template-columns:repeat(5,1fr);gap:10px;border-top:1px solid #232320;padding-top:10px">
     <div onClick="{{ go0 }}" style="display:flex;flex-direction:column;gap:6px;cursor:pointer">
       <div style="height:2px;background:#232320;overflow:hidden">
         <sc-if value="{{ s1 }}" hint-placeholder-val="{{ true }}"><div style="height:2px;background:#EDE8E0;transform-origin:left;animation:dcBar 6s linear both"></div></sc-if>
       </div>
-      <div style="font-family:var(--non-mono);font-size:10.5px;letter-spacing:0.1em;color:#6E6B65">01 FRUIT</div>
+      <div class="non-proc-steps__t" style="font-family:var(--non-mono);font-size:10.5px;letter-spacing:0.1em;color:#6E6B65">01 FRUIT</div>
     </div>
     <div onClick="{{ go1 }}" style="display:flex;flex-direction:column;gap:6px;cursor:pointer">
       <div style="height:2px;background:#232320;overflow:hidden">
         <sc-if value="{{ s2 }}" hint-placeholder-val="{{ false }}"><div style="height:2px;background:#EDE8E0;transform-origin:left;animation:dcBar 6s linear both"></div></sc-if>
       </div>
-      <div style="font-family:var(--non-mono);font-size:10.5px;letter-spacing:0.1em;color:#6E6B65">02 TANNIN</div>
+      <div class="non-proc-steps__t" style="font-family:var(--non-mono);font-size:10.5px;letter-spacing:0.1em;color:#6E6B65">02 TANNIN</div>
     </div>
     <div onClick="{{ go2 }}" style="display:flex;flex-direction:column;gap:6px;cursor:pointer">
       <div style="height:2px;background:#232320;overflow:hidden">
         <sc-if value="{{ s3 }}" hint-placeholder-val="{{ false }}"><div style="height:2px;background:#EDE8E0;transform-origin:left;animation:dcBar 6s linear both"></div></sc-if>
       </div>
-      <div style="font-family:var(--non-mono);font-size:10.5px;letter-spacing:0.1em;color:#6E6B65">03 SALINITY</div>
+      <div class="non-proc-steps__t" style="font-family:var(--non-mono);font-size:10.5px;letter-spacing:0.1em;color:#6E6B65">03 SALINITY</div>
     </div>
     <div onClick="{{ go3 }}" style="display:flex;flex-direction:column;gap:6px;cursor:pointer">
       <div style="height:2px;background:#232320;overflow:hidden">
         <sc-if value="{{ s4 }}" hint-placeholder-val="{{ false }}"><div style="height:2px;background:#EDE8E0;transform-origin:left;animation:dcBar 6s linear both"></div></sc-if>
       </div>
-      <div style="font-family:var(--non-mono);font-size:10.5px;letter-spacing:0.1em;color:#6E6B65">04 ACIDITY</div>
+      <div class="non-proc-steps__t" style="font-family:var(--non-mono);font-size:10.5px;letter-spacing:0.1em;color:#6E6B65">04 ACIDITY</div>
     </div>
     <div onClick="{{ go4 }}" style="display:flex;flex-direction:column;gap:6px;cursor:pointer">
       <div style="height:2px;background:#232320;overflow:hidden">
         <sc-if value="{{ s5 }}" hint-placeholder-val="{{ false }}"><div style="height:2px;background:#EDE8E0;transform-origin:left;animation:dcBar 6s linear both"></div></sc-if>
       </div>
-      <div style="font-family:var(--non-mono);font-size:10.5px;letter-spacing:0.1em;color:#6E6B65">05 BALANCE</div>{% endraw %}
+      <div class="non-proc-steps__t" style="font-family:var(--non-mono);font-size:10.5px;letter-spacing:0.1em;color:#6E6B65">05 BALANCE</div>{% endraw %}

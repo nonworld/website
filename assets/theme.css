@@ -3024,6 +3024,25 @@ a, button, .non-card, .non-filter, .non-pair__opt, .non-somm__seed,
 }
 .non-pair__again { margin-top: 18px; }
 
+/* THE VERDICT'S BUY CARD, ON A PHONE.
+   ==========================================================================
+   The row already had `flex-wrap: wrap` and it never wrapped, because nothing
+   in it was too wide — the meta simply gave up its width instead. `flex: 1` is
+   `1 1 0%`: a zero basis, so the name column only ever gets what is left after
+   a 64px image and an Add button that refuses to shrink. Measured at 402: the
+   meta computed to 19px, so "NON1 Salted Raspberry & Chamomile" wrapped one
+   word per line and ran out under the button.
+
+   A real basis fixes it by making the row genuinely too wide, which is the
+   condition flex-wrap was waiting for: image and name on the first line, Add
+   across the second. Not `min-width`, because that would let it overflow the
+   card on a 320px screen instead of wrapping.
+   ========================================================================== */
+@media (max-width: 699px) {
+  .non-pair__buymeta { flex: 1 1 60%; }
+  .non-pair__add { flex: 1 0 100%; }
+}
+
 /* --- Pairing: the free-text route ----------------------------------------- */
 .non-pair__freetext {
   margin-top: 34px;
@@ -6368,7 +6387,12 @@ select:-moz-focusring { color: transparent; text-shadow: 0 0 0 var(--non-fg); }
 
      32 → 24 above the eyebrow, 26 → 18 above the buttons, 22 → 16 above the
      Somm entry. 22px, and none of it is legible as a loss. */
-  .non-hero__copy { padding-top: 24px; padding-bottom: 4px; }
+  /* 28 at the bottom, not 4. Measured: the prompt chips ended 4px above the
+     hero photograph, so the two read as one crushed block with the controls
+     jammed against the picture. The 4px dates from when the Somm below was a
+     single field; it now carries a bar and a wrapping chip row, and they need
+     to end before the image starts. */
+  .non-hero__copy { padding-top: 24px; padding-bottom: 28px; }
   .non-hero__ctas { margin-top: 18px; }
   .non-somm-entry { margin-top: 16px; }
 

@@ -131,7 +131,17 @@
      * Not on the first paint — `written` is still false there, which is
      * exactly the "they have not asked yet" signal — and not when the panel is
      * already usefully on screen, which is the desktop case. */
-    if (written) bringIntoView(list[variant]);
+    /* Every press, including the first — and the first is the one that matters.
+     *
+     * This was gated on `written`, which is false until the end of this
+     * function, so the very first WRITE THE DISH did not scroll and only the
+     * re-rolls did. Backwards: the first press is the one where the panel is
+     * furthest down the page and the customer has no idea anything happened.
+     *
+     * No gate is needed at all. reveal() is only ever reached through write(),
+     * and write() only runs from a click or a picker change — the initial paint
+     * calls marks() and hideAll(), never this. */
+    bringIntoView(list[variant]);
     written = true;
   }
 

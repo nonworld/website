@@ -4267,7 +4267,24 @@ select:-moz-focusring { color: transparent; text-shadow: 0 0 0 var(--non-fg); }
   border-radius: 0;
   background: transparent;
 }
+/* CENTRED ONLY WHILE THE CHIPS FIT.
+ *
+ * On a phone this row is `flex-wrap: nowrap` with `overflow-x: auto`, and its
+ * content is wider than its box — 474px of chips in 358px on the homepage. In
+ * a centred flex row, overflow is pushed out BOTH sides, and the left side is
+ * unreachable: scrollLeft is already 0 and cannot go negative. Measured on the
+ * built theme: the first chip sat at x = -72, permanently off screen and
+ * impossible to scroll to. "Roast chicken, Friday night" rendered as
+ * "n, Friday night".
+ *
+ * So it is centred only where it wraps and there is nothing to overflow. Below
+ * 700 it starts at the left, which is also where the bar and the label start.
+ * The overflow then falls entirely on the right, where the row scrolls. */
 .non-somm__seeds { justify-content: center; }
+@media (max-width: 699px) {
+  .non-somm__seeds,
+  .non-sommbox__seeds { justify-content: flex-start; }
+}
 
 @media (prefers-reduced-motion: reduce) {
   .non-somm::before { animation: none; }

@@ -111,6 +111,18 @@
       {%- capture ph_style -%}
         --non-ph: url({{ product.featured_media | image_url: width: 32, format: 'webp' }});
       {%- endcapture -%}
+      {%- comment -%}
+        THE STAGE. The image and any video pane share one box, so a pane can be
+        `inset: 0` against the IMAGE rather than against a guess at its size.
+
+        Guessing is what broke first: the pane was given the image's
+        `aspect-ratio: 1/1`, and on a phone `.non-gallery__main` also carries
+        `max-height: 280px` — so a 358px-square pane overhung the 280px image by
+        78px and covered the thumbnails, which made every other shot
+        unclickable while a film was open. Matching a sibling's box by
+        re-declaring its constraints only works until one of them changes.
+      {%- endcomment -%}
+      <div class="non-gallery__stage">
       {{
         product.featured_media
         | image_url: width: 1400, format: 'webp'
@@ -147,6 +159,7 @@
           </div>
         {%- endif -%}
       {%- endfor -%}
+      </div>
 
       {%- if product.media.size > 1 -%}
         <div class="non-gallery__thumbs">

@@ -900,20 +900,19 @@ button { font-family: inherit; }
    image's own square — matching `aspect-ratio: 1/1` on `.non-gallery__main`
    means the layout does not move when the film appears.
    ========================================================================== */
-.non-gallery { position: relative; }
+/* The stage is only a positioning context — it takes its size from the image
+   inside it, so it needs no dimensions of its own. `line-height: 0` stops the
+   inline <img> leaving a descender gap under it that the pane would not cover. */
+.non-gallery__stage { position: relative; line-height: 0; }
+
+/* `inset: 0` against the stage, which IS the image's box. No aspect-ratio and
+   no width arithmetic here: the pane cannot disagree with the image about its
+   size, whatever max-height or ratio the image is under at any width. */
 .non-gallery__video {
   position: absolute;
-  left: var(--non-pad);
-  right: var(--non-pad);
-  top: 20px;
-  aspect-ratio: 1 / 1;
+  inset: 0;
   background: #000;
   z-index: 2;
-}
-@media (min-width: 860px) {
-  /* Beside the thumbs the image no longer spans the padded box, so the pane
-     tracks the image itself rather than the section's gutters. */
-  .non-gallery__video { left: var(--non-pad); right: auto; width: calc(100% - var(--non-pad) * 2); }
 }
 .non-gallery__player,
 .non-gallery__video video {

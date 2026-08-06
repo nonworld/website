@@ -894,7 +894,26 @@
         var why = e.target.closest('[data-non-somm-why]');
         if (why) {
           e.preventDefault();
-          ask(t('sommRecWhy', 'Why this one?') + ' ' + (why.getAttribute('data-code') || ''));
+          /* ASK IT AGAINST THE DISH, not in the abstract.
+           *
+           * This sent "Why this one? NON3" — a question with no subject. The
+           * Worker cannot explain a choice without knowing what it was chosen
+           * FOR, so it routed the string as a general enquiry and answered
+           * about the bottle rather than about the match: true, and not what
+           * was asked.
+           *
+           * The dish is already here in lastQuery. Naming it turns the request
+           * into the one the button is actually making — why THIS bottle for
+           * THAT plate, and what it beat. Falls back to the old phrasing when
+           * there is no previous question, which is the case for a
+           * recommendation restored from a transcript. */
+          var whyCode = why.getAttribute('data-code') || '';
+          ask(
+            lastQuery
+              ? 'Why ' + whyCode + ' for "' + lastQuery + '" rather than the alternative? '
+                + 'Explain the match — what in the dish it is answering.'
+              : t('sommRecWhy', 'Why this one?') + ' ' + whyCode
+          );
           return;
         }
 

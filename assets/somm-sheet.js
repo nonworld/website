@@ -298,6 +298,47 @@
     ctxBox.hidden = false;
   }
 
+
+  /* ------------------------------------------------------- panel placement */
+
+  /* IT OPENS UNDER THE BAR, NOT OVER THE PAGE.
+   *
+   * Centred in the viewport it reads as a popup — something that has arrived on
+   * top of the site and has to be dismissed. It is not: it is the answer to the
+   * question just typed, and it belongs where the question was asked.
+   *
+   * So on a desktop the panel is pinned to the left edge and bottom of whatever
+   * Somm block was used, and sized to that block. The trigger is the form
+   * itself for a typed question, a chip inside it, or the orb; all of them
+   * resolve upwards to the same `.non-somm` or `.non-somm-entry`. Anything that
+   * cannot be resolved — the header, a triptych tile — falls back to centred,
+   * which is the right answer for a trigger with no bar of its own.
+   *
+   * Written as custom properties rather than inline top/left so the stylesheet
+   * keeps the transition, the max-height and the reduced-motion rule in one
+   * place, and so the fallback is a CSS default rather than a branch here.
+   *
+   * fixed positioning is measured from the viewport, so this follows scroll and
+   * resize while it is open. */
+  var anchorEl = null;
+
+  function anchorTo(trigger) {
+    anchorEl = trigger ? trigger.closest('.non-somm, .non-somm-entry') : null;
+    placePanel();
+  }
+
+  function placePanel() {
+    if (modal || !anchorEl || !document.contains(anchorEl)) {
+      sheet.classList.remove('is-anchored');
+      return;
+    }
+    var r = anchorEl.getBoundingClientRect();
+    sheet.style.setProperty('--non-sheet-anchor-x', Math.round(r.left) + 'px');
+    sheet.style.setProperty('--non-sheet-anchor-y', Math.round(r.bottom + 12) + 'px');
+    sheet.style.setProperty('--non-sheet-anchor-w', Math.round(r.width) + 'px');
+    sheet.classList.add('is-anchored');
+  }
+
   /* ------------------------------------------------------- the sheet body */
 
   /* THE KEYBOARD.
@@ -393,6 +434,7 @@
 
     sheet.hidden = false;
     sheet.classList.toggle('is-panel', !modal);
+    if (!modal) anchorTo(trigger);
 
     /* VISIBILITY MUST NOT DEPEND ON A FRAME BEING PAINTED.
      *
@@ -412,6 +454,10 @@
 
     syncHeight();
     open = true;
+    if (!modal) {
+      window.addEventListener('scroll', placePanel, { passive: true });
+      window.addEventListener('resize', placePanel);
+    }
     /* Escape still closes it as a panel; only the focus RING is modal. */
     document.addEventListener('keydown', trap, true);
     if (window.visualViewport) {
@@ -458,6 +504,8 @@
     open = false;
 
     document.removeEventListener('keydown', trap, true);
+    window.removeEventListener('scroll', placePanel);
+    window.removeEventListener('resize', placePanel);
     if (window.visualViewport) {
       window.visualViewport.removeEventListener('resize', syncHeight);
       window.visualViewport.removeEventListener('scroll', syncHeight);

@@ -7231,6 +7231,29 @@ select:-moz-focusring { color: transparent; text-shadow: 0 0 0 var(--non-fg); }
     transform: translate(-50%, -50%);
     opacity: 1;
   }
+
+  /* ANCHORED: it opens UNDER the bar that asked, not over the middle of the
+     page. Centred, it reads as a popup — something that arrived on top of the
+     site and has to be dismissed. It is the answer to the question just typed,
+     and it belongs where the question was asked.
+
+     somm-sheet.js writes the three custom properties from the Somm block the
+     trigger belongs to. A trigger with no bar of its own — the header, a
+     triptych tile — never gets `is-anchored` and keeps the centred placement
+     above, which is the right answer there. */
+  .non-sheet.is-anchored .non-sheet__panel {
+    left: var(--non-sheet-anchor-x);
+    top: var(--non-sheet-anchor-y);
+    width: var(--non-sheet-anchor-w);
+    max-width: none;
+    /* Measured from the anchor down to the viewport floor, so a bar low on the
+       page opens a shorter panel rather than one running off the bottom. */
+    max-height: calc(100vh - var(--non-sheet-anchor-y) - 24px);
+    transform: translate(0, 8px);
+  }
+  .non-sheet.is-anchored.is-open .non-sheet__panel {
+    transform: translate(0, 0);
+  }
   @media (prefers-reduced-motion: reduce) {
     .non-sheet__panel,
     .non-sheet.is-open .non-sheet__panel,

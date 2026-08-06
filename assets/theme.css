@@ -6939,9 +6939,14 @@ select:-moz-focusring { color: transparent; text-shadow: 0 0 0 var(--non-fg); }
      the brief asks to remove.
 
      THE LABEL STAYS. It is the orb's caption — the concise nearby text that
-     says what the light is, because glow is not an affordance. Hiding it left
-     a 160px orb next to three chips and nothing naming it. */
-  .non-somm-entry__field { display: none; }
+     says what the light is, because glow is not an affordance.
+
+     AND SO DOES THE FIELD. I hid it here on the reasoning that the hero's
+     "Ask the Somm" button already says the same thing. That was wrong against
+     the design that already exists: the pairing page is an orb, a BAR you can
+     type in, and chips — and with the bar removed this was an orb, a label and
+     three chips with nothing to type into. The bar is the anchor of the
+     composition, not a duplicate of the button. */
 
   /* And the block has to be tall enough to hold the orb. With the field
      hidden, the rows are the label and the chips — about 70px — and a 160px
@@ -6953,8 +6958,13 @@ select:-moz-focusring { color: transparent; text-shadow: 0 0 0 var(--non-fg); }
     display: flex;
     flex-wrap: wrap;
     gap: 8px;
+    margin-top: 12px;
   }
   .non-somm-entry__chip { min-height: 40px; }
+
+  /* The bar, at the width the pairing page gives it rather than stretched
+     across the whole column. */
+  .non-somm-entry__field { max-width: 520px; }
 }
 
 /* THE SHEET AS A DESKTOP DIALOG.

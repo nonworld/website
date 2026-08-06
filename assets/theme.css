@@ -7309,8 +7309,12 @@ select:-moz-focusring { color: transparent; text-shadow: 0 0 0 var(--non-fg); }
     margin-bottom: 10px;
   }
   .non-sheet__seeds[hidden] { display: none; }
-  .non-sheet__ask { display: flex; align-items: stretch; gap: 8px; }
-  .non-sheet__ask .non-somm__input { flex: 1; min-width: 0; min-height: 46px; font-size: 15px; }
+  /* The desktop panel carries no field of its own — the page's own Somm bar is
+     the single input at this width (see the head of this block). These two
+     rules styled it, and the first of them re-declared `display: flex` LATER in
+     the same media query than the rule hiding it, at the same specificity, so
+     the hide never took and the second box came back. Deleted rather than
+     reordered: there is nothing here to style. */
   .non-sheet__send {
     flex: none;
     width: 46px;

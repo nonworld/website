@@ -4629,7 +4629,10 @@ select:-moz-focusring { color: transparent; text-shadow: 0 0 0 var(--non-fg); }
    * the two that ARE spacing come out here. */
   padding-bottom: 0;
 }
-.non-stock-search + .non-stock-filters { margin-top: 14px; }
+/* No margin here. The parent already supplies an 18px row gap, and a margin on
+   top of a gap ADDS to it — the 14px I first put here made the gap 32 and moved
+   the filters further from the bar, not closer. Measured: 631 with it, 617
+   without. */
 
 /* 1. The orb. Sized so it is present without dominating, and sitting close
       enough to the words to belong to them. */

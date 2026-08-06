@@ -3745,6 +3745,41 @@ select:-moz-focusring { color: transparent; text-shadow: 0 0 0 var(--non-fg); }
 }
 @keyframes non-somm-shimmer { to { background-position: -200% 0; } }
 
+/* THE SAME OPENING LINE, IN THE SHEET.
+ * ==========================================================================
+ * `.non-sommbox__opener` above is the original: display size, and a slow
+ * shimmer that is the one thing saying this is alive before anything has been
+ * typed. Nothing has rendered `.non-sommbox` since 473bf63 deleted both inline
+ * panels, so all of it — the size, the gradient, the animation — has been dead
+ * CSS ever since, and the Somm has opened onto an empty black band.
+ *
+ * The declarations are repeated rather than the selector being added to the
+ * block above, because the two are not the same object: this one lives in a
+ * panel with its own measure and sits above a transcript, so it takes a
+ * smaller size and a bottom margin. Only the shimmer is shared, and the
+ * keyframes are.
+ *
+ * --idle is the resting state. A triptych tile opens with its own follow-up
+ * question, which is a question being asked rather than the Somm waiting, and
+ * a shimmering question reads as decoration.
+ * ========================================================================== */
+.non-sheet__opener--idle {
+  background: linear-gradient(100deg, #3d3d3a 25%, #EDEDE8 50%, #3d3d3a 75%);
+  background-size: 200% 100%;
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  animation: non-somm-shimmer 6s linear infinite;
+}
+@media (prefers-reduced-motion: reduce) {
+  .non-sheet__opener--idle {
+    animation: none;
+    background: none;
+    color: #EDEDE8;
+    -webkit-text-fill-color: currentColor;
+  }
+}
+
 /* The ask: one hairline, centred, no well and no box. */
 .non-sommbox__ask {
   border-top: 0;
@@ -7133,10 +7168,31 @@ select:-moz-focusring { color: transparent; text-shadow: 0 0 0 var(--non-fg); }
   .non-somm-entry__field { max-width: 520px; }
 }
 
-/* THE SHEET AS A DESKTOP DIALOG.
-   Same markup, same focus trap, same transcript — centred and bounded rather
-   than docked full-width. */
+/* THE SHEET AS A DESKTOP PANEL.
+   ==========================================================================
+   Same markup, same transcript — centred and bounded rather than docked
+   full-width. NOT a dialog: it holds no field of its own up here.
+
+   The page already has a Somm bar, in the hero and on the PDP, and a box that
+   opens a box containing another box is two controls asking the same question.
+   So above the breakpoint the sheet's form is hidden and the page's own bar is
+   the single input. somm-sheet.js matches this — no body lock, no focus trap,
+   no aria-hidden on the shell — because the bar underneath has to stay
+   reachable for the second question. Escape still closes it.
+
+   The scrim goes with the modality. A panel that dims the page it is a panel
+   over is claiming to be a dialog, and the bar it expects you to type into is
+   behind that dim.
+   ========================================================================== */
 @media (min-width: 860px) {
+  /* No second box. The hero and the PDP each carry the real one. */
+  .non-sheet__ask { display: none; }
+  /* The notice belongs to the field it warns about. With no field up here it is
+     advice about nothing. `.non-sheet__notice` — the class is spelled out
+     because I first wrote `__note`, which matches no element in the snippet and
+     would have been a dead rule that looked like a working one. */
+  .non-sheet__notice { display: none; }
+  .non-sheet__scrim { display: none; }
   .non-sheet {
     display: block;
     position: fixed;

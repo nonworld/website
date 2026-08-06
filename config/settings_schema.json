@@ -61,6 +61,13 @@
         "info": "The single switch. Turn this off and every entry point, both orbs, the sheet and its scripts stop rendering, and no request or analytics event can be produced — because the code is not on the page, not because it is hidden. Use it if the privacy position changes."
       },
       {
+        "type": "textarea",
+        "id": "somm_opener",
+        "label": "Somm opening line",
+        "default": "I've read every spec sheet in the range. Ask me anything - pairing, process, sugar, or whether it's right for you.",
+        "info": "The line the Somm opens with, before anything has been typed. It carries the shimmer, so keep it to a sentence or two."
+      },
+      {
         "type": "url",
         "id": "somm_endpoint",
         "label": "Somm API endpoint",

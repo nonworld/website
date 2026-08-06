@@ -62,7 +62,28 @@
       stay pinned, so the way to buy never scrolls away mid-conversation.
     {%- endcomment -%}
     <div class="non-sheet__scroll" data-non-sheet-scroll>
-      <p class="non-sheet__opener" data-non-sheet-opener hidden></p>
+      {%- comment -%}
+        THE OPENING LINE, present from first paint rather than waiting for a
+        trigger to supply one.
+
+        It used to be `.non-sommbox__opener` on the PDP and in the hero, at
+        display size with a slow shimmer - "the one thing telling you this is
+        alive before you have typed anything". 473bf63 deleted both inline
+        panels and left this element empty unless a triptych tile happened to
+        pass `data-somm-opener`, so opening the Somm from the hero or the orb
+        gave a black band and three chips with nothing saying what any of it
+        was. The CSS for the shimmer never went anywhere; only the markup that
+        used it did.
+
+        A trigger that carries its own opener still wins - somm-sheet.js
+        overwrites this text - so the triptych's follow-up question is
+        unaffected.
+      {%- endcomment -%}
+      <p class="non-sheet__opener non-sheet__opener--idle"
+         data-non-sheet-opener
+         data-non-sheet-opener-default="{{ settings.somm_opener | escape }}">
+        {{- settings.somm_opener -}}
+      </p>
 
       <div class="non-somm__answer" data-non-somm-answer hidden>
         <p class="non-somm__stream" data-non-somm-stream></p>

@@ -51,6 +51,23 @@
 
   var open = false;
   var lastFocus = null;
+
+  /* MODAL ON A PHONE, A PANEL ON A DESKTOP.
+   *
+   * Above the breakpoint the sheet's own field is hidden (see theme.css): the
+   * page already has a Somm bar, and a dialog holding a second one is two boxes
+   * asking the same question. That only works if the bar underneath stays
+   * usable — so a desktop open does not lock the body, does not trap focus and
+   * does not mark the page inert. It is a panel showing the conversation, not a
+   * dialog holding it.
+   *
+   * Below the breakpoint nothing changes. There is no room for a bar and a
+   * panel at once, the sheet owns the screen, and every modal affordance stays
+   * exactly as it was.
+   *
+   * Captured at open rather than read at close, so a resize mid-conversation
+   * cannot unlock a body that was never locked. */
+  var modal = true;
   var scrollY = 0;
 
   /* ------------------------------------------------------------ analytics */
@@ -138,13 +155,21 @@
      the merchant's rather than this file's. */
   function renderOpener(ctx) {
     if (!opener) return;
-    if (!ctx.opener) {
-      opener.hidden = true;
-      opener.textContent = '';
-      return;
-    }
-    opener.textContent = ctx.opener;
-    opener.hidden = false;
+    /* FALLS BACK TO THE HOUSE LINE rather than to nothing.
+     *
+     * This used to hide the element whenever a trigger supplied no opener,
+     * which is every trigger except a triptych tile — so opening the Somm from
+     * the hero bar or the orb produced a black band, three chips and nothing
+     * saying what any of it was. The default now lives on the element as a data
+     * attribute, so the copy stays in the theme editor and this only chooses
+     * between it and a trigger's more specific question. */
+    var fallback = opener.getAttribute('data-non-sheet-opener-default') || '';
+    var text = ctx.opener || fallback;
+    opener.textContent = text;
+    opener.hidden = !text;
+    /* The shimmer is the resting state. A tile's follow-up question is a
+       question being asked, not the Somm idling, so it does not shimmer. */
+    opener.classList.toggle('non-sheet__opener--idle', !ctx.opener);
   }
 
   /* Parsed on demand rather than once at load: the theme editor can replace a
@@ -360,9 +385,12 @@
     renderProductAction(ctx);
 
     lastFocus = trigger || document.activeElement;
-    lockBody();
+
+    modal = MOBILE.matches;
+    if (modal) lockBody();
 
     sheet.hidden = false;
+    sheet.classList.toggle('is-panel', !modal);
 
     /* VISIBILITY MUST NOT DEPEND ON A FRAME BEING PAINTED.
      *
@@ -382,6 +410,7 @@
 
     syncHeight();
     open = true;
+    /* Escape still closes it as a panel; only the focus RING is modal. */
     document.addEventListener('keydown', trap, true);
     if (window.visualViewport) {
       window.visualViewport.addEventListener('resize', syncHeight);
@@ -392,11 +421,14 @@
        so a screen reader does not read the sheet and the page as one document.
        Matches what the lotto already does. */
     var shell = document.querySelector('.non-shell');
-    if (shell) shell.setAttribute('aria-hidden', 'true');
+    if (modal && shell) shell.setAttribute('aria-hidden', 'true');
 
     /* Focus the field, not the close button: the customer opened this to ask
        something, and the way out is one Escape away and labelled. */
-    if (input) input.focus({ preventScroll: true });
+    /* Only when the sheet owns the input. As a panel the field is hidden and
+       the customer is already in the page's own bar — moving focus into a
+       hidden control would drop it to the document. */
+    if (modal && input) input.focus({ preventScroll: true });
 
     track('somm_opened', {
       surface: ctx.surface,
@@ -439,7 +471,7 @@
       if (!open) sheet.hidden = true;
     }, 240);
 
-    unlockBody();
+    if (modal) unlockBody();
 
     /* THE EVENT FIRST, THEN THE FOCUS — and the order is the whole fix.
      *

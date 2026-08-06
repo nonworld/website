@@ -3024,6 +3024,18 @@ a, button, .non-card, .non-filter, .non-pair__opt, .non-somm__seed,
 }
 .non-pair__again { margin-top: 18px; }
 
+/* CONTACT'S EMAIL LINKS MEET THE TAP FLOOR.
+   Measured at 402: three stacked mailto links at 19px high, against the 44px
+   the rest of the site holds — on the one page whose whole job is getting in
+   touch. inline-flex rather than block so they do not each claim a full line
+   of a paragraph they sit inside. */
+.non-contact a[href^="mailto:"],
+.non-contact-section a[href^="mailto:"] {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+}
+
 /* THE VERDICT'S BUY CARD, ON A PHONE.
    ==========================================================================
    The row already had `flex-wrap: wrap` and it never wrapped, because nothing

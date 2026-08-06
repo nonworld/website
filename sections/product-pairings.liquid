@@ -58,6 +58,14 @@
     {%- liquid
       assign pf_images = product.metafields.custom.perfect_for_images.value
       assign pf_ok = false
+      # GLOBAL FLAG, default OFF. Only NON1 has pairing photography, so with it
+      # on the range reads as one bottle that got a photoshoot and five that
+      # did not. The code and the metafields stay exactly as they are; this
+      # decides only whether they are used. Turn it on in Theme settings once
+      # all six core bottles have approved imagery.
+      unless settings.pairing_photos_enabled
+        assign pf_images = empty
+      endunless
       # pair_blocks.size == 0 as well: the tiles are labelled from `pairings`,
       # so a product whose cards are coming from editor blocks instead would
       # get tiles saying one thing and expansions saying another.

@@ -174,5 +174,17 @@
         "default": "hello@non.world"
       }
     ]
+  },
+  {
+    "name": "Product pairings",
+    "settings": [
+      {
+        "type": "checkbox",
+        "id": "pairing_photos_enabled",
+        "label": "Show pairing photography",
+        "default": false,
+        "info": "OFF until all six core bottles have approved pairing photography. With it off every product shows the written pairing cards, which is what five of the six show today anyway. Turning it on with incomplete photography gives one bottle pictures and the rest text."
+      }
+    ]
   }
 ]

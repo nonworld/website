@@ -50,42 +50,25 @@ three-and-a-bit bottles.
 It is the only band on the site that keeps a desktop two-column ratio at phone
 width. Everything else either stacks or scrolls.
 
-**Options**
-- **(a) Stack, image below the CTA.** Copy gets the full 358px, button fits on
-  one line, image runs full-bleed at its natural ratio. Costs vertical height.
-- **(b) Stack, image above the copy.** Leads with the product — consistent with
-  how the PDP and the range cards behave on a phone.
-- **(c) Keep two columns, flip the ratio.** Image takes the larger share and is
-  re-cropped to a square detail rather than a squeezed group shot. Cheapest,
-  keeps the band compact, but the button still wraps.
-
-Recommendation: **(b)**. It matches the mobile pattern already used everywhere
-else, and the 6-pack shot is the argument for the product.
+**RESOLVED — (b), picture first.** Aaron's call, shipped in `2e24dfc`.
 
 ### 2.2 Stockists — 62px between the search bar and the filters
 Down from 92px. Of the remaining 62, **44px is not spacing** — it is the orb's
 96px box hanging below a 52px bar. The homepage puts its chips 14px under the
 same bar, which is the consistency being asked for.
 
-**Options**
-- **(a) Shrink the orb on this page** to roughly the bar's height. Closes the
-  gap properly; makes the stockists orb smaller than the homepage's.
-- **(b) Let the filters sit in the bar's column**, aligned to it rather than to
-  the page gutter, so the orb's overhang sits beside them rather than above
-  them. Also fixes an x-alignment inconsistency: the filters currently start at
-  x=64 while the bar starts at x=204.
-- **(c) Accept 62px.** It reads as deliberate spacing rather than as a mistake.
-
-Recommendation: **(b)** — it fixes both the vertical gap and the left edge, and
-it is the arrangement the homepage already uses.
+**RESOLVED — (b), filters in the bar's column.** Aaron's call, shipped in
+`2e24dfc`. Offset written as `96px + 44px` (orb column + grid gap) rather than
+as 140, so it stays true if either changes.
 
 ### 2.3 Sets have no Somm entry
 The Somm block is gated on `has_spec`, which is false for anything without
 bottle metafields. So a bottle PDP offers "Considering NON1?" and a set PDP
 offers nothing.
 
-Defensible — a set is not one bottle, and the Somm answers about bottles. But it
-is a deliberate absence rather than an accident, and worth confirming.
+**RESOLVED — confirmed intended.** Aaron: "sets don't need the somm". The
+`has_spec` gate stays exactly as it is. Recorded here so the absence is not read
+as a bug and "fixed" by a later pass.
 
 ---
 

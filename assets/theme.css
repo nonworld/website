@@ -1464,8 +1464,33 @@ button { font-family: inherit; }
   width: 36px;
   height: 44px;
 }
-/* Remove sits apart from the pair, so it can afford the full 44 both ways. */
-.non-drawer__rm::after { width: 44px; }
+/* Remove sits apart from the pair, so it can afford the full 44 both ways.
+
+   `[data-non-remove]` as well as the class: the DRAWER's remove carries
+   `.non-drawer__rm`, the CART PAGE's carries only the data attribute (see
+   main-cart.liquid). Same control, same 26px box, two markups — so the class
+   alone gave the cart page the 36px pair-expander meant for a button with a
+   neighbour 10px away, when it has no neighbour at all. Measured on the cart at
+   402: hit at 18px in every direction either way, but 8px narrower than
+   intended for the one control here that destroys a line item. */
+.non-drawer__rm::after,
+[data-non-remove]::after { width: 44px; }
+
+/* THE LINE ITEM'S TITLE, which had no expander at all.
+   18px tall, and a miss 12px above it lands on the row rather than the link.
+   It only navigates to the product — nothing is lost by a mis-tap — so it gets
+   the same invisible expander rather than being grown, which would push the
+   price and the quantity cluster around. */
+.non-drawer__item a { position: relative; }
+.non-drawer__item a::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 100%;
+  height: 44px;
+}
 
 .non-drawer__empty { padding: 40px 0; color: var(--non-fg-mute); font-size: 14px; }
 

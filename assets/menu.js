@@ -53,8 +53,24 @@
     lastFocus = document.activeElement;
     panel.hidden = false;
     /* Next frame, so the element is laid out before the class that transitions
-       it — setting both in one tick paints the end state with no transition. */
-    requestAnimationFrame(function () { panel.classList.add('is-open'); });
+       it — setting both in one tick paints the end state with no transition.
+     *
+     * BACKED BY A TIMER, because rAF is not guaranteed to fire.
+     *
+     * It does not run in a background or throttled tab, and `is-open` is what
+     * carries this panel from `opacity: 0; translateY(-8px)` to visible. Without
+     * it the menu is open by every measure that matters — `hidden` cleared, body
+     * locked, focus moved into it — and completely invisible. Measured exactly
+     * that way: classes "non-menu", opacity 0, and a customer holding a frozen
+     * page with no navigation on it.
+     *
+     * somm-sheet.js hit this and documented it; the menu had the same single-rAF
+     * pattern and no fallback, which matters more here because this IS the
+     * navigation on a phone. Whichever arrives first wins and the other is a
+     * no-op, because adding a class twice does nothing. */
+    var reveal = function () { panel.classList.add('is-open'); };
+    requestAnimationFrame(reveal);
+    setTimeout(reveal, 60);
     openBtn.setAttribute('aria-expanded', 'true');
     document.documentElement.classList.add('non-menu-lock');
     lockBody();

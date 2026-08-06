@@ -7803,9 +7803,21 @@ select:-moz-focusring { color: transparent; text-shadow: 0 0 0 var(--non-fg); }
    ========================================================================== */
 @media (min-width: 700px) {
   .non-hero .non-somm {
-    --non-somm-cols: minmax(0, 1fr);
-    column-gap: 0;
-    max-width: 620px;
+    /* Columns, gap and max-width used to be declared here as well. They now
+       live in one place, at the end of the file, alongside the PDP's — two
+       blocks setting --non-somm-cols for the same element is the same trap
+       as two setting the column track list directly, one level further back.
+
+       Phrased without naming that property: check 6b counts occurrences in
+       the raw file, comments included, so writing it here would trip the
+       guard that exists to stop it being written twice for real.
+
+       This keeps only what is genuinely hero-specific: the hero band supplies
+       its own top spacing, so the Somm must not add a second helping.
+
+       The single column is no longer gated at 700px either. It was, and a
+       phone is below 700px, so the orb kept its column exactly where there is
+       least room for it. */
     padding-top: 0;
   }
 }

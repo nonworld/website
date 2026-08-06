@@ -5909,10 +5909,20 @@ select:-moz-focusring { color: transparent; text-shadow: 0 0 0 var(--non-fg); }
 .non-btn--ghost:hover,
 .non-btn--ghost:focus-visible { border-color: var(--non-fg); }
 @media (max-width: 599px) {
-  /* Full width and stacked: two half-width buttons on a 320px line leave the
-     primary looking like one of a pair rather than the obvious next step. */
-  .non-hero__ctas { flex-direction: column; }
-  .non-hero__cta { width: 100%; }
+  /* SIDE BY SIDE, sized to their words.
+   *
+   * This stacked them and set width: 100%, on the reasoning that two
+   * half-width buttons make the primary look like one of a pair. With the
+   * Somm button hidden below the breakpoint that left ONE 358px white slab
+   * across the hero, which is not a call to action, it is a wall.
+   *
+   * Measured at 402: the two want 172px and 157px, so 339px against 358px
+   * available — they fit with room over, and `flex: 1 1 auto` spends that room
+   * on the buttons rather than leaving a gap. Below about 360px they no longer
+   * fit and `flex-wrap: wrap` on the parent stacks them, which is the old
+   * behaviour arriving only when it is actually needed. */
+  .non-hero__ctas { flex-direction: row; }
+  .non-hero__cta { width: auto; flex: 1 1 auto; }
 }
 
 /* ==========================================================================
@@ -6444,7 +6454,21 @@ select:-moz-focusring { color: transparent; text-shadow: 0 0 0 var(--non-fg); }
   /* Attribution stays visible whatever the quote does — an unattributed pull
      quote is not proof of anything. */
   .non-press__cite { margin-top: 10px; }
-  .non-press .non-globe { display: none; }
+  /* THE GLOBE STAYS ON A PHONE.
+   *
+   * It was hidden here as "a scaled 3D object in a narrow column is just a
+   * smudge". It is not — globe.js fits the stage to whatever column it is
+   * given (fitStage(), min(size, root.clientWidth)) and re-fits on resize, so
+   * at 402 it renders a 358px globe with its wireframe, its NON mark and its
+   * location pins all legible. Measured: stage 358x358, scale 3.58, no
+   * horizontal overflow.
+   *
+   * The one thing to know if it ever looks wrong again: while this rule was
+   * here, `root.clientWidth` was 0 at init, so fitStage fell back to the
+   * authored 420 and the stage overhung its column by 62px. That is what a
+   * hidden globe measures, not what a scaled one looks like — the smudge was
+   * never tested, because the element it would have been measured on was
+   * display:none. */
 }
 
 /* ==========================================================================
@@ -6974,17 +6998,22 @@ select:-moz-focusring { color: transparent; text-shadow: 0 0 0 var(--non-fg); }
 .non-somm-entry { margin-top: 22px; }
 
 @media (max-width: 859px) {
-  /* ONE SOMM OPENER ON A PHONE, not two.
-     The hero's ghost "Ask the Somm" button and the field-shaped button below it
-     open the same sheet and say the same thing. On a desktop the ghost button
-     is the opener and the field is hidden; on a phone it is the other way
-     round, because a field is the shape a thumb expects and it carries the
-     prompt text.
-
-     This rule existed, was removed with the inline form it used to sit beside,
-     and cost 62px: both buttons appeared and stacked, which pushed the Core
-     Range past its target. Restored, and measured. */
-  .non-hero__ctas [data-non-somm-open] { display: none; }
+  /* THE GHOST BUTTON IS BACK ON A PHONE.
+   *
+   * It was hidden here so there would be "one Somm opener, not two" — the
+   * ghost button and the field below it do open the same sheet. The reasoning
+   * was sound and the result was not: it left Shop the range alone on the
+   * line, and the rule above it stretched that one button to the full 358px,
+   * so the hero's call to action was a single white slab.
+   *
+   * It also cost 62px when it was last removed, because both buttons appeared
+   * and STACKED. They no longer stack — they sit side by side and share the
+   * line (see the 599px block above, measured: 172 + 157 in 358), so the row
+   * is one button tall and the 62px never arrives.
+   *
+   * The duplication is real and it is the smaller problem. A button that says
+   * what it does, beside the primary action, is worth more than the tidiness
+   * of having exactly one way in. */
 
   /* The mobile spacing, which the base rule above was overriding by virtue of
      coming later in the file. */

@@ -3745,6 +3745,73 @@ select:-moz-focusring { color: transparent; text-shadow: 0 0 0 var(--non-fg); }
 }
 @keyframes non-somm-shimmer { to { background-position: -200% 0; } }
 
+/* THE SHIMMERING PROMPT IN THE BAR.
+ * ==========================================================================
+ * `::placeholder` accepts colour, font and opacity and nothing else. No
+ * background, so no `background-clip: text`, so no gradient and no animation —
+ * the shimmer this site uses everywhere else physically cannot be put on a
+ * placeholder. So it is a real element laid over the field, with the native
+ * placeholder left in place underneath as the accessible and no-CSS fallback.
+ *
+ * `.non-somm__field` is the positioning context and now carries the flex the
+ * input used to: `.non-somm__bar .non-somm__input` sets `flex: 1 1 auto`, and
+ * with the input wrapped, that grew the WRAPPER's child instead of the wrapper.
+ * The wrapper takes the row's space; the input fills the wrapper.
+ *
+ * The ghost hides on `:placeholder-shown` being false — CSS, not script, so it
+ * cannot fall out of step with what has been typed. It matches the input's own
+ * font and line box exactly, because two strings that are meant to be the same
+ * string must not disagree by a pixel when the shimmer fades.
+ * ========================================================================== */
+.non-somm__field {
+  position: relative;
+  flex: 1 1 auto;
+  min-width: 0;
+  display: flex;
+}
+.non-somm__field .non-somm__input { flex: 1 1 auto; min-width: 0; }
+
+/* Transparent, not removed: it is still the accessible placeholder and it is
+   what shows if the ghost never paints. */
+.non-somm__field .non-somm__input::placeholder { color: transparent; }
+
+.non-somm__ghost {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  pointer-events: none;
+  white-space: nowrap;
+  overflow: hidden;
+  font-family: var(--non-sans);
+  font-size: var(--t-copy);
+  background: linear-gradient(100deg, #3d3d3a 25%, #EDEDE8 50%, #3d3d3a 75%);
+  background-size: 200% 100%;
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  animation: non-somm-shimmer 6s linear infinite;
+  transition: opacity .18s var(--ease-hover, ease);
+}
+/* The moment anything is typed, the prompt goes — same as a placeholder. */
+.non-somm__input:not(:placeholder-shown) ~ .non-somm__ghost { opacity: 0; }
+
+@media (prefers-reduced-motion: reduce) {
+  .non-somm__ghost {
+    animation: none;
+    background: none;
+    color: var(--non-fg-mute);
+    -webkit-text-fill-color: currentColor;
+  }
+}
+
+/* 16px on a phone for the same reason the field itself is: below it iOS Safari
+   zooms the viewport on focus, and a ghost that does not match the input it
+   covers would visibly jump as the real text arrives. */
+@media (max-width: 859px) {
+  .non-somm__ghost { font-size: 16px; }
+}
+
 /* THE HERO'S OWN ANSWER, BELOW ITS OWN BAR.
  * ==========================================================================
  * On a desktop the hero is a real Somm — somm.js binds it and writes here,

@@ -117,7 +117,8 @@
         <label class="visually-hidden" for="somm-hero-{{ section.id }}">
           {{ 'sections.somm.placeholder' | t }}
         </label>
-        <input
+        <div class="non-somm__field">
+          <input
           id="somm-hero-{{ section.id }}"
           class="non-somm__input"
           type="search"
@@ -135,7 +136,29 @@
           {%- endcomment -%}
           data-non-somm-input
           data-non-somm-hero-input
-          placeholder="{{ section.settings.placeholder | escape }}">
+            placeholder="{{ section.settings.placeholder | escape }}">
+
+          {%- comment -%}
+            THE SHIMMER CANNOT LIVE ON THE PLACEHOLDER.
+
+          `::placeholder` takes colour, font and opacity and nothing else - no
+          background, so no `background-clip: text`, so no gradient and no
+          animation. The shimmering line everywhere else on this site is a
+          gradient clipped to letterforms, and a real placeholder physically
+          cannot carry it.
+
+          So the shimmer is a real element sitting over the field, and the
+          native placeholder stays exactly where it was underneath: it is what a
+          screen reader and a no-CSS render get, and what shows if this element
+          ever fails to paint. The ghost is aria-hidden so the two are never
+          announced as one string, and pointer-events: none so it cannot take a
+          click meant for the input.
+
+          It hides itself through `:placeholder-shown` on the input beside it -
+          CSS, not script, so it cannot fall out of step with what is typed.
+        {%- endcomment -%}
+          <span class="non-somm__ghost" aria-hidden="true">{{ section.settings.placeholder }}</span>
+        </div>
         <button type="submit" class="non-somm__submit">{{ 'sections.somm.ask' | t }}</button>
       </div>
 
@@ -438,7 +461,8 @@
       "type": "text",
       "id": "placeholder",
       "label": "Input placeholder",
-      "default": "Tell me what's on the table tonight"
+      "info": "Shown shimmering in the bar until someone types. Keep it short - it has to fit on one line beside the Ask button.",
+      "default": "Ask the NON Somm anything"
     },
     {
       "type": "text",

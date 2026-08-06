@@ -64,25 +64,52 @@
   {%- assign chip_list = chip_source | newline_to_br | split: '<br />' -%}
 {%- endif -%}
 
+{%- comment -%}
+  The live variant, resolved once. Every control this snippet emits carries the
+  same payload, so a conversation opened from the bar and one opened from a chip
+  know exactly the same thing about the bottle.
+{%- endcomment -%}
+{%- if product != blank -%}
+  {%- assign somm_variant = product.selected_or_first_available_variant -%}
+{%- endif -%}
+
 <form
   class="non-somm{% if modifier != blank %} {{ modifier }}{% endif %}"
-  data-non-somm
-  data-non-somm-entry
+  {%- comment -%}
+    THE EXPLICIT SHARED-SHEET HOOK, and the only thing that emits it.
+
+    somm-sheet.js binds submission to THIS, not to `.non-somm`, because the
+    class is not a statement about behaviour. The pairing page's free-text form
+    is `.non-somm` and answers INLINE through somm.js; the stockists venue
+    search is `.non-somm` and is not a Somm at all. A generic class binding
+    would have made pairing open a sheet instead of printing its verdict and
+    made a stockist search open a sommelier.
+
+    Note what is absent: [data-non-somm]. That is somm.js's inline-answer
+    binding — somm.js:944 calls Somm() on every element carrying it — and these
+    surfaces have no answer panel to stream into. A form with both hooks would
+    preventDefault twice and ask twice.
+  {%- endcomment -%}
+  data-non-somm-sheet-form
   data-somm-context="{{ somm_context }}"
   data-somm-surface="{{ somm_surface }}"
   {%- comment -%}
     THE CONTROLLER'S HOOKS, emitted per surface.
 
     Found by auditing every selector in assets/*.js before retiring the old
-    markup, which is the only reason this snippet works. somm-sheet.js hands
-    the hero's submit to the sheet through `[data-non-somm-hero]` and reads the
-    typed text from `[data-non-somm-hero-input]`; without both, the hero form
-    submits, the sheet never opens, and the control is silently dead - the same
-    failure mode as the welded attributes, and just as invisible.
+    markup, which is the only reason this snippet works.
 
-    Scoped by surface rather than emitted everywhere: `[data-non-somm-hero]` is
-    queried with querySelector, so a second element carrying it would take the
-    handoff and the real hero would lose it.
+    Submission itself is generic now - somm-sheet.js binds every
+    `[data-non-somm-sheet-form]` - so `[data-non-somm-hero]` no longer carries
+    the handoff. What it still marks is the ONE behaviour that is genuinely the
+    hero's: focusing the field opens the sheet. That is right in a hero, where
+    the field is the invitation, and wrong on a PDP, where the same rule would
+    put a full-screen dialog between a customer and the Add button the moment a
+    tab key passed through.
+
+    Scoped by surface rather than emitted everywhere, and it must stay that way:
+    a second element carrying it would open the sheet on focus somewhere nobody
+    asked for it.
 
     Note the JS binds NOTHING to the .non-somm-entry tree - not one selector -
     which is why retiring that component cannot break behaviour.
@@ -104,10 +131,19 @@
     here - unlike the hero hook above.
   {%- endcomment -%}
   {%- if somm_context == 'product' %} data-non-somm-pdp{% endif -%}
+  {%- comment -%}
+    THE WHOLE BOTTLE, not just its name. readTrigger() in somm-sheet.js reads
+    every one of these off the element that opened the sheet, and the price and
+    availability are what let the sheet keep the bottle BUYABLE while the
+    conversation runs — without them renderProductAction() bails out and the
+    customer has to leave the conversation to add the thing it was about.
+  {%- endcomment -%}
   {%- if product != blank %}
     data-somm-product="{{ product.id }}"
     data-somm-product-title="{{ product.title | escape }}"
-    data-somm-variant="{{ product.selected_or_first_available_variant.id }}"
+    data-somm-variant="{{ somm_variant.id }}"
+    data-somm-product-price="{{ somm_variant.price | money }}"
+    data-somm-product-available="{{ somm_variant.available }}"
   {%- endif -%}
   {%- if code != blank %} data-somm-code="{{ code | escape }}"{% endif %}
   role="search">
@@ -152,12 +188,45 @@
     {%- if chip_text != blank -%}{%- assign chip_count = chip_count | plus: 1 -%}{%- endif -%}
   {%- endfor -%}
 
+  {%- comment -%}
+    A CHIP IS A TRIGGER, not decoration beside one.
+
+    `data-non-somm-open` is what somm-sheet.js's document click handler listens
+    for, and `data-somm-prompt` is the question it asks on arrival. Both are
+    already in that file and already work — the hero's chips have used this path
+    since the sheet existed — so a chip needs no new controller code at all.
+
+    type="button", so a chip inside the form cannot submit it: without that,
+    every chip would fire BOTH the click handler and the form's submit handler,
+    which is one question asked twice.
+
+    It carries the full bottle payload for the same reason the form does: a
+    conversation begun by tapping "Is it dry?" should already know which bottle
+    is on screen, and on a product surface it carries the variant-sync marker so
+    changing the pack size keeps the chip's payload honest too.
+  {%- endcomment -%}
   {%- if chip_count > 0 -%}
     <div class="non-somm__seeds">
       {%- for chip in chip_list -%}
         {%- assign chip_text = chip | strip_html | strip -%}
         {%- if chip_text != blank -%}
-          <button type="button" class="non-somm__seed" data-non-somm-seed>{{ chip_text }}</button>
+          <button
+            type="button"
+            class="non-somm__seed"
+            data-non-somm-seed
+            data-non-somm-open
+            {% if somm_context == 'product' %}data-non-somm-pdp{% endif %}
+            data-somm-surface="{{ somm_surface }}"
+            data-somm-context="{{ somm_context }}"
+            data-somm-prompt="{{ chip_text | escape }}"
+            {%- if code != blank %} data-somm-code="{{ code | escape }}"{% endif %}
+            {%- if product != blank %}
+              data-somm-product="{{ product.id }}"
+              data-somm-product-title="{{ product.title | escape }}"
+              data-somm-variant="{{ somm_variant.id }}"
+              data-somm-product-price="{{ somm_variant.price | money }}"
+              data-somm-product-available="{{ somm_variant.available }}"
+            {%- endif -%}>{{ chip_text }}</button>
         {%- endif -%}
       {%- endfor -%}
     </div>

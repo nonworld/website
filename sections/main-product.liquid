@@ -417,63 +417,68 @@
       that changed is where the way in sits.
     {%- endcomment -%}
     {%- if settings.somm_enabled and section.settings.show_somm and not_drink == blank and has_spec -%}
-      {%- assign pdp_variant = product.selected_or_first_available_variant -%}
-      <div class="non-somm-entry non-somm-entry--pdp" data-non-somm-entry>
-        {% render 'somm-orb',
-           orb_variant: 'integrated',
-           orb_surface: 'product_page',
-           orb_context: 'product',
-           orb_code: code,
-           product: product %}
+      {%- comment -%}
+        THE CANONICAL SOMM, RENDERED — not a second design of one.
 
+        This was `.non-somm-entry`: a <div> where the pairing page has a <form>,
+        a `→` glyph where it has a real <button type="submit">, its own class
+        names and its own grid. Two components drift, and these two did: with two
+        grids on the page there was a surface whose controls sat inside the orb's
+        96px column while a 663px content column stood empty, wrapping "Ask about
+        this bottle" one word per line. That is not a styling bug to patch — a
+        third surface-specific override would have been the fourth attempt.
+
+        So the PDP renders the same snippet the composition is defined in. Layout
+        comes entirely from `.non-somm`, which owns the grid alone; the orb is
+        `.non-somm::before`, which is why no orb is rendered here any more — the
+        `.non-orb--integrated` element was the parallel component's orb, and two
+        of them in one composition is one too many.
+
+        WHAT IS NOW REAL: the input, the submit button, and Enter. The old div
+        had none of the three — a button dressed as a field cannot be typed into,
+        so the only way to ask a question from a product page was to open the
+        sheet first and start again.
+
+        The variant-sync marker rides along on the form. product.js:62 does not
+        care what element carries it; it writes the live variant, price and
+        availability onto everything that does.
+      {%- endcomment -%}
+      {%- comment -%}
+        "Considering NON1?" — the merchant's word plus the resolved code. Built
+        here rather than in the snippet because the code is a PDP concept, and
+        captured rather than concatenated inline so an empty setting yields an
+        empty label and the snippet omits the eyebrow row entirely instead of
+        printing a bare "?".
+
+        `render` gets its own scope — nothing leaks into it — so everything the
+        snippet needs is passed explicitly.
+      {%- endcomment -%}
+      {%- capture pdp_somm_label -%}
         {%- if section.settings.somm_pdp_label != blank -%}
-          <div class="non-mono non-eyebrow non-somm-entry__label">
-            {{ section.settings.somm_pdp_label }} {{ code }}?
-          </div>
+          {{ section.settings.somm_pdp_label }} {{ code }}?
         {%- endif -%}
+      {%- endcapture -%}
+      {%- assign pdp_somm_label = pdp_somm_label | strip -%}
+      {%- capture pdp_somm_submit %}{{ 'sections.somm.ask' | t }}{% endcapture -%}
 
-        <button
-          type="button"
-          class="non-somm-entry__field"
-          data-non-somm-open
-          data-non-somm-pdp
-          data-somm-surface="product_page"
-          data-somm-context="product"
-          data-somm-code="{{ code }}"
-          data-somm-product="{{ product.id }}"
-          data-somm-variant="{{ pdp_variant.id }}"
-          data-somm-product-title="{{ product.title | escape }}"
-          data-somm-product-price="{{ pdp_variant.price | money }}"
-          data-somm-product-available="{{ pdp_variant.available }}">
-          <span class="non-somm-entry__ph">{{ section.settings.somm_placeholder }}</span>
-          <span class="non-somm-entry__go" aria-hidden="true">&rarr;</span>
-        </button>
+      {%- assign pdp_seeds = section.blocks | where: 'type', 'seed' -%}
+      {%- capture pdp_chips -%}
+        {%- for block in pdp_seeds limit: 3 -%}
+          {{ block.settings.short_label | default: block.settings.label }}{% unless forloop.last %}|{% endunless %}
+        {%- endfor -%}
+      {%- endcapture -%}
 
-        {%- assign pdp_seeds = section.blocks | where: 'type', 'seed' -%}
-        {%- if pdp_seeds.size > 0 -%}
-          <div class="non-somm-entry__chips">
-            {%- for block in pdp_seeds limit: 3 -%}
-              <button
-                type="button"
-                class="non-somm__seed non-somm-entry__chip"
-                data-non-somm-open
-                data-non-somm-pdp
-                data-somm-surface="product_page"
-                data-somm-context="product"
-                data-somm-code="{{ code }}"
-                data-somm-product="{{ product.id }}"
-                data-somm-variant="{{ pdp_variant.id }}"
-                data-somm-product-title="{{ product.title | escape }}"
-                data-somm-product-price="{{ pdp_variant.price | money }}"
-                data-somm-product-available="{{ pdp_variant.available }}"
-                data-somm-prompt="{{ block.settings.label | escape }}"
-                {{ block.shopify_attributes }}>
-                {{ block.settings.short_label | default: block.settings.label }}
-              </button>
-            {%- endfor -%}
-          </div>
-        {%- endif -%}
-      </div>
+      {% render 'non-somm-form',
+         surface: 'product_entry',
+         context: 'product',
+         modifier: 'non-somm--pdp',
+         uid: section.id,
+         label: pdp_somm_label,
+         placeholder: section.settings.somm_placeholder,
+         submit_label: pdp_somm_submit,
+         chips: pdp_chips,
+         product: product,
+         code: code %}
     {%- endif -%}
 
     {%- comment -%}

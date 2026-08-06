@@ -110,7 +110,24 @@
       differs.
     {%- endcomment -%}
     {%- if settings.somm_enabled -%}
-    <form class="non-somm" data-non-somm-hero role="search"
+    {%- comment -%}
+      `data-non-somm-sheet-form` is the explicit hook somm-sheet.js binds
+      submission to. It replaces a `[data-non-somm-hero]` querySelector that
+      could only ever find ONE form on the page — which is why the PDP could not
+      have a real form until now.
+
+      The markup below is otherwise untouched, deliberately: it is already the
+      canonical `.non-somm` composition, and the layout complaint against it was
+      never in this file. It was four CSS declarations that pinned every child
+      into the 96px orb column. Rewriting working markup to render the shared
+      snippet would also cost the hero the two things the snippet has no
+      parameters for — `data-somm-intent` per chip, and the "Show on mobile"
+      filter — for no rendered difference.
+
+      `data-non-somm-hero` stays, and now means only "focusing the field opens
+      the sheet". See non-somm-form.liquid.
+    {%- endcomment -%}
+    <form class="non-somm" data-non-somm-sheet-form data-non-somm-hero role="search"
       data-somm-surface="homepage_hero" data-somm-context="home">
       <div class="non-somm__bar">
         <span class="non-somm__caret" aria-hidden="true">&gt;</span>

@@ -53,6 +53,22 @@
   var lastFocus = null;
   var scrollY = 0;
 
+  /* TRUE WHILE THE CLOSE IS HANDING FOCUS BACK.
+   *
+   * The hero opens the sheet when its field is focused, and closing the sheet
+   * focuses whatever opened it — so restoring focus to the hero field re-fires
+   * that handler and the sheet reopens instantly. Escape stops working and the
+   * customer is trapped in a dialog they are actively trying to leave.
+   *
+   * It only became reachable once focus restore started naming a real control:
+   * the trigger used to be the <form>, which cannot hold focus, so the caret
+   * dropped to the top of the document and the loop had nothing to fire on. The
+   * old behaviour hid this rather than avoided it.
+   *
+   * A flag rather than a timer: the reopen would be synchronous inside the
+   * focus() call, so the window that needs covering is exactly that call. */
+  var restoringFocus = false;
+
   /* ------------------------------------------------------------ analytics */
 
   /* A conversation id so a thread can be followed across events without
@@ -340,7 +356,11 @@
     return !!d && !d.hidden;
   }
 
-  function openSheet(trigger) {
+  /* `restoreTo` is where focus goes when the sheet closes, when that is NOT the
+     trigger itself. Every click trigger is its own answer — a chip, the orb, a
+     tile — so it stays optional; only the shared-sheet forms pass it, because
+     their trigger is a <form> and a form cannot hold focus. */
+  function openSheet(trigger, restoreTo) {
     /* No width guard. There is ONE Somm and this is it, at every size — the
        hero's inline form is gone, so refusing to open above the breakpoint
        would leave a desktop customer with a button and nothing behind it.
@@ -359,7 +379,7 @@
     renderChips(ctx);
     renderProductAction(ctx);
 
-    lastFocus = trigger || document.activeElement;
+    lastFocus = restoreTo || trigger || document.activeElement;
     lockBody();
 
     sheet.hidden = false;
@@ -454,7 +474,12 @@
     document.dispatchEvent(new CustomEvent('non:somm:closed'));
 
     if (lastFocus && document.contains(lastFocus) && typeof lastFocus.focus === 'function') {
-      lastFocus.focus({ preventScroll: true });
+      restoringFocus = true;
+      try {
+        lastFocus.focus({ preventScroll: true });
+      } finally {
+        restoringFocus = false;
+      }
     }
     lastFocus = null;
 
@@ -484,42 +509,100 @@
 
   /* ------------------------------------------------------------- events */
 
-  /* THE HERO'S BAR.
+  /* THE SHARED-SHEET FORMS — the hero's bar and the PDP's, one code path.
    *
-   * It is the pairing page's markup so that it looks like the pairing page,
-   * but it does NOT answer inline — there is one Somm and it is the sheet.
-   * It carries no [data-non-somm] hook, so somm.js never binds a controller to
-   * it; this forwards it instead.
+   * Both are the pairing page's markup so that they look like the pairing
+   * page, and neither answers inline: there is one Somm and it is the sheet.
+   * Submitting hands the typed text over and the sheet continues the same
+   * transcript, whichever surface it was asked from.
    *
-   * Submitting hands the typed text over. Focusing opens the sheet empty and
-   * moves the caret into ITS field, because a customer who has clicked into a
-   * text box expects to type into the thing they clicked — leaving them typing
-   * into a field whose answer appears somewhere else would be worse than not
-   * opening at all.
+   * THE SELECTOR IS THE EXPLICIT HOOK, NOT `.non-somm`.
+   *
+   * The pairing page's free-text form and the stockists venue search are both
+   * `.non-somm` too — the first binds somm.js and answers inline, the second
+   * is a venue filter that has nothing to do with the Somm at all. Binding on
+   * the class would have taken both of them over: pairing would open a sheet
+   * INSTEAD of printing its verdict, and searching for a stockist would open a
+   * sommelier. So the hook is emitted by non-somm-form.liquid and by nothing
+   * else, and it means one specific thing — "this form's submit belongs to the
+   * shared sheet".
+   *
+   * It is also why the snippet does NOT carry [data-non-somm]. That attribute
+   * is somm.js's inline-answer binding; a form carrying both would preventDefault
+   * twice, ask twice, and try to stream an answer into a panel these surfaces
+   * do not have.
    */
-  var heroForm = document.querySelector('[data-non-somm-hero]');
-  if (heroForm) {
-    var heroInput = heroForm.querySelector('[data-non-somm-hero-input]');
+  function bindSheetForm(form_) {
+    /* Bound once per element, and the flag lives ON the element rather than in
+       a list here: the theme editor re-renders a section without a reload, and
+       a second pass over a form already carrying a listener would submit the
+       question twice. */
+    if (form_.__nonSommSheetBound) return;
+    form_.__nonSommSheetBound = true;
 
-    heroForm.addEventListener('submit', function (e) {
+    /* The hero's field is marked for the sheet's own handoff; the PDP's is the
+       plain canonical input. Either way there is exactly one per form. */
+    var field =
+      form_.querySelector('[data-non-somm-hero-input]') ||
+      form_.querySelector('[data-non-somm-input]');
+
+    form_.addEventListener('submit', function (e) {
+      /* FIRST, unconditionally. Without it Enter in the field submits the form
+         natively and the page reloads — losing the question, the transcript and
+         the scroll position. It is the whole reason a real <form> is safe to
+         use here. */
       e.preventDefault();
-      var text = heroInput ? heroInput.value.trim() : '';
-      if (!openSheet(heroForm)) return;
+
+      /* One question per submit. A double-click on the button, or Enter held
+         down, fires submit repeatedly; the sheet would open once (openSheet is
+         idempotent) and ask the same thing two or three times, which reads as
+         the Somm stuttering. The window is short enough that a genuine second
+         question is never refused. */
+      if (form_.__nonSommSubmitting) return;
+      form_.__nonSommSubmitting = true;
+      setTimeout(function () { form_.__nonSommSubmitting = false; }, 400);
+
+      var text = field ? field.value.trim() : '';
+
+      /* WHERE FOCUS GOES BACK TO, decided here rather than in openSheet.
+         The trigger is the FORM, because the form carries the context payload
+         readTrigger needs — but a <form> is not focusable, so restoring to it
+         on close dropped focus to the top of the document. The control the
+         customer actually used is the active element at submit time: the field
+         on Enter, the submit button on a click. */
+      var restoreTo = form_.contains(document.activeElement)
+        ? document.activeElement
+        : field;
+
+      if (!openSheet(form_, restoreTo)) return;
+
       if (text) {
-        if (heroInput) heroInput.value = '';
+        if (field) field.value = '';
         setTimeout(function () { ask(text, 'typed'); }, 60);
       }
     });
 
-    if (heroInput) {
-      heroInput.addEventListener('focus', function () {
-        /* Only when the sheet is not already up — refocusing after it closes
-           would reopen it immediately and trap the customer in it. */
-        if (open) return;
-        openSheet(heroForm);
+    /* FOCUS OPENS IT — hero only.
+     *
+     * A customer who has clicked into a text box expects to type into the thing
+     * they clicked, so the hero opens the sheet and moves the caret into ITS
+     * field. Deliberately not on the PDP: that form sits under Add to cart, and
+     * a sheet that took over the screen the moment a stray tab reached the
+     * field would come between someone and the buy button. There, Enter and
+     * the button open it — both of them deliberate. */
+    if (field && form_.hasAttribute('data-non-somm-hero')) {
+      field.addEventListener('focus', function () {
+        /* Not while it is already up, and not while the close is putting focus
+           back here — either one reopens it immediately and traps the customer
+           in a dialog they are trying to leave. */
+        if (open || restoringFocus) return;
+        openSheet(form_, field);
       });
     }
   }
+
+  document.querySelectorAll('[data-non-somm-sheet-form]').forEach(bindSheetForm);
+  NON.sommBindSheetForm = bindSheetForm;
 
   document.addEventListener('click', function (e) {
     var trigger = e.target.closest('[data-non-somm-open]');

@@ -1,0 +1,10 @@
+{
+  "name": "non-theme-tests",
+  "private": true,
+  "type": "module",
+  "description": "Behavioural tests for the theme's front-end JS. jsdom, no browser, no network.",
+  "scripts": {
+    "test": "node somm-sheet.test.js && node markup.test.js"
+  },
+  "dependencies": { "jsdom": "^28.0.0" }
+}

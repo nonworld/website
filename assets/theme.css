@@ -399,6 +399,17 @@ button { font-family: inherit; }
   background: var(--non-somm-bg, var(--non-panel));
 }
 .non-somm__caret { font-family: var(--non-mono); font-size: 13px; color: var(--non-fg-faint); }
+/* THE EYEBROW, INSIDE THE FORM.
+   "Considering NON1?" on a PDP, absent elsewhere. It sits in the grid's second
+   column with the bar and the chips — not above the whole form — because the
+   orb spans the composition, and a row outside column 2 would push the orb down
+   by its own height and break the vertical relationship the pairing page sets.
+
+   It is the canonical component's, not a surface's: it replaced
+   .non-somm-entry__label, which was the only thing the retired PDP tree
+   contributed that the shared one did not already have. Nothing else came
+   across, deliberately. */
+.non-somm__label { margin-bottom: 10px; color: var(--non-fg-mute); }
 .non-somm__input {
   flex: 1; background: transparent; border: 0; outline: none;
   color: var(--non-fg); font-family: var(--non-sans); font-size: var(--t-copy);
@@ -6067,7 +6078,6 @@ select:-moz-focusring { color: transparent; text-shadow: 0 0 0 var(--non-fg); }
      Somm entry. 22px, and none of it is legible as a loss. */
   .non-hero__copy { padding-top: 24px; padding-bottom: 4px; }
   .non-hero__ctas { margin-top: 18px; }
-  .non-somm-entry { margin-top: 16px; }
 
   /* 320 → 250 on the picture.
 
@@ -6085,71 +6095,6 @@ select:-moz-focusring { color: transparent; text-shadow: 0 0 0 var(--non-fg); }
      Still a band rather than a thumbnail, and it is the LCP element, so it
      keeps its eager load and its priority. */
   .non-hero__media img { height: 220px; }
-
-  .non-somm-entry { margin-top: 16px; }
-  .non-somm-entry__label {
-    margin-bottom: 10px;
-    color: var(--non-fg-mute);
-  }
-
-  /* A BUTTON DRESSED AS A FIELD. It is not an input — see the section for why
-     — so it has to be given the affordances an input gets for free: the full
-     width, the left-aligned prompt, the caret at the end. */
-  .non-somm-entry__field {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 12px;
-    width: 100%;
-    min-height: 52px;
-    padding: 0 16px;
-    /* NOT var(--non-somm-bg). That token is the Somm PANEL's background and is
-       set to #c9c7c1 in theme settings — a light grey. Used here it painted a
-       near-white slab across a black hero with the placeholder in mute grey on
-       top of it: low contrast, and nothing else on the page that shape.
-
-       These are the values the real .non-somm__input resolves to, so the
-       button that stands in for the field looks like the field it stands in
-       for, on every page and under every section colour override. */
-    background: rgba(242, 240, 234, .05);
-    border: 1px solid var(--non-line-strong);
-    color: var(--non-fg);
-    font-family: var(--non-sans);
-    /* 16px floor, same reason as the real field: below it iOS Safari zooms the
-       viewport, and here it would zoom against a control that cannot even be
-       typed into. */
-    font-size: 16px;
-    text-align: left;
-    cursor: pointer;
-  }
-  .non-somm-entry__field:hover,
-  .non-somm-entry__field:focus-visible { border-color: var(--non-fg); }
-  .non-somm-entry__ph { color: var(--non-fg-mute); }
-  .non-somm-entry__go { flex: none; opacity: .7; }
-
-  /* ONE ROW, ALWAYS. `flex-wrap: nowrap` is the requirement — three chips
-     that wrap into two rows on a 320px screen read as a menu to work through
-     rather than a hint to flick past. The row scrolls instead. */
-  .non-somm-entry__chips {
-    display: flex;
-    flex-wrap: nowrap;
-    gap: 8px;
-    margin-top: 12px;
-    overflow-x: auto;
-    /* Bleeds to both edges so the row visibly continues off screen, which is
-       what says "swipe" without a caption saying it. */
-    margin-inline: calc(var(--non-pad) * -1);
-    padding-inline: var(--non-pad);
-    scroll-snap-type: x proximity;
-    scrollbar-width: none;
-  }
-  .non-somm-entry__chips::-webkit-scrollbar { display: none; }
-  .non-somm-entry__chip {
-    flex: none;
-    scroll-snap-align: start;
-    white-space: nowrap;
-    min-height: 44px;
-  }
 
   /* ------------------------------------------------------- the core range */
 
@@ -6791,28 +6736,30 @@ select:-moz-focusring { color: transparent; text-shadow: 0 0 0 var(--non-fg); }
    tree either. */
 .non-ingr--mobile { display: none; }
 
-/* The PDP's Somm band is a direct child of its section, so it has no page
-   padding of its own — the orb sat flush against the viewport edge while every
-   other band on the page starts at the gutter. */
-/* FLUSH WITH THE BUY COLUMN, both ways.
+/* THE PDP MODIFIER — OUTER SPACING, AND NOTHING ELSE.
 
-   Two separate causes of one step. It carried `padding: 28px var(--non-pad)`
-   from when it was a standalone section and needed its own gutter — but it
-   lives inside .non-buy again, which already pads, so the horizontal half was
-   being applied twice. Only the horizontal half is dropped.
+   It carried `padding: 28px var(--non-pad)` from when the Somm was a standalone
+   section and needed its own gutter. It lives inside .non-buy again, which
+   already pads, so the horizontal half was being applied twice. Only the
+   horizontal half is dropped.
 
-   The columns are NOT touched here. This block once forced a single column so
-   the label and bar would start at the same x as the title and the pack rows,
-   and that was the wrong thing to optimise: it deleted the orb's column, so
-   the orb fell out of the composition and the content column shrank to a
-   narrow rail that wrapped "Ask about this bottle" one word per line.
+   THE COLUMNS ARE NOT TOUCHED HERE, and that is the whole discipline this file
+   keeps failing and relearning. This block once forced a single column so the
+   label and bar would start at the same x as the title and the pack rows —
+   which deleted the orb's column, dropped the orb out of the composition, and
+   shrank the content column to a rail that wrapped "Ask about this bottle" one
+   word per line. Optimising for equal x-coordinates is what broke it.
 
-   The indent is the design. On the pairing page the content column starts
-   after the orb and its 44px gap, and that offset is what makes the orb read
-   as part of the control rather than decoration parked nearby. The PDP and the
-   hero inherit the same two-column track from .non-somm-entry, which is the
-   single owner of it. */
-.non-somm-entry--pdp {
+   The indent IS the design. On the pairing page the content column starts after
+   the orb and its 44px gap, and that offset is what makes the orb read as part
+   of the control rather than decoration parked nearby. The PDP and the hero
+   inherit that track from .non-somm, which is its single owner — see preflight
+   check 6b, which fails the push on a second declaration of it.
+
+   A modifier passed to non-somm-form.liquid may set outer spacing. If you find
+   yourself wanting it to set anything internal, that is the parallel component
+   growing back. */
+.non-somm--pdp {
   padding: 28px 0 0;
 }
 
@@ -6934,12 +6881,6 @@ select:-moz-focusring { color: transparent; text-shadow: 0 0 0 var(--non-fg); }
    a 1440px window has no bottom edge worth docking to.
    ========================================================================== */
 
-/* THE ENTRY, at every width. On a phone it is the hero's whole Somm presence.
-   On a desktop it sits under the two buttons as a short row of prompts, which
-   is what the brief keeps: proposition, copy, Shop the range, Ask the Somm,
-   optional chips — and no second form competing beneath them. */
-.non-somm-entry { margin-top: 22px; }
-
 @media (max-width: 859px) {
   /* ONE SOMM OPENER ON A PHONE, not two.
      The hero's ghost "Ask the Somm" button and the field-shaped button below it
@@ -6953,44 +6894,6 @@ select:-moz-focusring { color: transparent; text-shadow: 0 0 0 var(--non-fg); }
      Range past its target. Restored, and measured. */
   .non-hero__ctas [data-non-somm-open] { display: none; }
 
-  /* The mobile spacing, which the base rule above was overriding by virtue of
-     coming later in the file. */
-  .non-somm-entry { margin-top: 16px; }
-}
-
-@media (min-width: 860px) {
-  /* The field-shaped button is a phone affordance. On a desktop the hero
-     already has a labelled "Ask the Somm" button two lines up, so a second
-     control saying the same thing in a different shape is the competing UI
-     the brief asks to remove.
-
-     THE LABEL STAYS. It is the orb's caption — the concise nearby text that
-     says what the light is, because glow is not an affordance.
-
-     AND SO DOES THE FIELD. I hid it here on the reasoning that the hero's
-     "Ask the Somm" button already says the same thing. That was wrong against
-     the design that already exists: the pairing page is an orb, a BAR you can
-     type in, and chips — and with the bar removed this was an orb, a label and
-     three chips with nothing to type into. The bar is the anchor of the
-     composition, not a duplicate of the button. */
-
-  /* And the block has to be tall enough to hold the orb. With the field
-     hidden, the rows are the label and the chips — about 70px — and a 160px
-     orb had nowhere to go. */
-  .non-somm-entry { min-height: var(--non-orb-col); }
-  .non-somm-entry__label { align-self: end; }
-
-  .non-somm-entry__chips {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 8px;
-    margin-top: 12px;
-  }
-  .non-somm-entry__chip { min-height: 40px; }
-
-  /* The bar, at the width the pairing page gives it rather than stretched
-     across the whole column. */
-  .non-somm-entry__field { max-width: 520px; }
 }
 
 /* THE SHEET AS A DESKTOP DIALOG.
@@ -7538,53 +7441,27 @@ select:-moz-focusring { color: transparent; text-shadow: 0 0 0 var(--non-fg); }
 
    TWO STATES, never both:
 
-     .non-orb--integrated  large, art-directed, inside the page composition.
-                           In the hero it sits in the Somm block's own grid
-                           column, beside the label and the field. On a PDP it
-                           anchors the "still deciding?" band.
+     .non-orb--integrated  large, art-directed, inside a page composition that
+                           gives it a grid column of its own.
+
+                           NOTHING RENDERS IT TODAY. The hero and the PDP both
+                           show the canonical Somm, whose orb is the ORIGINAL
+                           pseudo-element one — see "THE ORB — single owner",
+                           which is the only place its placement may be written.
+                           This state survived the retirement of
+                           .non-somm-entry because somm-orb.liquid still offers
+                           it; if a surface ever wants it back, it needs a grid
+                           to sit in, and that grid must not be a second copy of
+                           the canonical component's.
 
      .non-orb--compact     small, persistent, lower-right — and only once the
                            integrated one has left the screen. A way back to a
                            conversation, not an advertisement for one.
 
-   IT COSTS THE HERO NO HEIGHT. The integrated orb takes a grid COLUMN and
-   spans every row, so the label, the field and the chips stack beside it
-   inside the space they already occupied. The hero measured 671px before this
-   and measures 671px after it.
+   IT COSTS ITS COMPOSITION NO HEIGHT. The integrated orb takes a grid COLUMN
+   and spans every row, so the label, the field and the chips stack beside it
+   inside the space they already occupied.
    ========================================================================== */
-
-/* The Somm block becomes two columns: the orb, then everything else. */
-.non-somm-entry {
-  display: grid;
-  /* 100px on a phone, and the number is a comparison rather than a taste.
-     The ORIGINAL orb — .non-somm::before, still on the pairing and stockists
-     pages — measures 72px below 700 and 104px between 700 and 859. At 84 the
-     hero's orb was within 12px of a decoration sitting beside a form on
-     another page, which is not a hierarchy anyone can see. The hero is where
-     the Somm lives; its orb should be unmistakably the largest one on the
-     site at every width.
-
-     100 is the top of the range the brief allows on mobile, and it costs the
-     hero nothing: the rows beside it are the label (16), the field (52) and
-     the chips (44) — 112px of content that the orb sits inside rather than
-     adds to. Measured at 375: hero 671 before, 671 after. */
-  grid-template-columns: var(--non-orb-col, 72px) minmax(0, 1fr);
-  /* EXPLICIT ROWS, and they are load-bearing.
-     `grid-row: 1 / -1` on the orb resolves -1 against the EXPLICIT row grid.
-     With rows left implicit there is no explicit grid, so -1 collapsed to line
-     1, the orb sat in row 1 alone, and row 1 stretched from 16px to the orb's
-     84 — 59px of hero that nothing on screen accounted for. Three auto rows:
-     the label, the field, the chips. An absent one is a zero-height row. */
-  grid-template-rows: repeat(3, auto);
-  align-items: center;
-  /* The rows keep their own height and the BLOCK centres. Without this the
-     min-height that makes room for the orb was distributed across the three
-     rows instead — 16/52/44 of content rendered as 40/70/70, which pulled the
-     label away from the field and left the composition loose. */
-  align-content: center;
-  column-gap: 16px;
-}
-.non-somm-entry > :not(.non-orb--integrated) { grid-column: 2; }
 
 .non-orb--integrated {
   grid-column: 1;
@@ -7705,27 +7582,14 @@ select:-moz-focusring { color: transparent; text-shadow: 0 0 0 var(--non-fg); }
 
 /* Sizes. 84px on a phone — inside the 72–100 the brief sets, and the tallest
    the Somm block's own rows allow without adding height to the hero. */
-@media (min-width: 700px) {
-  /* The pairing orb is 104 in this band; 140 keeps the gap decisive and is the
-     floor of the brief's desktop range. */
-  .non-somm-entry { column-gap: 20px; }
-}
-@media (min-width: 860px) {
-  /* 160px on a desktop: inside 140–200, and about the width of the field it
-     sits beside, which is what makes the pair read as one composition. */
-  .non-somm-entry { --non-orb-col: 96px; column-gap: 24px; }
-}
-@media (min-width: 1440px) {
-  .non-somm-entry { --non-orb-col: 96px; }
-}
+/* Below 360 the orb column would take a third of the screen and squeeze the
+   field into something unusable. The orb steps out; the compact state still
+   exists and the label and field still say what the Somm is.
 
-/* Below 360 the column would take a third of the screen and squeeze the field
-   into something unusable. The orb steps out; the compact state still exists
-   and the label and field still say what the Somm is. */
+   The column track itself is NOT restated here — .non-somm owns it, once, and
+   below 700 it is not a grid at all. */
 @media (max-width: 359px) {
-  .non-somm-entry { grid-template-columns: minmax(0, 1fr); }
   .non-orb--integrated { display: none; }
-  .non-somm-entry > :not(.non-orb--integrated) { grid-column: 1; }
 }
 
 /* The compact state keeps the same glow, at 52px, in the corner — the styling
@@ -7738,43 +7602,6 @@ select:-moz-focusring { color: transparent; text-shadow: 0 0 0 var(--non-fg); }
   height: 26px;
   animation: none;   /* the corner is not the place for a breathing light */
 }
-
-/* ==========================================================================
-   THE SOMM BAR IS A BAR AT EVERY WIDTH
-   ==========================================================================
-   Its whole visual treatment — the fill, the hairline, the height, the 16px
-   type — was written inside the mobile query, because when it was authored the
-   bar only existed on a phone. Un-hiding it on desktop therefore produced an
-   unstyled button: 344x22, no border, no background. A sliver of text where
-   the pairing page has a bar you can obviously type into.
-
-   Declared here without a query so the two surfaces cannot diverge again. The
-   mobile block still overrides what is genuinely phone-specific (the 16px font
-   floor that stops iOS zooming) and those declarations still win, being later
-   and inside a matching query.
-   ========================================================================== */
-.non-somm-entry__field {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 12px;
-  width: 100%;
-  min-height: 52px;
-  padding: 0 18px;
-  background: rgba(242, 240, 234, .05);
-  border: 1px solid var(--non-line-strong);
-  color: var(--non-fg);
-  font-family: var(--non-sans);
-  font-size: 15px;
-  text-align: left;
-  cursor: pointer;
-  transition: border-color var(--duration-hover, .2s) var(--ease-hover, ease);
-}
-.non-somm-entry__field:hover,
-.non-somm-entry__field:focus-visible { border-color: var(--non-fg); }
-.non-somm-entry__field:focus-visible { outline: 2px solid var(--non-fg); outline-offset: 2px; }
-.non-somm-entry__ph { color: var(--non-fg-mute); }
-.non-somm-entry__go { flex: none; opacity: .7; }
 
 /* ==========================================================================
    THE HERO'S SOMM IS FLUSH LEFT

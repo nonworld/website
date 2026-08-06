@@ -440,13 +440,25 @@
     }, 240);
 
     unlockBody();
+
+    /* THE EVENT FIRST, THEN THE FOCUS — and the order is the whole fix.
+     *
+     * The orb hides itself while the sheet is open, because two things asking
+     * for attention is one too many. It un-hides on `non:somm:closed`. So when
+     * this dispatched LAST, the focus restore ran while the opener was still
+     * `hidden`, and a hidden element cannot take focus: opening the Somm from
+     * the orb and pressing Escape dropped focus to the top of the document.
+     *
+     * Announcing the close first lets every listener put its control back, and
+     * only then is focus handed to it. */
+    document.dispatchEvent(new CustomEvent('non:somm:closed'));
+
     if (lastFocus && document.contains(lastFocus) && typeof lastFocus.focus === 'function') {
       lastFocus.focus({ preventScroll: true });
     }
     lastFocus = null;
 
     track('somm_closed', { surface: context.surface, reason: why || 'button' });
-    document.dispatchEvent(new CustomEvent('non:somm:closed'));
   }
 
   /* ------------------------------------------------------------- asking */

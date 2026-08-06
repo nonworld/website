@@ -4642,6 +4642,35 @@ select:-moz-focusring { color: transparent; text-shadow: 0 0 0 var(--non-fg); }
 
    One row, and both centred in it. The orb sets the row height, the bar sits
    on the same axis, and there are no phantom rows left to pad the block. */
+/* THE FILTERS SIT IN THE BAR'S COLUMN, not the page's.
+   ==========================================================================
+   Aaron's call, and it fixes two things at once. Measured at 1440 before this:
+   the TYPE row began 92px below the bar and started at x=64 while the bar
+   started at x=204 — so it was both a screen away and out of line with the
+   control it belongs to. The homepage puts its chips 14px under the same bar
+   and flush with it.
+
+   The offset is the orb's column plus the grid gap — 96 + 44 — because that is
+   exactly what the bar itself is inset by. Written as that sum rather than as
+   140 so it stays true if either changes.
+
+   The negative pull is the orb's overhang: the row is as tall as the 96px orb,
+   the 52px bar is centred in it, so 22px of form hangs below the field. Pulling
+   the filters up by it puts them under the BAR rather than under the orb's box,
+   and because they now start in column 2 they clear the orb entirely rather
+   than colliding with it.
+
+   Only above 700. Below it `.non-somm` is a centred flex column, the orb sits
+   above the bar rather than beside it, and there is no second column to align
+   to — the filters are already flush.
+   ========================================================================== */
+@media (min-width: 700px) {
+  .non-stock-search + .non-stock-filters {
+    margin-left: calc(96px + 44px);
+    margin-top: -22px;
+  }
+}
+
 .non-somm.non-stock-search {
   grid-template-rows: auto;
   align-items: center;
@@ -6636,11 +6665,28 @@ select:-moz-focusring { color: transparent; text-shadow: 0 0 0 var(--non-fg); }
 
   /* --------------------------------------------------- the first purchase */
 
+  /* STACKED, PICTURE FIRST — Aaron's call.
+     This was the only band on the site still holding a desktop two-column ratio
+     at phone width. Measured at 402: 206px of copy against a 136px image, which
+     wrapped the headline mid-phrase, broke "SHOP THE MIXED 6 PACK" over two
+     lines inside a narrow button, and cropped a six-bottle photograph down to a
+     sliver of three-and-a-bit.
+
+     The picture leads, which is the pattern the range cards and the PDP already
+     use on a phone, and the copy gets the full 358px underneath.
+
+     PLACING THE MEDIA IN ROW 1 IS SAFE HERE, and it is worth saying why given
+     this theme deleted its `order` mechanism over exactly this. That rule
+     existed because reordering sections made the eye and the screen reader
+     follow different sequences — WCAG 2.4.3 and 1.3.2. This element is
+     `tabindex="-1" aria-hidden="true"`: it is not in the tab order and not in
+     the accessibility tree, so it has no reading position to disagree with.
+     Nothing is announced in a different order; a decorative picture moves. */
   .non-firstbuy {
     display: grid;
-    grid-template-columns: 1fr 38%;
+    grid-template-columns: 1fr;
     align-items: center;
-    gap: 16px;
+    gap: 20px;
     padding: 32px var(--non-pad);
     border-top: 1px solid var(--non-line);
     border-bottom: 1px solid var(--non-line);
@@ -6704,10 +6750,13 @@ select:-moz-focusring { color: transparent; text-shadow: 0 0 0 var(--non-fg); }
   }
   /* Below 360 the picture costs more than it earns — it squeezes the price and
      the button into a column narrower than the button's own label. */
-  @media (max-width: 359px) {
-    .non-firstbuy { grid-template-columns: 1fr; }
-    .non-firstbuy__media { display: none; }
-  }
+  .non-firstbuy__media { grid-row: 1; }
+  .non-firstbuy__copy { grid-row: 2; }
+
+  /* The 359px rule that hid the picture outright is gone with the two columns
+     that made it necessary — it existed because a 68px image column squeezed
+     the price and the button into something narrower than the button's own
+     label. Stacked, there is no column to squeeze. */
 
   /* ------------------------------------------------------- the proof band */
 

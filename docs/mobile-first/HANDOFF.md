@@ -378,3 +378,77 @@ which is the hardest possible version of this bug to believe.
 Nothing about either looks wrong in a rendered diff, so **`preflight.py` check 3c**
 now fails the push on a valueless attribute followed by a whitespace-stripping
 tag inside an element.
+
+---
+
+# Release-candidate pass — 2026-08-06
+
+## Pairing data, all live products
+
+Six live bottles, not nine. Audited by fetching every PDP and reading what the
+theme actually rendered.
+
+| Product | `pairings` | `perfect_for_images` | Strip | Fallback | Status |
+|---|---|---|---|---|---|
+| NON1 Salted Raspberry & Chamomile | 3 | 3 | renders | — | **PASS** |
+| NON2 Caramelised Pear & Kombu | 3 | 0 | suppressed | 3 prose cards | **PASS (no strip)** |
+| NON3 Toasted Cinnamon & Yuzu | 3 | 0 | suppressed | 3 prose cards | **PASS (no strip)** |
+| NON5 Lemon Marmalade & Hibiscus | 3 | 0 | suppressed | 3 prose cards | **PASS (no strip)** |
+| NON7 Stewed Cherry & Coffee | 3 | 0 | suppressed | 3 prose cards | **PASS (no strip)** |
+| NON9 Oaked Blackberry & Plum | 3 | 0 | suppressed | 3 prose cards | **PASS (no strip)** |
+| Mixed 6 Pack | — | — | n/a | n/a | **PASS (set)** |
+| The Everyday Set | — | — | n/a | n/a | **PASS (set)** |
+| NONstopper | — | — | n/a | n/a | **PASS (accessory)** |
+
+All six bottles are in stock with three variants each and live variant IDs.
+
+**Only NON1 has the photography.** The guard behaves exactly as designed — no
+images, no strip, prose cards stay — so nothing is broken and nothing is
+misjoined. It does mean one bottle gets photographs and five get text.
+
+**This is a content decision, not a code one.** Either upload
+`nonN-perfect-for-starters/-mains/-dessert` for the other five, or ask for the
+strip to be switched off on NON1 until they exist. Fifteen images.
+
+## Homepage, one order
+
+DOM order and visual order are identical and verified equal at every width:
+
+Hero → Poured at → Core range → Made for → Mixed 6 → Press → Sets → NONHQ →
+Stopper → Footer.
+
+No `order`, no grid-area reordering, no transforms. `main` is not a flex
+container. The `mobile_order` setting has been removed from the six schemas and
+from the template, so it cannot be reintroduced by accident.
+
+| Measure at 375×812 | Target | Now |
+|---|---|---|
+| Hero | ≤673 | **671** |
+| Core range begins | ≤915 | **900** |
+| Made for | 3 across, compact | **293px, 3 across** |
+| Document | ≤3,867 | **3,860** |
+| Horizontal overflow | none | none |
+
+## PDP, one order
+
+Gallery → identity + "Drinks like" → pack → Add + shipping → fast facts →
+food pairing → "Still deciding?" → ingredients + process → complete the case.
+
+Achieved by moving the markup: the pairings and the Somm entry are their own
+sections now. No CSS reordering anywhere on the page.
+
+| Measure at 375×812 | Target | Before | Now |
+|---|---|---|---|
+| Product title | 550–600 | 701 | **544** |
+| Pack selector | visible by 750 | — | **720** |
+| Add to cart | 850–900 | 1,061 | **~890** |
+
+## Known blockers
+
+**DO NOT PUBLISH — content:** five of six bottles have no pairing photography.
+Not a defect; a visible inconsistency. Decision required (above).
+
+**DO NOT PUBLISH — pre-existing, unchanged by this work:** the privacy policy
+still does not disclose the Somm or its US processor, and publishing starts
+sending customer free text to it. That is task #21 in the root HANDOFF and it
+is a legal review, not a code change.

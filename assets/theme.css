@@ -3807,16 +3807,27 @@ select:-moz-focusring { color: transparent; text-shadow: 0 0 0 var(--non-fg); }
    specificity that cannot be reached by another two-class selector. */
 .non-somm .non-somm__field .non-somm__input::placeholder { color: transparent; }
 
-.non-somm__ghost {
+/* `.non-somm .non-somm__ghost`, not `.non-somm__ghost`. The block that hands it
+   the input's padding and type also hands it a border and a 52px height, at two
+   classes — so a one-class undo here would lose and the ghost would render as a
+   second bordered field on top of the real one. Same specificity, declared
+   later, which is the only way this wins. */
+.non-somm .non-somm__ghost {
   position: absolute;
   inset: 0;
+  /* Inherited from the input's block above and explicitly undone: the ghost is
+     a transparent overlay, not a second field. */
+  border: 0;
+  height: auto;
   display: flex;
   align-items: center;
   pointer-events: none;
   white-space: nowrap;
   overflow: hidden;
   font-family: var(--non-sans);
-  font-size: var(--t-copy);
+  /* No font-size or padding here — both come from the input's own block above,
+     so the prompt and the text that replaces it cannot end up different sizes
+     in different places. */
   background: linear-gradient(100deg, #3d3d3a 25%, #EDEDE8 50%, #3d3d3a 75%);
   background-size: 200% 100%;
   -webkit-background-clip: text;
@@ -3826,10 +3837,10 @@ select:-moz-focusring { color: transparent; text-shadow: 0 0 0 var(--non-fg); }
   transition: opacity .18s var(--ease-hover, ease);
 }
 /* The moment anything is typed, the prompt goes — same as a placeholder. */
-.non-somm__input:not(:placeholder-shown) ~ .non-somm__ghost { opacity: 0; }
+.non-somm .non-somm__input:not(:placeholder-shown) ~ .non-somm__ghost { opacity: 0; }
 
 @media (prefers-reduced-motion: reduce) {
-  .non-somm__ghost {
+  .non-somm .non-somm__ghost {
     animation: none;
     background: none;
     color: var(--non-fg-mute);
@@ -3840,9 +3851,8 @@ select:-moz-focusring { color: transparent; text-shadow: 0 0 0 var(--non-fg); }
 /* 16px on a phone for the same reason the field itself is: below it iOS Safari
    zooms the viewport on focus, and a ghost that does not match the input it
    covers would visibly jump as the real text arrives. */
-@media (max-width: 859px) {
-  .non-somm__ghost { font-size: 16px; }
-}
+/* No mobile font-size override: the input's own block sets 16px at every width
+   and the ghost now rides it. */
 
 /* THE HERO'S OWN ANSWER, BELOW ITS OWN BAR.
  * ==========================================================================
@@ -4671,10 +4681,20 @@ select:-moz-focusring { color: transparent; text-shadow: 0 0 0 var(--non-fg); }
   border: 0;
   background: transparent;
 }
+/* THE GHOST RIDES THIS BLOCK, not a copy of its numbers.
+   `.non-somm__ghost` is the shimmering prompt laid over the field. It has to
+   match the input's padding and type exactly or the words sit somewhere the
+   real text never appears — measured before this, 19px to the left of it and a
+   size and a half too big. Listed here rather than given its own padding and
+   font-size, so the two cannot drift apart the next time this block is tuned.
+   The properties that are genuinely the input's alone — background, border,
+   height — do it no harm: it is absolutely positioned over the field with a
+   transparent background of its own further down. */
 .non-somm .non-somm__input,
 .non-somm__bar .non-somm__input,
 .non-sommbox__ask input,
-.non-sommbox__ask .non-somm__input {
+.non-sommbox__ask .non-somm__input,
+.non-somm .non-somm__ghost {
   flex: 1 1 auto;
   min-width: 0;
   height: 52px;
@@ -4958,7 +4978,8 @@ select:-moz-focusring { color: transparent; text-shadow: 0 0 0 var(--non-fg); }
   /* The controls get their height back now there is room for them. */
   .non-somm .non-somm__input,
   .non-sommbox__ask input,
-  .non-sommbox__ask .non-somm__input { height: 52px; font-size: 16px; padding: 0 18px; }
+  .non-sommbox__ask .non-somm__input,
+  .non-somm .non-somm__ghost { height: 52px; font-size: 16px; padding: 0 18px; }
   .non-somm__submit,
   .non-sommbox__submit { height: 52px; padding: 0 26px; }
   .non-somm .non-somm__seed,

@@ -4662,7 +4662,13 @@ select:-moz-focusring { color: transparent; text-shadow: 0 0 0 var(--non-fg); }
 
        Declared once, here. preflight check 6b fails the push on a second one,
        so the thing that made this hard to reason about cannot come back. */
-    grid-template-columns: 96px minmax(0, 1fr);
+    /* Parameterised, NOT duplicated. The hero needs one column so its bar and
+       chips sit flush with the headline and buttons above them; every other
+       surface keeps the orb beside the conversation. A second
+       grid-template-columns rule is what preflight check 6b exists to stop, so
+       the value moves to a custom property and the hero sets the property
+       instead. Still one declaration, here. */
+    grid-template-columns: var(--non-somm-cols, 96px minmax(0, 1fr));
     column-gap: 44px;
     align-items: start;
     text-align: left;
@@ -7749,3 +7755,25 @@ select:-moz-focusring { color: transparent; text-shadow: 0 0 0 var(--non-fg); }
 .non-somm-entry__field:focus-visible { outline: 2px solid var(--non-fg); outline-offset: 2px; }
 .non-somm-entry__ph { color: var(--non-fg-mute); }
 .non-somm-entry__go { flex: none; opacity: .7; }
+
+/* ==========================================================================
+   THE HERO'S SOMM IS FLUSH LEFT
+   ==========================================================================
+   Everything in the hero starts at the same x: the eyebrow, the headline, the
+   blurb, Shop the range, Ask the Somm. The Somm block's bar and chips did not
+   — the orb took a 96px column and pushed them 140px in, so the one column of
+   type on the page had a step in it.
+
+   One column here. The orb keeps its own rules — size, blur, opacity,
+   position are all still the pairing page's, and check 6 still owns where it
+   sits — it simply stacks above the bar rather than beside it, and the bar and
+   chips line up with everything else.
+   ========================================================================== */
+@media (min-width: 700px) {
+  .non-hero .non-somm {
+    --non-somm-cols: minmax(0, 1fr);
+    column-gap: 0;
+    max-width: 620px;
+    padding-top: 0;
+  }
+}

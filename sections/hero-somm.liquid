@@ -123,6 +123,17 @@
           type="search"
           name="query"
           autocomplete="off"
+          {%- comment -%}
+            BOTH NAMES, for the two controllers that read this field.
+
+            somm-sheet.js takes the typed text from `[data-non-somm-hero-input]`
+            when it forwards to the sheet on a phone. somm.js resolves its own
+            field with `form.querySelector('[data-non-somm-input]')` — the
+            generic hook every other Somm uses — so without it the inline bind
+            above the breakpoint found no input, read no query and returned
+            silently. Bound, submitted, nothing asked.
+          {%- endcomment -%}
+          data-non-somm-input
           data-non-somm-hero-input
           placeholder="{{ section.settings.placeholder | escape }}">
         <button type="submit" class="non-somm__submit">{{ 'sections.somm.ask' | t }}</button>

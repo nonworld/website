@@ -145,7 +145,13 @@
         <div class="non-somm__seeds">
           {%- assign shown = 0 -%}
           {%- for block in all_seeds -%}
-            {%- if shown >= 3 -%}{% break %}{%- endif -%}
+            {%- comment -%}
+              FOUR, not three. Three was the ceiling everywhere while the chip
+              row wrapped onto a second line on a phone and cost the hero its
+              height. That row scrolls horizontally now, so a fourth costs
+              nothing above the fold and gives the Somm one more way in.
+            {%- endcomment -%}
+            {%- if shown >= 4 -%}{% break %}{%- endif -%}
             {%- if flagged_count > 0 and block.settings.show_on_mobile != true -%}
               {%- continue -%}
             {%- endif -%}

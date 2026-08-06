@@ -86,6 +86,17 @@
             "answer": "Between 18 and 51 per 150ml serve, depending on the bottle.\n\nNON5 is the lightest at 18 calories and 3.6g of sugar, the lowest in the range. NON1 sits at 37 with 7.1g. NON9 is the richest at 51 and 7.5g.\n\nFor context, a standard glass of wine is around 120. Nothing here is engineered to be diet — the numbers are low because there is no alcohol and very little added sugar.",
             "picks": "NON5,NON1"
           }
+        },
+        "seed-6": {
+          "type": "seed",
+          "settings": {
+            "label": "Cooking for friends",
+            "short_label": "Cooking for friends",
+            "intent": "hosting",
+            "show_on_mobile": true,
+            "picks": "SET,NON2",
+            "answer": "Then pour more than one thing. A table of people is a table of different palates, and the range is built to be split across a meal rather than to carry all of it.\n\nStart with the Everyday Set — rosé, white and red, so nobody is handed the same glass all night. NON2 is the one that gets talked about: caramelised pear and kombu, savoury enough that someone will ask what it is."
+          }
         }
       },
       "block_order": [
@@ -98,6 +109,7 @@
         "seed-2",
         "seed-3",
         "seed-4",
+        "seed-6",
         "seed-5"
       ],
       "settings": {

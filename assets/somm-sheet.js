@@ -239,7 +239,9 @@
 
     var added = 0;
     source.forEach(function (seed) {
-      if (added >= 3) return;
+      /* Four, matching the hero. The sheet offers the same suggestions the
+         page does; a different number is a different component. */
+      if (added >= 4) return;
       seedBox.appendChild(
         chipButton(seed.short || seed.label, seed.answer || '', (seed.picks || []).join(','))
       );

@@ -50,6 +50,17 @@
   var MOBILE = window.matchMedia('(max-width: 859px)');
 
   var open = false;
+
+  /* Guarded, not called straight through. If scroll-lock.js ever fails to load,
+     a bare `NON.scrollLock.lock()` throws inside the open handler — and a
+     thrown handler here is indistinguishable from a dead button. The overlay
+     opening without a lock is a degraded page; the overlay refusing to open is
+     a broken one. */
+  function holdPage(on) {
+    var s = window.NON && window.NON.scrollLock;
+    if (s) s[on ? 'lock' : 'unlock']('somm-sheet');
+  }
+
   var lastFocus = null;
 
   /* MODAL ON A PHONE, A PANEL ON A DESKTOP.
@@ -68,7 +79,6 @@
    * Captured at open rather than read at close, so a resize mid-conversation
    * cannot unlock a body that was never locked. */
   var modal = true;
-  var scrollY = 0;
 
   /* ------------------------------------------------------------ analytics */
 
@@ -378,23 +388,10 @@
     sheet.style.setProperty('--non-sheet-top', (vv.offsetTop || 0) + 'px');
   }
 
-  function lockBody() {
-    scrollY = window.scrollY || window.pageYOffset || 0;
-    document.body.style.position = 'fixed';
-    document.body.style.top = -scrollY + 'px';
-    document.body.style.left = '0';
-    document.body.style.right = '0';
-    document.body.style.width = '100%';
-  }
-
-  function unlockBody() {
-    document.body.style.position = '';
-    document.body.style.top = '';
-    document.body.style.left = '';
-    document.body.style.right = '';
-    document.body.style.width = '';
-    window.scrollTo(0, scrollY);
-  }
+  /* The page behind is held by NON.scrollLock — see assets/scroll-lock.js.
+     Only when modal: as a desktop panel the page must stay usable.
+     The owner string must match on both sides; it is what lets two overlays
+     overlap without one releasing the other's lock. */
 
   var FOCUSABLE =
     'a[href], button:not([disabled]), input:not([disabled]), textarea:not([disabled]), ' +
@@ -449,7 +446,7 @@
     lastFocus = trigger || document.activeElement;
 
     modal = MOBILE.matches;
-    if (modal) lockBody();
+    if (modal) holdPage(true);
 
     sheet.hidden = false;
     sheet.classList.toggle('is-panel', !modal);
@@ -540,7 +537,7 @@
       if (!open) sheet.hidden = true;
     }, 240);
 
-    if (modal) unlockBody();
+    if (modal) holdPage(false);
 
     /* THE EVENT FIRST, THEN THE FOCUS — and the order is the whole fix.
      *

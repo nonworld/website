@@ -75,6 +75,15 @@
       because a single IntersectionObserver watching every band is cheaper
       than one per section and the stagger has to reason across siblings.
     {%- endcomment -%}
+    {%- comment -%}
+      The scroll lock, before anything that uses it. Deferred scripts execute in
+      document order, so a head one is guaranteed to have defined
+      NON.scrollLock before cart.js, menu.js or somm-sheet.js run — and all
+      three are deferred too. It owns no DOM and costs nothing on a page with
+      no overlay on it.
+    {%- endcomment -%}
+    <script src="{{ 'scroll-lock.js' | asset_url }}" defer></script>
+
     <script src="{{ 'reveal.js' | asset_url }}" defer></script>
 
     <script>

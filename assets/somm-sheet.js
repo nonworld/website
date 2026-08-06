@@ -333,6 +333,25 @@
       return;
     }
     var r = anchorEl.getBoundingClientRect();
+
+    /* ONLY IF THERE IS ROOM UNDER IT.
+     *
+     * The hero's bar sits low in a 900px window — measured, its bottom edge is
+     * at 768 — which leaves about 130px beneath. Anchored there the panel
+     * clamped to 96px: an answer, two recommendation cards and a chip row in
+     * the height of a single button. A panel that opens where the question was
+     * asked is better than a centred one, and a 96px panel is worse than
+     * either.
+     *
+     * So the anchor is conditional on the space actually existing, and falls
+     * back to the centred placement when it does not. 320 is the smallest
+     * height that shows the opening line and one whole recommendation card. */
+    var room = (window.innerHeight || 0) - r.bottom - 36;
+    if (room < 320) {
+      sheet.classList.remove('is-anchored');
+      return;
+    }
+
     sheet.style.setProperty('--non-sheet-anchor-x', Math.round(r.left) + 'px');
     sheet.style.setProperty('--non-sheet-anchor-y', Math.round(r.bottom + 12) + 'px');
     sheet.style.setProperty('--non-sheet-anchor-w', Math.round(r.width) + 'px');

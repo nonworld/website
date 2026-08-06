@@ -8161,6 +8161,42 @@ select:-moz-focusring { color: transparent; text-shadow: 0 0 0 var(--non-fg); }
 .non-somm-entry__field:focus-visible { border-color: var(--non-fg); }
 .non-somm-entry__field:focus-visible { outline: 2px solid var(--non-fg); outline-offset: 2px; }
 .non-somm-entry__ph { color: var(--non-fg-mute); }
+
+/* THE SAME SHIMMER, ON A PROMPT THAT IS NOT AN OVERLAY.
+ * ==========================================================================
+ * The PDP's entry is a <button> dressed as a field, so its prompt is a real
+ * child of it rather than a layer over an input — no absolute positioning, no
+ * `:placeholder-shown` to hide it, nothing to align to. It needs the ink and
+ * the animation and none of the overlay mechanics, which is the whole of this
+ * modifier.
+ *
+ * It is also why the rules above are scoped `.non-somm .non-somm__ghost`: the
+ * PDP entry is `.non-somm-entry`, so none of them reach it, and a bare
+ * `.non-somm__ghost` would have handed it `position: absolute; inset: 0` and
+ * collapsed the button's contents into its top-left corner.
+ *
+ * Declared after the LAST `.non-somm-entry__ph`, which sets the muted colour at
+ * the same specificity. It was first written eight hundred lines earlier, where
+ * that rule beat it and the prompt stayed grey with an invisible gradient
+ * behind it. Source order is the only thing making this win.
+ * ========================================================================== */
+.non-somm__ghost--static {
+  background: linear-gradient(100deg, #3d3d3a 25%, #EDEDE8 50%, #3d3d3a 75%);
+  background-size: 200% 100%;
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  animation: non-somm-shimmer 6s linear infinite;
+}
+@media (prefers-reduced-motion: reduce) {
+  .non-somm__ghost--static {
+    animation: none;
+    background: none;
+    color: var(--non-fg-mute);
+    -webkit-text-fill-color: currentColor;
+  }
+}
+
 .non-somm-entry__go { flex: none; opacity: .7; }
 
 /* ==========================================================================

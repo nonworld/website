@@ -445,7 +445,7 @@
           data-somm-product-title="{{ product.title | escape }}"
           data-somm-product-price="{{ pdp_variant.price | money }}"
           data-somm-product-available="{{ pdp_variant.available }}">
-          <span class="non-somm-entry__ph">{{ section.settings.somm_placeholder }}</span>
+          <span class="non-somm-entry__ph non-somm__ghost non-somm__ghost--static">{{ section.settings.somm_placeholder }}</span>
           <span class="non-somm-entry__go" aria-hidden="true">&rarr;</span>
         </button>
 
@@ -871,7 +871,7 @@
       "type": "text",
       "id": "somm_placeholder",
       "label": "Somm input placeholder",
-      "default": "Ask about this bottle"
+      "default": "Ask the NON Somm anything"
     },
     {
       "type": "header",

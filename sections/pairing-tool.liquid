@@ -97,6 +97,7 @@
               <label class="visually-hidden" for="pair-q-{{ section.id }}">
                 {{ section.settings.freetext_placeholder }}
               </label>
+              <div class="non-somm__field">
               <input
                 id="pair-q-{{ section.id }}"
                 class="non-somm__input"
@@ -104,6 +105,15 @@
                 autocomplete="off"
                 data-non-somm-input
                 placeholder="{{ section.settings.freetext_placeholder | escape }}">
+
+              {%- comment -%}
+                The shimmering prompt, same component as the hero's. A real
+                element rather than the placeholder, because `::placeholder`
+                takes no background and therefore no gradient — see
+                `.non-somm__ghost` in theme.css.
+              {%- endcomment -%}
+              <span class="non-somm__ghost" aria-hidden="true">{{ section.settings.freetext_placeholder }}</span>
+            </div>
               <button type="submit" class="non-somm__submit">
                 {{ section.settings.freetext_cta }}
               </button>
@@ -363,7 +373,8 @@
       "type": "text",
       "id": "freetext_placeholder",
       "label": "Placeholder",
-      "default": "Whole snapper, charcoal, lemon"
+      "info": "Shown shimmering in the bar until someone types.",
+      "default": "Ask the NON Somm anything"
     },
     {
       "type": "text",

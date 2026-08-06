@@ -5994,8 +5994,30 @@ select:-moz-focusring { color: transparent; text-shadow: 0 0 0 var(--non-fg); }
   }
   .non-somm__seeds::-webkit-scrollbar,
   .non-sommbox__seeds::-webkit-scrollbar { display: none; }
-  .non-somm__seed {
-    flex: none;
+  /* SELECTOR MATCHED TO THE RULE IT HAS TO BEAT, and that is the entire fix.
+   *
+   * This block used to say `.non-somm__seed` alone. `flex: none` never took:
+   * `.non-somm .non-somm__seed` two thousand lines up sets `flex: 0 1 auto`,
+   * and at 0,2,0 against 0,1,0 it wins no matter which is later or which media
+   * query is matching. That rule is correct where it was written — the row
+   * WRAPPED there, and a chip that can wrap may safely shrink.
+   *
+   * Here the row does not wrap, it scrolls, and the chip carries
+   * `white-space: nowrap`. A chip that cannot wrap and is still allowed to
+   * shrink does not get smaller — it renders its text straight out through its
+   * own border and over the top of the next chip. On a phone that is what every
+   * Somm surface looked like: overlapping, unreadable prompts on the homepage,
+   * the PDP, pairing and stockists alike.
+   *
+   * flex-shrink is spelled out beside the shorthand deliberately. The shorthand
+   * is what a future edit is likely to retune for padding or basis; the
+   * longhand is the one declaration that must survive that edit. */
+  .non-somm__seed,
+  .non-somm .non-somm__seed,
+  .non-sommbox .non-somm__seed,
+  .non-sommbox__seeds button {
+    flex: 0 0 auto;
+    flex-shrink: 0;
     scroll-snap-align: start;
     /* One line each. A chip that wraps is a paragraph with a border. */
     white-space: nowrap;

@@ -224,6 +224,47 @@ test('the PDP modifier sets outer spacing and nothing else', () => {
     `.non-somm--pdp sets ${props.join(', ')} — a modifier may set outer spacing only`);
 });
 
+
+test('a Somm chip cannot shrink on a phone — resolved through the real cascade', () => {
+  /* THE DEFECT THIS EXISTS FOR, seen on a real iPhone on staging: every chip on
+     every Somm surface rendered its text out through its own border and across
+     the next chip. Unreadable, on the homepage, the PDP, pairing and stockists
+     at once.
+
+     It was not a value that was wrong, it was a SPECIFICITY that was wrong, and
+     that is why reading either rule on its own made it look fine.
+     `.non-somm .non-somm__seed` sets `flex: 0 1 auto` — correct where written,
+     because the row wrapped there. The mobile block later switches the row to
+     nowrap + horizontal scroll and sets `white-space: nowrap` on the chip, and
+     its `flex: none` was written as `.non-somm__seed`: 0,1,0 against 0,2,0, so
+     it lost regardless of order or media query. A chip that cannot wrap and may
+     still shrink puts its words outside itself.
+
+     So this does not grep for a declaration. It resolves the cascade the way a
+     browser does — every rule that matches a chip, ordered by specificity then
+     source order — and asserts the winner. Any future rule that reintroduces
+     shrink at higher specificity fails here, wherever it is written. */
+  const chipSelectors = [
+    '.non-somm__seed',
+    '.non-somm .non-somm__seed',
+    '.non-sommbox .non-somm__seed'
+  ];
+
+  const winner = resolve(css, 'flex-shrink', chipSelectors, 400);
+  assert.ok(winner, 'nothing sets flex-shrink on a chip at phone width');
+  assert.equal(winner.value, '0',
+    `at 400px a chip resolves to flex-shrink: ${winner.value} (from \`${winner.selector}\`). ` +
+    'It carries white-space: nowrap, so shrinking renders its text through its own border.');
+
+  /* And the pair has to stay a pair: shrink 0 is only safe because the row
+     scrolls instead of wrapping. */
+  const wrap = resolve(css, 'flex-wrap', ['.non-somm__seeds', '.non-somm .non-somm__seeds'], 400);
+  assert.equal(wrap && wrap.value, 'nowrap');
+  const overflow = resolve(css, 'overflow-x', ['.non-somm__seeds'], 400);
+  assert.equal(overflow && overflow.value, 'auto',
+    'the chip row neither wraps nor scrolls — the chips have nowhere to go');
+});
+
 /* ------------------------------------------- what this repair must not touch */
 
 test('the pairing tool is byte-identical to the published branch point', () => {
@@ -255,6 +296,87 @@ function assertUnchanged(rel) {
     assert.fail(`cannot read ${rel} at ${BASE}: ${e.message}`);
   }
   assert.equal(read(rel), base, `${rel} changed — it is outside the scope of this repair`);
+}
+
+
+/* A very small slice of the cascade: enough to answer "which declaration wins
+   on this element at this viewport width". Handles the two things that actually
+   decide it here — media-query width bounds, and specificity then source order.
+   Deliberately not a CSS engine; it reads only the declarations asked for.
+
+   One pass, tracking a brace stack, so `order` is the rule's real offset in the
+   file. An earlier version recursed into @media blocks first and numbered them
+   ahead of the top-level rules — which inverts every tie-break and quietly
+   reports the wrong winner. A cascade resolver that gets source order wrong is
+   worse than no resolver, because it fails convincingly. */
+function resolve(source, prop, selectors, width) {
+  const text = stripCssComments(source);
+  const stack = [];
+  const rules = [];
+  let i = 0, mark = 0;
+
+  while (i < text.length) {
+    const ch = text[i];
+    if (ch === '{') {
+      const head = text.slice(mark, i).trim();
+      if (head.startsWith('@')) {
+        stack.push(head);
+      } else {
+        /* Collect the declaration body of this rule. */
+        let depth = 1, j = i + 1;
+        while (j < text.length && depth > 0) {
+          if (text[j] === '{') depth++;
+          else if (text[j] === '}') depth--;
+          j++;
+        }
+        rules.push({
+          sel: head,
+          body: text.slice(i + 1, j - 1),
+          media: stack.filter((s) => s.startsWith('@media')).join(' and '),
+          order: i
+        });
+        i = j; mark = j; continue;
+      }
+      mark = i + 1;
+    } else if (ch === '}') {
+      if (stack.length) stack.pop();
+      mark = i + 1;
+    }
+    i++;
+  }
+
+  const applies = (media) => {
+    if (!media) return true;
+    for (const mx of media.matchAll(/max-width:\s*(\d+)px/g)) if (width > +mx[1]) return false;
+    for (const mn of media.matchAll(/min-width:\s*(\d+)px/g)) if (width < +mn[1]) return false;
+    return true;
+  };
+
+  const spec = (s) =>
+    (s.match(/#/g) || []).length * 100 +
+    (s.match(/[.:[]/g) || []).length * 10 +
+    (s.match(/(^|[\s>+~])[a-z]/gi) || []).length;
+
+  let best = null;
+  for (const r of rules) {
+    if (!applies(r.media)) continue;
+    const hit = r.sel.split(',').map((x) => x.trim()).filter((p) => selectors.includes(p));
+    if (!hit.length) continue;
+    for (const d of r.body.matchAll(/(?:^|;)\s*([a-z-]+)\s*:([^;]+)/g)) {
+      const name = d[1].trim();
+      let value = d[2].trim();
+      if (name === 'flex') {
+        if (prop !== 'flex-shrink') continue;
+        const bits = value.split(/\s+/);
+        value = value === 'none' ? '0' : (bits[1] !== undefined ? bits[1] : '1');
+      } else if (name !== prop) continue;
+      const sp = Math.max(...hit.map(spec));
+      if (!best || sp > best.spec || (sp === best.spec && r.order >= best.order)) {
+        best = { value, spec: sp, order: r.order, selector: hit[0], media: r.media };
+      }
+    }
+  }
+  return best;
 }
 
 function walk(dir) {

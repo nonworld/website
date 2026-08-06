@@ -8050,6 +8050,37 @@ select:-moz-focusring { color: transparent; text-shadow: 0 0 0 var(--non-fg); }
   justify-self: start;
 }
 
+/* THE ORB SITS BESIDE THE CONTROL ON A PHONE, NOT ON TOP OF IT.
+ * ==========================================================================
+ * Stacking it put a 72px orb directly above "CONSIDERING NON1?" with the label
+ * tight under its lower edge — squashed, and reading as two unrelated things
+ * rather than one control. Aaron's call, and it is the pairing page's
+ * composition: a presence on the left, what it says and how you talk to it on
+ * the right.
+ *
+ * It costs the block height rather than adding it: 234px stacked, 162px
+ * beside. The orb spans the rows it is next to instead of occupying one of its
+ * own.
+ *
+ * The content column is what is left — measured 266px at 402pt, which holds
+ * the field, the label and the chip scroller without any of them wrapping.
+ * Below 360 the orb still steps out entirely (see the 359px rule above), where
+ * 72px of a 320px screen is a third of the line.
+ * ========================================================================== */
+@media (max-width: 859px) {
+  .non-somm-entry.non-somm-entry--pdp {
+    grid-template-columns: var(--non-orb-col, 72px) minmax(0, 1fr);
+    column-gap: 20px;
+  }
+  .non-somm-entry.non-somm-entry--pdp > .non-orb--integrated {
+    grid-row: 1 / -1;
+    align-self: center;
+  }
+  .non-somm-entry.non-somm-entry--pdp > :not(.non-orb--integrated) {
+    grid-column: 2;
+  }
+}
+
 /* The children were sized to a 472px second column. On one column they take
    the block's width, and the block takes the column's. */
 .non-somm-entry.non-somm-entry--pdp > *,

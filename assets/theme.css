@@ -7712,3 +7712,40 @@ select:-moz-focusring { color: transparent; text-shadow: 0 0 0 var(--non-fg); }
   height: 26px;
   animation: none;   /* the corner is not the place for a breathing light */
 }
+
+/* ==========================================================================
+   THE SOMM BAR IS A BAR AT EVERY WIDTH
+   ==========================================================================
+   Its whole visual treatment — the fill, the hairline, the height, the 16px
+   type — was written inside the mobile query, because when it was authored the
+   bar only existed on a phone. Un-hiding it on desktop therefore produced an
+   unstyled button: 344x22, no border, no background. A sliver of text where
+   the pairing page has a bar you can obviously type into.
+
+   Declared here without a query so the two surfaces cannot diverge again. The
+   mobile block still overrides what is genuinely phone-specific (the 16px font
+   floor that stops iOS zooming) and those declarations still win, being later
+   and inside a matching query.
+   ========================================================================== */
+.non-somm-entry__field {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  width: 100%;
+  min-height: 52px;
+  padding: 0 18px;
+  background: rgba(242, 240, 234, .05);
+  border: 1px solid var(--non-line-strong);
+  color: var(--non-fg);
+  font-family: var(--non-sans);
+  font-size: 15px;
+  text-align: left;
+  cursor: pointer;
+  transition: border-color var(--duration-hover, .2s) var(--ease-hover, ease);
+}
+.non-somm-entry__field:hover,
+.non-somm-entry__field:focus-visible { border-color: var(--non-fg); }
+.non-somm-entry__field:focus-visible { outline: 2px solid var(--non-fg); outline-offset: 2px; }
+.non-somm-entry__ph { color: var(--non-fg-mute); }
+.non-somm-entry__go { flex: none; opacity: .7; }

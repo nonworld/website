@@ -74,9 +74,20 @@
     var show = pastAdd && !suppressed;
     bar.classList.toggle('is-on', show);
     bar.setAttribute('aria-hidden', show ? 'false' : 'true');
-    /* Lift the orb clear of the bar. Measured rather than assumed, because the
-       bar's height depends on the pack label's length and the safe area. */
-    if (NON.orb) NON.orb.lift(show ? Math.round(bar.getBoundingClientRect().height) + 12 : 0);
+    /* LIFT THE ORB CLEAR OF THE BAR.
+     *
+     * Set directly rather than through NON.orb.lift(). Both files are deferred
+     * scripts and this one is emitted by the section, so it can execute BEFORE
+     * theme.liquid's orb script has defined NON.orb — and the guarded call then
+     * did nothing at all, silently, leaving the orb sitting on top of the bar.
+     *
+     * It is a custom property on the root: no API, no load order, nothing to be
+     * undefined. NON.orb.lift stays as the named way to do the same thing.
+     *
+     * Measured, not assumed — the bar's height depends on the pack label and
+     * the safe-area inset. */
+    var lift = show ? Math.round(bar.getBoundingClientRect().height) + 12 : 0;
+    document.documentElement.style.setProperty('--non-orb-lift', lift + 'px');
   }
 
 

@@ -8,15 +8,53 @@
 
   var main = document.querySelector('[data-non-gallery-main]');
   var thumbs = document.querySelectorAll('[data-non-gallery-thumb]');
+  var videos = document.querySelectorAll('[data-non-gallery-video]');
+
+  /* Every video pane down, and stopped.
+   *
+   * Pausing matters as much as hiding: a hidden <video> keeps playing, so
+   * switching to another shot left the film running audibly behind a still of
+   * a bottle. Reset to the start too — coming back to it should be the film,
+   * not wherever it happened to be abandoned. */
+  function stopVideos() {
+    videos.forEach(function (pane) {
+      pane.hidden = true;
+      var v = pane.querySelector('video');
+      if (v && !v.paused) { v.pause(); v.currentTime = 0; }
+    });
+  }
 
   thumbs.forEach(function (thumb) {
     thumb.addEventListener('click', function () {
       if (!main) return;
-      main.src = thumb.getAttribute('data-full');
-      main.removeAttribute('srcset');
+
       thumbs.forEach(function (t) {
         t.setAttribute('aria-current', t === thumb ? 'true' : 'false');
       });
+
+      stopVideos();
+
+      /* A video thumb shows its pane over the image; an image thumb swaps the
+         image and puts every pane away. The <img> is never removed, so the LCP
+         element the page loaded with stays exactly where it was. */
+      if (thumb.getAttribute('data-media-type') === 'video') {
+        var pane = document.querySelector(
+          '[data-non-gallery-video="' + thumb.getAttribute('data-index') + '"]'
+        );
+        if (pane) {
+          pane.hidden = false;
+          var v = pane.querySelector('video');
+          /* play() rejects when the browser refuses autoplay — which is most of
+             them without a gesture, though this IS one. Caught either way: an
+             unhandled rejection in a click handler is a console error nobody
+             asked for, and the controls are right there. */
+          if (v) { var r = v.play(); if (r && r.catch) r.catch(function () {}); }
+          return;
+        }
+      }
+
+      main.src = thumb.getAttribute('data-full');
+      main.removeAttribute('srcset');
     });
   });
 

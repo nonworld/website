@@ -892,6 +892,56 @@ button { font-family: inherit; }
 .non-gallery__thumb[aria-current="true"] { border-color: var(--non-fg); opacity: 1; }
 .non-gallery__thumb:hover { opacity: .85; }
 
+/* THE VIDEO PANE, over the image rather than instead of it.
+   ==========================================================================
+   The <img> stays in the DOM and keeps its eager load and LCP priority; a
+   chosen video simply covers it. `.non-gallery` is the positioning context and
+   already a flex column, so the pane is taken out of flow and pinned to the
+   image's own square — matching `aspect-ratio: 1/1` on `.non-gallery__main`
+   means the layout does not move when the film appears.
+   ========================================================================== */
+.non-gallery { position: relative; }
+.non-gallery__video {
+  position: absolute;
+  left: var(--non-pad);
+  right: var(--non-pad);
+  top: 20px;
+  aspect-ratio: 1 / 1;
+  background: #000;
+  z-index: 2;
+}
+@media (min-width: 860px) {
+  /* Beside the thumbs the image no longer spans the padded box, so the pane
+     tracks the image itself rather than the section's gutters. */
+  .non-gallery__video { left: var(--non-pad); right: auto; width: calc(100% - var(--non-pad) * 2); }
+}
+.non-gallery__player,
+.non-gallery__video video {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+/* A play mark on the thumb, so a film reads as a film before it is opened.
+   The still alone gives no clue — which is how a how-it's-made video sat in
+   this gallery looking like a dark photograph. */
+.non-gallery__thumb--video { position: relative; }
+.non-gallery__thumb--video::after {
+  content: "";
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  width: 0;
+  height: 0;
+  border-style: solid;
+  border-width: 7px 0 7px 12px;
+  border-color: transparent transparent transparent #f2f0ea;
+  filter: drop-shadow(0 1px 2px rgba(0, 0, 0, .6));
+  pointer-events: none;
+}
+
 .non-buy { padding: 26px var(--non-pad) 34px; display: flex; flex-direction: column; gap: 18px; }
 @media (min-width: 860px) { .non-buy { padding: 34px var(--non-pad); } }
 

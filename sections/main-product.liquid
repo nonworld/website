@@ -126,16 +126,40 @@
           | default: product.title
       }}
 
+      {%- comment -%}
+        VIDEO MEDIA PLAYS. It could not before.
+
+        The main slot above is an <img> built from `image_url`, and the thumbs
+        swapped its `src` — so a video media item rendered as its poster frame
+        and there was no way to start it. Aaron added a how-it's-made film to
+        NON1 and got a still of it, which is exactly what the markup asked for.
+
+        A pane per video, server-rendered with `video_tag` so the player is
+        Shopify's own — native controls, its own poster, no JS to build it and
+        nothing to keep in step with the CDN. Hidden until its thumb is chosen,
+        and stacked on the image rather than replacing it in the DOM, so the
+        <img> keeps its eager load and its LCP priority.
+      {%- endcomment -%}
+      {%- for media in product.media limit: 8 -%}
+        {%- if media.media_type == 'video' -%}
+          <div class="non-gallery__video" data-non-gallery-video="{{ forloop.index0 }}" hidden>
+            {{ media | video_tag: controls: true, preload: 'metadata', class: 'non-gallery__player' }}
+          </div>
+        {%- endif -%}
+      {%- endfor -%}
+
       {%- if product.media.size > 1 -%}
         <div class="non-gallery__thumbs">
           {%- for media in product.media limit: 8 -%}
             <button
               type="button"
-              class="non-gallery__thumb"
+              class="non-gallery__thumb{% if media.media_type == 'video' %} non-gallery__thumb--video{% endif %}"
               data-non-gallery-thumb
+              data-index="{{ forloop.index0 }}"
+              data-media-type="{{ media.media_type }}"
               data-full="{{ media | image_url: width: 1400, format: 'webp' }}"
               aria-current="{% if forloop.first %}true{% else %}false{% endif %}"
-              aria-label="View image {{ forloop.index }}">
+              aria-label="{% if media.media_type == 'video' %}{{ 'products.product.play_video' | t: default: 'Play video' }}{% else %}View image {{ forloop.index }}{% endif %}">
               <img src="{{ media | image_url: width: 200, format: 'webp' }}" alt="" loading="lazy">
             </button>
           {%- endfor -%}

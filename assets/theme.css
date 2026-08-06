@@ -6000,8 +6000,29 @@ select:-moz-focusring { color: transparent; text-shadow: 0 0 0 var(--non-fg); }
   }
   .non-somm__seeds::-webkit-scrollbar,
   .non-sommbox__seeds::-webkit-scrollbar { display: none; }
-  .non-somm__seed {
-    flex: none;
+  /* SELECTOR MATCHED TO THE RULE IT HAS TO BEAT, and that is the whole fix.
+   *
+   * This said `.non-somm__seed` alone, and `flex: none` never took effect:
+   * `.non-somm .non-somm__seed` sets `flex: 0 1 auto`, and at 0,2,0 against
+   * 0,1,0 it wins whichever is later and whichever media query is matching.
+   * That rule is right where it was written — the chip row WRAPPED there, and a
+   * chip that can wrap may safely shrink.
+   *
+   * Here the row does not wrap, it scrolls, and the chip carries
+   * `white-space: nowrap`. A chip that cannot wrap and is still allowed to
+   * shrink does not get smaller; it renders its text straight out through its
+   * own border and across the next chip. That is what every Somm surface looked
+   * like on a phone — homepage, PDP, pairing and stockists alike.
+   *
+   * flex-shrink is spelled out beside the shorthand deliberately: the shorthand
+   * is what a later edit is likely to retune, the longhand is what must
+   * survive it. */
+  .non-somm__seed,
+  .non-somm .non-somm__seed,
+  .non-sommbox .non-somm__seed,
+  .non-sommbox__seeds button {
+    flex: 0 0 auto;
+    flex-shrink: 0;
     scroll-snap-align: start;
     /* One line each. A chip that wraps is a paragraph with a border. */
     white-space: nowrap;
@@ -7873,11 +7894,53 @@ select:-moz-focusring { color: transparent; text-shadow: 0 0 0 var(--non-fg); }
 .non-hero .non-somm.non-somm {
   --non-somm-cols: minmax(0, 1fr);
   column-gap: 0;
-  justify-items: start;
+  justify-items: stretch;
   justify-self: start;
   margin-inline: 0;
   padding-left: 0;
   padding-right: 0;
+}
+
+/* THE PDP'S SINGLE COLUMN WAS DECLARED AND THEN LOST.
+ * ==========================================================================
+ * Measured on a phone before this: `grid-template-columns: 72px 286px`, every
+ * child pinned into the 72px track, the field 72px wide wrapping "Ask about
+ * this bottle" over three lines with the arrow adrift in the middle of it.
+ *
+ * The single column was already written — `.non-somm-entry--pdp` sets
+ * `minmax(0, 1fr)` above. It lost. `.non-somm-entry` sets
+ * `var(--non-orb-col, 72px) minmax(0, 1fr)` at the SAME specificity (0,1,0)
+ * and later in the file, so source order decided it, and the 72px track that
+ * won is the ORB's. `> * { grid-column: 1 }` then put the words in it.
+ *
+ * That is the same shape of bug as the chip row twenty lines down: a correct
+ * declaration beaten by an equally-specific one, so reading either rule on its
+ * own shows nothing wrong. It is why this surface has now been "fixed" three
+ * times by changing values that were never the problem — including once by me,
+ * on the theory that `justify-items: start` was shrinking the field. It was
+ * not; with the track corrected the field fills whether that says start or
+ * stretch. Verified by measurement, not by reading.
+ *
+ * Two declarations, both needed:
+ *
+ *   the TRACK, at 0,2,0 so it cannot lose to `.non-somm-entry` again wherever
+ *   that rule ends up sitting in the file;
+ *
+ *   the ORB'S ROW. It is `grid-row: 1 / -1` — correct beside a column of text,
+ *   and in a ONE-column grid it means the orb spans every row and sits BEHIND
+ *   the label, the field and the chips. `auto` gives it its own row above them,
+ *   which is the composition this page had before, and the width has to come
+ *   back with it: `.non-orb--integrated` is `width: 100%`, which was 72px of an
+ *   orb column and would be the full 358px here.
+ * ========================================================================== */
+.non-somm-entry.non-somm-entry--pdp {
+  grid-template-columns: minmax(0, 1fr);
+}
+.non-somm-entry.non-somm-entry--pdp > .non-orb--integrated {
+  grid-row: auto;
+  grid-column: 1;
+  width: var(--non-orb-col, 72px);
+  justify-self: start;
 }
 
 /* The children were sized to a 472px second column. On one column they take

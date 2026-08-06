@@ -170,6 +170,25 @@
 
 *, *::before, *::after { box-sizing: border-box; min-width: 0; }
 
+/* `hidden` MEANS HIDDEN. ==================================================
+   The HTML attribute only sets `display: none` through the UA stylesheet,
+   which is the weakest origin there is — so ANY author `display` rule beats
+   it, and an element the script has correctly hidden stays on screen.
+
+   Found live in the cart drawer: `.non-cart-prize` carried `hidden`, cart.js
+   sets it there whenever no prize has been won, and `display: flex` overrode
+   it — so every customer with no prize saw an empty "YOU WON … APPLY TO THIS
+   ORDER" banner above their subtotal, 357x70 of it. Three more were hidden by
+   luck rather than by the attribute: two `.non-somm__picks` and the lotto's
+   copy button, all `display: flex` with nothing in them at the time.
+
+   This file already carries 37 hand-written `[hidden]` guards, which is the
+   same fix applied thirty-seven times and missed four. One rule instead.
+   `!important` because it has to outrank an author `display` on the element
+   itself, which is the whole failure.
+   ========================================================================= */
+[hidden] { display: none !important; }
+
 html, body {
   margin: 0;
   background: var(--non-bg);

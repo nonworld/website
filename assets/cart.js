@@ -150,12 +150,43 @@
   /* --- drawer open/close ------------------------------------------------ */
 
   var lastFocus = null;
+  var scrollY = 0;
+
+  /* THE PAGE BEHIND STAYS PUT — and `overflow: hidden` is not enough to make it.
+   *
+   * That is what this used, and iOS Safari ignores it for touch scrolling: the
+   * drawer sits still while the storefront slides underneath it, and closing it
+   * leaves the customer somewhere they never navigated to. Measured here with
+   * the drawer open — the window scrolled to 600 quite happily.
+   *
+   * Fixing the body is what actually holds it, and it is what somm-sheet.js in
+   * this same theme already does for the Somm sheet. The offset has to be
+   * carried and put back by hand, because `position: fixed` collapses the page
+   * to the top the instant it is applied. The cart is the more commercially
+   * important of the two overlays and had the weaker technique. */
+  function lockBody() {
+    scrollY = window.scrollY || window.pageYOffset || 0;
+    document.body.style.position = 'fixed';
+    document.body.style.top = -scrollY + 'px';
+    document.body.style.left = '0';
+    document.body.style.right = '0';
+    document.body.style.width = '100%';
+  }
+
+  function unlockBody() {
+    document.body.style.position = '';
+    document.body.style.top = '';
+    document.body.style.left = '';
+    document.body.style.right = '';
+    document.body.style.width = '';
+    window.scrollTo(0, scrollY);
+  }
 
   function open() {
     if (!drawer) return;
     lastFocus = document.activeElement;
     drawer.hidden = false;
-    document.body.style.overflow = 'hidden';
+    lockBody();
     var close = drawer.querySelector('[data-non-cart-close]');
     if (close) close.focus();
   }
@@ -163,7 +194,7 @@
   function close() {
     if (!drawer) return;
     drawer.hidden = true;
-    document.body.style.overflow = '';
+    unlockBody();
     if (lastFocus) lastFocus.focus();
     // The lotto waits on this before auto-opening — it is a full-viewport
     // overlay that outranks the drawer, so it holds off while someone is

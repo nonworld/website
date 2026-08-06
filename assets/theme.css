@@ -4267,24 +4267,7 @@ select:-moz-focusring { color: transparent; text-shadow: 0 0 0 var(--non-fg); }
   border-radius: 0;
   background: transparent;
 }
-/* CENTRED ONLY WHILE THE CHIPS FIT.
- *
- * On a phone this row is `flex-wrap: nowrap` with `overflow-x: auto`, and its
- * content is wider than its box — 474px of chips in 358px on the homepage. In
- * a centred flex row, overflow is pushed out BOTH sides, and the left side is
- * unreachable: scrollLeft is already 0 and cannot go negative. Measured on the
- * built theme: the first chip sat at x = -72, permanently off screen and
- * impossible to scroll to. "Roast chicken, Friday night" rendered as
- * "n, Friday night".
- *
- * So it is centred only where it wraps and there is nothing to overflow. Below
- * 700 it starts at the left, which is also where the bar and the label start.
- * The overflow then falls entirely on the right, where the row scrolls. */
 .non-somm__seeds { justify-content: center; }
-@media (max-width: 699px) {
-  .non-somm__seeds,
-  .non-sommbox__seeds { justify-content: flex-start; }
-}
 
 @media (prefers-reduced-motion: reduce) {
   .non-somm::before { animation: none; }
@@ -6015,6 +5998,23 @@ select:-moz-focusring { color: transparent; text-shadow: 0 0 0 var(--non-fg); }
   .non-sommbox__seeds {
     display: flex;
     flex-wrap: nowrap;
+    /* AND IT STARTS AT THE LEFT, which belongs in THIS block rather than
+     * anywhere earlier — this is the rule that turns the row into a scroller,
+     * and `justify-content: center` two thousand lines up is correct for the
+     * wrapping version it was written for.
+     *
+     * A centred flex row pushes overflow out BOTH sides, and the left side
+     * cannot be reached: scrollLeft is already 0 and has no negative range.
+     * Measured on the BUILT theme — 474px of chips in a 358px box put the
+     * first chip at x = -72, permanently off screen, "Roast chicken, Friday
+     * night" reading as "n, Friday night" with no way to swipe back to it.
+     *
+     * Written here on the second attempt. The first put it in its own
+     * `max-width: 699px` block beside the centring rule, which lost: an
+     * unconditional `.non-somm__seeds, .non-sommbox__seeds` at the same
+     * specificity sits further down the file and won on source order. Same
+     * trap as the chips' flex-shrink and the press row's snapport. */
+    justify-content: flex-start;
     gap: 8px;
     overflow-x: auto;
     /* Edge-to-edge, so the row visibly continues past the screen and invites

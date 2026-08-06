@@ -7507,6 +7507,13 @@ select:-moz-focusring { color: transparent; text-shadow: 0 0 0 var(--non-fg); }
 .non-somm-entry {
   display: grid;
   grid-template-columns: var(--non-orb-col, 84px) minmax(0, 1fr);
+  /* EXPLICIT ROWS, and they are load-bearing.
+     `grid-row: 1 / -1` on the orb resolves -1 against the EXPLICIT row grid.
+     With rows left implicit there is no explicit grid, so -1 collapsed to line
+     1, the orb sat in row 1 alone, and row 1 stretched from 16px to the orb's
+     84 — 59px of hero that nothing on screen accounted for. Three auto rows:
+     the label, the field, the chips. An absent one is a zero-height row. */
+  grid-template-rows: repeat(3, auto);
   align-items: center;
   column-gap: 16px;
 }

@@ -6234,11 +6234,28 @@ select:-moz-focusring { color: transparent; text-shadow: 0 0 0 var(--non-fg); }
      pictures that mean the same thing. As a strip it is one glance, and the
      three routes are visibly alternatives to each other rather than a list.
 
-     28/44/28 rather than equal thirds: the middle tile carries the plated main
-     course, which is the widest subject of the three, and a centre panel with
-     more room reads as the primary route without needing to be labelled one. */
+     A SCROLLER, THOUGH, NOT THREE FIXED COLUMNS.
+
+     28/44/28 was chosen so the middle tile — the plated main, the widest
+     subject — reads as the primary route. On a phone that arithmetic runs out
+     of room: measured at 402, the outer tiles compute to 113px each. These are
+     art-directed photographs with `object-fit: cover`, so 113px of a landscape
+     frame is a vertical slice of one bottle with the caption sitting on top of
+     whatever food happens to fall in it. Three tiles that mean the same thing,
+     none of them readable.
+
+     76% each, scrolled, which is the pattern the Core Range row directly below
+     already uses — so this needs no new design language, and the first tile
+     plus a third of the next is what says "these continue" without a caption
+     saying it. Measured: 306px tiles, 921px of content in a 402px box, no page
+     overflow. */
   .non-trip {
-    grid-template-columns: 28% 44% 28%;
+    grid-template-columns: none;
+    grid-auto-flow: column;
+    grid-auto-columns: 76%;
+    overflow-x: auto;
+    scroll-snap-type: x proximity;
+    scrollbar-width: none;
     gap: 2px;
     /* The band is a fixed height so the three crops are predictable. Clamped
        rather than fixed so a 320px screen does not get a band taller than the
@@ -6246,6 +6263,7 @@ select:-moz-focusring { color: transparent; text-shadow: 0 0 0 var(--non-fg); }
     height: clamp(280px, 78vw, 340px);
   }
   .non-trip__cell {
+    scroll-snap-align: start;
     /* Its own stacking context, so the caption's gradient cannot escape it and
        the hit area cannot be covered by the next tile's. */
     position: relative;
@@ -6422,7 +6440,17 @@ select:-moz-focusring { color: transparent; text-shadow: 0 0 0 var(--non-fg); }
   .non-press__list {
     flex-direction: row;
     flex-wrap: nowrap;
-    gap: 0;
+    /* THE GAP IS WHAT PUSHES THE NEXT QUOTE OFF THE SCREEN.
+     *
+     * It was 0, and the separation was attempted with `padding-right` on the
+     * item instead — which is inside the item's own 100% under border-box, so
+     * it separated nothing. Measured at 402: quote 1 ran to the bleed edge and
+     * quote 2 began at x=358, putting 44px of a second sentence on screen. Not
+     * a swipe affordance; a sentence cut in half.
+     *
+     * One page-gutter of gap puts quote 2 at exactly x=402 — the viewport
+     * edge — so one quote is on screen, whole, and the next is a swipe away. */
+    gap: var(--non-pad);
     overflow-x: auto;
     scroll-snap-type: x mandatory;
     scrollbar-width: none;
@@ -6439,7 +6467,8 @@ select:-moz-focusring { color: transparent; text-shadow: 0 0 0 var(--non-fg); }
     flex: 0 0 100%;
     width: 100%;
     scroll-snap-align: start;
-    padding-right: var(--non-pad);
+    /* padding-right removed: it was trying to do the gap's job from inside the
+       box, which under border-box moves nothing. See the gap above. */
   }
   .non-press__quote {
     font-size: 18px;

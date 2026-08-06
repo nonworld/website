@@ -8008,78 +8008,58 @@ select:-moz-focusring { color: transparent; text-shadow: 0 0 0 var(--non-fg); }
   padding-right: 0;
 }
 
-/* THE PDP'S SINGLE COLUMN WAS DECLARED AND THEN LOST.
+/* THE PDP'S SOMM TRACK, DECLARED WHERE IT CANNOT LOSE.
  * ==========================================================================
- * Measured on a phone before this: `grid-template-columns: 72px 286px`, every
- * child pinned into the 72px track, the field 72px wide wrapping "Ask about
- * this bottle" over three lines with the arrow adrift in the middle of it.
+ * Measured on a phone before any of this: `grid-template-columns: 72px 286px`
+ * with every child pinned into the 72px track — the field 72px wide, wrapping
+ * "Ask about this bottle" over three lines with the arrow adrift in the middle
+ * of it.
  *
- * The single column was already written — `.non-somm-entry--pdp` sets
- * `minmax(0, 1fr)` above. It lost. `.non-somm-entry` sets
- * `var(--non-orb-col, 72px) minmax(0, 1fr)` at the SAME specificity (0,1,0)
- * and later in the file, so source order decided it, and the 72px track that
- * won is the ORB's. `> * { grid-column: 1 }` then put the words in it.
+ * `.non-somm-entry--pdp` DID declare its own track. It lost. `.non-somm-entry`
+ * declares one at the SAME specificity (0,1,0) later in the file, so source
+ * order decided it. That is the same shape of bug as the chip row and the press
+ * snapport: a correct declaration beaten by an equally specific one, which is
+ * why reading either rule alone shows nothing wrong, and why this surface was
+ * "fixed" three times by changing values that were never the problem —
+ * including once by me, on the theory that `justify-items: start` was shrinking
+ * the field. It was not. Measured, not read.
  *
- * That is the same shape of bug as the chip row twenty lines down: a correct
- * declaration beaten by an equally-specific one, so reading either rule on its
- * own shows nothing wrong. It is why this surface has now been "fixed" three
- * times by changing values that were never the problem — including once by me,
- * on the theory that `justify-items: start` was shrinking the field. It was
- * not; with the track corrected the field fills whether that says start or
- * stretch. Verified by measurement, not by reading.
+ * So the track is declared at 0,2,0 here and cannot lose to `.non-somm-entry`
+ * wherever that rule ends up sitting.
  *
- * Two declarations, both needed:
+ * TWO COLUMNS, ORB LEFT — Aaron's call, and it is the pairing page's
+ * composition at every width: a presence on the left, what it says and how you
+ * talk to it on the right. Stacking put the orb directly on top of
+ * "CONSIDERING NON1?" and read as two unrelated objects.
  *
- *   the TRACK, at 0,2,0 so it cannot lose to `.non-somm-entry` again wherever
- *   that rule ends up sitting in the file;
+ * It costs no height, it saves it — the orb spans the rows beside it instead of
+ * taking one of its own. Measured: 244px stacked, 148px beside at 1440;
+ * 234px / 162px at 402.
  *
- *   the ORB'S ROW. It is `grid-row: 1 / -1` — correct beside a column of text,
- *   and in a ONE-column grid it means the orb spans every row and sits BEHIND
- *   the label, the field and the chips. `auto` gives it its own row above them,
- *   which is the composition this page had before, and the width has to come
- *   back with it: `.non-orb--integrated` is `width: 100%`, which was 72px of an
- *   orb column and would be the full 358px here.
+ * The orb's width has to be restated because `.non-orb--integrated` is
+ * `width: 100%`, which is 96px of an orb column and would be the whole 472px
+ * of a full one.
  * ========================================================================== */
 .non-somm-entry.non-somm-entry--pdp {
-  grid-template-columns: minmax(0, 1fr);
+  grid-template-columns: var(--non-orb-col, 72px) minmax(0, 1fr);
+  column-gap: 20px;
 }
 .non-somm-entry.non-somm-entry--pdp > .non-orb--integrated {
-  grid-row: auto;
+  grid-row: 1 / -1;
   grid-column: 1;
+  align-self: center;
   width: var(--non-orb-col, 72px);
   justify-self: start;
 }
-
-/* THE ORB SITS BESIDE THE CONTROL ON A PHONE, NOT ON TOP OF IT.
- * ==========================================================================
- * Stacking it put a 72px orb directly above "CONSIDERING NON1?" with the label
- * tight under its lower edge — squashed, and reading as two unrelated things
- * rather than one control. Aaron's call, and it is the pairing page's
- * composition: a presence on the left, what it says and how you talk to it on
- * the right.
- *
- * It costs the block height rather than adding it: 234px stacked, 162px
- * beside. The orb spans the rows it is next to instead of occupying one of its
- * own.
- *
- * The content column is what is left — measured 266px at 402pt, which holds
- * the field, the label and the chip scroller without any of them wrapping.
- * Below 360 the orb still steps out entirely (see the 359px rule above), where
- * 72px of a 320px screen is a third of the line.
- * ========================================================================== */
-@media (max-width: 859px) {
-  .non-somm-entry.non-somm-entry--pdp {
-    grid-template-columns: var(--non-orb-col, 72px) minmax(0, 1fr);
-    column-gap: 20px;
-  }
-  .non-somm-entry.non-somm-entry--pdp > .non-orb--integrated {
-    grid-row: 1 / -1;
-    align-self: center;
-  }
-  .non-somm-entry.non-somm-entry--pdp > :not(.non-orb--integrated) {
-    grid-column: 2;
-  }
+.non-somm-entry.non-somm-entry--pdp > :not(.non-orb--integrated) {
+  grid-column: 2;
 }
+@media (min-width: 860px) {
+  /* --non-orb-col is already 96px up here; only the gap widens, to the 44px
+     rhythm the pairing page uses at the same width less the orb's own bleed. */
+  .non-somm-entry.non-somm-entry--pdp { column-gap: 24px; }
+}
+
 
 /* The children were sized to a 472px second column. On one column they take
    the block's width, and the block takes the column's. */
@@ -8089,16 +8069,44 @@ select:-moz-focusring { color: transparent; text-shadow: 0 0 0 var(--non-fg); }
   max-width: 100%;
 }
 
-/* The hero block was capped at 620px and then centred in a column nearly
-   twice that, which is where the ~265px indent came from. The cap stays — a
-   search bar the full width of a hero column reads as a footer — but it is
-   measured from the left edge now, not from the middle. */
+/* THE HERO ORB SITS IN ITS OWN COLUMN, BESIDE THE BAR.
+   ==========================================================================
+   Aaron's call, twice, and it is what the pairing page has always done: the
+   orb on the left, the bar and the chips beside it. Stacked above, the orb
+   read as a smudge floating over a search field rather than as part of the
+   control.
+
+   This has to sit AFTER the block above, which forces a single column through
+   `--non-somm-cols: minmax(0, 1fr)` and `> * { grid-column: 1 }`. Same
+   specificity, so source order is the whole reason this works — the third time
+   in this file that has decided a Somm layout, and the reason the value is set
+   through --non-somm-cols rather than grid-template-columns: preflight check 6b
+   allows exactly one of the latter on `.non-somm`.
+
+   760px, not 620: the cap exists so the bar does not run the full width of the
+   hero and read as a footer, and it was measured against a block that had no
+   orb column. Adding a 96px orb and a 44px gap to a 620px cap would have taken
+   140px out of the bar instead of out of the empty space beside it. 760 keeps
+   the bar at exactly the 620 it had.
+
+   Measured at 1440: orb 96px in column 1 at x=46, flush with the headline;
+   bar 620px at x=186. Below 700 nothing changes — `.non-somm` is a centred flex
+   column there, shared with pairing and stockists, and those are right.
+   ========================================================================== */
 @media (min-width: 700px) {
   .non-hero .non-somm.non-somm {
-    max-width: 620px;
+    --non-somm-cols: 96px minmax(0, 1fr);
+    column-gap: 44px;
+    /* The cap, measured from the left edge rather than the middle — it was
+       620px centred in a column nearly twice that, which is where an old
+       ~265px indent came from. ONE block, not two: this rule and the cap used
+       to be separate @media blocks on the same selector, which is the exact
+       arrangement that has silently decided three layouts in this file. */
+    max-width: 760px;
     margin-left: 0;
     margin-right: auto;
   }
+  .non-hero .non-somm.non-somm > * { grid-column: 2; }
 }
 
 /* --------------------------------------------------------------------------

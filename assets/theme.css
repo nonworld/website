@@ -6931,9 +6931,18 @@ select:-moz-focusring { color: transparent; text-shadow: 0 0 0 var(--non-fg); }
   /* The field-shaped button is a phone affordance. On a desktop the hero
      already has a labelled "Ask the Somm" button two lines up, so a second
      control saying the same thing in a different shape is the competing UI
-     the brief asks to remove. The chips stay: they are distinct offers. */
-  .non-somm-entry__field,
-  .non-somm-entry__label { display: none; }
+     the brief asks to remove.
+
+     THE LABEL STAYS. It is the orb's caption — the concise nearby text that
+     says what the light is, because glow is not an affordance. Hiding it left
+     a 160px orb next to three chips and nothing naming it. */
+  .non-somm-entry__field { display: none; }
+
+  /* And the block has to be tall enough to hold the orb. With the field
+     hidden, the rows are the label and the chips — about 70px — and a 160px
+     orb had nowhere to go. */
+  .non-somm-entry { min-height: var(--non-orb-col); }
+  .non-somm-entry__label { align-self: end; }
 
   .non-somm-entry__chips {
     display: flex;

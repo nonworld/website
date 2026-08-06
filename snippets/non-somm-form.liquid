@@ -1,0 +1,130 @@
+{%- comment -%}
+  THE CANONICAL NON SOMM ENTRY.
+
+  One component, four surfaces. The pairing page defined this composition and
+  is the golden master; this snippet is that composition extracted so the
+  homepage and the PDP can RENDER it rather than each rebuilding something
+  that resembles it.
+
+  It exists because they did rebuild it. The PDP grew a parallel
+  `.non-somm-entry` tree - a <div> where this is a <form>, a `→` glyph where
+  this has a real <button type="submit">, its own class names and its own grid
+  - and once there were two grids there was a surface with the controls sitting
+  in the orb's 96px column and the 663px content column standing empty. That is
+  not a styling bug that can be patched. Two components drift; one cannot.
+
+  WHAT THIS OWNS: the DOM structure and the class system. Internal layout comes
+  entirely from `.non-somm` in theme.css, which stays the sole owner of the
+  grid - 96px minmax(0, 1fr), 44px gap, align-items: start, justify-items
+  normal, orb in column 1 spanning the composition, content in column 2.
+
+  WHAT CALLERS MAY CHANGE: copy, context, chips, and outer spacing through
+  `modifier`. Nothing else. A caller cannot reach the internal grid, the orb's
+  positioning model, the input/button mechanics or the chip mechanics, because
+  none of those are parameters. That is the point of the snippet.
+
+  PARAMETERS
+    surface       required. Analytics + Worker context: 'homepage_hero',
+                  'product_entry'. Sent as data-somm-surface.
+    context       required. Conversation context: 'home', 'product'.
+    modifier      optional. ONE class for OUTER spacing only, e.g.
+                  'non-somm--pdp'. Never for internal layout.
+    uid           required. Unique per instance, for the label/input id pair.
+                  Two Somms on one page with the same id gives one of them a
+                  label pointing at the other's input.
+    label         optional. The eyebrow above the bar. Product-aware on a PDP:
+                  "Considering NON1?"
+    placeholder   required. Also the visually-hidden label text, so the field
+                  is never unlabelled even when the eyebrow is absent.
+    submit_label  required. The button's words. "Ask" on the hero.
+    chips         optional. Newline- or pipe-separated preset prompts.
+    product       optional. Passed on a PDP so the conversation knows the
+                  bottle without the customer naming it.
+    code          optional. The resolved NON code for that product.
+
+  The <form> is real and so is the button: native submission is what makes
+  Enter work in the field, what gives the control a submit event to hook, and
+  what a screen reader announces as a search. The old PDP div had none of that.
+{%- endcomment -%}
+
+{%- assign somm_uid = uid | default: 'somm' -%}
+{%- assign somm_context = context | default: 'home' -%}
+{%- assign somm_surface = surface | default: 'somm_entry' -%}
+
+{%- comment -%}
+  Chips accept either separator. The hero's schema uses a pipe list and the
+  product settings use one per line; normalising here means neither caller has
+  to care, and a caller that supplies neither simply gets no chip row rather
+  than an empty one taking up space.
+{%- endcomment -%}
+{%- assign chip_source = chips | default: '' | strip -%}
+{%- if chip_source contains '|' -%}
+  {%- assign chip_list = chip_source | split: '|' -%}
+{%- else -%}
+  {%- assign chip_list = chip_source | newline_to_br | split: '<br />' -%}
+{%- endif -%}
+
+<form
+  class="non-somm{% if modifier != blank %} {{ modifier }}{% endif %}"
+  data-non-somm
+  data-non-somm-entry
+  data-somm-context="{{ somm_context }}"
+  data-somm-surface="{{ somm_surface }}"
+  {%- if product != blank %}
+    data-somm-product="{{ product.id }}"
+    data-somm-product-title="{{ product.title | escape }}"
+    data-somm-variant="{{ product.selected_or_first_available_variant.id }}"
+  {%- endif -%}
+  {%- if code != blank %} data-somm-code="{{ code | escape }}"{% endif %}
+  role="search">
+
+  {%- comment -%}
+    The eyebrow sits in column 2 with the rest of the content, NOT above the
+    whole form: the orb spans the composition, so a label placed outside the
+    grid's second column would push the orb down by its height and break the
+    vertical relationship the pairing page establishes.
+  {%- endcomment -%}
+  {%- if label != blank -%}
+    <div class="non-mono non-eyebrow non-somm__label">{{ label }}</div>
+  {%- endif -%}
+
+  <div class="non-somm__bar">
+    <span class="non-somm__caret" aria-hidden="true">&gt;</span>
+    <label class="visually-hidden" for="somm-q-{{ somm_uid }}">{{ placeholder }}</label>
+    <input
+      id="somm-q-{{ somm_uid }}"
+      class="non-somm__input"
+      type="search"
+      autocomplete="off"
+      data-non-somm-input
+      placeholder="{{ placeholder | escape }}">
+    <button type="submit" class="non-somm__submit">{{ submit_label }}</button>
+  </div>
+
+  {%- comment -%}
+    The seeds sit INSIDE the form, as they do on the pairing page. That
+    placement is load-bearing, not tidiness: every light-surface correction is
+    scoped `.non-somm .non-somm__seed`, and `.non-somm__seeds` carries padding
+    written to sit inside the panel. A chip outside the form matches none of
+    it and falls back to a near-black pill on a near-black page.
+
+    No data-answer, for the reason recorded in pairing-tool.liquid: it made
+    the script type the label back instead of asking, so the chips looked dead.
+  {%- endcomment -%}
+  {%- assign chip_count = 0 -%}
+  {%- for chip in chip_list -%}
+    {%- assign chip_text = chip | strip_html | strip -%}
+    {%- if chip_text != blank -%}{%- assign chip_count = chip_count | plus: 1 -%}{%- endif -%}
+  {%- endfor -%}
+
+  {%- if chip_count > 0 -%}
+    <div class="non-somm__seeds">
+      {%- for chip in chip_list -%}
+        {%- assign chip_text = chip | strip_html | strip -%}
+        {%- if chip_text != blank -%}
+          <button type="button" class="non-somm__seed" data-non-somm-seed>{{ chip_text }}</button>
+        {%- endif -%}
+      {%- endfor -%}
+    </div>
+  {%- endif -%}
+</form>

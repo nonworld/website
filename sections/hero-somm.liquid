@@ -86,62 +86,52 @@
       the other is display:none, which takes it out of the accessibility tree
       as well as off the screen. Nothing is announced twice.
     {%- endcomment -%}
-    <div class="non-somm-entry" data-non-somm-entry>
+    {%- comment -%}
+      THE PAIRING PAGE'S SOMM BLOCK, not a second design of one.
+
+      This was rebuilt as a bespoke composition — .non-somm-entry, an orb in a
+      grid column, a button dressed as a field. It indented the bar and the
+      chips 120px past the hero's left edge while the eyebrow, headline, blurb
+      and buttons all sat flush at 46, so the hero had a ragged edge with a
+      faint glow in the gutter.
+
+      The site already has this component and it is right on /pages/pairing and
+      /pages/stockists: .non-somm wraps .non-somm__bar (caret, field, ASK) with
+      .non-somm__seeds beneath, and the orb is .non-somm::before. Using those
+      class names means it inherits every one of those rules — the orb's size,
+      blur, opacity and position included — and the three surfaces cannot drift
+      apart again, because there is one set of styles.
+
+      THE ONE DIFFERENCE, and it is behaviour not appearance: this does not
+      answer inline. It has no [data-non-somm] hook, so somm.js does not bind a
+      controller to it. Focusing the field or submitting it opens the shared
+      sheet and hands over whatever was typed — one Somm, one transcript, as
+      the brief requires. The markup is the pairing page's; only the wiring
+      differs.
+    {%- endcomment -%}
+    <form class="non-somm" data-non-somm-hero role="search"
+      data-somm-surface="homepage_hero" data-somm-context="home">
+      <div class="non-somm__bar">
+        <span class="non-somm__caret" aria-hidden="true">&gt;</span>
+        <label class="visually-hidden" for="somm-hero-{{ section.id }}">
+          {{ 'sections.somm.placeholder' | t }}
+        </label>
+        <input
+          id="somm-hero-{{ section.id }}"
+          class="non-somm__input"
+          type="search"
+          name="query"
+          autocomplete="off"
+          data-non-somm-hero-input
+          placeholder="{{ section.settings.placeholder | escape }}">
+        <button type="submit" class="non-somm__submit">{{ 'sections.somm.ask' | t }}</button>
+      </div>
+
       {%- comment -%}
-        THE ORB, IN THE COMPOSITION.
-
-        Not a bubble in the corner of the viewport. It sits in the hero's own
-        column, in the first cell of this block's grid, with the label and the
-        field beside it — which is where it was in the original design and why
-        the hero reads as a place the Somm lives rather than a page with a chat
-        widget bolted to it.
-
-        It occupies a grid COLUMN, so it costs the hero no height: the label,
-        the field and the chips stack beside it inside the same rows.
-
-        A real button, with a real accessible name, because glow is not an
-        affordance. The words next to it say what it is.
-      {%- endcomment -%}
-      {% render 'somm-orb',
-         orb_variant: 'integrated',
-         orb_surface: 'homepage_hero',
-         orb_context: 'home' %}
-
-      {%- if section.settings.cta_ask_label != blank -%}
-        <div class="non-mono non-eyebrow non-somm-entry__label">{{ section.settings.cta_ask_label }}</div>
-      {%- endif -%}
-
-      <button
-        type="button"
-        class="non-somm-entry__field"
-        data-non-somm-open
-        data-somm-surface="homepage_hero"
-        data-somm-context="home">
-        <span class="non-somm-entry__ph">
-          {{- section.settings.mobile_placeholder | default: section.settings.placeholder -}}
-        </span>
-        <span class="non-somm-entry__go" aria-hidden="true">&rarr;</span>
-      </button>
-
-      {%- comment -%}
-        THREE, and no more.
-
-        Seeds flagged "Show on mobile" win; if a merchant has flagged none —
-        which is the state every existing template is in — the first three are
-        used, so this degrades to something sensible rather than to nothing.
-        Either way the loop stops at three: the brief's ceiling, and about what
-        fits on one line at 320px before the row becomes a menu.
-      {%- endcomment -%}
-      {%- comment -%}
-        Counted with a loop, NOT with `where: 'settings.show_on_mobile', true`.
-
-        That filter silently matched nothing — Liquid's `where` does not follow
-        a dotted path into a block's settings — so `flagged.size` was always 0,
-        the fallback always won, and the three chips rendered were simply the
-        first three blocks. It looked exactly like a working filter with the
-        wrong blocks ticked: the chips said "Dinner", "Is this just grape
-        juice?" and "Taking a night off", which is two thirds right and so not
-        obviously broken. Caught on the deployed page, not in review.
+        The same three chips, in the pairing page's own chip class so they
+        match it exactly. They carry the full question rather than a short
+        label, because at this width there is room for the sentence and the
+        sentence is the better invitation.
       {%- endcomment -%}
       {%- assign all_seeds = section.blocks | where: 'type', 'seed' -%}
       {%- assign flagged_count = 0 -%}
@@ -150,23 +140,18 @@
           {%- assign flagged_count = flagged_count | plus: 1 -%}
         {%- endif -%}
       {%- endfor -%}
-
       {%- if all_seeds.size > 0 -%}
-        <div class="non-somm-entry__chips">
+        <div class="non-somm__seeds">
           {%- assign shown = 0 -%}
           {%- for block in all_seeds -%}
             {%- if shown >= 3 -%}{% break %}{%- endif -%}
-            {%- comment -%}
-              When nothing is ticked, every seed is a candidate and the first
-              three win. When something is ticked, only ticked seeds are.
-            {%- endcomment -%}
             {%- if flagged_count > 0 and block.settings.show_on_mobile != true -%}
               {%- continue -%}
             {%- endif -%}
             {%- assign shown = shown | plus: 1 -%}
             <button
               type="button"
-              class="non-somm__seed non-somm-entry__chip"
+              class="non-somm__seed"
               data-non-somm-open
               data-somm-surface="homepage_hero"
               data-somm-context="home"
@@ -178,7 +163,7 @@
           {%- endfor -%}
         </div>
       {%- endif -%}
-    </div>
+    </form>
 
     {%- comment -%}
       THE HERO NO LONGER CONTAINS A SOMM.

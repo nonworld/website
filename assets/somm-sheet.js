@@ -109,7 +109,7 @@
   function readTrigger(el) {
     var d = el.dataset || {};
     return {
-      surface: d.sommSurface || 'unknown',
+      surface: d.sommSurface || 'homepage_hero',
       context: d.sommContext || 'home',
       intent: d.sommIntent || '',
       meal_category: d.sommMeal || '',
@@ -483,6 +483,43 @@
   };
 
   /* ------------------------------------------------------------- events */
+
+  /* THE HERO'S BAR.
+   *
+   * It is the pairing page's markup so that it looks like the pairing page,
+   * but it does NOT answer inline — there is one Somm and it is the sheet.
+   * It carries no [data-non-somm] hook, so somm.js never binds a controller to
+   * it; this forwards it instead.
+   *
+   * Submitting hands the typed text over. Focusing opens the sheet empty and
+   * moves the caret into ITS field, because a customer who has clicked into a
+   * text box expects to type into the thing they clicked — leaving them typing
+   * into a field whose answer appears somewhere else would be worse than not
+   * opening at all.
+   */
+  var heroForm = document.querySelector('[data-non-somm-hero]');
+  if (heroForm) {
+    var heroInput = heroForm.querySelector('[data-non-somm-hero-input]');
+
+    heroForm.addEventListener('submit', function (e) {
+      e.preventDefault();
+      var text = heroInput ? heroInput.value.trim() : '';
+      if (!openSheet(heroForm)) return;
+      if (text) {
+        if (heroInput) heroInput.value = '';
+        setTimeout(function () { ask(text, 'typed'); }, 60);
+      }
+    });
+
+    if (heroInput) {
+      heroInput.addEventListener('focus', function () {
+        /* Only when the sheet is not already up — refocusing after it closes
+           would reopen it immediately and trap the customer in it. */
+        if (open) return;
+        openSheet(heroForm);
+      });
+    }
+  }
 
   document.addEventListener('click', function (e) {
     var trigger = e.target.closest('[data-non-somm-open]');

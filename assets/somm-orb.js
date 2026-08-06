@@ -130,7 +130,14 @@
   function layerOpen() {
     var drawer = document.querySelector('[data-non-cart-drawer]');
     var lotto = document.querySelector('[data-non-lotto]');
-    var menu = document.querySelector('[data-non-menu-panel], .non-drawer-menu');
+        /* `[data-non-menu]` — the panel's real hook. This queried
+       `[data-non-menu-panel]`, which matches nothing in this theme
+       (sections/header.liquid:75), so the mobile menu never counted as an open
+       layer: the floating orb stayed up over the open menu.
+       Never caught because both the selector and the element look plausible and
+       the miss is silent — querySelector returns null and the || chain simply
+       moves on. */
+    var menu = document.querySelector('[data-non-menu]');
     return (
       (NON.somm && NON.somm.isOpen && NON.somm.isOpen()) ||
       (drawer && !drawer.hidden) ||
@@ -154,7 +161,7 @@
      attribute-filtered — it fires on `hidden` flipping and nothing else. */
   if ('MutationObserver' in window) {
     var mo = new MutationObserver(sync);
-    ['[data-non-cart-drawer]', '[data-non-lotto]', '[data-non-menu-panel]'].forEach(function (sel) {
+    ['[data-non-cart-drawer]', '[data-non-lotto]', '[data-non-menu]'].forEach(function (sel) {
       var el = document.querySelector(sel);
       if (el) mo.observe(el, { attributes: true, attributeFilter: ['hidden', 'class', 'style'] });
     });

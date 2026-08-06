@@ -7556,14 +7556,24 @@ select:-moz-focusring { color: transparent; text-shadow: 0 0 0 var(--non-fg); }
   position: absolute;
   inset: 0;
   border-radius: 50%;
+  /* THE ORIGINAL STOPS, not a tighter version of them.
+     The first attempt put pure white at the centre and reached transparency at
+     78%, which draws a lit SPHERE — a hard-edged ball with a highlight. The
+     orb is meant to be atmospheric: a light in the page, with no edge you
+     could trace. That is what the long, shallow falloff does.
+
+     The blur is what makes it diffuse rather than merely soft, and it is safe
+     here because the gradient is fully transparent by 84% of the box: there is
+     6% of empty box around the painted form for the blur to spread into, so
+     nothing clips at the boundary the way the old mobile orb did. */
   background:
-    radial-gradient(circle at 42% 36%,
-      #ffffff 0%,
-      rgba(242, 240, 234, .90) 16%,
-      rgba(242, 240, 234, .48) 34%,
-      rgba(242, 240, 234, .18) 50%,
-      rgba(242, 240, 234, .06) 64%,
-      transparent 78%);
+    radial-gradient(circle at 40% 34%,
+      rgba(242, 240, 234, .92) 0%,
+      rgba(242, 240, 234, .55) 34%,
+      rgba(242, 240, 234, .18) 58%,
+      rgba(242, 240, 234, .05) 74%,
+      transparent 84%);
+  filter: blur(6px);
   /* Slow, shallow, and never finished — a light that is alive rather than a
      control demanding to be pressed. 9s, 3% travel, opacity barely moving. */
   animation: nonOrbBreathe 9s ease-in-out infinite;

@@ -7899,3 +7899,39 @@ select:-moz-focusring { color: transparent; text-shadow: 0 0 0 var(--non-fg); }
     margin-right: auto;
   }
 }
+
+/* --------------------------------------------------------------------------
+   PDP CHIP ROW — the bleed had nothing left to cancel.
+
+   `.non-somm-entry__chips` bleeds to both edges with
+   `margin-inline: calc(var(--non-pad) * -1)` and puts the padding back with
+   `padding-inline: var(--non-pad)`. That pair is written to cancel the
+   PARENT's horizontal padding: the strip's box reaches the screen edge so the
+   row visibly runs off it, while the first chip still lines up with the type
+   above it.
+
+   It only works while the parent actually has that padding. Setting
+   `padding-left: 0` on the PDP entry — correct in itself, the entry sits
+   inside .non-buy which already supplies the gutter — left the negative
+   margin pulling against nothing, so the cancel applied twice and the first
+   chip lost its 22px.
+
+   The fix is to stop cancelling a padding that is no longer there, not to put
+   the padding back: restoring it would re-indent the label and bar and undo
+   the alignment this all started with.
+
+   Scrolling is untouched. overflow-x, scroll-snap, the hidden scrollbar and
+   nowrap all still come from the rule above; only the two offsets are
+   neutralised. The row still runs off the right-hand edge, because the entry
+   has no right padding either — so the swipe affordance survives on the side
+   where it does the work.
+
+   Mobile only, and PDP only. Desktop PDP measures correct at 1440 and the
+   homepage hero never had the doubled cancel, so neither is in this selector.
+   -------------------------------------------------------------------------- */
+@media (max-width: 859px) {
+  .non-somm-entry--pdp .non-somm-entry__chips {
+    margin-inline: 0;
+    padding-inline: 0;
+  }
+}

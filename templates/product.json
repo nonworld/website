@@ -72,9 +72,33 @@
             "label": "Serve",
             "source": "serve"
           }
+        },
+        "seed-1": {
+          "type": "seed",
+          "settings": {
+            "label": "Is it sweet?",
+            "short_label": "Is it sweet?"
+          }
+        },
+        "seed-2": {
+          "type": "seed",
+          "settings": {
+            "label": "What does it replace?",
+            "short_label": "What does it replace?"
+          }
+        },
+        "seed-3": {
+          "type": "seed",
+          "settings": {
+            "label": "What should I serve it with?",
+            "short_label": "What to serve it with?"
+          }
         }
       },
       "block_order": [
+        "seed-1",
+        "seed-2",
+        "seed-3",
         "pack-12",
         "pack-6",
         "pack-1",
@@ -108,43 +132,10 @@
     "pairings": {
       "type": "product-pairings",
       "settings": {}
-    },
-    "somm": {
-      "type": "product-somm",
-      "blocks": {
-        "seed-1": {
-          "type": "seed",
-          "settings": {
-            "label": "Is it sweet?",
-            "short_label": "Is it sweet?"
-          }
-        },
-        "seed-2": {
-          "type": "seed",
-          "settings": {
-            "label": "What does it replace?",
-            "short_label": "What does it replace?"
-          }
-        },
-        "seed-3": {
-          "type": "seed",
-          "settings": {
-            "label": "What should I serve it with?",
-            "short_label": "What to serve it with?"
-          }
-        }
-      },
-      "block_order": [
-        "seed-1",
-        "seed-2",
-        "seed-3"
-      ],
-      "settings": {}
     }
   },
   "order": [
     "main",
-    "somm",
     "pairings",
     "process",
     "related"

@@ -398,6 +398,82 @@
     </form>
 
     {%- comment -%}
+      THE SOMM, BACK UNDER ADD TO CART.
+
+      It was lifted out into its own section so the page could read in the
+      brief's content order, which puts it at position 7 — below the food
+      pairings. On a desktop that is 412px below the buy button, under BOTH
+      columns, because the gallery is taller than the buy block. Measured.
+
+      That is not where a customer decides. The question the Somm answers —
+      is this the right one for me — is asked with the price and the pack in
+      front of you, not a screen later. So it lives in the buy column again,
+      directly beneath the button, which is where it was and where it works.
+
+      Same shared sheet, same transcript, same bottle context. The only thing
+      that changed is where the way in sits.
+    {%- endcomment -%}
+    {%- if section.settings.show_somm and not_drink == blank and has_spec -%}
+      {%- assign pdp_variant = product.selected_or_first_available_variant -%}
+      <div class="non-somm-entry non-somm-entry--pdp" data-non-somm-entry>
+        {% render 'somm-orb',
+           orb_variant: 'integrated',
+           orb_surface: 'product_page',
+           orb_context: 'product',
+           orb_code: code,
+           product: product %}
+
+        {%- if section.settings.somm_pdp_label != blank -%}
+          <div class="non-mono non-eyebrow non-somm-entry__label">
+            {{ section.settings.somm_pdp_label }} {{ code }}?
+          </div>
+        {%- endif -%}
+
+        <button
+          type="button"
+          class="non-somm-entry__field"
+          data-non-somm-open
+          data-non-somm-pdp
+          data-somm-surface="product_page"
+          data-somm-context="product"
+          data-somm-code="{{ code }}"
+          data-somm-product="{{ product.id }}"
+          data-somm-variant="{{ pdp_variant.id }}"
+          data-somm-product-title="{{ product.title | escape }}"
+          data-somm-product-price="{{ pdp_variant.price | money }}"
+          data-somm-product-available="{{ pdp_variant.available }}">
+          <span class="non-somm-entry__ph">{{ section.settings.somm_placeholder }}</span>
+          <span class="non-somm-entry__go" aria-hidden="true">&rarr;</span>
+        </button>
+
+        {%- assign pdp_seeds = section.blocks | where: 'type', 'seed' -%}
+        {%- if pdp_seeds.size > 0 -%}
+          <div class="non-somm-entry__chips">
+            {%- for block in pdp_seeds limit: 3 -%}
+              <button
+                type="button"
+                class="non-somm__seed non-somm-entry__chip"
+                data-non-somm-open
+                data-non-somm-pdp
+                data-somm-surface="product_page"
+                data-somm-context="product"
+                data-somm-code="{{ code }}"
+                data-somm-product="{{ product.id }}"
+                data-somm-variant="{{ pdp_variant.id }}"
+                data-somm-product-title="{{ product.title | escape }}"
+                data-somm-product-price="{{ pdp_variant.price | money }}"
+                data-somm-product-available="{{ pdp_variant.available }}"
+                data-somm-prompt="{{ block.settings.label | escape }}"
+                {{ block.shopify_attributes }}>
+                {{ block.settings.short_label | default: block.settings.label }}
+              </button>
+            {%- endfor -%}
+          </div>
+        {%- endif -%}
+      </div>
+    {%- endif -%}
+
+    {%- comment -%}
       FEATURES & BENEFITS, per product.
 
       Reads custom.benefits — one per line, "Title | Body" — so every product

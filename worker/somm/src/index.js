@@ -684,7 +684,25 @@ async function routeQuery(env, query) {
 /* Split from answerFacts so the streaming path and the JSON path send the
    IDENTICAL prompt. Two copies of a prompt this long is how the streamed
    answer and the tested answer quietly stop being the same answer. */
-function factsPrompt(query, code, facts, lang = '') {
+/* `surface` IS A PARAMETER. It was not, and the omission killed this whole path.
+ *
+ * The body below builds its system prompt as `FACTS_SYSTEM + HOUSE_RULES +
+ * surface + lang`, but the signature took four arguments and `surface` was not
+ * one of them. There is no module-scope `surface` either — the only two in this
+ * file are a parameter of surfaceDirective() and a const inside the request
+ * handler, both out of scope here. This is an ES module, so it is strict mode,
+ * so that free identifier is a ReferenceError rather than `undefined`.
+ *
+ * Every call therefore threw before reaching the model, was caught by the
+ * caller's fallback, and returned "That one has not come through cleanly." The
+ * Somm could not answer a single question about a bottle — including "Is it
+ * sweet?" and "What to serve it with?", which are two of the PDP's own preset
+ * chips. Pairing and brand questions were unaffected, which is why it read as a
+ * flaky model rather than a dead code path.
+ *
+ * Both call sites now pass it: answerFacts() forwards the surface it already
+ * accepts, and the streaming branch passes the one the handler already built. */
+function factsPrompt(query, code, facts, lang = '', surface = '') {
   const scope = code
     ? PRODUCTS.filter((p) => p.id === String(code).toUpperCase())
     : PRODUCTS;
@@ -764,7 +782,7 @@ function picksFrom(answer) {
 }
 
 async function answerFacts(env, query, code, facts, lang = '', surface = '') {
-  const prompt = factsPrompt(query, code, facts, lang);
+  const prompt = factsPrompt(query, code, facts, lang, surface);
   const answer = await claude(env, {
     model: env.EXPLAIN_MODEL || 'claude-sonnet-5',
     ...prompt,
@@ -1295,7 +1313,7 @@ const handler = {
           return await claudeStreamResponse(env, {
             model: env.EXPLAIN_MODEL || 'claude-sonnet-5',
             escalationMeta: { query, code: context, page: body.page, title: body.facts && body.facts.title },
-            ...factsPrompt(query, context, body.facts, lang),
+            ...factsPrompt(query, context, body.facts, lang, surface),
             tail: (answer) => ({
               intent,
               answer,

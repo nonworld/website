@@ -247,8 +247,11 @@
         desc-cards turns each heading into a card. See that snippet for how,
         and for its one assumption about heading markup.
       {%- endcomment -%}
-      {%- if has_spec == false and m.blurb == blank and product.description != blank -%}
-        {% render 'desc-cards', html: product.description, label: section.settings.benefits_label %}
+      {%- comment -%}
+        The cards render BELOW the buy controls now — see further down. Left
+        here as a signpost because this is where anyone would look for them.
+      {%- endcomment -%}
+      {%- if false -%}
       {%- endif -%}
     </div>
 
@@ -471,6 +474,25 @@
           </div>
         {%- endif -%}
       </div>
+    {%- endif -%}
+
+    {%- comment -%}
+      THE SET'S CONTENTS, BELOW THE BUY CONTROLS — not above them.
+
+      This rendered inside the identity block, between the product's name and
+      its form. On a bottle that is harmless: the blurb is one sentence. On a
+      SET the description is six cards — contains, about, profile, ingredients,
+      storage, notes — so the price, the pack selector and Add to cart were
+      pushed a full screen below the title. Measured on The Spice Set: the
+      first thing under the name was CONTAINS, and there was no way to buy it
+      on screen at all.
+
+      A set should read like a bottle: name, what it is, what it costs, add.
+      The detail belongs after that decision, in the same place a bottle keeps
+      its spec strip.
+    {%- endcomment -%}
+    {%- if has_spec == false and m.blurb == blank and product.description != blank -%}
+      {% render 'desc-cards', html: product.description, label: section.settings.benefits_label %}
     {%- endif -%}
 
     {%- comment -%}

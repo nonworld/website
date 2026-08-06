@@ -120,6 +120,27 @@
 
   var lastRevealed = 0;
 
+  /* False until the first refresh() has run, so restoring a completed state on
+     load does not scroll the page out from under someone who has just arrived.
+     Only an answer they gave in this session moves the view. */
+  var booted = false;
+
+  function inView(el) {
+    var r = el.getBoundingClientRect();
+    var h = window.innerHeight || document.documentElement.clientHeight;
+    /* "Usefully visible", not "one pixel visible" — the failing case measured
+       17px of a panel on screen, which is technically intersecting and no use
+       to anybody. Ask for a third of it, or 200px, whichever is smaller. */
+    var want = Math.min(200, r.height / 3);
+    return r.top < h - want && r.bottom > want;
+  }
+
+  function revealResult() {
+    if (!booted || !resultEl || resultEl.hidden || inView(resultEl)) return;
+    var motion = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    resultEl.scrollIntoView({ behavior: motion ? 'auto' : 'smooth', block: 'start' });
+  }
+
   function refresh() {
     var sk = skippedSet();
 
@@ -210,6 +231,21 @@
     // The questions stay on screen. They are the page now, and hiding what was
     // answered to reveal a verdict leaves nothing to change your mind with.
     resultEl.hidden = false;
+
+    /* AND THE VERDICT HAS TO BE BROUGHT TO THEM.
+     *
+     * refresh() scrolls to the next question as each one is revealed, but it
+     * guards that on `firstUnanswered !== -1` — so the one moment that matters,
+     * the last answer, is the one moment it does nothing. On a phone the
+     * verdict lives in the aside below the questions: measured at 402x874, it
+     * rendered at top 857 in an 874px viewport. Seventeen pixels on screen.
+     * You answer the third question and the page sits there, which reads as
+     * the tool being broken rather than as an answer arriving off-screen.
+     *
+     * Only when it is actually out of view — on a desktop the verdict sits in
+     * the column beside the questions and is already being looked at, and
+     * yanking the page there would be worse than doing nothing. */
+    revealResult();
 
     /* ONE ANSWER IN THE BOX AT A TIME.
        ---------------------------------------------------------------------
@@ -361,5 +397,8 @@
     }
   });
 
+  /* The first pass paints whatever state the page loaded in. Everything after
+     it is the customer answering, and only those may move the view. */
   refresh();
+  booted = true;
 })();

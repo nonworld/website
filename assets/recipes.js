@@ -119,7 +119,32 @@
 
     if (empty) empty.hidden = list.length > 0;
     if (writeBtn) writeBtn.disabled = false;
+
+    /* BRING THE DISH TO THEM — same failure as the pairing verdict.
+     *
+     * The pickers are tall on a phone: bottle, effort, diet, then WRITE THE
+     * DISH. By the time the button is pressed the panel it fills is below the
+     * fold, so the staged trace runs and the recipe lands somewhere the
+     * customer cannot see. Pressing a button labelled "write the dish" and
+     * watching nothing happen is indistinguishable from a broken button.
+     *
+     * Not on the first paint — `written` is still false there, which is
+     * exactly the "they have not asked yet" signal — and not when the panel is
+     * already usefully on screen, which is the desktop case. */
+    if (written) bringIntoView(list[variant]);
     written = true;
+  }
+
+  function bringIntoView(el) {
+    if (!el) return;
+    var r = el.getBoundingClientRect();
+    var h = window.innerHeight || document.documentElement.clientHeight;
+    /* A third of it, capped at 200px. One visible pixel is not "in view" —
+       that is the state this exists to correct. */
+    var want = Math.min(200, r.height / 3);
+    if (r.top < h - want && r.bottom > want) return;
+    var still = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    el.scrollIntoView({ behavior: still ? 'auto' : 'smooth', block: 'start' });
   }
 
   function hideAll() {

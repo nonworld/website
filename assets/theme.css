@@ -6785,6 +6785,11 @@ select:-moz-focusring { color: transparent; text-shadow: 0 0 0 var(--non-fg); }
    tree either. */
 .non-ingr--mobile { display: none; }
 
+/* The PDP's Somm band is a direct child of its section, so it has no page
+   padding of its own — the orb sat flush against the viewport edge while every
+   other band on the page starts at the gutter. */
+.non-somm-entry--pdp { padding: 28px var(--non-pad); }
+
 @media (max-width: 859px) {
   /* No `order` here either. The buy column reads in source order, and the
      source order is the order the brief specifies — see main-product.liquid,
@@ -7536,6 +7541,11 @@ select:-moz-focusring { color: transparent; text-shadow: 0 0 0 var(--non-fg); }
      the label, the field, the chips. An absent one is a zero-height row. */
   grid-template-rows: repeat(3, auto);
   align-items: center;
+  /* The rows keep their own height and the BLOCK centres. Without this the
+     min-height that makes room for the orb was distributed across the three
+     rows instead — 16/52/44 of content rendered as 40/70/70, which pulled the
+     label away from the field and left the composition loose. */
+  align-content: center;
   column-gap: 16px;
 }
 .non-somm-entry > :not(.non-orb--integrated) { grid-column: 2; }
@@ -7544,6 +7554,16 @@ select:-moz-focusring { color: transparent; text-shadow: 0 0 0 var(--non-fg); }
   grid-column: 1;
   grid-row: 1 / -1;
   position: relative;
+  /* AND CLEAR THE COMPACT ORB'S OFFSETS.
+     `.non-orb` is fixed to the lower-right with `right: 16px`. Overriding only
+     `position` left that offset in force, and on a relatively-positioned
+     element `right: 16px` moves it 16px LEFT — so the integrated orb rendered
+     at x = -16, hanging off the left edge of the page on both the homepage and
+     the PDP. Measured, not guessed: entry at x=0, orb at x=-16. */
+  right: auto;
+  bottom: auto;
+  left: auto;
+  top: auto;
   display: grid;
   place-items: center;
   /* Square, sized from the column, so the glow scales with the composition

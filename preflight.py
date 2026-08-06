@@ -339,7 +339,12 @@ if css.exists():
 somm_cols = [
     (text[:m.start()].count('\n') + 1)
     for m in re.finditer(r'([^{}]*)\{([^{}]*grid-template-columns[^{}]*)\}', text)
-    if 'non-somm' in ' '.join(m.group(1).split())
+    # `.non-somm` as a whole class, not as a substring. .non-somm-entry is a
+    # DIFFERENT component — the hero's orb-and-field block — and it legitimately
+    # declares its own columns. Matching loosely made this check fire on it and
+    # would have pushed someone to work around the guard rather than fix a real
+    # duplicate, which is how a check stops being trusted.
+    if re.search(r'\.non-somm(?![-\w])', ' '.join(m.group(1).split()))
 ] if css.exists() else []
 if len(somm_cols) > 1:
     errors.append(

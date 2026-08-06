@@ -20,10 +20,30 @@
   Rendered from theme.liquid on the templates that have a Somm to open.
 {%- endcomment -%}
 
+{%- comment -%}
+  TWO STATES, ONE COMPONENT.
+
+    integrated — large, art-directed, inside the page composition. It is the
+                 Somm's presence in the NON world, not a widget parked in a
+                 corner. Rendered by the hero and by the PDP's "still
+                 deciding?" band, beside the words that explain it.
+
+    compact    — small and persistent, lower-right, and only ever visible once
+                 the integrated one has left the screen. It is a way back to a
+                 conversation, not an advertisement for one.
+
+  Never both at once. somm-orb.js owns that, gating on scroll position.
+
+  `orb_variant` picks which. Everything else — the context payload, the
+  accessible name, the shared sheet it opens — is identical, because they are
+  the same control in two sizes.
+{%- endcomment -%}
+{%- assign variant = orb_variant | default: 'compact' -%}
+
 <button
   type="button"
-  class="non-orb"
-  data-non-orb
+  class="non-orb non-orb--{{ variant }}"
+  {% if variant == 'integrated' %}data-non-orb-integrated{% else %}data-non-orb{% endif %}
   data-non-somm-open
   data-somm-surface="{{ orb_surface | default: 'floating_orb' }}"
   data-somm-context="{{ orb_context | default: 'home' }}"
@@ -43,12 +63,31 @@
     data-somm-product-available="{{ product.selected_or_first_available_variant.available }}"
   {%- endif %}
   aria-label="{{ 'sections.somm.orb_label' | t }}"
-  hidden>
+  {%- comment -%}
+    The compact orb starts hidden and is revealed by script once the integrated
+    one has gone. The integrated orb is part of the page and is present from
+    first paint — hiding it would be hiding the composition.
+  {%- endcomment -%}
+  {% if variant != 'integrated' %}hidden{% endif %}>
   {%- comment -%}
     The mark is the full stop from "NON." — the same mark the working state
     uses. aria-hidden because the button already has an accessible name; a
     screen reader does not need to be told there is a dot.
   {%- endcomment -%}
-  <span class="non-orb__mark" aria-hidden="true"></span>
-  <span class="non-orb__label" data-non-orb-label>{{ 'sections.somm.orb_label' | t }}</span>
+  {%- comment -%}
+    The glow is its own element rather than a pseudo-element on the button.
+    Two reasons: it can breathe on its own transform without the button's
+    focus ring or hit area moving with it, and it keeps this component clear
+    of preflight check 6, which owns the position of the ORIGINAL orb
+    (.non-somm::before) and exists because that one moved every time anyone
+    touched the stylesheet.
+  {%- endcomment -%}
+  <span class="non-orb__glow" aria-hidden="true"></span>
+  {%- if variant == 'integrated' -%}
+    {%- if orb_caption != blank -%}
+      <span class="non-orb__caption" aria-hidden="true">{{ orb_caption }}</span>
+    {%- endif -%}
+  {%- else -%}
+    <span class="non-orb__label" data-non-orb-label>{{ 'sections.somm.orb_label' | t }}</span>
+  {%- endif -%}
 </button>

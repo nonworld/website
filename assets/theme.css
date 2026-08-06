@@ -7202,6 +7202,8 @@ select:-moz-focusring { color: transparent; text-shadow: 0 0 0 var(--non-fg); }
   width: 26px;
   height: 26px;
   border-radius: 50%;
+  /* Retained for any markup still emitting a mark; the glow element supersedes
+     it and carries the same treatment. */
   background:
     radial-gradient(circle at 40% 34%,
       #ffffff 0%,
@@ -7475,4 +7477,154 @@ select:-moz-focusring { color: transparent; text-shadow: 0 0 0 var(--non-fg); }
   color: var(--non-fg);
   max-width: 34ch;
   text-wrap: pretty;
+}
+
+/* ==========================================================================
+   THE ORB — integrated, then compact
+   ==========================================================================
+   The Somm is the distinctive thing about this store, and for one release it
+   was a small button in the corner of the viewport, which is what every
+   support chatbot on the internet looks like. It is not that.
+
+   TWO STATES, never both:
+
+     .non-orb--integrated  large, art-directed, inside the page composition.
+                           In the hero it sits in the Somm block's own grid
+                           column, beside the label and the field. On a PDP it
+                           anchors the "still deciding?" band.
+
+     .non-orb--compact     small, persistent, lower-right — and only once the
+                           integrated one has left the screen. A way back to a
+                           conversation, not an advertisement for one.
+
+   IT COSTS THE HERO NO HEIGHT. The integrated orb takes a grid COLUMN and
+   spans every row, so the label, the field and the chips stack beside it
+   inside the space they already occupied. The hero measured 671px before this
+   and measures 671px after it.
+   ========================================================================== */
+
+/* The Somm block becomes two columns: the orb, then everything else. */
+.non-somm-entry {
+  display: grid;
+  grid-template-columns: var(--non-orb-col, 84px) minmax(0, 1fr);
+  align-items: center;
+  column-gap: 16px;
+}
+.non-somm-entry > :not(.non-orb--integrated) { grid-column: 2; }
+
+.non-orb--integrated {
+  grid-column: 1;
+  grid-row: 1 / -1;
+  position: relative;
+  display: grid;
+  place-items: center;
+  /* Square, sized from the column, so the glow scales with the composition
+     rather than being a fixed lump at every width. */
+  width: 100%;
+  aspect-ratio: 1 / 1;
+  background: none;
+  border: 0;
+  padding: 0;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
+}
+
+/* THE GLOW ITSELF.
+   A radial gradient and nothing else — no filter: blur(). The blur version
+   clipped on phones (the painted form extended past the element box and an
+   ancestor cut it off) and it is the expensive way to draw a soft edge. The
+   gradient reaches full transparency inside its own box, so there is nothing
+   for a clip to remove and nothing for the compositor to blur every frame. */
+.non-orb__glow {
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  background:
+    radial-gradient(circle at 42% 36%,
+      #ffffff 0%,
+      rgba(242, 240, 234, .90) 16%,
+      rgba(242, 240, 234, .48) 34%,
+      rgba(242, 240, 234, .18) 50%,
+      rgba(242, 240, 234, .06) 64%,
+      transparent 78%);
+  /* Slow, shallow, and never finished — a light that is alive rather than a
+     control demanding to be pressed. 9s, 3% travel, opacity barely moving. */
+  animation: nonOrbBreathe 9s ease-in-out infinite;
+  will-change: transform;
+}
+
+@keyframes nonOrbBreathe {
+  0%, 100% { transform: scale(1);     opacity: .92; }
+  50%      { transform: scale(1.035); opacity: 1;   }
+}
+
+/* Stopped outright when the tab is not being looked at, and when the customer
+   has asked for less motion. `is-still` is set by somm-orb.js on
+   visibilitychange — browsers already throttle background animation, but
+   "already throttled" is not "stopped". */
+.non-orb.is-still .non-orb__glow { animation: none; }
+
+@media (prefers-reduced-motion: reduce) {
+  .non-orb__glow { animation: none; }
+}
+
+/* The caption under a PDP orb — "Ask about NON1". The hero has its own label
+   two lines up, so it does not carry one. */
+.non-orb__caption {
+  position: absolute;
+  left: 50%;
+  bottom: -4px;
+  transform: translateX(-50%);
+  white-space: nowrap;
+  font-family: var(--non-mono);
+  font-size: 10px;
+  letter-spacing: .12em;
+  text-transform: uppercase;
+  color: var(--non-fg-mute);
+}
+
+/* FOCUS IS A RING, NOT A BRIGHTER GLOW. Glow is the resting state; if focus
+   were "more glow" it would be invisible to anyone who cannot compare the two.
+   Offset outside the circle so it reads against the photograph behind it. */
+.non-orb--integrated:focus-visible {
+  outline: 2px solid var(--non-fg);
+  outline-offset: 4px;
+  border-radius: 50%;
+}
+.non-orb--integrated:hover .non-orb__glow { transform: scale(1.05); opacity: 1; }
+.non-orb--integrated:active .non-orb__glow { transform: scale(.98); }
+
+/* Sizes. 84px on a phone — inside the 72–100 the brief sets, and the tallest
+   the Somm block's own rows allow without adding height to the hero. */
+@media (min-width: 700px) {
+  .non-somm-entry { --non-orb-col: 120px; column-gap: 22px; }
+}
+@media (min-width: 860px) {
+  /* 160px on a desktop: inside 140–200, and about the width of the field it
+     sits beside, which is what makes the pair read as one composition. */
+  .non-somm-entry { --non-orb-col: 160px; column-gap: 28px; }
+}
+@media (min-width: 1440px) {
+  .non-somm-entry { --non-orb-col: 180px; }
+}
+
+/* Below 360 the column would take a third of the screen and squeeze the field
+   into something unusable. The orb steps out; the compact state still exists
+   and the label and field still say what the Somm is. */
+@media (max-width: 359px) {
+  .non-somm-entry { grid-template-columns: minmax(0, 1fr); }
+  .non-orb--integrated { display: none; }
+  .non-somm-entry > :not(.non-orb--integrated) { grid-column: 1; }
+}
+
+/* The compact state keeps the same glow, at 52px, in the corner — the styling
+   for it is in THE SOMM ORB block above; this only makes sure the glow element
+   fills it now that the mark has been replaced. */
+.non-orb--compact .non-orb__glow {
+  position: static;
+  flex: none;
+  width: 26px;
+  height: 26px;
+  animation: none;   /* the corner is not the place for a breathing light */
 }

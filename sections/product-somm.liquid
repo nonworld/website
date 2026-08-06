@@ -21,6 +21,8 @@
 
 {%- capture code %}{% render 'non-code', product: product %}{% endcapture -%}
 {%- assign code = code | strip -%}
+{%- capture product_orb_caption -%}{{ 'sections.somm.orb_ask_about' | t: code: code }}{%- endcapture -%}
+{%- assign product_orb_caption = product_orb_caption | strip -%}
 {%- liquid
   assign m = product.metafields.custom
   assign not_drink = m.not_a_drink | metafield_text
@@ -35,6 +37,18 @@
 {%- if section.settings.show_somm and not_drink == blank and has_spec -%}
   {%- assign pdp_variant = product.selected_or_first_available_variant -%}
   <div class="non-somm-entry non-somm-entry--pdp" data-non-somm-entry>
+  {%- comment -%}
+    The same orb, the same size, carrying this bottle. It makes the band read
+    as the Somm's part of the product page rather than as another CTA.
+  {%- endcomment -%}
+  {% render 'somm-orb',
+     orb_variant: 'integrated',
+     orb_surface: 'product_page',
+     orb_context: 'product',
+     orb_code: code,
+     orb_caption: product_orb_caption,
+     product: product %}
+
     {%- if section.settings.somm_pdp_label != blank -%}
       <div class="non-mono non-eyebrow non-somm-entry__label">
         {{ section.settings.label }} {{ code }}?

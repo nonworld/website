@@ -43,63 +43,66 @@
   }
   if (used()) orb.classList.add('is-used');
 
+  /* Every orb opens the same sheet, so any of them counts as "used" and
+     collapses the compact one's label. */
+  document.addEventListener('click', function (e) {
+    if (e.target.closest('.non-orb')) markUsed();
+  });
+
   /* --- when it is allowed on screen -------------------------------------- */
 
-  /* The element the orb defers to while it is visible. On a product page that
-     is the buy block — the orb must never share the screen with Add to cart.
-     On the homepage it is the hero's own Somm entry. Falls back to the hero. */
-  var defersTo =
-    document.querySelector('[data-non-orb-defer]') ||
-    document.querySelector('.non-buy') ||
-    document.querySelector('[data-non-somm-entry]') ||
-    document.querySelector('.non-hero');
+  /* WHAT THE COMPACT ORB DEFERS TO.
+   *
+   * Two things, and both must be off screen before it appears:
+   *
+   *   the INTEGRATED orb — the large art-directed one in the hero, or in the
+   *     PDP's "still deciding?" band. The two are one control in two sizes and
+   *     showing both at once would say there are two.
+   *
+   *   the BUY BLOCK on a product page — nothing competes with Add to cart
+   *     while Add to cart is on screen.
+   *
+   * A page may have either, both, or neither. With neither, the compact orb is
+   * simply always available. */
+  var gates = [].slice.call(
+    document.querySelectorAll('[data-non-orb-integrated], [data-non-orb-defer]')
+  );
 
   var suppressed = false;   // a layer is open
-  var pastGate = !defersTo; // nothing to defer to: show straight away
+  var pastGate = !gates.length;
 
   function apply() {
     var show = pastGate && !suppressed;
     orb.hidden = !show;
-    if (show && !orb.__seen) {
-      orb.__seen = true;
-      /* Three cycles then stop, and only for someone who has not used it and
-         has not asked for less motion. A control that pulses forever is an
-         advert. */
-      if (!used() && !reduce.matches) {
-        orb.classList.add('is-pulsing');
-        setTimeout(function () { orb.classList.remove('is-pulsing'); }, 5400);
-      }
-    }
   }
-
 
   /* THE GATE IS A SCROLL POSITION, not an IntersectionObserver.
    *
    * IO was the obvious tool and it could not be verified: in a tab that is not
-   * painting, its callbacks do not arrive, so the orb and the sticky bar never
-   * appeared and there was no way to test either of them. A feature whose
-   * trigger cannot be exercised is a feature nobody has checked.
+   * painting its callbacks do not arrive, so the orb never appeared and there
+   * was no way to exercise it. A feature whose trigger cannot be tested is a
+   * feature nobody has checked.
    *
-   * A passive scroll listener computing the same condition is a couple of
-   * microseconds, fires everywhere, and is trivially testable. rect.bottom < 0
-   * means "this element has left upwards", which is the real condition —
-   * scrolling back UP towards the buy block should retire the orb before the
-   * block is reached, not after.
-   *
-   * Throttled with a dirty flag rather than rAF, for the same reason. */
+   * A passive scroll listener computing the same condition costs microseconds
+   * and fires everywhere. `bottom < 0` means "has left upwards", which is the
+   * real condition — scrolling back up towards the hero should retire the
+   * compact orb before the integrated one is reached, not after. */
   var ticking = false;
   function onScroll() {
     if (ticking) return;
     ticking = true;
-    setTimeout(function () {
-      ticking = false;
-      recompute();
-    }, 100);
+    setTimeout(function () { ticking = false; recompute(); }, 100);
   }
 
   function recompute() {
-    if (!defersTo) { pastGate = true; apply(); return; }
-    pastGate = defersTo.getBoundingClientRect().bottom < 0;
+    pastGate = gates.every(function (el) {
+      /* An element that is display:none has a zero rect and is not a gate —
+         the integrated orb is hidden below 360px, and the compact one should
+         still work there. */
+      var r = el.getBoundingClientRect();
+      if (!r.width && !r.height) return true;
+      return r.bottom < 0;
+    });
     apply();
   }
 
@@ -107,6 +110,20 @@
   window.addEventListener('resize', onScroll, { passive: true });
   recompute();
 
+  /* --- motion, and when to stop it --------------------------------------- */
+
+  /* Every orb on the page, both states. Browsers already throttle animation in
+     a background tab, but "throttled" is not "stopped" — and this is a light
+     that breathes, which is the kind of thing that should not be running for
+     someone who has switched to another tab. */
+  function stillness() {
+    var still = document.visibilityState === 'hidden';
+    document.querySelectorAll('.non-orb').forEach(function (o) {
+      o.classList.toggle('is-still', still);
+    });
+  }
+  document.addEventListener('visibilitychange', stillness);
+  stillness();
 
   /* --- stepping aside ---------------------------------------------------- */
 
@@ -143,7 +160,6 @@
     });
   }
 
-  orb.addEventListener('click', markUsed);
 
   /* Exposed so the sticky purchase bar can raise the orb above itself rather
      than the two overlapping — see product-sticky.js. */

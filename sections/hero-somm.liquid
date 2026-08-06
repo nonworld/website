@@ -87,6 +87,26 @@
       as well as off the screen. Nothing is announced twice.
     {%- endcomment -%}
     <div class="non-somm-entry" data-non-somm-entry>
+      {%- comment -%}
+        THE ORB, IN THE COMPOSITION.
+
+        Not a bubble in the corner of the viewport. It sits in the hero's own
+        column, in the first cell of this block's grid, with the label and the
+        field beside it — which is where it was in the original design and why
+        the hero reads as a place the Somm lives rather than a page with a chat
+        widget bolted to it.
+
+        It occupies a grid COLUMN, so it costs the hero no height: the label,
+        the field and the chips stack beside it inside the same rows.
+
+        A real button, with a real accessible name, because glow is not an
+        affordance. The words next to it say what it is.
+      {%- endcomment -%}
+      {% render 'somm-orb',
+         orb_variant: 'integrated',
+         orb_surface: 'homepage_hero',
+         orb_context: 'home' %}
+
       {%- if section.settings.cta_ask_label != blank -%}
         <div class="non-mono non-eyebrow non-somm-entry__label">{{ section.settings.cta_ask_label }}</div>
       {%- endif -%}

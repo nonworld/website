@@ -88,6 +88,22 @@
     which is why retiring that component cannot break behaviour.
   {%- endcomment -%}
   {%- if somm_surface == 'homepage_hero' %} data-non-somm-hero{% endif -%}
+  {%- comment -%}
+    data-non-somm-pdp is NOT an event hook, despite reading like one. Traced
+    end to end: product.js:62 queries every element carrying it on variant
+    change and WRITES data-somm-variant, data-somm-product-price and
+    data-somm-product-available onto them. Nothing listens on it, nothing
+    opens the sheet from it, and it expects no particular element type.
+
+    So the canonical form carries it and the variant sync keeps working with
+    no controller change at all - the marker lands on a real <form> instead of
+    the retired arrow-only <div>, and product.js cannot tell the difference.
+
+    The orb carries it too (somm-orb.liquid), deliberately: both need the live
+    variant. querySelectorAll, not querySelector, so more than one is correct
+    here - unlike the hero hook above.
+  {%- endcomment -%}
+  {%- if somm_context == 'product' %} data-non-somm-pdp{% endif -%}
   {%- if product != blank %}
     data-somm-product="{{ product.id }}"
     data-somm-product-title="{{ product.title | escape }}"

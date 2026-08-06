@@ -1002,4 +1002,27 @@
   }
 
   document.querySelectorAll('[data-non-somm]').forEach(Somm);
+
+  /* THE PAGE'S OWN SOMM BAR, ON A DESKTOP ONLY.
+   *
+   * `[data-non-somm-inline]` is the hero's bar. Above the breakpoint it is a
+   * real Somm: this binds it, and the answer renders into the
+   * [data-non-somm-answer] sitting under it in the same column, in the page.
+   * Below the breakpoint it is NOT bound — somm-sheet.js forwards it to the
+   * sheet instead, because a transcript unrolling inside a 402px hero would
+   * push the range off the screen.
+   *
+   * The two never both act. somm-sheet.js checks the same breakpoint and stands
+   * down above it; this stands down below it. Binding both would preventDefault
+   * twice and send the question twice.
+   *
+   * THE HONEST COST, stated because 473bf63 removed exactly this to avoid it:
+   * a desktop conversation and a phone conversation are now separate
+   * transcripts, so resizing across 860 mid-conversation starts a fresh one.
+   * That is the trade Aaron chose over the answer arriving in a panel on top of
+   * the page. Read at bind time rather than watched, so a resize cannot rebind
+   * a form that is already mid-question. */
+  if (window.matchMedia && window.matchMedia('(min-width: 860px)').matches) {
+    document.querySelectorAll('[data-non-somm-inline]').forEach(Somm);
+  }
 })();

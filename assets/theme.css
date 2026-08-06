@@ -3745,6 +3745,32 @@ select:-moz-focusring { color: transparent; text-shadow: 0 0 0 var(--non-fg); }
 }
 @keyframes non-somm-shimmer { to { background-position: -200% 0; } }
 
+/* THE HERO'S OWN ANSWER, BELOW ITS OWN BAR.
+ * ==========================================================================
+ * On a desktop the hero is a real Somm — somm.js binds it and writes here,
+ * rather than opening a panel over the page.
+ *
+ * Hidden below the breakpoint whatever else happens. somm.js does not bind the
+ * bar down there, so nothing should ever unhide this, but a transcript
+ * unrolling inside a 402px hero would push the range off the screen and that is
+ * too expensive a failure to leave to a JS guard alone.
+ * ========================================================================== */
+@media (max-width: 859px) {
+  .non-somm[data-non-somm-inline] .non-somm__answer { display: none; }
+}
+@media (min-width: 860px) {
+  .non-somm[data-non-somm-inline] .non-somm__answer {
+    /* The measure the rest of the hero copy uses. An answer running the full
+       620px of the bar reads as a paragraph of terms and conditions. */
+    max-width: 52ch;
+    /* No reserved height. `.non-somm__answer` carries min-height: 150px so an
+       inline panel does not collapse mid-stream, which is right in a dialog and
+       wrong here: it would hold 150px of empty hero open before anyone has
+       asked anything, under a bar that is the composition's anchor. */
+    min-height: 0;
+  }
+}
+
 /* THE SAME OPENING LINE, IN THE SHEET.
  * ==========================================================================
  * `.non-sommbox__opener` above is the original: display size, and a slow

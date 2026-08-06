@@ -603,6 +603,13 @@
     var heroInput = heroForm.querySelector('[data-non-somm-hero-input]');
 
     heroForm.addEventListener('submit', function (e) {
+      /* ABOVE THE BREAKPOINT THIS IS NOT OURS.
+       *
+       * The hero's bar is a real Somm on a desktop — somm.js binds it and the
+       * answer renders under it, in the page. Forwarding to the sheet as well
+       * would preventDefault twice and ask twice, and would put the answer back
+       * in a panel over the page, which is the thing being removed. */
+      if (!MOBILE.matches) return;
       e.preventDefault();
       var text = heroInput ? heroInput.value.trim() : '';
       if (!openSheet(heroForm)) return;
@@ -614,6 +621,9 @@
 
     if (heroInput) {
       heroInput.addEventListener('focus', function () {
+        /* Same split. On a desktop the field answers where it is; there is
+           nothing to open. */
+        if (!MOBILE.matches) return;
         /* Only when the sheet is not already up — refocusing after it closes
            would reopen it immediately and trap the customer in it. */
         if (open) return;
@@ -624,6 +634,10 @@
 
   document.addEventListener('click', function (e) {
     var trigger = e.target.closest('[data-non-somm-open]');
+    /* A chip inside the page's own Somm bar carries BOTH hooks so it can serve
+       either width. Above the breakpoint the bar answers inline, so the sheet
+       must not also open — otherwise one click asks twice, in two places. */
+    if (trigger && !MOBILE.matches && trigger.closest('[data-non-somm-inline]')) return;
     if (trigger) {
       /* A trigger may be a link to a fallback page for no-JS. Only prevent the
          navigation once we know the sheet actually opened. */

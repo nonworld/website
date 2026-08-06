@@ -110,7 +110,7 @@
       differs.
     {%- endcomment -%}
     {%- if settings.somm_enabled -%}
-    <form class="non-somm" data-non-somm-hero role="search"
+    <form class="non-somm" data-non-somm-inline data-non-somm-hero role="search"
       data-somm-surface="homepage_hero" data-somm-context="home">
       <div class="non-somm__bar">
         <span class="non-somm__caret" aria-hidden="true">&gt;</span>
@@ -159,6 +159,23 @@
             <button
               type="button"
               class="non-somm__seed"
+              {%- comment -%}
+                BOTH HOOKS, and which one acts depends on the width.
+
+                `data-non-somm-seed` is what somm.js's root listener reads, so
+                on a desktop the chip asks inline like the field beside it.
+                `data-non-somm-open` is the sheet's, so on a phone it still
+                opens the sheet. somm-sheet.js ignores the second above the
+                breakpoint precisely so they cannot both fire.
+
+                The canned answer travels with it because that list is also the
+                offline fallback: a chip that reaches somm.js with no vetted
+                copy asks the Worker for a real answer instead, which is the
+                right behaviour and not the fast one.
+              {%- endcomment -%}
+              data-non-somm-seed
+              data-answer="{{ block.settings.answer | escape }}"
+              data-picks="{{ block.settings.picks | escape }}"
               data-non-somm-open
               data-somm-surface="homepage_hero"
               data-somm-context="home"
@@ -170,6 +187,25 @@
           {%- endfor -%}
         </div>
       {%- endif -%}
+
+      {%- comment -%}
+        THE ANSWER, IN THE PAGE.
+
+        The Somm used to open a panel over the homepage to say what it thought,
+        which reads as a popup arriving on top of the site rather than as the
+        hero answering the question it just asked for. This is where the answer
+        goes on a desktop: under the bar, in the same column, in the composition.
+
+        Hidden until there is something to say — somm.js clears `hidden` on
+        [data-non-somm-answer] and on the stream inside it. Below the
+        breakpoint it stays hidden and the sheet does the talking, because a
+        transcript unrolling inside a 402px hero would push the range off the
+        page.
+      {%- endcomment -%}
+      <div class="non-somm__answer" data-non-somm-answer hidden>
+        <p class="non-somm__stream" data-non-somm-stream></p>
+        <div class="non-somm__picks" data-non-somm-picks hidden></div>
+      </div>
     </form>
 
     {%- endif -%}

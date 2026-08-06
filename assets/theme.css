@@ -1446,7 +1446,23 @@ button { font-family: inherit; }
   animation: cardIn .3s var(--non-ease) both;
 }
 .non-drawer__head { display: flex; align-items: center; justify-content: space-between; padding: 20px 22px; border-bottom: 1px solid var(--non-line); }
-.non-drawer__items { flex: 1; overflow-y: auto; padding: 8px 22px; }
+/* THE FOOTER SITS UNDER THE LIST, not at the bottom of the screen.
+   `flex: 1` made the list claim every spare pixel, so with two lines in the
+   cart there was about 600px of empty panel between the last item and the
+   subtotal — and with one line it would be most of the screen.
+
+   `flex: 0 1 auto` keeps the two behaviours that matter and drops the one that
+   did not: the list is only as tall as its contents, so the footer follows it
+   immediately; and when the contents outgrow the panel it still SHRINKS and
+   scrolls rather than pushing checkout off the bottom. `min-height: 0` is what
+   lets it shrink at all — a flex item's default floor is its content, which
+   would make a long cart overflow the panel instead of scrolling inside it. */
+.non-drawer__items {
+  flex: 0 1 auto;
+  min-height: 0;
+  overflow-y: auto;
+  padding: 8px 22px;
+}
 .non-drawer__item { display: flex; gap: 14px; padding: 16px 0; border-bottom: 1px solid var(--non-line); }
 .non-drawer__item img { width: 62px; height: 78px; object-fit: cover; background: var(--non-photo-bed); }
 .non-drawer__foot { padding: 20px 22px; border-top: 1px solid var(--non-line); }

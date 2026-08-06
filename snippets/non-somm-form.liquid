@@ -70,6 +70,24 @@
   data-non-somm-entry
   data-somm-context="{{ somm_context }}"
   data-somm-surface="{{ somm_surface }}"
+  {%- comment -%}
+    THE CONTROLLER'S HOOKS, emitted per surface.
+
+    Found by auditing every selector in assets/*.js before retiring the old
+    markup, which is the only reason this snippet works. somm-sheet.js hands
+    the hero's submit to the sheet through `[data-non-somm-hero]` and reads the
+    typed text from `[data-non-somm-hero-input]`; without both, the hero form
+    submits, the sheet never opens, and the control is silently dead - the same
+    failure mode as the welded attributes, and just as invisible.
+
+    Scoped by surface rather than emitted everywhere: `[data-non-somm-hero]` is
+    queried with querySelector, so a second element carrying it would take the
+    handoff and the real hero would lose it.
+
+    Note the JS binds NOTHING to the .non-somm-entry tree - not one selector -
+    which is why retiring that component cannot break behaviour.
+  {%- endcomment -%}
+  {%- if somm_surface == 'homepage_hero' %} data-non-somm-hero{% endif -%}
   {%- if product != blank %}
     data-somm-product="{{ product.id }}"
     data-somm-product-title="{{ product.title | escape }}"
@@ -97,6 +115,7 @@
       type="search"
       autocomplete="off"
       data-non-somm-input
+      {% if somm_surface == 'homepage_hero' %}data-non-somm-hero-input{% endif %}
       placeholder="{{ placeholder | escape }}">
     <button type="submit" class="non-somm__submit">{{ submit_label }}</button>
   </div>

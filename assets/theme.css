@@ -1469,12 +1469,16 @@ button { font-family: inherit; }
    `[data-non-remove]` as well as the class: the DRAWER's remove carries
    `.non-drawer__rm`, the CART PAGE's carries only the data attribute (see
    main-cart.liquid). Same control, same 26px box, two markups — so the class
-   alone gave the cart page the 36px pair-expander meant for a button with a
-   neighbour 10px away, when it has no neighbour at all. Measured on the cart at
-   402: hit at 18px in every direction either way, but 8px narrower than
-   intended for the one control here that destroys a line item. */
+   alone left the cart page on the 36px pair-expander, which exists for a button
+   sitting 10px from a neighbour. Measured here: the nearest neighbour is 205px
+   away, so the full 44 applies exactly as the line above intends.
+
+   SCOPED UNDER `.non-drawer__qty`, because on the cart page Remove is INSIDE
+   that cluster — so `.non-drawer__qty button::after` at two classes beat a bare
+   attribute selector at one, and the first attempt at this changed nothing.
+   Verified with elementFromPoint, not by reading the rule. */
 .non-drawer__rm::after,
-[data-non-remove]::after { width: 44px; }
+.non-drawer__qty [data-non-remove]::after { width: 44px; }
 
 /* THE LINE ITEM'S TITLE, which had no expander at all.
    18px tall, and a miss 12px above it lands on the row rather than the link.

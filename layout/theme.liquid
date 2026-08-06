@@ -91,7 +91,15 @@
           cartDrawer: {{ settings.cart_drawer | default: true | json }},
           freeShipping: {% render 'free-shipping', mode: 'json' %},
           moneyFormat: {{ shop.money_format | json }},
-          sommEndpoint: {{ settings.somm_endpoint | default: '' | json }},
+          {%- comment -%}
+            THE KILL SWITCH REACHES THE ENDPOINT TOO.
+
+            Hiding the controls while leaving the endpoint configured would
+            stop the buttons and leave every other path — a stale script, a
+            console call, a cached page — able to transmit. Off means the
+            Worker's address is not in the document.
+          {%- endcomment -%}
+          sommEndpoint: {% if settings.somm_enabled %}{{ settings.somm_endpoint | default: '' | json }}{% else %}""{% endif %},
           sommStream: {{ settings.somm_stream | default: true | json }},
           sommTypeSpeed: {{ settings.somm_type_speed | default: 12 | json }},
           lottoEndpoint: {{ settings.lotto_endpoint | default: '' | json }}
@@ -208,7 +216,7 @@
       stacking context if both are ever up. The sheet closes itself when the
       drawer opens, so that should not happen; this is the belt to that braces.
     {%- endcomment -%}
-    {%- if template.name == 'index' or template.name == 'product' or template.name == 'collection' -%}
+    {%- if settings.somm_enabled and template.name == 'index' or settings.somm_enabled and template.name == 'product' or settings.somm_enabled and template.name == 'collection' -%}
       {% render 'somm-sheet' %}
 
       {%- comment -%}

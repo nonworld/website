@@ -58,7 +58,7 @@
       class="non-trip__cell"
       {% if block.settings.focal != blank %}style="--non-trip-pos: {{ block.settings.focal }}"{% endif %}
       {{ block.shopify_attributes }}>
-      {%- if block.settings.meal_category != blank -%}
+      {%- if settings.somm_enabled and block.settings.meal_category != blank -%}
         <button
           type="button"
           class="non-trip__hit"

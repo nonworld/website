@@ -7792,3 +7792,15 @@ select:-moz-focusring { color: transparent; text-shadow: 0 0 0 var(--non-fg); }
     padding-top: 0;
   }
 }
+
+/* The sensitive-information notice, under the Somm's field. Quiet but never
+   hidden: it warns about exactly what the field invites, so it is present
+   every time the field is. */
+.non-sheet__notice {
+  margin: 8px 0 0;
+  font-family: var(--non-mono);
+  font-size: 10.5px;
+  letter-spacing: .04em;
+  line-height: 1.4;
+  color: var(--non-fg-faint);
+}

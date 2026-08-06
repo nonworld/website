@@ -416,7 +416,7 @@
       Same shared sheet, same transcript, same bottle context. The only thing
       that changed is where the way in sits.
     {%- endcomment -%}
-    {%- if section.settings.show_somm and not_drink == blank and has_spec -%}
+    {%- if settings.somm_enabled and section.settings.show_somm and not_drink == blank and has_spec -%}
       {%- assign pdp_variant = product.selected_or_first_available_variant -%}
       <div class="non-somm-entry non-somm-entry--pdp" data-non-somm-entry>
         {% render 'somm-orb',

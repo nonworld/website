@@ -54,6 +54,13 @@
     "name": "NON Somm",
     "settings": [
       {
+        "type": "checkbox",
+        "id": "somm_enabled",
+        "label": "NON Somm enabled",
+        "default": true,
+        "info": "The single switch. Turn this off and every entry point, both orbs, the sheet and its scripts stop rendering, and no request or analytics event can be produced — because the code is not on the page, not because it is hidden. Use it if the privacy position changes."
+      },
+      {
         "type": "url",
         "id": "somm_endpoint",
         "label": "Somm API endpoint",

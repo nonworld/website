@@ -48,7 +48,7 @@
         <a class="non-btn non-hero__cta" href="{{ section.settings.cta_shop_url }}">
           {{ section.settings.cta_shop_label }}
         </a>
-        {%- if section.settings.cta_ask_label != blank -%}
+        {%- if settings.somm_enabled and section.settings.cta_ask_label != blank -%}
           <button
             type="button"
             class="non-btn non-btn--ghost non-hero__cta"
@@ -109,6 +109,7 @@
       the brief requires. The markup is the pairing page's; only the wiring
       differs.
     {%- endcomment -%}
+    {%- if settings.somm_enabled -%}
     <form class="non-somm" data-non-somm-hero role="search"
       data-somm-surface="homepage_hero" data-somm-context="home">
       <div class="non-somm__bar">
@@ -164,6 +165,8 @@
         </div>
       {%- endif -%}
     </form>
+
+    {%- endif -%}
 
     {%- comment -%}
       THE HERO NO LONGER CONTAINS A SOMM.

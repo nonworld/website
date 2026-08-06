@@ -113,7 +113,8 @@
       "rec_another": "Show me another",
       "rec_heading": "The Somm suggests",
       "orb_label": "Ask NON Somm",
-      "orb_ask_about": "Ask about {{ code }}"
+      "orb_ask_about": "Ask about {{ code }}",
+      "sensitive_notice": "Don't include sensitive personal information."
     },
     "lotto": {
       "heading": "Scratch & reveal",

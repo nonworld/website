@@ -98,12 +98,34 @@
           autocomplete="off"
           enterkeyhint="send"
           data-non-somm-input
+          aria-describedby="non-sheet-notice"
           placeholder="{{ 'sections.somm.placeholder' | t | escape }}">
         <button type="submit" class="non-sheet__send">
           <span aria-hidden="true">&rarr;</span>
           <span class="visually-hidden">{{ 'sections.somm.ask' | t }}</span>
         </button>
       </form>
+
+      {%- comment -%}
+        BESIDE THE FIELD, in every context.
+
+        The sheet is the ONLY place a customer types free text into the Somm —
+        the hero bar and the PDP bar hand over to it, the chips carry canned
+        prompts, and the triptych tiles carry a category. So one notice here
+        covers every entry point by construction, rather than by being repeated
+        in four places and going stale in three of them.
+
+        It is deliberately plain and permanent, not a dismissible banner: the
+        thing it warns about is the thing the field invites you to do, so it
+        belongs next to the field every time it is used.
+
+        aria-describedby rather than a floating line of text, so a screen
+        reader hears it as part of the input rather than as unrelated prose
+        somewhere after it.
+      {%- endcomment -%}
+      <p class="non-sheet__notice" id="non-sheet-notice">
+        {{ 'sections.somm.sensitive_notice' | t }}
+      </p>
     </div>
   </div>
 </div>

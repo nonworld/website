@@ -6453,6 +6453,19 @@ select:-moz-focusring { color: transparent; text-shadow: 0 0 0 var(--non-fg); }
     gap: var(--non-pad);
     overflow-x: auto;
     scroll-snap-type: x mandatory;
+    /* AND THE SNAP HAS TO KNOW ABOUT THE GUTTER.
+     *
+     * The gap alone was not enough, which only showed up on the built theme:
+     * `scroll-snap-align: start` aligns an item to the SNAPPORT, and the
+     * snapport starts at the padding-box edge unless told otherwise. So the
+     * row silently scrolled itself to scrollLeft: 22 to satisfy the snap,
+     * putting quote 1 flush against the viewport edge and 22px of quote 2 back
+     * on screen — the geometry was right and the resting position was wrong.
+     *
+     * Insetting the snapport by the same gutter lands it at scrollLeft: 0 with
+     * quote 1 at x=22, aligned with every other left edge on the page, and
+     * quote 2 at exactly 402. */
+    scroll-padding-inline: var(--non-pad);
     scrollbar-width: none;
     margin-inline: calc(var(--non-pad) * -1);
     padding-inline: var(--non-pad);

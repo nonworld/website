@@ -144,8 +144,8 @@
   },
   "order": [
     "main",
-    "pairings",
     "somm",
+    "pairings",
     "process",
     "related"
   ]

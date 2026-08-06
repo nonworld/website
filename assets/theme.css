@@ -3697,6 +3697,25 @@ select:-moz-focusring { color: transparent; text-shadow: 0 0 0 var(--non-fg); }
   color: #EDEDE8;
 }
 
+/* THE SHEET IS A SOMM THAT CARRIES NEITHER CLASS.
+ *
+ * Its form is `.non-sheet__ask`: somm.js binds it, it uses `.non-somm__input`,
+ * it reads these tokens — but it is not `.non-somm` and it is not inside one,
+ * so it never inherited the override above and `--non-somm-fg` fell all the way
+ * through to the :root value, #0c0c0c.
+ *
+ * Measured on the built theme: typed text at rgb(12,12,12) on a rgb(23,21,19)
+ * panel. 1.07:1. Not hard to read — invisible. Every question typed into the
+ * sheet was black ink on a black panel, and because the placeholder carries its
+ * own colour the field looked perfectly fine until you touched it. That is why
+ * it survived: nothing is wrong with an empty one.
+ *
+ * ONLY THIS TOKEN, not the whole block above. Applying all of them to the panel
+ * was measured too, and it drags `--non-fg-faint` down with it — the NON SOMM
+ * eyebrow goes from rgb(125,125,122) to rgb(95,95,91) for no reason anybody
+ * asked for. One broken token, one line. */
+.non-sheet__panel { --non-somm-fg: #EDEDE8; }
+
 /* No panel. No border, no fill, no radius, no clipping. */
 .non-sommbox,
 .non-somm__bar {

@@ -3812,11 +3812,17 @@ select:-moz-focusring { color: transparent; text-shadow: 0 0 0 var(--non-fg); }
    classes — so a one-class undo here would lose and the ghost would render as a
    second bordered field on top of the real one. Same specificity, declared
    later, which is the only way this wins. */
-.non-somm .non-somm__ghost {
+.non-somm .non-somm__field .non-somm__ghost {
   position: absolute;
   inset: 0;
-  /* Inherited from the input's block above and explicitly undone: the ghost is
-     a transparent overlay, not a second field. */
+  /* Inherited from the input's metric block and explicitly undone: the ghost is
+     a transparent overlay, not a second field.
+
+     THREE CLASSES, and not for tidiness. That block is `.non-somm
+     .non-somm__ghost` at two, and it sits LATER in this file than this rule —
+     so a two-class undo lost and the ghost kept a 1px border, laid exactly over
+     the input's own and shifting the prompt a pixel right of the text that
+     replaces it. Measured. Specificity beats source order; matching it did not. */
   border: 0;
   height: auto;
   display: flex;
@@ -4608,7 +4614,22 @@ select:-moz-focusring { color: transparent; text-shadow: 0 0 0 var(--non-fg); }
 .non-somm.non-stock-search {
   grid-template-rows: auto;
   align-items: center;
+  /* AND THE FILTERS SIT UNDER IT, not a screen below it.
+   *
+   * Measured at 1440: the bar ended at y=555 and the TYPE row began at 647 —
+   * 92px of nothing. The homepage puts its prompt chips 14px under the same
+   * bar, and this is meant to read as the same control on a different page.
+   *
+   * Two of the three causes are removable and one is not. The shared
+   * `.non-somm` bottom padding (30px) is one, the filters' own leading is
+   * another. The third is the orb: it is 96px against the bar's 52 and it sets
+   * the row height, so 44px of the gap is the orb's own box hanging below the
+   * field. Closing that would mean shrinking the orb on this page or letting
+   * the filters run under it, and neither is worth doing behind Aaron's back —
+   * the two that ARE spacing come out here. */
+  padding-bottom: 0;
 }
+.non-stock-search + .non-stock-filters { margin-top: 14px; }
 
 /* 1. The orb. Sized so it is present without dominating, and sitting close
       enough to the words to belong to them. */

@@ -5933,7 +5933,12 @@ select:-moz-focusring { color: transparent; text-shadow: 0 0 0 var(--non-fg); }
    Bullets are dashes rather than discs: a disc inside a bordered card reads as
    a second level of decoration, and the set contents list is the one place on
    the site where a list is doing real work. */
-.non-benefit__b--rich { font-size: var(--t-copy); line-height: 1.55; }
+/* NO FONT SIZE OF ITS OWN. It set var(--t-copy) — 17.5px against the 14px
+   `.non-benefit__b` uses — so a Set's cards ran a size and a half larger than
+   the identical cards on an accessory, which is the whole of Aaron's "sets
+   don't match". Measured: 17.5/27.1 against 14/21.7, in cards whose padding,
+   grid, gap and titles were already pixel-identical. Line-height goes with it;
+   the base already says 1.55. */
 .non-benefit__b--rich p { margin: 0 0 8px; }
 .non-benefit__b--rich p:last-child { margin-bottom: 0; }
 .non-benefit__b--rich ul,
@@ -5948,9 +5953,18 @@ select:-moz-focusring { color: transparent; text-shadow: 0 0 0 var(--non-fg); }
   position: absolute; left: 0; opacity: .55;
   font-family: var(--non-mono); font-size: 11px;
 }
-/* Descriptions carry stray <br> between list items and headings, which double
-   the spacing the rules above already set. */
-.non-benefit__b--rich br { display: none; }
+/* Descriptions carry stray <br> BETWEEN blocks — after a list, before a
+   heading — which double the spacing the rules above already set. Those are
+   direct children of this container, and only those are hidden.
+   
+   It used to hide every <br> at any depth, and that was destroying content. In
+   the sets, every single <br> sits inside a <p>, separating one bottle's line
+   from the next: "…for a floral finish." / "NON3 - Bright, tart…". Hidden, they
+   ran together as "…floral finish.NON3 - Bright…" on every set in the range.
+   Checked rather than assumed — of the six cards on The Spring Set, the four
+   <br> elements are all inside <span> inside <p>, and not one is the stray this
+   rule was written for. */
+.non-benefit__b--rich > br { display: none; }
 
 /* ASK A HUMAN — the escalation card under a Somm answer.
    Charcoal panel on the page's own ground, one hairline, no second border

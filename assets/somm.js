@@ -262,6 +262,47 @@
       // replied, and the page showed nothing at all. On the hero the two are
       // nested, so this is a no-op there.
       if (stream) stream.hidden = false;
+
+      /* AND BRING IT INTO VIEW INSIDE THE SHEET.
+       *
+       * Unhiding is not showing. In the sheet the transcript sits above the
+       * prompt chips and the field, in its own scroll container — so a
+       * customer who has just typed a question is looking at the field, with a
+       * keyboard under it, while the answer paints off the top of the panel.
+       * The request succeeded, the somm replied, and from where they are
+       * sitting nothing happened. Reported three times as "nothing came up"
+       * and "didn't scroll to answer", and both are the same thing.
+       *
+       * Scrolls the SHEET'S OWN container where there is one — scrolling the
+       * document instead does nothing, because the sheet is fixed and the body
+       * is locked while it is open. Falls back to the element on the surfaces
+       * that answer inline. */
+      revealAnswer();
+    }
+
+    /* Deliberately not scrollIntoView() on the answer box in the sheet: the
+       panel is a fixed, body-locked overlay, so the browser resolves that
+       against the document and moves nothing anyone can see. The scroll
+       container is the thing that has to move. */
+    function revealAnswer() {
+      var target = stream || answerBox;
+      if (!target) return;
+      var still = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      var pane = target.closest('[data-non-sheet-scroll]');
+      if (pane) {
+        /* Computed, not scrollTo(0). The transcript happens to sit near the top
+           of the panel today, but a conversation that has run for a few turns
+           puts it anywhere, and "scroll to the top" would then show the wrong
+           end of it. This lands the answer's top edge at the top of the pane
+           wherever it actually is. */
+        var top = pane.scrollTop + (target.getBoundingClientRect().top - pane.getBoundingClientRect().top);
+        pane.scrollTo({ top: Math.max(0, top), behavior: still ? 'auto' : 'smooth' });
+        return;
+      }
+      var r = target.getBoundingClientRect();
+      var h = window.innerHeight || document.documentElement.clientHeight;
+      if (r.top >= 0 && r.top < h - Math.min(160, r.height / 3)) return;
+      target.scrollIntoView({ behavior: still ? 'auto' : 'smooth', block: 'start' });
     }
 
     /* The working state, per the NON Somm identity: the mark is the full stop

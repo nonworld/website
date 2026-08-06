@@ -5660,23 +5660,6 @@ select:-moz-focusring { color: transparent; text-shadow: 0 0 0 var(--non-fg); }
   align-self: start;
 }
 
-/* THE ROW, on the two surfaces that drop to a single column.
-
-   Still inside the single owner: the hero and the PDP entry lay the Somm out
-   as one column so their text lines up with the title, price and Add button
-   beside it. An orb spanning `1 / -1` on a one-column grid does not sit above
-   that text, it sits BEHIND it for the full height of the block.
-
-   `grid-row: auto` puts it in its own row at the top. It is the same orb —
-   size, gradient, blur and breath are all set above and unchanged; this says
-   only which cell it occupies. Pairing and stockists are untouched and keep
-   the orb beside their block, which is what they were drawn for. */
-.non-hero .non-somm::before,
-.non-somm-entry--pdp::before {
-  grid-row: auto;
-  grid-column: 1;
-}
-
 /* EVERY REMAINING PLACEMENT DECLARATION, GATHERED HERE.
    ==========================================================================
    The owner block used to own only the horizontal pull. Five other rules
@@ -6816,16 +6799,21 @@ select:-moz-focusring { color: transparent; text-shadow: 0 0 0 var(--non-fg); }
    Two separate causes of one step. It carried `padding: 28px var(--non-pad)`
    from when it was a standalone section and needed its own gutter — but it
    lives inside .non-buy again, which already pads, so the horizontal half was
-   being applied twice. And the orb took a grid column, pushing the label, the
-   bar and the chips in by its width plus the gap.
+   being applied twice. Only the horizontal half is dropped.
 
-   The eyebrow, the title, "Drinks like", the pack rows, Add and the shipping
-   line all begin at the same x. So does this now: no horizontal padding of its
-   own, one column, orb stacked above. */
+   The columns are NOT touched here. This block once forced a single column so
+   the label and bar would start at the same x as the title and the pack rows,
+   and that was the wrong thing to optimise: it deleted the orb's column, so
+   the orb fell out of the composition and the content column shrank to a
+   narrow rail that wrapped "Ask about this bottle" one word per line.
+
+   The indent is the design. On the pairing page the content column starts
+   after the orb and its 44px gap, and that offset is what makes the orb read
+   as part of the control rather than decoration parked nearby. The PDP and the
+   hero inherit the same two-column track from .non-somm-entry, which is the
+   single owner of it. */
 .non-somm-entry--pdp {
   padding: 28px 0 0;
-  grid-template-columns: minmax(0, 1fr);
-  column-gap: 0;
 }
 
 @media (max-width: 859px) {
@@ -7803,21 +7791,12 @@ select:-moz-focusring { color: transparent; text-shadow: 0 0 0 var(--non-fg); }
    ========================================================================== */
 @media (min-width: 700px) {
   .non-hero .non-somm {
-    /* Columns, gap and max-width used to be declared here as well. They now
-       live in one place, at the end of the file, alongside the PDP's — two
-       blocks setting --non-somm-cols for the same element is the same trap
-       as two setting the column track list directly, one level further back.
+    /* Only what is genuinely hero-specific. The hero band supplies its own
+       top spacing, so the Somm must not add a second helping.
 
-       Phrased without naming that property: check 6b counts occurrences in
-       the raw file, comments included, so writing it here would trip the
-       guard that exists to stop it being written twice for real.
-
-       This keeps only what is genuinely hero-specific: the hero band supplies
-       its own top spacing, so the Somm must not add a second helping.
-
-       The single column is no longer gated at 700px either. It was, and a
-       phone is below 700px, so the orb kept its column exactly where there is
-       least room for it. */
+       Columns and gap are deliberately absent: the hero uses the same
+       two-column composition as the pairing page, inherited from .non-somm,
+       which owns that track list alone. */
     padding-top: 0;
   }
 }
@@ -7834,104 +7813,4 @@ select:-moz-focusring { color: transparent; text-shadow: 0 0 0 var(--non-fg); }
   color: var(--non-fg-faint);
 }
 
-/* ==========================================================================
-   SOMM ALIGNMENT — LAST WORD, DELIBERATELY
 
-   Reported twice as "left align" and "not aligned", and fixed twice without
-   effect, because both fixes were written earlier in this file than the rules
-   they had to beat and lost the cascade at equal specificity. Measured at 1440
-   the PDP block still computed `grid-template-columns: 96px 472px`: the
-   override was in the file and doing nothing.
-
-   So this block sits at the end. Not for tidiness — for the cascade. Anything
-   added after it will outrank it, which is the thing to know before adding
-   anything after it.
-
-   The orb itself is untouched HERE, on purpose: its position has exactly one
-   owner (see "THE ORB — single owner"), and the row it occupies on these two
-   surfaces is set there, with the rest of its placement, rather than being
-   claimed by an eleventh block at the bottom of the file. That separation is
-   the whole reason the orb stopped moving every time someone edited this file.
-
-   What was wrong is that the orb was given a grid COLUMN. A decorative light
-   holding a column pushes every word beside it 120px inboard of the title,
-   the price and the Add button it is supposed to sit under. These surfaces
-   drop to one column, so the orb takes a row instead — same object, same
-   gradient, blur, size and breath, stacked above the words rather than beside
-   them, every line starting on the same left edge as the rest of the column.
-
-   The pairing page keeps its column, because there the whole block is beside
-   the orb and there is nothing for it to be out of line with.
-
-   Columns are set through --non-somm-cols rather than grid-template-columns:
-   the base rule reads that custom property, so there is still exactly one
-   grid-template-columns declaration on .non-somm in this file. Declaring it a
-   second time here would win silently and is what check 6b exists to stop.
-   ========================================================================== */
-
-.non-somm-entry.non-somm-entry--pdp,
-.non-hero .non-somm.non-somm {
-  --non-somm-cols: minmax(0, 1fr);
-  column-gap: 0;
-  justify-items: start;
-  justify-self: start;
-  margin-inline: 0;
-  padding-left: 0;
-  padding-right: 0;
-}
-
-/* The children were sized to a 472px second column. On one column they take
-   the block's width, and the block takes the column's. */
-.non-somm-entry.non-somm-entry--pdp > *,
-.non-hero .non-somm.non-somm > * {
-  grid-column: 1;
-  max-width: 100%;
-}
-
-/* The hero block was capped at 620px and then centred in a column nearly
-   twice that, which is where the ~265px indent came from. The cap stays — a
-   search bar the full width of a hero column reads as a footer — but it is
-   measured from the left edge now, not from the middle. */
-@media (min-width: 700px) {
-  .non-hero .non-somm.non-somm {
-    max-width: 620px;
-    margin-left: 0;
-    margin-right: auto;
-  }
-}
-
-/* --------------------------------------------------------------------------
-   PDP CHIP ROW — the bleed had nothing left to cancel.
-
-   `.non-somm-entry__chips` bleeds to both edges with
-   `margin-inline: calc(var(--non-pad) * -1)` and puts the padding back with
-   `padding-inline: var(--non-pad)`. That pair is written to cancel the
-   PARENT's horizontal padding: the strip's box reaches the screen edge so the
-   row visibly runs off it, while the first chip still lines up with the type
-   above it.
-
-   It only works while the parent actually has that padding. Setting
-   `padding-left: 0` on the PDP entry — correct in itself, the entry sits
-   inside .non-buy which already supplies the gutter — left the negative
-   margin pulling against nothing, so the cancel applied twice and the first
-   chip lost its 22px.
-
-   The fix is to stop cancelling a padding that is no longer there, not to put
-   the padding back: restoring it would re-indent the label and bar and undo
-   the alignment this all started with.
-
-   Scrolling is untouched. overflow-x, scroll-snap, the hidden scrollbar and
-   nowrap all still come from the rule above; only the two offsets are
-   neutralised. The row still runs off the right-hand edge, because the entry
-   has no right padding either — so the swipe affordance survives on the side
-   where it does the work.
-
-   Mobile only, and PDP only. Desktop PDP measures correct at 1440 and the
-   homepage hero never had the doubled cancel, so neither is in this selector.
-   -------------------------------------------------------------------------- */
-@media (max-width: 859px) {
-  .non-somm-entry--pdp .non-somm-entry__chips {
-    margin-inline: 0;
-    padding-inline: 0;
-  }
-}

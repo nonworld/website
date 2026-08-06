@@ -7179,7 +7179,11 @@ select:-moz-focusring { color: transparent; text-shadow: 0 0 0 var(--non-fg); }
      hidden, the rows are the label and the chips — about 70px — and a 160px
      orb had nowhere to go. */
   .non-somm-entry { min-height: var(--non-orb-col); }
-  .non-somm-entry__label { align-self: end; }
+  /* `align-self: end` pulls the label to the bottom of its own grid row, which
+     on a desktop put it hard against the top edge of the field — measured, the
+     gap was 0px. The 10px above is inside the mobile query and never reached
+     here, so this row had no spacing at all. */
+  .non-somm-entry__label { align-self: end; margin-bottom: 12px; }
 
   .non-somm-entry__chips {
     display: flex;

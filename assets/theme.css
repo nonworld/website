@@ -3772,8 +3772,15 @@ select:-moz-focusring { color: transparent; text-shadow: 0 0 0 var(--non-fg); }
 .non-somm__field .non-somm__input { flex: 1 1 auto; min-width: 0; }
 
 /* Transparent, not removed: it is still the accessible placeholder and it is
-   what shows if the ghost never paints. */
-.non-somm__field .non-somm__input::placeholder { color: transparent; }
+   what shows if the ghost never paints.
+
+   `.non-somm .non-somm__field` rather than `.non-somm__field` alone, because
+   `.non-somm .non-somm__input::placeholder` is declared later in this file at
+   the same specificity and wins on source order — which shipped the ghost and
+   the native placeholder painting the same words on top of each other. Fifth
+   time today a Somm rule has lost that way, so this one is written to a
+   specificity that cannot be reached by another two-class selector. */
+.non-somm .non-somm__field .non-somm__input::placeholder { color: transparent; }
 
 .non-somm__ghost {
   position: absolute;

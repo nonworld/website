@@ -7515,7 +7515,19 @@ select:-moz-focusring { color: transparent; text-shadow: 0 0 0 var(--non-fg); }
 /* The Somm block becomes two columns: the orb, then everything else. */
 .non-somm-entry {
   display: grid;
-  grid-template-columns: var(--non-orb-col, 84px) minmax(0, 1fr);
+  /* 100px on a phone, and the number is a comparison rather than a taste.
+     The ORIGINAL orb — .non-somm::before, still on the pairing and stockists
+     pages — measures 72px below 700 and 104px between 700 and 859. At 84 the
+     hero's orb was within 12px of a decoration sitting beside a form on
+     another page, which is not a hierarchy anyone can see. The hero is where
+     the Somm lives; its orb should be unmistakably the largest one on the
+     site at every width.
+
+     100 is the top of the range the brief allows on mobile, and it costs the
+     hero nothing: the rows beside it are the label (16), the field (52) and
+     the chips (44) — 112px of content that the orb sits inside rather than
+     adds to. Measured at 375: hero 671 before, 671 after. */
+  grid-template-columns: var(--non-orb-col, 100px) minmax(0, 1fr);
   /* EXPLICIT ROWS, and they are load-bearing.
      `grid-row: 1 / -1` on the orb resolves -1 against the EXPLICIT row grid.
      With rows left implicit there is no explicit grid, so -1 collapsed to line
@@ -7624,7 +7636,9 @@ select:-moz-focusring { color: transparent; text-shadow: 0 0 0 var(--non-fg); }
 /* Sizes. 84px on a phone — inside the 72–100 the brief sets, and the tallest
    the Somm block's own rows allow without adding height to the hero. */
 @media (min-width: 700px) {
-  .non-somm-entry { --non-orb-col: 120px; column-gap: 22px; }
+  /* The pairing orb is 104 in this band; 140 keeps the gap decisive and is the
+     floor of the brief's desktop range. */
+  .non-somm-entry { --non-orb-col: 140px; column-gap: 22px; }
 }
 @media (min-width: 860px) {
   /* 160px on a desktop: inside 140–200, and about the width of the field it

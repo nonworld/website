@@ -19,9 +19,14 @@
  * phrasing. Everything between them is plain arithmetic in scoring-engine.js.
  *
  * Two rules hold the whole thing together:
- *   - the model is never shown a price, so it can never misquote one
+ *   - the model READS a price, it never recalls one. It is shown what the
+ *     product page publishes and quotes or sums only that; with no figure in
+ *     the sheet there is no price answer. (Until 87f5a5b, 2026-08-01, it was
+ *     shown no price at all, and this comment still said so until 2026-08-07.
+ *     See README.md for why the change is not a relaxation.)
  *   - the response carries product *codes*; the theme renders title, price
- *     and availability from Liquid
+ *     and availability from Liquid — so the number the customer acts on is
+ *     always Liquid's, never the model's
  */
 
 import { PRODUCTS, rankProducts, scoreProduct, factsSheet } from './scoring-engine.js';

@@ -24,12 +24,25 @@ nowhere to go but the prompt. Here a wrong pairing is a number in
 
 Two rules do most of the safety work:
 
-- **The model is never shown a price**, so it cannot misquote one. This is not
-  hypothetical: the original static design confidently quoted three different
-  prices for the Mixed 6, none of which matched the store.
+- **The model reads a price, it never recalls one.** It is shown the figure the
+  product page publishes, and it quotes or adds up only that. The original
+  static design confidently quoted three different prices for the Mixed 6, none
+  of which matched the store — that failure was recall. Being handed the number
+  is the fix for it, not a relaxation of it: with no figure in the sheet there
+  is no price answer, and discount codes, promotions and shipping are still
+  refused outright because those are not in the sheet either.
+
+  This rule used to read "the model is never shown a price", and that was true
+  until 2026-08-01 (`87f5a5b`), when the spec sheet started carrying `Price` and
+  `Pack prices`. `b4771ee` then told it to do the arithmetic. The sentence
+  survived both commits and sat here describing the opposite of the shipping
+  design for six days, while `FACTS_SYSTEM` still carried a matching ban that
+  the house rules contradicted. Deflecting "how much is one bottle" on a page
+  printing the price two inches away was the visible cost.
 - **The response carries product codes**, not product copy. The theme resolves
   each code to a live Shopify product and renders title, price and stock from
-  Liquid.
+  Liquid. This is what makes the above safe: the price the customer acts on is
+  always Liquid's, never the model's.
 
 ## Deploy
 

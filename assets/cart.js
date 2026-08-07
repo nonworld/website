@@ -167,12 +167,54 @@
      The owner string must match on both sides; it is what lets two overlays
      overlap without one releasing the other's lock. */
 
+  /* EVERY INTERACTIVE CONTROL IN THE DRAWER, IN TAB ORDER.
+   *
+   * Recomputed on each call, never cached. The item list is re-rendered from
+   * /cart.js on every quantity change, so a list captured at open time is
+   * stale the moment someone taps "+", and a trap holding stale nodes sends
+   * focus to elements that are no longer in the document.
+   *
+   * `getClientRects().length` rather than `offsetParent`, because the drawer
+   * is `position: fixed` and offsetParent is null for fixed subtrees — the
+   * obvious check would have filtered out every control in it. This also drops
+   * the upsell block and the lotto prize row when they are hidden, which is
+   * the behaviour wanted: an empty cart has only Close and Checkout, and the
+   * trap must cycle those two rather than invisible ones. */
+  function focusables() {
+    var sel = 'a[href],button:not([disabled]),input:not([disabled]),'
+      + 'select:not([disabled]),textarea:not([disabled]),[tabindex]:not([tabindex="-1"])';
+    return Array.prototype.filter.call(drawer.querySelectorAll(sel), function (el) {
+      return el.getClientRects().length > 0;
+    });
+  }
+
   function open() {
     if (!drawer) return;
     lastFocus = document.activeElement;
     drawer.hidden = false;
     holdPage(true);
-    var close = drawer.querySelector('[data-non-cart-close]');
+
+    /* `button[data-non-cart-close]`, NOT `[data-non-cart-close]`.
+     *
+     * This is the whole bug. TWO elements carry that attribute, and the scrim
+     * comes first in the document:
+     *
+     *   <div class="non-drawer__scrim" data-non-cart-close>   <- line 2
+     *   <button class="non-header__cart" data-non-cart-close> <- line 14
+     *
+     * querySelector returns the first match in document order, so this handed
+     * `.focus()` a plain <div> with tabIndex -1. Focusing a non-focusable
+     * element is a silent no-op: focus stayed on the page behind the drawer,
+     * and a keyboard customer opened the cart and then tabbed through the
+     * storefront underneath it.
+     *
+     * It was NOT, as first diagnosed, a matter of focusing before the drawer
+     * was visible — `drawer.hidden = false` is already set two lines above,
+     * and the only visibility gate is `.non-drawer[hidden] { display: none }`.
+     * Deferring the call by a frame would have changed nothing, because the
+     * div is not focusable at any time. Verified by reading what the selector
+     * actually returned rather than what it was meant to return. */
+    var close = drawer.querySelector('button[data-non-cart-close]');
     if (close) close.focus();
   }
 
@@ -269,7 +311,46 @@
   });
 
   document.addEventListener('keydown', function (e) {
-    if (e.key === 'Escape' && drawer && !drawer.hidden) close();
+    if (!drawer || drawer.hidden) return;
+
+    if (e.key === 'Escape') { close(); return; }
+    if (e.key !== 'Tab') return;
+
+    /* KEEP TAB INSIDE THE OPEN DRAWER.
+     *
+     * The panel is aria-modal="true", which tells a screen reader the rest of
+     * the page is inert but does nothing at all to the Tab key. Without this
+     * the sequence after the last control is the storefront behind the scrim:
+     * the customer tabs onto links they cannot see, over a page they cannot
+     * scroll, with no indication they have left the cart.
+     *
+     * Only the two edges are handled. Tab between interior controls is the
+     * browser's own, which keeps reading order, disabled states and any future
+     * control correct for free — a handler that moved focus on every Tab would
+     * have to reimplement all of that and would get it subtly wrong. */
+    var list = focusables();
+    if (!list.length) return;
+
+    var first = list[0];
+    var last = list[list.length - 1];
+    var active = document.activeElement;
+
+    /* Focus outside the drawer entirely — possible if a re-render replaced the
+       node that had it — is pulled back to the appropriate edge rather than
+       left on the page behind. */
+    if (!drawer.contains(active)) {
+      e.preventDefault();
+      (e.shiftKey ? last : first).focus();
+      return;
+    }
+
+    if (e.shiftKey && active === first) {
+      e.preventDefault();
+      last.focus();
+    } else if (!e.shiftKey && active === last) {
+      e.preventDefault();
+      first.focus();
+    }
   });
 
   // Product forms post through the API rather than navigating to /cart.

@@ -5,21 +5,21 @@
               <circle pathLength="1" cx="201" cy="150" r="9" style="stroke-dasharray:1;stroke-dashoffset:1;animation:dcDraw .5s ease 1.6s forwards"></circle>
             </g>
             <path pathLength="1" d="M212 100 q6 -14 20 -18" style="stroke-dasharray:1;stroke-dashoffset:1;animation:dcDraw .5s ease 1.8s forwards"></path>
-            <g style="stroke:#8FA05E">
+            <g style="stroke:var(--dc-green)">
               <path pathLength="1" d="M200 168 q-4 8 0 12 q4 -4 0 -12" style="animation:dcFall 1.5s ease-in 2s infinite"></path>
               <path pathLength="1" d="M186 172 q-4 7 0 11 q4 -4 0 -11" style="animation:dcFall 1.5s ease-in 2.4s infinite"></path>
             </g>
             <path pathLength="1" d="M150 232 h100 l-8 46 h-84 z" style="stroke-dasharray:1;stroke-dashoffset:1;animation:dcDraw .9s ease .3s forwards"></path>
             <path pathLength="1" d="M250 242 q22 6 22 20 t-22 16" style="stroke-dasharray:1;stroke-dashoffset:1;animation:dcDraw .6s ease 1.2s forwards"></path>
-            <path pathLength="1" d="M158 254 q22 -8 44 0 t42 -1" style="stroke:#8FA05E;stroke-dasharray:1;stroke-dashoffset:1;animation:dcDraw .8s ease 2.6s forwards"></path>
-            <text x="200" y="296" style="fill:#5C5A55;stroke:none;font-family:var(--non-mono);font-size:13px;letter-spacing:0.2em;text-anchor:middle;animation:dcFade .6s ease 2.2s both">{{ cap4 }}</text>
+            <path pathLength="1" d="M158 254 q22 -8 44 0 t42 -1" style="stroke:var(--dc-green);stroke-dasharray:1;stroke-dashoffset:1;animation:dcDraw .8s ease 2.6s forwards"></path>
+            <text x="200" y="296" style="fill:var(--dc-cap);stroke:none;font-family:var(--non-mono);font-size:13px;letter-spacing:0.2em;text-anchor:middle;animation:dcFade .6s ease 2.2s both">{{ cap4 }}</text>
           </g>
         </svg>
       </sc-if>
 
       <sc-if value="{{ s5 }}" hint-placeholder-val="{{ false }}">
         <svg viewBox="0 0 400 300" style="position:absolute;inset:0;width:100%;height:100%;overflow:visible">
-          <g style="fill:none;stroke:#EDE8E0;stroke-width:2;stroke-linecap:round;stroke-linejoin:round">
+          <g style="fill:none;stroke:var(--dc-ink);stroke-width:2;stroke-linecap:round;stroke-linejoin:round">
             <path pathLength="1" d="M200 244 v-146" style="stroke-dasharray:1;stroke-dashoffset:1;animation:dcDraw .7s ease forwards"></path>
             <path pathLength="1" d="M170 274 h60 l-30 -30 z" style="stroke-dasharray:1;stroke-dashoffset:1;animation:dcDraw .8s ease .5s forwards"></path>
             <path pathLength="1" d="M156 274 h88" style="stroke-dasharray:1;stroke-dashoffset:1;animation:dcDraw .4s ease 1.2s forwards"></path>
@@ -35,40 +35,40 @@
                 <circle pathLength="1" cx="308" cy="112" r="7" style="stroke-dasharray:1;stroke-dashoffset:1;animation:dcDraw .5s ease 2.3s forwards"></circle>
               </g>
             </g>
-            <text x="200" y="296" style="fill:#5C5A55;stroke:none;font-family:var(--non-mono);font-size:13px;letter-spacing:0.2em;text-anchor:middle;animation:dcFade .6s ease 3s both">{{ cap5 }}</text>
+            <text x="200" y="296" style="fill:var(--dc-cap);stroke:none;font-family:var(--non-mono);font-size:13px;letter-spacing:0.2em;text-anchor:middle;animation:dcFade .6s ease 3s both">{{ cap5 }}</text>
           </g>
         </svg>
       </sc-if>
     </div>
   </div>
 
-  <div class="non-proc-steps" style="display:grid;grid-template-columns:repeat(5,1fr);gap:10px;border-top:1px solid #232320;padding-top:10px">
+  <div class="non-proc-steps" style="display:grid;grid-template-columns:repeat(5,1fr);gap:10px;border-top:1px solid var(--dc-rule);padding-top:10px">
     <div onClick="{{ go0 }}" style="display:flex;flex-direction:column;gap:6px;cursor:pointer">
-      <div style="height:2px;background:#232320;overflow:hidden">
-        <sc-if value="{{ s1 }}" hint-placeholder-val="{{ true }}"><div style="height:2px;background:#EDE8E0;transform-origin:left;animation:dcBar 6s linear both"></div></sc-if>
+      <div style="height:2px;background:var(--dc-rule);overflow:hidden">
+        <sc-if value="{{ s1 }}" hint-placeholder-val="{{ true }}"><div style="height:2px;background:var(--dc-ink);transform-origin:left;animation:dcBar 6s linear both"></div></sc-if>
       </div>
-      <div class="non-proc-steps__t" style="font-family:var(--non-mono);font-size:10.5px;letter-spacing:0.1em;color:#6E6B65">01 FRUIT</div>
+      <div class="non-proc-steps__t" style="font-family:var(--non-mono);font-size:10.5px;letter-spacing:0.1em;color:var(--dc-tick)">01 FRUIT</div>
     </div>
     <div onClick="{{ go1 }}" style="display:flex;flex-direction:column;gap:6px;cursor:pointer">
-      <div style="height:2px;background:#232320;overflow:hidden">
-        <sc-if value="{{ s2 }}" hint-placeholder-val="{{ false }}"><div style="height:2px;background:#EDE8E0;transform-origin:left;animation:dcBar 6s linear both"></div></sc-if>
+      <div style="height:2px;background:var(--dc-rule);overflow:hidden">
+        <sc-if value="{{ s2 }}" hint-placeholder-val="{{ false }}"><div style="height:2px;background:var(--dc-ink);transform-origin:left;animation:dcBar 6s linear both"></div></sc-if>
       </div>
-      <div class="non-proc-steps__t" style="font-family:var(--non-mono);font-size:10.5px;letter-spacing:0.1em;color:#6E6B65">02 TANNIN</div>
+      <div class="non-proc-steps__t" style="font-family:var(--non-mono);font-size:10.5px;letter-spacing:0.1em;color:var(--dc-tick)">02 TANNIN</div>
     </div>
     <div onClick="{{ go2 }}" style="display:flex;flex-direction:column;gap:6px;cursor:pointer">
-      <div style="height:2px;background:#232320;overflow:hidden">
-        <sc-if value="{{ s3 }}" hint-placeholder-val="{{ false }}"><div style="height:2px;background:#EDE8E0;transform-origin:left;animation:dcBar 6s linear both"></div></sc-if>
+      <div style="height:2px;background:var(--dc-rule);overflow:hidden">
+        <sc-if value="{{ s3 }}" hint-placeholder-val="{{ false }}"><div style="height:2px;background:var(--dc-ink);transform-origin:left;animation:dcBar 6s linear both"></div></sc-if>
       </div>
-      <div class="non-proc-steps__t" style="font-family:var(--non-mono);font-size:10.5px;letter-spacing:0.1em;color:#6E6B65">03 SALINITY</div>
+      <div class="non-proc-steps__t" style="font-family:var(--non-mono);font-size:10.5px;letter-spacing:0.1em;color:var(--dc-tick)">03 SALINITY</div>
     </div>
     <div onClick="{{ go3 }}" style="display:flex;flex-direction:column;gap:6px;cursor:pointer">
-      <div style="height:2px;background:#232320;overflow:hidden">
-        <sc-if value="{{ s4 }}" hint-placeholder-val="{{ false }}"><div style="height:2px;background:#EDE8E0;transform-origin:left;animation:dcBar 6s linear both"></div></sc-if>
+      <div style="height:2px;background:var(--dc-rule);overflow:hidden">
+        <sc-if value="{{ s4 }}" hint-placeholder-val="{{ false }}"><div style="height:2px;background:var(--dc-ink);transform-origin:left;animation:dcBar 6s linear both"></div></sc-if>
       </div>
-      <div class="non-proc-steps__t" style="font-family:var(--non-mono);font-size:10.5px;letter-spacing:0.1em;color:#6E6B65">04 ACIDITY</div>
+      <div class="non-proc-steps__t" style="font-family:var(--non-mono);font-size:10.5px;letter-spacing:0.1em;color:var(--dc-tick)">04 ACIDITY</div>
     </div>
     <div onClick="{{ go4 }}" style="display:flex;flex-direction:column;gap:6px;cursor:pointer">
-      <div style="height:2px;background:#232320;overflow:hidden">
-        <sc-if value="{{ s5 }}" hint-placeholder-val="{{ false }}"><div style="height:2px;background:#EDE8E0;transform-origin:left;animation:dcBar 6s linear both"></div></sc-if>
+      <div style="height:2px;background:var(--dc-rule);overflow:hidden">
+        <sc-if value="{{ s5 }}" hint-placeholder-val="{{ false }}"><div style="height:2px;background:var(--dc-ink);transform-origin:left;animation:dcBar 6s linear both"></div></sc-if>
       </div>
-      <div class="non-proc-steps__t" style="font-family:var(--non-mono);font-size:10.5px;letter-spacing:0.1em;color:#6E6B65">05 BALANCE</div>{% endraw %}
+      <div class="non-proc-steps__t" style="font-family:var(--non-mono);font-size:10.5px;letter-spacing:0.1em;color:var(--dc-tick)">05 BALANCE</div>{% endraw %}

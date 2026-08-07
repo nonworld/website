@@ -31,7 +31,13 @@
       class="non-contact-field"
       data-non-contact-field
       data-density="{{ section.settings.field_density }}"
-      data-ink="{{ section.settings.field_ink | default: '242,240,234' }}"
+      {%- comment -%}
+        No literal default. Emitting '242,240,234' unconditionally hardcoded the
+        dark theme's ink into every canvas; left blank, contact-field.js falls
+        back to --non-fg-rgb and the field follows the appearance. A merchant
+        who has set field_ink still wins, exactly as before.
+      {%- endcomment -%}
+      data-ink="{{ section.settings.field_ink }}"
       data-envelope-x="{{ section.settings.field_envelope_x | divided_by: 100.0 }}"
       {%- comment -%}
         A real on/off, not a 0 on the size slider. That slider has min: 60, so
@@ -266,8 +272,7 @@
       "type": "text",
       "id": "field_ink",
       "label": "Ink (R,G,B)",
-      "default": "242,240,234",
-      "info": "Comma-separated RGB, no rgb() wrapper. Defaults to the theme's ink."
+      "info": "Comma-separated RGB, no rgb() wrapper. Leave blank to follow the theme appearance."
     },
     {
       "type": "text",

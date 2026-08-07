@@ -112,9 +112,9 @@ class Component extends DCLogic {
     for (let n = 0; n < 5; n++) { v["s" + (n + 1)] = !blank && i === n; v["cap" + (n + 1)] = prod.caps[n]; v["go" + n] = () => this.go(n); }
     PRODUCTS.forEach((pr, n) => {
       v["p" + n] = () => this.pick(n);
-      v["c" + n] = n === p ? "#0A0A0A" : "#8F8B83";
-      v["b" + n] = n === p ? "#EDEDE8" : "#2E2C29";
-      v["g" + n] = n === p ? "#EDEDE8" : "transparent";
+      v["c" + n] = n === p ? "var(--dc-pill-on-fg)" : "var(--dc-label)";
+      v["b" + n] = n === p ? "var(--dc-pill-on-bg)" : "var(--dc-pill-off-bg)";
+      v["g" + n] = n === p ? "var(--dc-pill-on-bg)" : "transparent";
     });
     return v;
   }

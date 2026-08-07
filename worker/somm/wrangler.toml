@@ -62,3 +62,59 @@ database_id = "42c8b78c-5c21-42ef-9b99-639a954ebe2a"
 # enough that a backlog drains in order rather than racing itself.
 [triggers]
 crons = ["0 * * * *"]
+
+# ==========================================================================
+# STAGING — non-somm-staging
+# ==========================================================================
+#
+#   npx wrangler deploy --env staging
+#   npx wrangler secret put ANTHROPIC_API_KEY --env staging
+#
+# Both from `worker/somm/`. From the repo root wrangler cannot find this file
+# and reports a missing Worker name, which makes --env look like the failure
+# when it was the directory.
+#
+# WHY THIS EXISTS. Until now there was exactly one Worker, and the storefront's
+# published theme pointed at it. That meant a prompt change could not be tried
+# without being live for customers: on 2026-08-06 an uncommitted draft went out
+# with someone else's deploy, because `wrangler deploy` ships the WORKING TREE
+# and nobody had checked git status. The draft was fine. The next one might not
+# be, and there was no way to find out first.
+#
+# EVERY VAR IS REPEATED BELOW, and that is not redundancy. `vars` and
+# `d1_databases` are NON-INHERITABLE: a named environment REPLACES the
+# top-level table rather than merging with it. Anything omitted here is not
+# "the production value", it is undefined.
+#
+# ── What is deliberately NOT repeated ─────────────────────────────────────
+#
+# NO D1 BINDING. Staging must never write to `non-somm-log`. That table is the
+# record of what real customers ask, and test traffic in it corrupts exactly
+# the counts the log exists to produce — the 2026-08-07 review read fallback
+# rates and template density straight off it. index.js:1711 returns early when
+# SOMM_LOG is unbound, so staging answers normally and simply records nothing.
+#
+# NO CRON. `crons` is set empty rather than left out: the hourly tick exports
+# to the Google Sheet named in SHEET_ID, and a second Worker on the same
+# schedule would append staging rows to the same tab. Empty is explicit and
+# survives whatever wrangler decides about trigger inheritance.
+#
+# SHEET_ID/SHEET_GID are carried anyway so the export code paths behave
+# identically if one is ever invoked by hand. With no cron nothing calls them.
+[env.staging]
+
+[env.staging.vars]
+EXTRACT_MODEL = "claude-haiku-4-5-20251001"
+EXPLAIN_MODEL = "claude-sonnet-5"
+RATE_LIMIT_PER_MINUTE = "20"
+SHEET_ID = "1MaKIe_a7kgNVPqYQrfktUYzW6p5pt8KNgGMzGK_FnZo"
+SHEET_GID = "183822213"
+RETENTION_MONTHS = "24"
+
+# ANTHROPIC_API_KEY is a secret and is NOT set by deploying. Until it is put,
+# every call throws before reaching the model and the customer-facing fallback
+# answers instead — the Worker looks healthy and says nothing useful. Set it
+# before pointing any theme at this endpoint.
+
+[env.staging.triggers]
+crons = []

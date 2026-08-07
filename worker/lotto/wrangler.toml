@@ -84,3 +84,115 @@ REVEAL_COOLDOWN_DAYS = "1"
 [[kv_namespaces]]
 binding = "LOTTO_KV"
 id = "66c6668cea084a2ea4e1c5cbb8be57eb"
+
+# ==========================================================================
+# US — nonusa.myshopify.com / us.non.world
+# ==========================================================================
+#
+# Deploys as a SECOND Worker, `non-lotto-us`, from this same source:
+#
+#   npx wrangler deploy --env us
+#   npx wrangler secret put KLAVIYO_API_KEY --env us
+#
+# Run both from `worker/lotto/`. Run them from the repo root and wrangler
+# cannot find this file, reports "Required Worker name missing", and the
+# --env flag looks like the thing that failed when it was the directory.
+#
+# EVERY var is repeated below, and that is not redundancy. `vars` and
+# `kv_namespaces` are NON-INHERITABLE in wrangler: a named environment does
+# not merge with the top-level table, it REPLACES it. Anything omitted here
+# is not "the AU value", it is undefined. Delete a line and the US Worker
+# loses that setting entirely.
+#
+# ── Why a separate KV namespace, not a shared one ───────────────────────
+# The reveal ledger is keyed on the lowercased email, with no region in the
+# key. Share one namespace and an Australian who has already scratched is
+# refused in the US, or worse is re-served their AU code — a code that does
+# not exist on nonusa and fails at the customer's checkout. Two stores, two
+# ledgers.
+[env.us]
+
+[env.us.vars]
+# Same six prizes, same weights, same words as AU. The codes do not yet
+# exist on nonusa: all US discounts today are expired, being DRY JULY 2026
+# and ~50 single-use INSTANT_COUPON_* codes. Verified 2026-08-07.
+#
+# The names stay LOTTO15/LOTTO10 rather than the design's NON15/NON10.
+# US is greenfield so either would work, and that is exactly the reason to
+# match AU: one pool shape, one set of docs, one story for both regions.
+LOTTO_POOL = '''[
+  {"code":"LOTTO15","weight":28,"description":"15% off your first case","terms":"Use it at checkout."},
+  {"code":"FREESTOPPER","weight":24,"description":"A free NON stopper","terms":"Add a bottle and the stopper is on us."},
+  {"code":"FREEPOUR","weight":20,"description":"Complimentary shipping","terms":"Use it at checkout."},
+  {"code":"ONEONUS","weight":14,"description":"A bottle of NON, on us","terms":"Add a bottle and the second is on us."},
+  {"code":"LOTTO10","weight":10,"description":"10% off","terms":"Use it at checkout."},
+  {"code":"THEHOUSE","weight":4,"description":"25% off plus free shipping","terms":"Use it at checkout."}
+]'''
+
+SHOPIFY_STORE = "nonusa.myshopify.com"
+
+# live, NOT trusted — the opposite of AU, deliberately.
+#
+# AU is stuck on "trusted" because its only Admin token was minted in
+# September 2023 under the legacy custom-app model and is masked for good;
+# rotating it would break the Zapier automations hanging off that app.
+#
+# nonusa has no such history, and it does NOT need one: there is no shpat_ to
+# obtain, because Shopify stopped allowing legacy store custom apps to be
+# created on 1 January 2026. A Dev Dashboard app authenticates with the OAuth
+# client-credentials grant instead, and src/index.js mints its own 24h token
+# from SHOPIFY_CLIENT_ID + SHOPIFY_CLIENT_SECRET, caching it in KV for 23h.
+# Do not go looking for a static token for this store. There isn't one.
+#
+# Until those two secrets are set this Worker is a CLOSED SHOP: missingConfig()
+# refuses to draw rather than handing over an unverified code. That is the
+# intended state, not a fault to work around by flipping this to "trusted".
+CODE_CHECK = "live"
+POOL_VERIFIED_AT = ""
+
+# The US Klaviyo account is a DIFFERENT account from AU: public key RCeRnG,
+# where AU is U6PhdU. Confirmed 2026-08-07 from the klaviyo.js onsite script
+# on us.non.world. So this needs its own list id and its own private key —
+# AU's WQLa3T does not exist in this account and writing to it would put
+# American sign-ups on an Australian list.
+#
+# "NON Lotto — scratch card entries", created 2026-08-07 in the NON USA
+# account. Sender resolves to the account default, NON USA / gday@non.world.
+#
+# SINGLE opt-in, and it had to be changed by hand: Klaviyo creates every new
+# list as DOUBLE opt-in and labels that "Recommended". Double would have broken
+# the mechanic silently — the customer scratches, is shown a prize, and then has
+# to go and find a confirmation email before anything arrives. Verified single
+# after a full page reload, not just after the click.
+#
+# The trade-off is real and is the reason this list stays separate: single
+# opt-in is a lower-consent audience than the main newsletter. Keep broad
+# campaigns on the double opt-in list.
+KLAVIYO_LIST_ID = "SFKkfq"
+KLAVIYO_EVENT = "Scratched NON Lotto"
+
+RATE_LIMIT_PER_HOUR = "6"
+REVEAL_COOLDOWN_DAYS = "1"
+
+# Secrets, per environment. Setting one on `non-lotto` does NOT set it here:
+#   npx wrangler secret put SHOPIFY_CLIENT_ID     --env us   Dev Dashboard app client id
+#   npx wrangler secret put SHOPIFY_CLIENT_SECRET --env us   its client secret (shpss_)
+#   npx wrangler secret put KLAVIYO_API_KEY       --env us   US Klaviyo private key
+#
+# The app needs read_discounts in its access scopes, and the app and the store
+# must sit in the same Dev Dashboard org, or the token exchange answers
+# shop_not_permitted rather than anything about discounts.
+#
+# SHOPIFY_ADMIN_TOKEN is NOT used on this environment. It is read only when it
+# holds a legacy shpat_; a shpss_ left in it is ignored, and /health?deep=1
+# says so rather than letting it look configured.
+
+# Created 2026-08-07 as "LOTTO_KV_US" on account NON World. The TITLE carries
+# the region; the BINDING must stay LOTTO_KV, because src/index.js reads
+# env.LOTTO_KV and does not know which store it is serving. Renaming the
+# binding to match the title would leave the US Worker with no KV at all —
+# and no KV means the ledger and the rate limiter both no-op silently, so one
+# email could farm codes all day.
+[[env.us.kv_namespaces]]
+binding = "LOTTO_KV"
+id = "b65fb0aa2e1b4eedac6f71b95c681d31"

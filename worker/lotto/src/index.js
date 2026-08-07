@@ -130,6 +130,129 @@ function drawWeighted(pool) {
 
 /* --------------------------------------------------------------- shopify */
 
+/* ── How this Worker authenticates to Shopify ──────────────────────────────
+ *
+ * NOT with a static shpat_ token. Those belong to legacy store custom apps,
+ * which Shopify stopped allowing anyone to create on 1 January 2026. On a
+ * store provisioned since then there is no shpat_ to paste and no setting
+ * that produces one — asking for one sends you round a loop that has no exit.
+ *
+ * Dev Dashboard apps use the OAuth 2.0 CLIENT CREDENTIALS grant instead: POST
+ * the app's client id and secret to the store's token endpoint and get an
+ * Admin API token back that is valid for TWENTY-FOUR HOURS. This is the same
+ * model `Sales Dashboard/sync.py` already runs against all three NON stores.
+ *
+ * The 24-hour life is the whole reason this function exists. A short-lived
+ * token cannot be a wrangler secret: it would work on the day it was pasted
+ * and start returning 401 the next, which reads as "the prize codes broke"
+ * rather than "the credential expired". So the Worker mints its own and
+ * caches it in KV just under the lifetime, and a rejected token busts the
+ * cache and re-mints once rather than staying wrong for a day.
+ *
+ * A shpat_ in SHOPIFY_ADMIN_TOKEN is still honoured, for any store that
+ * predates the change. Anything else in that variable is IGNORED rather than
+ * sent: a client secret pasted there (shpss_, which is the field directly
+ * above the one people mean to copy) would otherwise be forwarded as a
+ * bearer token and come back 401 with no hint as to why.
+ */
+
+const TOKEN_KEY = 'shopify:admin_token';
+// 23h against a 24h token. The margin has to cover a request that starts just
+// before expiry, not just the clock.
+const TOKEN_TTL = 60 * 60 * 23;
+
+/** Does this env have anything it could authenticate with at all? */
+function hasShopifyCreds(env) {
+  if (env.SHOPIFY_ADMIN_TOKEN && env.SHOPIFY_ADMIN_TOKEN.startsWith('shpat_')) return true;
+  return Boolean(env.SHOPIFY_CLIENT_ID && env.SHOPIFY_CLIENT_SECRET);
+}
+
+async function adminToken(env, { force = false } = {}) {
+  if (env.SHOPIFY_ADMIN_TOKEN && env.SHOPIFY_ADMIN_TOKEN.startsWith('shpat_')) {
+    return env.SHOPIFY_ADMIN_TOKEN;
+  }
+
+  if (!env.SHOPIFY_CLIENT_ID || !env.SHOPIFY_CLIENT_SECRET) {
+    throw new Error('no Shopify credentials: set SHOPIFY_CLIENT_ID and SHOPIFY_CLIENT_SECRET');
+  }
+
+  if (!force && env.LOTTO_KV) {
+    const cached = await env.LOTTO_KV.get(TOKEN_KEY);
+    if (cached) return cached;
+  }
+
+  const res = await fetch(`https://${env.SHOPIFY_STORE}/admin/oauth/access_token`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/x-www-form-urlencoded',
+      Accept: 'application/json',
+    },
+    body: new URLSearchParams({
+      grant_type: 'client_credentials',
+      client_id: env.SHOPIFY_CLIENT_ID,
+      client_secret: env.SHOPIFY_CLIENT_SECRET,
+    }),
+  });
+
+  /* Carry Shopify's REASON CODE, and never its description.
+     The token endpoint answers every credential problem with a bare 400, and
+     the reason is only in the payload: `invalid_client` is a wrong id/secret
+     pair, `unsupported_grant_type` is an app not granted the client-credentials
+     flow, `application_cannot_be_found` is a client id that is not a Shopify
+     app at all, and `shop_not_permitted` is an app outside this store's org.
+     Four different fixes; "400" alone points at none of them.
+
+     But `error_description` ECHOES THE CREDENTIAL BACK. On 2026-08-07 it
+     returned "Could not find Shopify API application with api_key pk_…",
+     quoting in full a Klaviyo private key that had been pasted into
+     SHOPIFY_CLIENT_ID — and this string is rendered by /health, which is
+     public and unauthenticated. A diagnostic that prints the secret it was
+     given is a worse bug than the one it was added to diagnose.
+     So: the machine-readable `error` code only, capped, and never the prose. */
+  if (!res.ok) {
+    const raw = await res.text();
+    /* The full description goes to the Worker LOG, which is private to the
+       Cloudflare account and readable with `wrangler tail --env us`, never to
+       the HTTP response, which is public. That split is the whole point: the
+       description is the only thing that names the actual fault, and it is
+       also the thing that quotes the credential back. */
+    console.error('[lotto] token exchange failed:', res.status, raw.slice(0, 400));
+
+    let code = 'no error code in body';
+    try {
+      const body = JSON.parse(raw);
+      if (typeof body?.error === 'string') code = body.error.slice(0, 60);
+    } catch {
+      /* a non-JSON body is not worth surfacing verbatim — same leak risk */
+    }
+    throw new Error(`shopify token exchange ${res.status} — ${code}`);
+  }
+
+  const data = await res.json();
+  // A 200 with no access_token is a real outcome here — a wrong client id
+  // answers this way — and treating it as success would cache the string
+  // "undefined" and 401 on every call for the next 23 hours.
+  if (!data.access_token) throw new Error('shopify token exchange returned no access_token');
+
+  if (env.LOTTO_KV) {
+    await env.LOTTO_KV.put(TOKEN_KEY, data.access_token, { expirationTtl: TOKEN_TTL });
+  }
+  return data.access_token;
+}
+
+/** One Admin GraphQL POST. `force` re-mints the token before sending. */
+async function shopifyGraphQL(env, query, variables, force) {
+  const token = await adminToken(env, { force });
+  return fetch(`https://${env.SHOPIFY_STORE}/admin/api/2025-01/graphql.json`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'X-Shopify-Access-Token': token,
+    },
+    body: JSON.stringify({ query, variables }),
+  });
+}
+
 // A code is only handed out if Shopify says it is live right now. This is the
 // difference between "we think this works" and "this works".
 async function codeIsLive(env, code) {
@@ -174,14 +297,14 @@ async function codeStatus(env, code) {
       }
     }`;
 
-  const res = await fetch(`https://${env.SHOPIFY_STORE}/admin/api/2025-01/graphql.json`, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      'X-Shopify-Access-Token': env.SHOPIFY_ADMIN_TOKEN,
-    },
-    body: JSON.stringify({ query, variables: { code } }),
-  });
+  /* Retry ONCE on 401, and only on 401.
+     The cached token outlives a revocation, a rotated client secret or an
+     app whose scopes were edited, and a cache miss is indistinguishable from
+     a real auth failure from out here. Re-minting once turns a day of dead
+     prizes into one extra round trip. Any other status is a real error and is
+     thrown, because retrying a 403 or a 500 just doubles the failure. */
+  let res = await shopifyGraphQL(env, query, { code }, false);
+  if (res.status === 401) res = await shopifyGraphQL(env, query, { code }, true);
 
   if (!res.ok) throw new Error(`shopify ${res.status}`);
 
@@ -341,8 +464,20 @@ function missingConfig(env) {
   const missing = [];
   if (!env.SHOPIFY_STORE) missing.push('SHOPIFY_STORE');
   // Only needed when we actually intend to call Shopify.
-  if (codeCheckMode(env) === 'live' && !env.SHOPIFY_ADMIN_TOKEN) missing.push('SHOPIFY_ADMIN_TOKEN');
+  /* Either a legacy shpat_ token OR a client id + secret pair. Reported as one
+     item because they are one requirement met two ways, and listing both would
+     make a correctly configured Worker look half-configured. */
+  if (codeCheckMode(env) === 'live' && !hasShopifyCreds(env)) {
+    missing.push('SHOPIFY_CLIENT_ID + SHOPIFY_CLIENT_SECRET (or a legacy shpat_ SHOPIFY_ADMIN_TOKEN)');
+  }
   if (!env.KLAVIYO_API_KEY) missing.push('KLAVIYO_API_KEY');
+  // The list is the CONSENT RECORD, so a blank id is missing config, not an
+  // optional extra. toKlaviyo() skips the subscription call when this is unset
+  // and returns ok anyway, so without this check a Worker with no list would
+  // email every entrant a prize while recording no consent for any of them —
+  // and /health would report green throughout. Caught while standing up the US
+  // environment, whose list did not exist yet.
+  if (!env.KLAVIYO_LIST_ID) missing.push('KLAVIYO_LIST_ID');
   if (!env.LOTTO_KV) missing.push('LOTTO_KV');
   return missing;
 }
@@ -449,19 +584,13 @@ export default {
          you still need to know whether a newly pasted one is good BEFORE
          flipping CODE_CHECK back to live — otherwise the only way to find out
          is to open the shop and watch it close. */
-      if (url.searchParams.get('deep') === '1' && env.SHOPIFY_ADMIN_TOKEN) {
+      if (url.searchParams.get('deep') === '1' && hasShopifyCreds(env)) {
         try {
-          const probe = await fetch(
-            `https://${env.SHOPIFY_STORE}/admin/api/2025-01/graphql.json`,
-            {
-              method: 'POST',
-              headers: {
-                'Content-Type': 'application/json',
-                'X-Shopify-Access-Token': env.SHOPIFY_ADMIN_TOKEN,
-              },
-              body: JSON.stringify({ query: '{ shop { name } }' }),
-            },
-          );
+          // Through the same path a draw uses, token exchange included, so a
+          // green probe means the real thing works rather than something
+          // adjacent to it.
+          let probe = await shopifyGraphQL(env, '{ shop { name } }', {}, false);
+          if (probe.status === 401) probe = await shopifyGraphQL(env, '{ shop { name } }', {}, true);
           if (!probe.ok) {
             // Shopify's body distinguishes a wrong value from a wrong store,
             // and "HTTP 401" alone sent us round the houses once already.
@@ -479,14 +608,29 @@ export default {
       }
 
       /* Shape only, never the value: enough to tell a shpat_ access token from
-         a shpss_ app secret, or to catch a stray newline in the paste. */
+         a shpss_ app secret, or to catch a stray newline in the paste.
+
+         This is what identified the 2026-08-07 failure in one read. The token
+         had uploaded cleanly and Shopify answered 401; `prefix: "shpss_"` said
+         why in six characters — an app CLIENT SECRET had been pasted into the
+         access-token field, which sits directly below it on the same page.
+         Kept, and extended to name the auth mode, because "which credential is
+         this Worker actually using" is the first question every time. */
       let tokenShape;
-      if (url.searchParams.get('deep') === '1' && env.SHOPIFY_ADMIN_TOKEN) {
+      if (url.searchParams.get('deep') === '1') {
         const t = env.SHOPIFY_ADMIN_TOKEN;
         tokenShape = {
-          prefix: t.slice(0, 6),
-          length: t.length,
-          hasWhitespace: /\s/.test(t),
+          mode: t && t.startsWith('shpat_')
+            ? 'legacy static token'
+            : (env.SHOPIFY_CLIENT_ID && env.SHOPIFY_CLIENT_SECRET)
+              ? 'client_credentials (24h, minted per store)'
+              : 'none',
+          ...(t ? { prefix: t.slice(0, 6), length: t.length, hasWhitespace: /\s/.test(t) } : {}),
+          // A shpat_ has priority; anything else in that variable is ignored
+          // rather than sent, and silence about that would be its own trap.
+          ...(t && !t.startsWith('shpat_')
+            ? { note: 'SHOPIFY_ADMIN_TOKEN is not a shpat_ and is being IGNORED — delete it to avoid confusion' }
+            : {}),
         };
       }
 
@@ -514,11 +658,13 @@ export default {
          Now the answer is the reason. */
       const wantsShopify = url.searchParams.get('deep') === '1'
         || url.searchParams.get('codes') === '1';
-      const noToken = wantsShopify && !env.SHOPIFY_ADMIN_TOKEN;
-      if (noToken) shopify = 'no SHOPIFY_ADMIN_TOKEN set — nothing can be verified';
+      const noToken = wantsShopify && !hasShopifyCreds(env);
+      if (noToken) {
+        shopify = 'no Shopify credentials set (SHOPIFY_CLIENT_ID + SHOPIFY_CLIENT_SECRET) — nothing can be verified';
+      }
 
       let codes;
-      if (url.searchParams.get('codes') === '1' && env.SHOPIFY_ADMIN_TOKEN) {
+      if (url.searchParams.get('codes') === '1' && hasShopifyCreds(env)) {
         const pool = loadPool(env);
         codes = await Promise.all(pool.map(async (p) => {
           try {

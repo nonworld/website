@@ -1,0 +1,162 @@
+/* ==========================================================================
+   NON Light — expressed in Baseline 4.0.49's own vocabulary.
+
+   This file is the whole test. Nothing here is a component override: every
+   rule below writes a value Baseline already reads, which is the claim being
+   tested — that the Light appearance from `concept/light-inverse` is a
+   settings-layer change on this theme, not a rewrite of it.
+
+   Baseline resolves colour through five named schemes, each five tokens, as
+   space-separated RGB channels so Tailwind can paint them at an alpha
+   (`text-scheme-text/70`). That is the same shape as the theme.css triplets
+   (--non-fg-rgb, --non-bg-rgb) the Light block already ships, so the mapping
+   is a rename rather than a translation.
+
+   Values are lifted verbatim from
+   `non-theme-light/assets/theme.css`, `:root[data-theme-appearance="light"]`.
+   ========================================================================== */
+
+/* --- the page ------------------------------------------------------------
+   scheme1 is Baseline's default and is also written onto :root, so it is the
+   ground everything else is judged against. Baseline shipped it as #ECECEC
+   with a violet accent; Light is a proper white page with warm-black ink
+   (#171513 — the dark release's own ground, used as ink here) and NO accent
+   hue at all. The accent slot is where a Shopify theme leaks colour into a
+   monochrome brand: it drives every link hover and button hover, so it is
+   pointed at the ink rather than left on violet. */
+:root,
+[data-color-scheme="scheme1"] {
+  --color-scheme-text: 23 21 19;
+  --color-scheme-background: 255 255 255;
+  --color-scheme-accent: 23 21 19;
+  --color-scheme-accent-contrast: 255 255 255;
+  --color-scheme-secondary: 104 101 95; /* --non-fg-label, 5.19:1 on white */
+}
+
+/* --- the raised surface --------------------------------------------------
+   scheme2 was the acid lime (198 249 31). In Light the equivalent role is
+   --non-panel: a surface four percent off the page, enough to bound a card
+   and not enough to turn the site into a grid of grey boxes. */
+[data-color-scheme="scheme2"] {
+  --color-scheme-text: 23 21 19;
+  --color-scheme-background: 244 244 243;
+  --color-scheme-accent: 23 21 19;
+  --color-scheme-accent-contrast: 255 255 255;
+  --color-scheme-secondary: 104 101 95;
+}
+
+/* --- the inverted island -------------------------------------------------
+   schemes 3 and 4 are Baseline's dark sections. Light keeps them dark on
+   purpose: the island tokens exist so one surface can be the reverse of the
+   page — "look here once" — and that move depends on the reversal, not on the
+   panel being any particular colour. Lime accent goes; the island's accent is
+   its own paper. */
+[data-color-scheme="scheme3"],
+[data-color-scheme="scheme4"] {
+  --color-scheme-text: 255 255 255;
+  --color-scheme-background: 23 21 19;
+  --color-scheme-accent: 255 255 255;
+  --color-scheme-accent-contrast: 23 21 19;
+  --color-scheme-secondary: 184 182 177; /* --non-on-select-dim */
+}
+
+/* --- pure white ----------------------------------------------------------
+   scheme5 was already white-on-black-type; it only needs the ink warmed to
+   match the page ink so two adjacent sections do not read as two blacks. */
+[data-color-scheme="scheme5"] {
+  --color-scheme-text: 23 21 19;
+  --color-scheme-background: 255 255 255;
+  --color-scheme-accent: 23 21 19;
+  --color-scheme-accent-contrast: 255 255 255;
+  --color-scheme-secondary: 104 101 95;
+}
+
+/* --- the grid ------------------------------------------------------------
+   Baseline draws its section separators from --color-gridline, which shipped
+   as 0 0 0 — a full-strength black hairline. On a dark page a hairline reads
+   by glow; on a white page it only reads by darkness, so Light's own scale
+   distinguishes a decorative separator (--non-line, 1.30:1) from a control
+   boundary (--non-line-strong, 3.47:1). This is the decorative one. */
+:root {
+  --color-gridline: 226 226 224;
+}
+
+/* --- actions -------------------------------------------------------------
+   Nothing to change, and that is the finding worth recording. Baseline
+   already computes the primary button as `background: scheme-text` /
+   `color: scheme-background`, which is exactly Light's inverted pair (black
+   fill, white label) once the scheme above is in place. Radius is already 0.
+   Restated here only so the next reader does not go looking for it.
+
+     --button-color-background: var(--color-scheme-text);
+     --button-color-text:       var(--color-scheme-background);
+
+   The one real edit is the hover, which Baseline points at the accent. With
+   accent = ink, hover would be a no-op, so it takes the panel instead. */
+[data-color-scheme] {
+  --button-color-background-hover: var(--color-scheme-background);
+  --button-color-text-hover: var(--color-scheme-text);
+  --button-color-border-hover: var(--color-scheme-text);
+}
+
+/* --- typography ----------------------------------------------------------
+   Helvetica Neue is already set on both stacks in this theme, so the brand
+   rule is met before this file loads. What is missing is NON's tracking: the
+   dark release sets heading letterspacing tight and rides the mono-cased
+   eyebrow at a wide track. Baseline exposes both as variables. */
+:root {
+  --heading-letterspacing: -0.02em;
+  --heading-line-height: 0.95;
+}
+
+/* --- the one section that does not follow ---------------------------------
+   `non_home_hero` is the custom section, and it is the only part of this page
+   that paints itself instead of reading the scheme. Its own <style> block
+   says, in hex:
+
+     .non-home-hero        { background: #000; border-bottom: 1px solid #000; }
+     .non-home-hero__panel { background: #fff; color: #000; }
+
+   So the hero stays a black frame with white copy panels no matter what the
+   scheme is set to — which is why it survived the mapping above unchanged
+   while every stock Baseline section turned over. The fix is three lines in
+   the section's own Liquid, not a new section: swap the six hex values for
+   the tokens Baseline already resolves. Reproduced here as CSS so the render
+   below shows the finished state rather than the blocker.
+
+   The gap between the panels is the hero's own 1px grid gap showing the frame
+   colour through, so the frame is what separates the copy from the media. On
+   a white page that frame becomes the hairline rather than a black bar. */
+#shopify-section-template--29715657851040__non_home_hero .non-home-hero {
+  background: rgb(var(--color-gridline));
+  border-bottom-color: rgb(var(--color-gridline));
+}
+#shopify-section-template--29715657851040__non_home_hero .non-home-hero__panel {
+  background: rgb(var(--color-scheme-background));
+  color: rgb(var(--color-scheme-text));
+}
+#shopify-section-template--29715657851040__non_home_hero .non-home-hero__panel * {
+  color: inherit;
+}
+
+/* --- test harness only ---------------------------------------------------
+   Not part of the port. The captured page carries the age gate, the Klaviyo
+   embed and a gift-upsell popup, all of which cover the fold in a static
+   capture where their dismiss handlers never run. */
+.non-test-hide,
+[class*="age-check"],
+[id*="age-check"],
+.klaviyo-form,
+[class*="kl-private"],
+#preview-bar-iframe,
+.shopify-preview-bar,
+[class*="promo-popup"] {
+  display: none !important;
+}
+
+/* Klaviyo locks the body while its modal is open; with the modal hidden the
+   lock survives and the capture cannot be scrolled. */
+body.klaviyo-prevent-body-scrolling {
+  overflow: visible !important;
+  position: static !important;
+}

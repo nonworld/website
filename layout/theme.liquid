@@ -1,10 +1,29 @@
 <!doctype html>
-<html lang="{{ request.locale.iso_code }}">
+{%- comment -%}
+  APPEARANCE. One global setting, rendered here and nowhere else.
+
+  It is an attribute on <html> rather than a class so it cannot collide with
+  the template-* classing on <body>, and it is written by Liquid rather than by
+  a script so the appearance is settled in the document's first tag. There is
+  no inline bootstrap script and no localStorage read: nothing about the
+  appearance is client state, so nothing can flash.
+
+  `default: 'dark'` on the filter, not just in the schema. A theme duplicated
+  before this setting existed has no value saved for it, and the fallback has
+  to land on the approved release rather than on an unreviewed light page.
+{%- endcomment -%}
+{%- assign appearance = settings.theme_appearance | default: 'dark' -%}
+<html lang="{{ request.locale.iso_code }}" data-theme-appearance="{{ appearance }}">
   <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-    <meta name="theme-color" content="#0c0c0c">
+    {%- comment -%}
+      The browser chrome follows the page. Left at #0c0c0c it would put a black
+      status bar above a white page on iOS, which reads as a rendering fault
+      rather than as a choice.
+    {%- endcomment -%}
+    <meta name="theme-color" content="{% if appearance == 'light' %}#FFFFFF{% else %}#0c0c0c{% endif %}">
     <link rel="canonical" href="{{ canonical_url }}">
 
     {%- comment -%}

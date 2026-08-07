@@ -8,6 +8,28 @@
     "theme_support_url": "https://github.com/nonworld/website"
   },
   {
+    "name": "Appearance",
+    "settings": [
+      {
+        "type": "select",
+        "id": "theme_appearance",
+        "label": "Theme appearance",
+        "options": [
+          {
+            "value": "dark",
+            "label": "Dark"
+          },
+          {
+            "value": "light",
+            "label": "Light"
+          }
+        ],
+        "default": "dark",
+        "info": "Sets the colour appearance for the whole storefront. Dark is the approved release. Light is the warm-white inverse. Layout, type and spacing are identical in both."
+      }
+    ]
+  },
+  {
     "name": "Brand",
     "settings": [
       {

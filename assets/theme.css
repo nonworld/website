@@ -54,6 +54,215 @@
      legible edge instead of dissolving into the background. */
   --non-photo-bed: #201f22;
 
+  /* --- semantic roles completed (2026-08-07, concept/light-inverse) --------
+     These names already were the semantic layer; what was missing were the
+     roles that components had been spelling out in hex because there was only
+     ever one appearance to spell them for. Naming them here is what lets the
+     Light block below say the same thing once instead of per component.
+
+     The channel triplets exist because ~70 declarations paint a token at an
+     alpha — rgba(var(--non-fg-rgb), .05) is --non-fg at 5%, written long-hand. A
+     custom property cannot be alpha-adjusted in a way Safari 15 supports
+     (color-mix and relative colour syntax are both too new for the floor this
+     theme holds), so the triplet is the portable way to keep one source of
+     truth for a colour that appears at eight opacities. */
+  --non-fg-rgb: 242, 240, 234;
+  --non-bg-rgb: 23, 21, 19;
+  --non-ink-rgb: 35, 31, 32;
+
+  /* Actions. The primary action on the dark page is the inverted pair — light
+     fill, dark label — which is what --non-invert-* already described. */
+  --non-btn-bg: var(--non-invert-bg);
+  --non-btn-fg: var(--non-invert-fg);
+  --non-btn2-bg: transparent;
+  --non-btn2-fg: var(--non-fg);
+
+  /* Fields. A faint lift off the page, a hairline that can be seen, and a
+     placeholder that reads as a prompt rather than as entered text. */
+  --non-input-bg: rgba(var(--non-fg-rgb), .05);
+  --non-input-fg: var(--non-fg);
+  --non-input-ph: var(--non-fg-faint);
+  --non-focus: var(--non-fg);
+
+  /* Status. Green and coral are the only two hues on the site that carry
+     meaning rather than decoration, so they get names. */
+  --non-success: #4ade80;
+  --non-error: #ff8a7a;
+
+  /* The orb. Core is the lit centre, glow is what it diffuses into. On the
+     dark page the orb is a light source; in Light it is ink. */
+  --non-orb-rgb: var(--non-fg-rgb);
+  --non-orb-core: #ffffff;
+  --non-orb-glow: rgba(var(--non-fg-rgb), .55);
+
+  /* Media. On the dark page photography needs no frame — every image is
+     lighter than the ground it sits on, so its own edge is the separation.
+     The token exists so the Light block has somewhere to put a frame without
+     a component having to know which appearance it is in. */
+  --non-media-frame: transparent;
+  --non-media-bed: var(--non-photo-bed);
+
+  /* Selection and active state. */
+  --non-select-bg: var(--non-fg);
+  --non-select-fg: var(--non-bg);
+
+  /* --- text over photography ----------------------------------------------
+     THE ONE ROLE THAT DOES NOT INVERT, and it needs a name so that stays true
+     on purpose rather than by being missed.
+
+     A caption sitting on a photograph under a dark scrim is light-on-dark in
+     every appearance, because what it sits on is the photograph, not the page.
+     The About CTA cards already knew this and said so in a comment — they
+     hardcoded #f2f0ea precisely because --non-invert-fg was the wrong token
+     for the job. This is that judgement, named, so a future light pass cannot
+     "fix" it into black type on a dark scrim. */
+  /* Literal, and NOT var(--non-fg-rgb): the whole point of the role is that it
+     does not follow the page ink. */
+  --non-on-media: #f2f0ea;
+  --non-on-media-dim: rgba(242, 240, 234, .86);
+  --non-on-media-line: rgba(242, 240, 234, .55);
+
+  /* --- inverted islands ----------------------------------------------------
+     Two surfaces are deliberately the reverse of the page: the lotto prize
+     panel and the cart prize row. "Paper on ink, the inversion the rest of the
+     drawer never uses, so the eye lands on it once" — that is the design, and
+     it depends on the reversal rather than on the panel being white.
+
+     They were written as --non-invert-bg with --non-ink type, which is correct
+     for exactly one appearance: invert-bg flips with the page, but --non-ink is
+     a brand constant that does not, so in Light the pair became near-black type
+     on a near-black panel. The island tokens keep the two ends bound together.
+
+     Dark values resolve to precisely what the release ships (#ffffff panel,
+     #231f20 type) — this is a rename in Dark and a fix in Light. */
+  --non-island-bg: var(--non-invert-bg);
+  --non-island-fg: var(--non-ink);
+  --non-island-rgb: 35, 31, 32;
+  --non-island-line: rgba(35, 31, 32, .22);
+
+  /* A full-bleed photographic band fades into the page at its top and bottom
+     edge, so the fade has to be the page's colour and not a fixed dark. */
+  --non-band-fade-rgb: 35, 31, 32;
+
+  /* --- the Somm's own scale ------------------------------------------------
+     The Somm carries a palette one step off the page's — #EDEDE8 rather than
+     #f2f0ea, #232321 rather than #2a2825 — because it was ported from its own
+     design file. That is a real distinction (the island reads as its own
+     surface) and it is not mine to collapse, so it gets tokens at its own
+     values rather than being folded into the page scale.
+
+     Every value below is the exact hex the release ships. Naming them is what
+     lets the .non-somm scope block, the field states, the seeds and the submit
+     button all turn over from the Light block instead of from twenty-odd
+     hardcoded declarations scattered across six competing rule sets. */
+  --non-somm-ink: #EDEDE8;
+  --non-somm-dim: #a9a9a2;
+  --non-somm-mute: #8d8d87;
+  --non-somm-faint: #5f5f5b;
+  --non-somm-line: #232321;
+  --non-somm-line-strong: #3a3a37;
+  /* The ask field, which has three border states and a placeholder of its own. */
+  --non-somm-field-line: #3d3d38;
+  --non-somm-field-line-hover: #55534e;
+  --non-somm-field-line-focus: #8d8d87;
+  --non-somm-field-ph: #7d7b74;
+  /* The opener's shimmer sweep, and the label inside the submit button. */
+  --non-somm-shimmer: #3d3d3a;
+  --non-somm-btn-fg: #000;
+
+  /* --- the long tail ------------------------------------------------------
+     Text tones that accumulated one at a time and never got names. They are
+     not duplicates of the dim/mute/faint scale — they sit between its steps —
+     and folding them into it would move type in the approved release, so each
+     keeps its exact shipped value and gains a role instead. */
+  --non-fg-soft: #dcdcda;   /* hero caption, variant label */
+  --non-fg-copy: #e8e8e6;   /* Somm stream, recipe body, pull quote */
+  --non-fg-quiet: #b4b4b1;  /* split-section copy */
+  --non-fg-sub: #adadaa;    /* triptych sub-label */
+  --non-fg-label: #6b6b68;  /* poured label */
+  --non-rule-tight: #1a1a18; /* the rule between ingredient rows */
+
+  /* Type sitting ON a foreground-filled control (the selected variant row). */
+  --non-on-select-dim: #454543;
+
+  /* --- inverted chips ------------------------------------------------------
+     The stockist filters, the recipe actions and the old Somm seeds are all
+     the same control: a white square with a hairline and dark type, deliberately
+     the reverse of the dark page so a row of choices reads as a row of choices.
+
+     Same reasoning as the prize islands — what carries the design is the
+     reversal, not the whiteness — so in Light they become ink chips on the
+     white page rather than white chips that vanish into it. */
+  --non-chip-bg: #ffffff;
+  --non-chip-fg: #141412;
+  --non-chip-line: #c6c2b8;
+  --non-chip-line-hover: #141412;
+  --non-chip-sel-bg: var(--non-ink);
+  --non-chip-sel-fg: #ffffff;
+
+  /* The Somm's pre-2026-08-02 light field. Superseded by the dark Somm block
+     further down on source order, so these never compute today — tokenised
+     anyway, at their exact shipped values, because "superseded" is a fact
+     about the current cascade and not a guarantee about the next edit. */
+  --non-lightfield-bg: #f4f2ec;
+  --non-lightfield-fg: #0c0c0c;
+  --non-lightfield-ph: #6b6862;
+  --non-seed-fg: #3a3a38;
+
+  /* Progress dots on the pairing tool. */
+  --non-dot-idle: #d6d6d4;
+  --non-dot-now: #8d8578;
+
+  /* Media. The PDP gallery bed is white because the product photography is
+     shot on white; the video bed is black because letterboxing is black. Both
+     are properties of the media, not of the page — see MEDIA FRAMING. */
+  --non-gallery-bed: #f2f0ea;
+  --non-video-bed: #000;
+  --non-recipe-bed: #dedcd7;
+
+  --non-globe-label: #fff;
+  --non-globe-glow-rgb: 255, 255, 255;
+
+  /* THE LOGO IS A DARK ASSET FLIPPED TO WHITE. The header, and the mark inside
+     the globe, both carry filter: invert(1) because the supplied artwork is
+     dark-on-transparent and the page is near-black. Inverting it on a warm
+     white page paints white on white -- the wordmark disappears entirely, and
+     no amount of colour tokens would have caught it, because it is a filter. */
+  --non-logo-invert: 1;
+
+  /* THE LOGO WALL CANNOT FOLLOW THE PAGE. Its images are dark logos composited
+     with mix-blend-mode: multiply, which is only meaningful over a light
+     surface -- multiply over ink returns ink, so every venue logo would go to
+     solid black. The band stays light in both appearances and earns its
+     separation from a hairline instead of from its fill. */
+  --non-logowall-bg: var(--non-invert-bg);
+  --non-logowall-fg: var(--non-invert-fg);
+  --non-logowall-line: transparent;
+
+  /* --- the process animation ----------------------------------------------
+     Five snippets of inline-styled SVG, ported from the supplied artifact.
+     Their colours live in style="" attributes, which no stylesheet can reach —
+     so the attributes read tokens instead and the values move here. Exact
+     shipped values; this is a lift, not a retune. */
+  --dc-ink: #EDE8E0;
+  --dc-cap: #5C5A55;
+  --dc-rule: #232320;
+  --dc-label: #8F8B83;
+  --dc-step: #807D76;
+  --dc-body: #B4AFA6;
+  --dc-tick: #6E6B65;
+  --dc-link-hover: #9A968E;
+  --dc-green: #8FA05E;
+  /* The step rail's selected pill, set from JS in process-anim-4. */
+  --dc-pill-on-bg: #EDEDE8;
+  --dc-pill-on-fg: #0A0A0A;
+  --dc-pill-off-bg: #2E2C29;
+
+  /* Two error tones shipped, at different weights, plus the failed-state dot. */
+  --non-error-soft: #e08c7a;
+  --non-error-dot: #b03a3a;
+  --non-success-rgb: 74, 222, 128;
+
   /* Two faces, and no named alternates. Arial, Menlo, SFMono and ui-monospace
      were in these stacks as fallbacks; none of them is a NON font, and a
      fallback that renders is still a font on the page. They are gone.
@@ -120,6 +329,218 @@
   --t-copy:    calc(clamp(17.5px, 1.10vw, 21px) * var(--non-type-scale));
   --t-lead:    calc(clamp(18px,  1.20vw, 22px)  * var(--non-type-scale));
   --t-title:   calc(clamp(28px,  2.4vw, 44px)   * var(--non-type-scale));
+}
+
+/* ==========================================================================
+   LIGHT APPEARANCE
+   ==========================================================================
+   One block, one place, and nothing below it knows which appearance it is in.
+
+   The attribute lands on <html> from Liquid (layout/theme.liquid reads
+   settings.theme_appearance), so the correct appearance is in the first byte
+   of the document and there is no frame of dark before a script runs. There is
+   no script: this is a server-rendered attribute and a stylesheet.
+
+   :root above stays the Dark definition rather than being moved into a
+   [data-theme-appearance="dark"] block. That is deliberate. It means Dark is
+   the file's default state — if the setting is ever missing, unset, or the
+   attribute fails to render, the page falls back to the approved release
+   rather than to an unreviewed light page. Dark is the baseline, not a mode.
+
+   WHY THESE ARE NOT THE DARK VALUES INVERTED
+   Mechanically flipping lightness gives you a grey page with grey text.
+   Each role was judged against its new ground:
+
+     - the page is #FFFFFF and the neutrals are neutral. The first pass used a
+       warm off-white so the two appearances would share the dark ground's
+       warmth; it read as aged paper. The warmth is carried by the ink instead
+       (#171513, the dark page's own background), which is how print does it:
+       neutral stock, warm black. A cream-tinted grey on a white page reads as
+       dirt, so the greys moved with the ground.
+     - primary text is #171513 — the dark page's own background. The inverse is
+       literal at the two ends of the scale and judged everywhere between.
+     - the greys are re-derived, not reflected. Dark's dim/mute/faint measure
+       7.20 / 5.26 / 4.41 against their ground; the light steps measure
+       7.78 / 6.27 / 5.23. Faint is deliberately *better* than its dark
+       counterpart, which sat under 4.5.
+     - line-strong is 3.47:1 here against 1.61:1 in Dark. On a dark page a
+       hairline reads by glow; on a light page it only reads by darkness, and
+       control boundaries have to clear 3:1 to be boundaries at all.
+     - the scrim stays dark in both. A white scrim over a white page dims
+       nothing; the drawer needs the page behind it to recede, and only dark
+       does that. Its alpha drops because it no longer has to fight a dark page.
+     - success and error are re-picked, not re-tinted. #4ade80 measures 1.75:1
+       on white — it would be decoration where it is meant to be meaning.
+   ========================================================================== */
+:root[data-theme-appearance="light"] {
+  /* PROPER WHITE, not a warm off-white. Aaron, 2026-08-07: the cream ground
+     read as aged paper rather than as the deliberate opposite of the dark
+     release. The page is #FFFFFF and the warmth now lives entirely in the ink
+     (#171513, the dark theme's own ground) — which is how print actually
+     works: neutral stock, warm black. The neutrals below moved with it; a
+     cream-tinted grey on a pure white page reads as dirt, not as warmth. */
+  --non-bg: #FFFFFF;
+  --non-fg: #171513;
+  --non-fg-dim: #55524C;
+  --non-fg-mute: #63605A;
+  --non-fg-faint: #6F6C66;
+  --non-fg-ghost: #6B6864;
+
+  --non-fg-rgb: 23, 21, 19;
+  --non-bg-rgb: 255, 255, 255;
+
+  /* Hairlines are decorative separation (1.30:1, matching Dark's 1.24:1);
+     line-strong is a control boundary and clears 3:1 at 3.47:1, against
+     Dark's 1.61:1. On a dark page a hairline reads by glow; on a white page it
+     only reads by darkness, and a control boundary has to be a boundary. */
+  --non-line: #E2E2E0;
+  --non-line-soft: #EBEBE9;
+  --non-line-strong: #8A8A86;
+
+  /* Elevated surfaces step *down* from the page, because on white the only
+     direction that reads as raised is a shadow and this brand has none.
+     Restrained on purpose: #F4F4F3 is four percent off the page, enough to
+     bound a card and not enough to turn the site into a grid of grey boxes. */
+  --non-panel: #F4F4F3;
+  --non-panel-alt: #ECECEA;
+
+  /* The inverted pair swaps ends: a primary action is black with white type. */
+  --non-invert-bg: #171513;
+  --non-invert-fg: #FFFFFF;
+
+  --non-scrim: rgba(23, 21, 19, .62);
+  --non-scrim-soft: rgba(23, 21, 19, .28);
+
+  --non-photo-bed: #F0F0EF;
+  --non-media-bed: #F0F0EF;
+  --non-media-frame: #E2E2E0;
+
+  --non-somm-bg: #F4F4F3;
+  --non-somm-fg: #171513;
+
+  --non-input-ph: var(--non-fg-faint);
+
+  /* Re-picked, not re-tinted: #4ade80 measures 1.75:1 on white, which would be
+     decoration where it is meant to be meaning. */
+  --non-success: #1B7A3E;
+  --non-error: #A3251A;
+
+  /* THE ORB, INVERTED. Ink rather than light — see the BLACK ORB block. */
+  --non-orb-rgb: 23, 21, 19;
+  --non-orb-core: #14110F;
+  --non-orb-glow: rgba(23, 21, 19, .40);
+
+  /* THE ISLANDS TURN OVER. A white prize panel on a dark drawer becomes an ink
+     prize panel on a white drawer — the same "look here once" move, kept by
+     reversing it rather than by letting it flatten into the page.
+     --non-island-bg follows --non-invert-bg and needs no restatement here. */
+  --non-island-fg: #FFFFFF;
+  --non-island-rgb: 255, 255, 255;
+  --non-island-line: rgba(255, 255, 255, .28);
+
+  --non-band-fade-rgb: 255, 255, 255;
+
+  /* THE SOMM'S SCALE, turned over. Measured against the field's own surface
+     (#F2F2F2, the page under a 5% ink wash), not against the page, because a
+     placeholder sits on the field:
+       field line (rest, a control boundary)  #83807A  3.52:1
+       placeholder / faint                    #68655F  5.19:1
+     Dark's equivalents are 1.4:1 and 3.9:1. This is the muted-text failure the
+     release already had to correct once; it is not repeated here. */
+  --non-somm-ink: #171513;
+  --non-somm-dim: #55524C;
+  --non-somm-mute: #63605A;
+  --non-somm-faint: #68655F;
+  --non-somm-line: #E2E2E0;
+  --non-somm-line-strong: #8A8A86;
+  --non-somm-field-line: #83807A;
+  --non-somm-field-line-hover: #68655F;
+  --non-somm-field-line-focus: #171513;
+  --non-somm-field-ph: #68655F;
+  /* The opener is a shimmer: the text IS a moving gradient, so its base is what
+     someone reads for most of the cycle, not its peak. A pale base measured
+     1.87:1 — grey type that resolves once every few seconds. Dark ships the
+     same shape at 1.61:1 and gets away with it because a dark page hides it; a
+     white page does not. The base is the readable value and the sweep lifts it
+     to full ink. */
+  --non-somm-shimmer: #68655F;
+  --non-somm-btn-fg: #FFFFFF;
+
+  /* THE LONG TAIL, re-derived. Each tracks its dark counterpart's contrast
+     rather than its lightness: 14.32 / 16.63 / 9.12 / 8.18 against Dark's
+     13.26 / 14.84 / 8.76 / 8.10. The label is the exception and is deliberately
+     better — #6b6b68 measures 3.41:1 in Dark, a caption failing AA that this
+     branch is not going to reproduce on a white page. */
+  --non-fg-soft: #2C2A26;
+  --non-fg-copy: #201E1B;
+  --non-fg-quiet: #4A4844;
+  --non-fg-sub: #514F4A;
+  --non-fg-label: #68655F;
+  --non-rule-tight: #E6E6E4;
+
+  --non-on-select-dim: #B8B6B1;
+
+  /* Chips turn over with the islands. */
+  --non-chip-bg: #171513;
+  --non-chip-fg: #FFFFFF;
+  --non-chip-line: #3A3630;
+  --non-chip-line-hover: #FFFFFF;
+  --non-chip-sel-bg: #FFFFFF;
+  --non-chip-sel-fg: #171513;
+
+  --non-lightfield-bg: #211F1C;
+  --non-lightfield-fg: #FFFFFF;
+  --non-lightfield-ph: #B8B6B1;
+  --non-seed-fg: #C6C4BF;
+
+  /* The "now" dot carries state, so it separates from idle by more than a hue
+     step — near-black against a light grey, legible without relying on colour. */
+  --non-dot-idle: #C8C8C5;
+  --non-dot-now: #171513;
+
+  /* THE GALLERY BED IS THE PAGE NOW, and the frame is what holds it. The
+     product shots are cut out on white, so on a white page the bed and the
+     ground are the same colour — the photograph would float with no edge at
+     all. --non-media-frame draws that edge. The photo itself is untouched:
+     same bed, same ratio, same focal point, one hairline. */
+  --non-gallery-bed: #FFFFFF;
+  --non-recipe-bed: #EFEFEE;
+  /* --non-video-bed stays #000: letterboxing is black in every appearance. */
+
+  --non-globe-label: #171513;
+  --non-globe-glow-rgb: 23, 21, 19;
+
+  --non-error-soft: #A3251A;
+  --non-error-dot: #A3251A;
+  --non-success-rgb: 27, 122, 62;
+
+  /* No flip: the supplied artwork is already dark, which is what a white page
+     wants. This is the single most consequential line in the block — without
+     it the header has no logo at all. */
+  --non-logo-invert: 0;
+
+  /* Still white, because multiply needs white. It is now a white band on a
+     white page, so the hairline is the only thing marking where it starts. */
+  --non-logowall-bg: #FFFFFF;
+  --non-logowall-fg: #171513;
+  --non-logowall-line: #E2E2E0;
+
+  /* The animation's line work is ink on paper rather than chalk on slate. Its
+     caption measures 2.62:1 in Dark; here it clears AA rather than being
+     mirrored into the same fault. The olive is darkened to hold 3:1 as a
+     drawn stroke. */
+  --dc-ink: #171513;
+  --dc-cap: #68655F;
+  --dc-rule: #E6E6E4;
+  --dc-label: #68655F;
+  --dc-step: #68655F;
+  --dc-body: #4A4844;
+  --dc-tick: #68655F;
+  --dc-link-hover: #55524C;
+  --dc-green: #5F6B36;
+  --dc-pill-on-bg: #171513;
+  --dc-pill-on-fg: #FFFFFF;
+  --dc-pill-off-bg: #EAEAE8;
 }
 
 @media (min-width: 860px) {
@@ -294,7 +715,7 @@ button { font-family: inherit; }
   border-bottom: 1px solid var(--non-line);
   flex-wrap: wrap; gap: 12px;
 }
-.non-header__logo { height: 19px; width: auto; filter: invert(1); display: block; }
+.non-header__logo { height: 19px; width: auto; filter: invert(var(--non-logo-invert)); display: block; }
 .non-header__nav {
   display: flex; gap: var(--non-nav-gap);
   font-size: var(--non-nav-size); font-weight: 500;
@@ -335,7 +756,7 @@ button { font-family: inherit; }
   position: absolute; left: 0; right: 0; bottom: 0; padding: 16px 20px;
   background: linear-gradient(to top, var(--non-scrim), transparent);
   font-family: var(--non-mono); font-size: 10.5px;
-  letter-spacing: .12em; text-transform: uppercase; color: #dcdcda;
+  letter-spacing: .12em; text-transform: uppercase; color: var(--non-fg-soft);
 }
 
 /* --- hero carousel ------------------------------------------------------- */
@@ -383,7 +804,7 @@ button { font-family: inherit; }
 }
 .non-carousel__dot {
   width: 26px; height: 2px; padding: 0; border: 0; cursor: pointer;
-  background: rgba(242, 240, 234, .35); transition: background var(--duration-reveal) var(--ease-standard);
+  background: rgba(var(--non-fg-rgb), .35); transition: background var(--duration-reveal) var(--ease-standard);
   position: relative;
 }
 /* The bar is 2px by design and stays 2px. What was missing is somewhere to
@@ -402,7 +823,7 @@ button { font-family: inherit; }
   height: 44px;
 }
 .non-carousel__dot.is-active { background: var(--non-fg); }
-.non-carousel__dot:hover { background: rgba(242, 240, 234, .7); }
+.non-carousel__dot:hover { background: rgba(var(--non-fg-rgb), .7); }
 
 @media (prefers-reduced-motion: reduce) {
   .non-carousel__slide { transition: none; }
@@ -430,7 +851,7 @@ button { font-family: inherit; }
 .non-somm__submit[disabled] { opacity: .5; cursor: default; }
 .non-somm__seeds { display: flex; flex-wrap: wrap; gap: 8px; padding: 0 18px 17px; }
 .non-somm__seed {
-  border: 1px solid var(--non-line-strong); background: transparent; color: #b4b4b1;
+  border: 1px solid var(--non-line-strong); background: transparent; color: var(--non-fg-quiet);
   font-family: var(--non-mono); font-size: var(--t-mono); padding: 8px 12px; cursor: pointer;
 }
 .non-somm__seed:hover { border-color: var(--non-fg); color: var(--non-fg); }
@@ -442,7 +863,7 @@ button { font-family: inherit; }
 .non-somm__answer[hidden] { display: none; }
 .non-somm__stream {
   margin: 12px 0 0; font-size: var(--t-lead); line-height: 1.6;
-  color: #e8e8e6; max-width: 52ch; text-wrap: pretty; white-space: pre-wrap;
+  color: var(--non-fg-copy); max-width: 52ch; text-wrap: pretty; white-space: pre-wrap;
 }
 .non-somm__cursor {
   display: inline-block; width: 8px; height: 16px;
@@ -479,7 +900,7 @@ button { font-family: inherit; }
 /* somm as a chat transcript (product page) */
 .non-chat { display: flex; flex-direction: column; gap: 12px; }
 .non-chat__msg { max-width: 46ch; padding: 14px 16px; border: 1px solid; font-size: var(--t-copy); line-height: 1.55; white-space: pre-wrap; }
-.non-chat__msg--a { align-self: flex-start; background: var(--non-panel); color: #e8e8e6; border-color: var(--non-line-soft); }
+.non-chat__msg--a { align-self: flex-start; background: var(--non-panel); color: var(--non-fg-copy); border-color: var(--non-line-soft); }
 .non-chat__msg--u { align-self: flex-end; background: var(--non-fg); color: var(--non-bg); border-color: var(--non-fg); }
 .non-chat__who { font-family: var(--non-mono); font-size: var(--t-mono); letter-spacing: .14em; text-transform: uppercase; opacity: .55; display: block; margin-bottom: 6px; }
 .non-chat__typing span { display: inline-block; width: 5px; height: 5px; border-radius: 50%; background: currentColor; margin-right: 3px; animation: bob 1.1s infinite; }
@@ -488,8 +909,15 @@ button { font-family: inherit; }
 
 /* --- logo marquee ------------------------------------------------------- */
 
-.non-poured { background: var(--non-invert-bg); color: var(--non-invert-fg); padding: 28px 0 24px; overflow: hidden; }
-.non-poured__label { text-align: center; font-family: var(--non-mono); font-size: var(--t-mono); letter-spacing: .2em; text-transform: uppercase; color: #6b6b68; }
+.non-poured {
+  background: var(--non-logowall-bg); color: var(--non-logowall-fg);
+  padding: 28px 0 24px; overflow: hidden;
+  /* Hairline, not padding: a border-block on a full-bleed band adds 2px of
+     document height, which would breach the 2px geometry budget. box-shadow
+     draws the same line and takes no space. */
+  box-shadow: inset 0 1px 0 var(--non-logowall-line), inset 0 -1px 0 var(--non-logowall-line);
+}
+.non-poured__label { text-align: center; font-family: var(--non-mono); font-size: var(--t-mono); letter-spacing: .2em; text-transform: uppercase; color: var(--non-fg-label); }
 .non-poured__track { display: flex; width: max-content; margin-top: 18px; animation: marq 40s linear infinite; }
 .non-poured__set { display: flex; align-items: center; justify-content: space-around; gap: 40px; width: max-content; flex: none; padding-left: 40px; }
 .non-poured__set img {
@@ -743,7 +1171,7 @@ button { font-family: inherit; }
   background: linear-gradient(to top, var(--non-scrim), transparent);
 }
 .non-trip__title { font-size: clamp(20px, 1.7vw, 30px); font-weight: 600; }
-.non-trip__sub { font-family: var(--non-mono); font-size: var(--t-mono); color: #adadaa; margin-top: 4px; }
+.non-trip__sub { font-family: var(--non-mono); font-size: var(--t-mono); color: var(--non-fg-sub); margin-top: 4px; }
 
 /* --- press -------------------------------------------------------------- */
 
@@ -768,7 +1196,7 @@ button { font-family: inherit; }
   display: flex; flex-direction: column; justify-content: flex-end; gap: 10px;
 }
 .non-split__title { font-size: clamp(22px, 2vw, 34px); font-weight: 600; letter-spacing: .02em; text-transform: uppercase; }
-.non-split__text { margin: 0; font-size: var(--t-copy); line-height: 1.55; color: #b4b4b1; max-width: 36ch; }
+.non-split__text { margin: 0; font-size: var(--t-copy); line-height: 1.55; color: var(--non-fg-quiet); max-width: 36ch; }
 .non-split__link {
   font-family: var(--non-mono); font-size: var(--t-mono); letter-spacing: .14em; text-transform: uppercase;
   border-bottom: 1px solid var(--non-fg-ghost); align-self: flex-start; padding-bottom: 3px;
@@ -847,11 +1275,22 @@ button { font-family: inherit; }
   /* The blurred low-res shot sits under the real one; cream is the base for
      the instant before even that arrives. scale(1.06) hides the soft edge a
      blur leaves at the boundary of a 32px source. See main-product.liquid. */
-  background-color: #f2f0ea;
+  background-color: var(--non-gallery-bed);
   background-image: var(--non-ph, none);
   background-size: cover;
   background-position: center;
   display: block;
+  /* THE ONE MEDIA FRAME. The product shots are cut out on white, so the bed
+     stays white in both appearances -- tinting it warm would put a grey
+     rectangle behind a white-background photograph, which is a worse artefact
+     than the one it fixes. On the dark page white needs no help; on the warm
+     white page the bed is a ~1.04:1 step off the ground, i.e. not an edge.
+
+     An inset shadow rather than a border: a border is 2px of box on an element
+     whose square aspect-ratio the whole PDP column is measured against, and
+     this pass is not allowed to move it. --non-media-frame is transparent in
+     Dark, so the declaration costs nothing there. */
+  box-shadow: inset 0 0 0 1px var(--non-media-frame);
 }
 @supports (backdrop-filter: blur(1px)) {
   /* Blurring a background-image needs its own layer, and a pseudo-element on
@@ -911,7 +1350,7 @@ button { font-family: inherit; }
 .non-gallery__video {
   position: absolute;
   inset: 0;
-  background: #000;
+  background: var(--non-video-bed);
   z-index: 2;
 }
 .non-gallery__player,
@@ -936,7 +1375,7 @@ button { font-family: inherit; }
   height: 0;
   border-style: solid;
   border-width: 7px 0 7px 12px;
-  border-color: transparent transparent transparent #f2f0ea;
+  border-color: transparent transparent transparent var(--non-on-media);
   filter: drop-shadow(0 1px 2px rgba(0, 0, 0, .6));
   pointer-events: none;
 }
@@ -957,7 +1396,7 @@ button { font-family: inherit; }
 .non-variant {
   display: flex; align-items: center; justify-content: space-between; gap: 16px;
   width: 100%; text-align: left; cursor: pointer; padding: 13px 16px;
-  border: 1px solid var(--non-line-strong); background: transparent; color: #dcdcda;
+  border: 1px solid var(--non-line-strong); background: transparent; color: var(--non-fg-soft);
   font-family: var(--non-sans);
 }
 .non-variant__lines { display: flex; flex-direction: column; gap: 3px; }
@@ -965,7 +1404,7 @@ button { font-family: inherit; }
 .non-variant__per { font-size: var(--t-small); color: var(--non-fg-mute); }
 .non-variant__price { font-family: var(--non-mono); font-size: var(--t-body); }
 .non-variant[aria-checked="true"] { background: var(--non-fg); color: var(--non-bg); border-color: var(--non-fg); }
-.non-variant[aria-checked="true"] .non-variant__per { color: #454543; }
+.non-variant[aria-checked="true"] .non-variant__per { color: var(--non-on-select-dim); }
 .non-variant[disabled] { opacity: .4; cursor: default; }
 
 .non-atc {
@@ -1001,14 +1440,14 @@ button { font-family: inherit; }
    it; a box-shadow expanding behind it does not touch layout at all. */
 .non-sommbox__dot {
   width: 7px; height: 7px; border-radius: 50%;
-  background: var(--non-somm-dot, #4ade80);
+  background: var(--non-somm-dot, var(--non-success));
   flex: none;
   animation: sommPulse 2s var(--ease-standard) infinite;
 }
 @keyframes sommPulse {
-  0%   { box-shadow: 0 0 0 0 var(--non-somm-dot-glow, rgba(74,222,128,.55)); }
-  70%  { box-shadow: 0 0 0 7px rgba(74,222,128,0); }
-  100% { box-shadow: 0 0 0 0 rgba(74,222,128,0); }
+  0%   { box-shadow: 0 0 0 0 var(--non-somm-dot-glow, rgba(var(--non-success-rgb), .55)); }
+  70%  { box-shadow: 0 0 0 7px rgba(var(--non-success-rgb), 0); }
+  100% { box-shadow: 0 0 0 0 rgba(var(--non-success-rgb), 0); }
 }
 @media (prefers-reduced-motion: reduce) {
   .non-sommbox__dot { animation: none; }
@@ -1258,9 +1697,9 @@ button { font-family: inherit; }
 .non-pair__opts { display: flex; flex-wrap: wrap; gap: 8px; }
 .non-pair__opt:hover, .non-pair__opt[aria-pressed="true"] { border-color: var(--non-fg); background: var(--non-fg); color: var(--non-bg); }
 .non-pair__dots { display: flex; gap: 6px; margin-bottom: 16px; }
-.non-pair__dot { width: 22px; height: 3px; background: #d6d6d4; }
+.non-pair__dot { width: 22px; height: 3px; background: var(--non-dot-idle); }
 .non-pair__dot--done { background: var(--non-panel-alt); }
-.non-pair__dot--now { background: #8d8578; }
+.non-pair__dot--now { background: var(--non-dot-now); }
 .non-pair__trace { font-family: var(--non-mono); font-size: 11px; line-height: 1.7; color: var(--non-fg-faint); }
 
 .non-matrix { margin-top: 28px; border-top: 1px solid var(--non-line); overflow-x: auto; }
@@ -1346,7 +1785,7 @@ button { font-family: inherit; }
 
 /* The pickers, per design-reference: a WHITE chip with dark text, going solid
    black when chosen. .non-filter is written for the near-black page — it is
-   transparent with a hardcoded `color: #e8e8e6` — so on this light band the
+   transparent with a hardcoded `color: var(--non-fg-copy)` — so on this light band the
    unchosen options were light grey on light grey and effectively invisible.
    The one selected chip looked like the only button that existed.
 
@@ -1434,7 +1873,7 @@ button { font-family: inherit; }
 .non-recipe__aside { display: flex; flex-direction: column; }
 /* Flush to the top of the column. The bed shows through when an entry has no
    image, which today is all thirty of them — see docs/recipes.md. */
-.non-recipe__media { aspect-ratio: 4 / 3; background: #dedcd7; overflow: hidden; }
+.non-recipe__media { aspect-ratio: 4 / 3; background: var(--non-recipe-bed); overflow: hidden; }
 .non-recipe__img { width: 100%; height: 100%; object-fit: cover; display: block; }
 .non-recipe__panel {
   padding: 28px 30px 30px; display: flex; flex-direction: column;
@@ -1445,7 +1884,7 @@ button { font-family: inherit; }
 .non-recipe__list { display: flex; flex-direction: column; gap: 9px; }
 .non-recipe__ing {
   display: flex; justify-content: space-between; gap: 14px;
-  padding-bottom: 8px; border-bottom: 1px solid #1a1a18; font-size: var(--t-small);
+  padding-bottom: 8px; border-bottom: 1px solid var(--non-rule-tight); font-size: var(--t-small);
 }
 .non-recipe__qty { font-size: var(--t-mono); color: var(--non-fg-mute); white-space: nowrap; }
 
@@ -1456,16 +1895,16 @@ button { font-family: inherit; }
   display: flex; flex-direction: column; gap: 10px;
 }
 .non-recipe__add {
-  background: var(--non-ink); color: #ffffff; text-align: center;
+  background: var(--non-chip-sel-bg); color: var(--non-chip-sel-fg); text-align: center;
   font-size: var(--t-mono); font-weight: 700; letter-spacing: .14em;
   text-transform: uppercase; padding: 15px; text-decoration: none;
 }
 .non-recipe__again {
-  border: 1px solid var(--non-line-strong); background: #ffffff; color: #141412;
+  border: 1px solid var(--non-line-strong); background: var(--non-chip-bg); color: var(--non-chip-fg);
   font-family: var(--non-mono); font-size: var(--t-mono); letter-spacing: .1em;
   text-transform: uppercase; padding: 13px; cursor: pointer; min-height: 44px;
 }
-.non-recipe__again:hover { border-color: #141412; }
+.non-recipe__again:hover { border-color: var(--non-chip-line-hover); }
 
 .non-recipes__empty { margin-top: 24px; font-size: var(--t-copy); color: var(--non-fg-mute); }
 .non-recipes__empty[hidden] { display: none; }
@@ -1480,13 +1919,13 @@ button { font-family: inherit; }
 
 .non-filters { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 18px; }
 .non-filter {
-  border: 1px solid var(--non-line-strong); background: transparent; color: #e8e8e6;
+  border: 1px solid var(--non-line-strong); background: transparent; color: var(--non-fg-copy);
   font-family: var(--non-mono); font-size: var(--t-mono); padding: 9px 14px; cursor: pointer;
 }
 .non-filter[aria-pressed="true"] { background: var(--non-invert-bg); color: var(--non-invert-fg); border-color: var(--non-invert-bg); }
 .non-somm-line {
   margin-top: 18px; border-left: 2px solid var(--non-line-strong);
-  padding-left: 14px; font-size: var(--t-lead); line-height: 1.6; color: #e8e8e6; max-width: 62ch;
+  padding-left: 14px; font-size: var(--t-lead); line-height: 1.6; color: var(--non-fg-copy); max-width: 62ch;
 }
 
 /* --- cart drawer -------------------------------------------------------- */
@@ -1672,23 +2111,23 @@ button { font-family: inherit; }
 .non-lotto__sent[hidden] { display: none; }
 
 .non-lotto__panel {
-  position: relative; height: 196px; background: var(--non-invert-bg);
+  position: relative; height: 196px; background: var(--non-island-bg);
   overflow: hidden; touch-action: none; user-select: none;
 }
 .non-lotto__prize {
   position: absolute; inset: 0; display: flex; flex-direction: column;
   align-items: center; justify-content: center; gap: 8px;
-  text-align: center; padding: 22px; color: var(--non-ink);
+  text-align: center; padding: 22px; color: var(--non-island-fg);
 }
-.non-lotto__won { font-family: var(--non-mono); font-size: 10px; letter-spacing: .16em; text-transform: uppercase; color: rgba(35,31,32,.45); }
+.non-lotto__won { font-family: var(--non-mono); font-size: 10px; letter-spacing: .16em; text-transform: uppercase; color: rgba(var(--non-island-rgb), .45); }
 .non-lotto__win { font-size: 25px; line-height: 1.14; font-weight: 300; letter-spacing: -.022em; max-width: 17ch; }
 .non-lotto__copy {
   display: inline-flex; align-items: baseline; gap: 8px; margin-top: 2px; cursor: pointer;
-  border: 1px solid rgba(35,31,32,.22); background: transparent; padding: 7px 12px;
+  border: 1px solid var(--non-island-line); background: transparent; padding: 7px 12px;
 }
-.non-lotto__copy-k { font-family: var(--non-mono); font-size: 9.5px; letter-spacing: .14em; text-transform: uppercase; color: rgba(35,31,32,.5); }
-.non-lotto__copy-v { font-family: var(--non-mono); font-size: 13px; color: var(--non-ink); }
-.non-lotto__fine { font-size: 11.5px; color: rgba(35,31,32,.68); }
+.non-lotto__copy-k { font-family: var(--non-mono); font-size: 9.5px; letter-spacing: .14em; text-transform: uppercase; color: rgba(var(--non-island-rgb), .5); }
+.non-lotto__copy-v { font-family: var(--non-mono); font-size: 13px; color: var(--non-island-fg); }
+.non-lotto__fine { font-size: 11.5px; color: rgba(var(--non-island-rgb), .68); }
 /* touch-action: none is required by the pointer handlers, not decoration. The
    browser's default touch behaviour claims a drag as a scroll and fires
    pointercancel, which on a phone ends the scratch the moment it starts
@@ -1832,14 +2271,14 @@ button { font-family: inherit; }
    hairline, sans. .non-filter's own styling is mono on a transparent fill,
    which made these the one control on the site that looked different. */
 .non-stock-filters .non-filter {
-  background: #ffffff; color: #141412; border: 1px solid #c6c2b8;
+  background: var(--non-chip-bg); color: var(--non-chip-fg); border: 1px solid var(--non-chip-line);
   border-radius: 0; font-family: var(--non-sans); font-size: 13.5px;
   letter-spacing: 0; text-transform: none; padding: 11px 16px; min-height: 44px;
   transition: border-color var(--duration-hover) var(--ease-hover);
 }
-.non-stock-filters .non-filter:hover { border-color: #141412; }
+.non-stock-filters .non-filter:hover { border-color: var(--non-chip-line-hover); }
 .non-stock-filters .non-filter[aria-pressed="true"] {
-  background: var(--non-ink); color: #ffffff; border-color: var(--non-ink);
+  background: var(--non-chip-sel-bg); color: var(--non-chip-sel-fg); border-color: var(--non-chip-sel-bg);
 }
 
 /* The full-directory card closing the results column. */
@@ -1951,7 +2390,7 @@ button { font-family: inherit; }
 }
 .non-btn--ghost { background: transparent; color: var(--non-fg); border: 1px solid var(--non-line-strong); }
 .non-note { font-size: var(--t-copy); line-height: 1.6; color: var(--non-fg-dim); }
-.non-error { font-size: 13px; color: #e08c7a; margin-top: 10px; }
+.non-error { font-size: 13px; color: var(--non-error-soft); margin-top: 10px; }
 
 /* --- rte ---------------------------------------------------------------- */
 
@@ -1969,13 +2408,13 @@ button { font-family: inherit; }
   align-items: center;
   justify-content: space-between;
   gap: 14px;
-  background: var(--non-invert-bg);
-  color: var(--non-ink);
+  background: var(--non-island-bg);
+  color: var(--non-island-fg);
   padding: 13px 15px;
   margin-bottom: 14px;
 }
 .non-cart-prize__body { display: flex; flex-direction: column; gap: 3px; min-width: 0; }
-.non-cart-prize .non-eyebrow { color: rgba(35,31,32,.5); }
+.non-cart-prize .non-eyebrow { color: rgba(var(--non-island-rgb), .5); }
 .non-cart-prize__desc {
   font-size: var(--t-small);
   font-weight: 600;
@@ -1988,7 +2427,7 @@ button { font-family: inherit; }
   font-family: var(--non-mono);
   font-size: var(--t-mono);
   letter-spacing: .1em;
-  color: rgba(35,31,32,.62);
+  color: rgba(var(--non-island-rgb), .62);
 }
 /* 44px minimum, and a visible border at rest — on touch there is no hover to
    reveal that this is the actionable half of the panel. */
@@ -2031,7 +2470,7 @@ button { font-family: inherit; }
 .non-globe__glow {
   position: absolute; inset: 0; border-radius: 50%;
   background: radial-gradient(circle at 40% 36%,
-    rgba(255,255,255,.12), rgba(255,255,255,.03) 52%, transparent 70%);
+    rgba(var(--non-globe-glow-rgb),.12), rgba(var(--non-globe-glow-rgb),.03) 52%, transparent 70%);
 }
 .non-globe__tilt {
   position: absolute; inset: 0;
@@ -2049,7 +2488,7 @@ button { font-family: inherit; }
   font-family: var(--non-mono);
   font-size: 2.4px;
   letter-spacing: 0.24px;
-  color: #fff;
+  color: var(--non-globe-label);
   opacity: 0;
   padding-left: 2.2px;
   margin-top: -1.4px;
@@ -2059,7 +2498,7 @@ button { font-family: inherit; }
   position: absolute; left: 50%; top: 50%;
   width: 9px; height: auto;
   margin-left: -4.5px; margin-top: -1.5px;
-  filter: invert(1);
+  filter: invert(var(--non-logo-invert));
   will-change: transform, opacity;
 }
 
@@ -2260,7 +2699,7 @@ button { font-family: inherit; }
 /* The red state from the identity doc's states row. Used for the beat before
    the offline fallback answers, so a failure is legible rather than silent. */
 .non-think.is-failed .non-think__dot {
-  background: #b03a3a;
+  background: var(--non-error-dot);
   animation: none;
   opacity: 1;
 }
@@ -2761,7 +3200,7 @@ a, button, .non-card, .non-filter, .non-pair__opt, .non-somm__seed,
 .non-about-hard-media__scrim {
   position: absolute; inset: 0;
   pointer-events: none;
-  background: linear-gradient(to bottom, rgba(35,31,32,0.18) 0%, rgba(35,31,32,0) 22%, rgba(35,31,32,0) 78%, rgba(35,31,32,0.28) 100%);
+  background: linear-gradient(to bottom, rgba(var(--non-band-fade-rgb),0.18) 0%, rgba(var(--non-band-fade-rgb),0) 22%, rgba(var(--non-band-fade-rgb),0) 78%, rgba(var(--non-band-fade-rgb),0.28) 100%);
 }
 
 /* Full-bleed kitchen band, 420px, caption over the image. The scrim is a
@@ -2780,13 +3219,16 @@ a, button, .non-card, .non-filter, .non-pair__opt, .non-somm__seed,
   line-height: 1.25;
   letter-spacing: -.015em;
   max-width: 40ch;
-  /* #f2f0ea, NOT var(--non-invert-fg). That token is #000000 — "invert" means
-     the dark-on-light pairing, so asking for it here got pure black type on a
-     photograph of a dark room. The `#fff` fallback never fired either, because
-     a var() fallback only applies when the variable is UNDEFINED, and this one
-     is defined at :root. It read as a token doing the right thing while doing
-     the exact opposite. */
-  color: #f2f0ea;
+  /* --non-on-media, NOT var(--non-invert-fg). That token is #000000 — "invert"
+     means the dark-on-light pairing, so asking for it here got pure black type
+     on a photograph of a dark room. The `#fff` fallback never fired either,
+     because a var() fallback only applies when the variable is UNDEFINED, and
+     this one is defined at :root. It read as a token doing the right thing
+     while doing the exact opposite.
+
+     --non-on-media is that judgement given a name: type on a photograph is
+     light in both appearances, because what it sits on is the photograph. */
+  color: var(--non-on-media);
   /* Deeper and taller than before. .62 over a busy, mid-tone photograph left
      the descenders fighting the highlights in the steel. */
   background: linear-gradient(to top, rgba(0, 0, 0, .82) 0%, rgba(0, 0, 0, .55) 45%, rgba(0, 0, 0, 0) 100%);
@@ -2835,6 +3277,18 @@ a, button, .non-card, .non-filter, .non-pair__opt, .non-somm__seed,
   padding: 64px var(--non-pad) 72px;
   width: 100%;
   border-top: 1px solid var(--non-line);
+}
+
+/* The rail keeps its own scale in Light too. --np-faint measures 2.67:1 in
+   Dark, which is a legend line nobody can read; here it clears AA rather than
+   reproducing the fault at a different lightness. */
+:root[data-theme-appearance="light"] .non-prail {
+  --np-mid: #5C5A55;
+  --np-muted: #66635E;
+  --np-dim: #6C6964;
+  --np-faint: #68655F;
+  --np-rule: #E6E6E4;
+  --np-station-line: #DBDBD8;
 }
 
 .np-head {
@@ -2886,7 +3340,7 @@ a, button, .non-card, .non-filter, .non-pair__opt, .non-somm__seed,
    dot is absent from the DOM order that matters. */
 .np-pulse {
   position: absolute; top: -1.5px; width: 4px; height: 4px; border-radius: 50%;
-  background: var(--non-fg); box-shadow: 0 0 10px 2px rgba(237, 234, 228, .35);
+  background: var(--non-fg); box-shadow: 0 0 10px 2px rgba(var(--non-fg-rgb), .35);
   animation: npPulseX 7s linear infinite;
 }
 @keyframes npPulseX { 0% { left: 0; opacity: 0 } 10% { opacity: 1 } 88% { opacity: 1 } 100% { left: 100%; opacity: 0 } }
@@ -2945,8 +3399,8 @@ a, button, .non-card, .non-filter, .non-pair__opt, .non-somm__seed,
 .non-somm__input,
 .non-sommbox__ask input { color: var(--non-somm-fg); }
 .non-somm__input::placeholder,
-.non-sommbox__ask input::placeholder { color: #6b6862; }
-.non-somm__seed { color: #3a3a38; }
+.non-sommbox__ask input::placeholder { color: var(--non-lightfield-ph); }
+.non-somm__seed { color: var(--non-seed-fg); }
 /* SCOPED, not global. The answer is NOT inside the grey panel — on the hero
    .non-somm__answer sits after </form> (hero-somm.liquid:80), on the near-black
    page. This rule used to be unscoped, so the streamed answer was painted
@@ -3072,9 +3526,9 @@ a, button, .non-card, .non-filter, .non-pair__opt, .non-somm__seed,
 .non-somm .non-somm__seed,
 .non-sommbox .non-somm__seed,
 .non-sommbox__seeds button {
-  background: #ffffff;
-  color: #141412;
-  border-color: #c6c2b8;
+  background: var(--non-chip-bg);
+  color: var(--non-chip-fg);
+  border-color: var(--non-chip-line);
   font-family: var(--non-sans);
   font-size: 13.5px;
   letter-spacing: 0;
@@ -3090,29 +3544,29 @@ a, button, .non-card, .non-filter, .non-pair__opt, .non-somm__seed,
 .non-sommbox .non-somm__seed:focus-visible,
 .non-sommbox__seeds button:hover,
 .non-sommbox__seeds button:focus-visible {
-  background: #ffffff;
-  color: #141412;
-  border-color: #141412;
+  background: var(--non-chip-bg);
+  color: var(--non-chip-fg);
+  border-color: var(--non-chip-line-hover);
 }
 
 /* The input well sat on --non-bg, a dark field on a light panel. Consistent
    with the chips now: light field, dark text, dark focus ring. */
 .non-sommbox__ask .non-somm__input {
-  background: #f4f2ec;
-  border-color: #6b6862;
-  color: #0c0c0c;
+  background: var(--non-lightfield-bg);
+  border-color: var(--non-lightfield-ph);
+  color: var(--non-lightfield-fg);
 }
-.non-sommbox__ask .non-somm__input::placeholder { color: #6b6862; }
+.non-sommbox__ask .non-somm__input::placeholder { color: var(--non-lightfield-ph); }
 .non-sommbox__ask .non-somm__input:focus {
-  border-color: #0c0c0c;
+  border-color: var(--non-lightfield-fg);
   box-shadow: 0 0 0 2px rgba(12, 12, 12, .16);
 }
 
 /* The homepage bar is .non-somm__bar and inherits the panel colour, so the
    caret and input need the same treatment. */
-.non-somm .non-somm__input { color: #0c0c0c; }
-.non-somm .non-somm__input::placeholder { color: #6b6862; }
-.non-somm .non-somm__caret { color: #6b6862; }
+.non-somm .non-somm__input { color: var(--non-lightfield-fg); }
+.non-somm .non-somm__input::placeholder { color: var(--non-lightfield-ph); }
+.non-somm .non-somm__caret { color: var(--non-lightfield-ph); }
 
 /* --- Pairing: the verdict -------------------------------------------------
    Sits above the free-text panel and pushes it down, so the answer lands where
@@ -3230,7 +3684,7 @@ a, button, .non-card, .non-filter, .non-pair__opt, .non-somm__seed,
    sitting on a photograph is always light-on-dark regardless of what the
    inverse palette happens to be. */
 .non-about-cta--media {
-  color: #f2f0ea;
+  color: var(--non-on-media);
   min-height: 340px;
   display: flex;
   flex-direction: column;
@@ -3247,7 +3701,7 @@ a, button, .non-card, .non-filter, .non-pair__opt, .non-somm__seed,
   font-weight: 500;
 }
 .non-about-cta--media .non-about-cta__body {
-  color: rgba(242, 240, 234, .86);
+  color: var(--non-on-media-dim);
   max-width: 38ch;
 }
 
@@ -3259,8 +3713,8 @@ a, button, .non-card, .non-filter, .non-pair__opt, .non-somm__seed,
   min-height: 0;
   margin-top: 16px;
   background: none;
-  color: #f2f0ea;
-  border-bottom: 1px solid rgba(242, 240, 234, .55);
+  color: var(--non-on-media);
+  border-bottom: 1px solid var(--non-on-media-line);
   padding-bottom: 3px;
   transition: border-color var(--duration-hover) var(--ease-hover);
 }
@@ -3290,9 +3744,9 @@ a, button, .non-card, .non-filter, .non-pair__opt, .non-somm__seed,
 /* --solid must not re-apply its inverted button on a photograph. */
 .non-about-cta--media.non-about-cta--solid .non-about-cta__link {
   background: none;
-  color: #f2f0ea;
+  color: var(--non-on-media);
   border-color: transparent;
-  border-bottom-color: rgba(242, 240, 234, .55);
+  border-bottom-color: var(--non-on-media-line);
 }
 
 /* A stronger scrim than the first pass. These photographs are bright at the
@@ -3316,12 +3770,12 @@ a, button, .non-card, .non-filter, .non-pair__opt, .non-somm__seed,
   0%, 100% { opacity: 1; }
   55%      { opacity: .35; }
 }
-/* Halo tuned for the light panel: the old rgba(74,222,128,.55) sat almost
+/* Halo tuned for the light panel: the old rgba(var(--non-success-rgb), .55) sat almost
    exactly on the grey's luminance and disappeared into it. */
 @keyframes sommPulse {
-  0%   { box-shadow: 0 0 0 0 rgba(74, 222, 128, .85); }
-  70%  { box-shadow: 0 0 0 8px rgba(74, 222, 128, 0); }
-  100% { box-shadow: 0 0 0 0 rgba(74, 222, 128, 0); }
+  0%   { box-shadow: 0 0 0 0 rgba(var(--non-success-rgb), .85); }
+  70%  { box-shadow: 0 0 0 8px rgba(var(--non-success-rgb), 0); }
+  100% { box-shadow: 0 0 0 0 rgba(var(--non-success-rgb), 0); }
 }
 @media (prefers-reduced-motion: reduce) {
   .non-sommbox__dot,
@@ -3443,7 +3897,7 @@ a, button, .non-card, .non-filter, .non-pair__opt, .non-somm__seed,
   height: 5px;
   border-radius: 50%;
   background: var(--non-fg);
-  box-shadow: 0 0 10px 2px rgba(242, 240, 234, .35);
+  box-shadow: 0 0 10px 2px rgba(var(--non-fg-rgb), .35);
   animation: nonStepsPulse 7s linear infinite;
 }
 @keyframes nonStepsPulse {
@@ -3839,6 +4293,19 @@ select:-moz-focusring { color: transparent; text-shadow: 0 0 0 var(--non-fg); }
   font-size: var(--t-mono); letter-spacing: .14em; text-transform: uppercase;
   color: var(--non-proc-accent); min-height: 1.4em;
 }
+/* THE ACCENT CANNOT CARRY TYPE ON A LIGHT PAGE. --non-proc-accent is a fruit
+   colour set per bottle by the merchant (#E4573F, #d9576e, #c8813a …). Against
+   near-black those land around 6:1; against white they land around 3.7:1,
+   which is fine for the 2px underline on the bottle chip — a boundary needs
+   3:1 — and not fine for a mono caption, which needs 4.5:1.
+
+   The caption is not the only place the accent appears and it never carried
+   information the words did not, so in Light it takes the page's own secondary
+   ink and the accent keeps doing its job on the chip. Nothing is communicated
+   by colour alone in either appearance. */
+:root[data-theme-appearance="light"] .non-proc__cap {
+  color: var(--non-fg-dim);
+}
 
 /* The draw-on. pathLength="1" in the markup is what lets one dasharray drive
    every path — otherwise each line needs its own measured length and they all
@@ -3889,16 +4356,18 @@ select:-moz-focusring { color: transparent; text-shadow: 0 0 0 var(--non-fg); }
 
 .non-somm,
 .non-sommbox {
-  /* The island is dark now, so its "foreground" is the page's ink. */
-  --non-somm-fg: #EDEDE8;
-  --non-fg: #EDEDE8;
-  --non-fg-dim: #a9a9a2;
-  --non-fg-mute: #8d8d87;
-  --non-fg-faint: #5f5f5b;
-  --non-line: #232321;
-  --non-line-soft: #232321;
-  --non-line-strong: #3a3a37;
-  color: #EDEDE8;
+  /* The island carries its own scale — see --non-somm-* at :root. In Dark it
+     resolves to exactly the values this block used to hardcode; in Light the
+     whole set turns over from one place. */
+  --non-somm-fg: var(--non-somm-ink);
+  --non-fg: var(--non-somm-ink);
+  --non-fg-dim: var(--non-somm-dim);
+  --non-fg-mute: var(--non-somm-mute);
+  --non-fg-faint: var(--non-somm-faint);
+  --non-line: var(--non-somm-line);
+  --non-line-soft: var(--non-somm-line);
+  --non-line-strong: var(--non-somm-line-strong);
+  color: var(--non-somm-ink);
 }
 
 /* THE SHEET IS A SOMM THAT CARRIES NEITHER CLASS.
@@ -3918,7 +4387,7 @@ select:-moz-focusring { color: transparent; text-shadow: 0 0 0 var(--non-fg); }
  * was measured too, and it drags `--non-fg-faint` down with it — the NON SOMM
  * eyebrow goes from rgb(125,125,122) to rgb(95,95,91) for no reason anybody
  * asked for. One broken token, one line. */
-.non-sheet__panel { --non-somm-fg: #EDEDE8; }
+.non-sheet__panel { --non-somm-fg: var(--non-somm-ink); }
 
 /* No panel. No border, no fill, no radius, no clipping. */
 .non-sommbox,
@@ -3940,7 +4409,7 @@ select:-moz-focusring { color: transparent; text-shadow: 0 0 0 var(--non-fg); }
   font-size: clamp(20px, 1.9vw, 26px);
   letter-spacing: -.02em;
   line-height: 1.35;
-  background: linear-gradient(100deg, #3d3d3a 25%, #EDEDE8 50%, #3d3d3a 75%);
+  background: linear-gradient(100deg, var(--non-somm-shimmer) 25%, var(--non-somm-ink) 50%, var(--non-somm-shimmer) 75%);
   background-size: 200% 100%;
   -webkit-background-clip: text;
   background-clip: text;
@@ -4013,7 +4482,7 @@ select:-moz-focusring { color: transparent; text-shadow: 0 0 0 var(--non-fg); }
   /* No font-size or padding here — both come from the input's own block above,
      so the prompt and the text that replaces it cannot end up different sizes
      in different places. */
-  background: linear-gradient(100deg, #3d3d3a 25%, #EDEDE8 50%, #3d3d3a 75%);
+  background: linear-gradient(100deg, var(--non-somm-shimmer) 25%, var(--non-somm-ink) 50%, var(--non-somm-shimmer) 75%);
   background-size: 200% 100%;
   -webkit-background-clip: text;
   background-clip: text;
@@ -4084,7 +4553,7 @@ select:-moz-focusring { color: transparent; text-shadow: 0 0 0 var(--non-fg); }
  * a shimmering question reads as decoration.
  * ========================================================================== */
 .non-sheet__opener--idle {
-  background: linear-gradient(100deg, #3d3d3a 25%, #EDEDE8 50%, #3d3d3a 75%);
+  background: linear-gradient(100deg, var(--non-somm-shimmer) 25%, var(--non-somm-ink) 50%, var(--non-somm-shimmer) 75%);
   background-size: 200% 100%;
   -webkit-background-clip: text;
   background-clip: text;
@@ -4095,7 +4564,7 @@ select:-moz-focusring { color: transparent; text-shadow: 0 0 0 var(--non-fg); }
   .non-sheet__opener--idle {
     animation: none;
     background: none;
-    color: #EDEDE8;
+    color: var(--non-somm-ink);
     -webkit-text-fill-color: currentColor;
   }
 }
@@ -4111,9 +4580,9 @@ select:-moz-focusring { color: transparent; text-shadow: 0 0 0 var(--non-fg); }
 .non-sommbox__ask .non-somm__input {
   background: transparent;
   border: 0;
-  border-bottom: 1px solid #232321;
+  border-bottom: 1px solid var(--non-somm-line);
   border-radius: 0;
-  color: #EDEDE8;
+  color: var(--non-somm-ink);
   font-size: clamp(16px, 1.4vw, 20px);
   letter-spacing: -.01em;
   padding: 0 0 12px;
@@ -4121,11 +4590,11 @@ select:-moz-focusring { color: transparent; text-shadow: 0 0 0 var(--non-fg); }
   transition: border-color var(--duration-hover) var(--ease-hover);
 }
 .non-sommbox__ask input::placeholder,
-.non-sommbox__ask .non-somm__input::placeholder { color: #5f5f5b; }
+.non-sommbox__ask .non-somm__input::placeholder { color: var(--non-somm-faint); }
 .non-sommbox__ask input:focus,
 .non-sommbox__ask .non-somm__input:focus {
   outline: none;
-  border-bottom-color: #8d8d87;
+  border-bottom-color: var(--non-somm-mute);
   box-shadow: none;
 }
 
@@ -4133,14 +4602,14 @@ select:-moz-focusring { color: transparent; text-shadow: 0 0 0 var(--non-fg); }
 .non-somm__seed,
 .non-sommbox__seeds button {
   background: transparent;
-  color: #a9a9a2;
-  border: 1px solid #3a3a37;
+  color: var(--non-somm-dim);
+  border: 1px solid var(--non-somm-line-strong);
 }
 .non-somm__seed:hover,
 .non-sommbox__seeds button:hover {
-  background: #EDEDE8;
-  color: #000;
-  border-color: #EDEDE8;
+  background: var(--non-somm-ink);
+  color: var(--non-somm-btn-fg);
+  border-color: var(--non-somm-ink);
 }
 
 /* The live dot becomes an orb that breathes, with three rings expanding out of
@@ -4173,7 +4642,7 @@ select:-moz-focusring { color: transparent; text-shadow: 0 0 0 var(--non-fg); }
 .non-sommbox .non-somm__stream,
 .non-somm .non-somm__stream,
 .non-somm__answer:not([hidden]) {
-  color: #EDEDE8;
+  color: var(--non-somm-ink);
   animation: non-somm-line-in var(--duration-reveal, 700ms) var(--ease-standard) both;
 }
 @keyframes non-somm-line-in {
@@ -4182,7 +4651,7 @@ select:-moz-focusring { color: transparent; text-shadow: 0 0 0 var(--non-fg); }
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .non-sommbox__opener { animation: none; color: #EDEDE8; background: none; -webkit-text-fill-color: currentColor; }
+  .non-sommbox__opener { animation: none; color: var(--non-somm-ink); background: none; -webkit-text-fill-color: currentColor; }
   .non-sommbox__dot,
   .non-sommbox__dot::before,
   .non-sommbox__dot::after { animation: none; }
@@ -4206,18 +4675,18 @@ select:-moz-focusring { color: transparent; text-shadow: 0 0 0 var(--non-fg); }
 .non-sommbox__ask .non-somm__input {
   background: transparent;
   border: 0;
-  border-bottom: 1px solid #232321;
+  border-bottom: 1px solid var(--non-somm-line);
   border-radius: 0;
-  color: #EDEDE8;
+  color: var(--non-somm-ink);
   box-shadow: none;
 }
 .non-somm .non-somm__input::placeholder,
 .non-somm__bar .non-somm__input::placeholder,
 .non-sommbox__ask input::placeholder,
-.non-sommbox__ask .non-somm__input::placeholder { color: #8d8d87; }
+.non-sommbox__ask .non-somm__input::placeholder { color: var(--non-somm-mute); }
 
 /* The caret and prompt mark on the hero read as page ink too. */
-.non-somm__caret { color: #8d8d87; }
+.non-somm__caret { color: var(--non-somm-mute); }
 .non-sommbox__dot::before,
 .non-sommbox__dot::after,
 .non-somm__dot::before,
@@ -4279,7 +4748,7 @@ select:-moz-focusring { color: transparent; text-shadow: 0 0 0 var(--non-fg); }
   display: flex;
   align-items: center;
   text-align: left;
-  border: 1px solid #3a3a37;
+  border: 1px solid var(--non-somm-line-strong);
 }
 .non-sommbox__dot::before,
 .non-sommbox__dot::after,
@@ -4410,11 +4879,11 @@ select:-moz-focusring { color: transparent; text-shadow: 0 0 0 var(--non-fg); }
   border-radius: 50%;
   background:
     radial-gradient(circle at 42% 36%,
-      #ffffff 0%,
-      #eef2f8 26%,
-      #dfe6f2 46%,
-      rgba(223, 230, 242, .34) 64%,
-      rgba(223, 230, 242, .10) 76%,
+      var(--non-orb-core) 0%,
+      rgba(var(--non-orb-rgb), .82) 26%,
+      rgba(var(--non-orb-rgb), .52) 46%,
+      rgba(var(--non-orb-rgb), .34) 64%,
+      rgba(var(--non-orb-rgb), .10) 76%,
       transparent 82%);
   filter: blur(12px);
   opacity: .92;
@@ -4469,10 +4938,10 @@ select:-moz-focusring { color: transparent; text-shadow: 0 0 0 var(--non-fg); }
   /* Horizontal slots zeroed — see the owner block at the end of the file. */
   background:
     radial-gradient(circle at 40% 34%,
-      rgba(242, 240, 234, .92) 0%,
-      rgba(242, 240, 234, .55) 34%,
-      rgba(242, 240, 234, .18) 58%,
-      rgba(242, 240, 234, .05) 74%,
+      rgba(var(--non-orb-rgb), .92) 0%,
+      rgba(var(--non-orb-rgb), .55) 34%,
+      rgba(var(--non-orb-rgb), .18) 58%,
+      rgba(var(--non-orb-rgb), .05) 74%,
       transparent 84%);
   filter: blur(7px);
   opacity: .7;
@@ -4525,10 +4994,10 @@ select:-moz-focusring { color: transparent; text-shadow: 0 0 0 var(--non-fg); }
   border-radius: 50%;
   background:
     radial-gradient(circle at 40% 34%,
-      rgba(242, 240, 234, .92) 0%,
-      rgba(242, 240, 234, .55) 34%,
-      rgba(242, 240, 234, .18) 58%,
-      rgba(242, 240, 234, .05) 74%,
+      rgba(var(--non-orb-rgb), .92) 0%,
+      rgba(var(--non-orb-rgb), .55) 34%,
+      rgba(var(--non-orb-rgb), .18) 58%,
+      rgba(var(--non-orb-rgb), .05) 74%,
       transparent 84%);
   filter: blur(7px);
   animation: non-somm-orb 5s ease-in-out infinite;
@@ -4607,10 +5076,10 @@ select:-moz-focusring { color: transparent; text-shadow: 0 0 0 var(--non-fg); }
   /* Horizontal slots zeroed — see the owner block at the end of the file. */
   background:
     radial-gradient(circle at 40% 34%,
-      rgba(242, 240, 234, .92) 0%,
-      rgba(242, 240, 234, .55) 34%,
-      rgba(242, 240, 234, .18) 58%,
-      rgba(242, 240, 234, .05) 74%,
+      rgba(var(--non-orb-rgb), .92) 0%,
+      rgba(var(--non-orb-rgb), .55) 34%,
+      rgba(var(--non-orb-rgb), .18) 58%,
+      rgba(var(--non-orb-rgb), .05) 74%,
       transparent 84%);
   filter: blur(7px);
   animation: non-somm-orb 5s ease-in-out infinite;
@@ -4637,7 +5106,7 @@ select:-moz-focusring { color: transparent; text-shadow: 0 0 0 var(--non-fg); }
   min-width: 0;
   text-align: center;
   border: 0;
-  border-bottom: 1px solid #232321;
+  border-bottom: 1px solid var(--non-somm-line);
   border-radius: 0;
   background: transparent;
 }
@@ -4649,7 +5118,7 @@ select:-moz-focusring { color: transparent; text-shadow: 0 0 0 var(--non-fg); }
 
 /* The ask field, made obviously a field.
 
-   A transparent box with a #232321 hairline under it is nearly invisible on a
+   A transparent box with a var(--non-somm-line) hairline under it is nearly invisible on a
    #0c0c0c page — the contrast between rule and background is about 1.3:1, so
    the only thing marking the input was its placeholder, which reads as body
    copy rather than as somewhere to type.
@@ -4661,9 +5130,9 @@ select:-moz-focusring { color: transparent; text-shadow: 0 0 0 var(--non-fg); }
 .non-somm__input,
 .non-sommbox__ask input,
 .non-sommbox__ask .non-somm__input {
-  background: rgba(242, 240, 234, .035);
-  border: 1px solid #34342f;
-  border-bottom-color: #55534e;
+  background: rgba(var(--non-fg-rgb), .035);
+  border: 1px solid var(--non-somm-field-line);
+  border-bottom-color: var(--non-somm-field-line-hover);
   padding: 16px 18px;
   transition:
     background var(--duration-hover) var(--ease-hover),
@@ -4672,21 +5141,21 @@ select:-moz-focusring { color: transparent; text-shadow: 0 0 0 var(--non-fg); }
 .non-somm__input::placeholder,
 .non-sommbox__ask input::placeholder,
 .non-sommbox__ask .non-somm__input::placeholder {
-  color: #7d7b74;
+  color: var(--non-somm-field-ph);
 }
 .non-somm__input:hover,
 .non-sommbox__ask input:hover,
 .non-sommbox__ask .non-somm__input:hover {
-  background: rgba(242, 240, 234, .06);
-  border-color: #4a4a44;
+  background: rgba(var(--non-fg-rgb), .06);
+  border-color: var(--non-somm-field-line-hover);
 }
 .non-somm__input:focus,
 .non-sommbox__ask input:focus,
 .non-sommbox__ask .non-somm__input:focus {
   outline: none;
-  background: rgba(242, 240, 234, .085);
-  border-color: #8d8d87;
-  border-bottom-color: #EDEDE8;
+  background: rgba(var(--non-fg-rgb), .085);
+  border-color: var(--non-somm-mute);
+  border-bottom-color: var(--non-somm-ink);
 }
 .non-somm__input,
 .non-sommbox__ask input,
@@ -4698,8 +5167,8 @@ select:-moz-focusring { color: transparent; text-shadow: 0 0 0 var(--non-fg); }
   text-align: left;
   padding: 15px 16px;
   font-size: 16px;
-  background: rgba(242, 240, 234, .05);
-  border: 1px solid #3d3d38;
+  background: rgba(var(--non-fg-rgb), .05);
+  border: 1px solid var(--non-somm-field-line);
   border-radius: 0;
 }
 .non-somm__submit,
@@ -4718,15 +5187,15 @@ select:-moz-focusring { color: transparent; text-shadow: 0 0 0 var(--non-fg); }
 .non-somm__bar .non-somm__input:hover,
 .non-sommbox__ask input:hover,
 .non-sommbox__ask .non-somm__input:hover {
-  background: rgba(242, 240, 234, .08);
-  border-color: #55534e;
+  background: rgba(var(--non-fg-rgb), .08);
+  border-color: var(--non-somm-field-line-hover);
 }
 .non-somm .non-somm__input:focus,
 .non-somm__bar .non-somm__input:focus,
 .non-sommbox__ask input:focus,
 .non-sommbox__ask .non-somm__input:focus {
-  background: rgba(242, 240, 234, .1);
-  border-color: #8d8d87;
+  background: rgba(var(--non-fg-rgb), .1);
+  border-color: var(--non-somm-mute);
 }
 
 /* ==========================================================================
@@ -4762,7 +5231,7 @@ select:-moz-focusring { color: transparent; text-shadow: 0 0 0 var(--non-fg); }
   border-radius: 0;
   box-shadow: none;
   text-align: center;
-  color: #EDEDE8;
+  color: var(--non-somm-ink);
 }
 
 /* Where the Somm is the whole interface (PDP, homepage) it self-centres on
@@ -4854,10 +5323,10 @@ select:-moz-focusring { color: transparent; text-shadow: 0 0 0 var(--non-fg); }
   border-radius: 50%;
   background:
     radial-gradient(circle at 40% 34%,
-      rgba(242, 240, 234, .92) 0%,
-      rgba(242, 240, 234, .55) 34%,
-      rgba(242, 240, 234, .18) 58%,
-      rgba(242, 240, 234, .05) 74%,
+      rgba(var(--non-orb-rgb), .92) 0%,
+      rgba(var(--non-orb-rgb), .55) 34%,
+      rgba(var(--non-orb-rgb), .18) 58%,
+      rgba(var(--non-orb-rgb), .05) 74%,
       transparent 84%);
   filter: blur(7px);
   animation: non-somm-orb 5s ease-in-out infinite;
@@ -4882,8 +5351,8 @@ select:-moz-focusring { color: transparent; text-shadow: 0 0 0 var(--non-fg); }
   height: 8px;
   border-radius: 50%;
   flex: none;
-  background: #4ade80;
-  color: #4ade80;
+  background: var(--non-success);
+  color: var(--non-success);
   box-shadow: 0 0 8px 1px currentColor;
   animation: non-somm-breathe 3.6s ease-in-out infinite;
 }
@@ -4933,22 +5402,22 @@ select:-moz-focusring { color: transparent; text-shadow: 0 0 0 var(--non-fg); }
   padding: 0 16px;
   text-align: left;
   font-size: 16px;
-  color: #EDEDE8;
-  background: rgba(242, 240, 234, .05);
-  border: 1px solid #3d3d38;
+  color: var(--non-somm-ink);
+  background: rgba(var(--non-fg-rgb), .05);
+  border: 1px solid var(--non-somm-field-line);
   border-radius: 0;
   box-shadow: none;
   transition: background .18s ease, border-color .18s ease;
 }
 .non-somm .non-somm__input::placeholder,
 .non-sommbox__ask input::placeholder,
-.non-sommbox__ask .non-somm__input::placeholder { color: #7d7b74; }
+.non-sommbox__ask .non-somm__input::placeholder { color: var(--non-somm-field-ph); }
 .non-somm .non-somm__input:focus,
 .non-sommbox__ask input:focus,
 .non-sommbox__ask .non-somm__input:focus {
   outline: none;
-  background: rgba(242, 240, 234, .09);
-  border-color: #8d8d87;
+  background: rgba(var(--non-fg-rgb), .09);
+  border-color: var(--non-somm-mute);
 }
 .non-somm__submit,
 .non-sommbox__submit {
@@ -4956,8 +5425,8 @@ select:-moz-focusring { color: transparent; text-shadow: 0 0 0 var(--non-fg); }
   height: 52px;
   min-height: 0;
   padding: 0 26px;
-  background: #EDEDE8;
-  color: #000;
+  background: var(--non-somm-ink);
+  color: var(--non-somm-btn-fg);
   border: 0;
   border-radius: 0;
   font-family: var(--non-mono);
@@ -4990,9 +5459,9 @@ select:-moz-focusring { color: transparent; text-shadow: 0 0 0 var(--non-fg); }
   font-size: 13px;
   line-height: 1.35;
   text-align: center;
-  color: #a9a9a2;
+  color: var(--non-somm-dim);
   background: transparent;
-  border: 1px solid #3a3a37;
+  border: 1px solid var(--non-somm-line-strong);
   border-radius: 0;
   cursor: pointer;
   transition: color .18s ease, border-color .18s ease;
@@ -5000,8 +5469,8 @@ select:-moz-focusring { color: transparent; text-shadow: 0 0 0 var(--non-fg); }
 .non-somm .non-somm__seed:hover,
 .non-sommbox .non-somm__seed:hover,
 .non-sommbox__seeds button:hover {
-  color: #EDEDE8;
-  border-color: #8d8d87;
+  color: var(--non-somm-ink);
+  border-color: var(--non-somm-mute);
   background: transparent;
 }
 
@@ -5034,11 +5503,11 @@ select:-moz-focusring { color: transparent; text-shadow: 0 0 0 var(--non-fg); }
 .non-sommbox::before {
   background:
     radial-gradient(circle at 40% 34%,
-      #ffffff 0%,
-      rgba(242, 240, 234, .95) 30%,
-      rgba(242, 240, 234, .58) 52%,
-      rgba(242, 240, 234, .22) 70%,
-      rgba(242, 240, 234, .06) 82%,
+      var(--non-orb-core) 0%,
+      rgba(var(--non-orb-rgb), .95) 30%,
+      rgba(var(--non-orb-rgb), .58) 52%,
+      rgba(var(--non-orb-rgb), .22) 70%,
+      rgba(var(--non-orb-rgb), .06) 82%,
       transparent 90%);
   filter: blur(8px);
   animation: non-somm-orb 3.6s ease-in-out infinite;
@@ -5242,7 +5711,7 @@ select:-moz-focusring { color: transparent; text-shadow: 0 0 0 var(--non-fg); }
   border: 0;
   --tile: 34px;
 }
-.non-think__dot { background: #EDEDE8; }
+.non-think__dot { background: var(--non-somm-ink); }
 
 /* The auto-playing step. Each scene re-draws as the cycle reaches it, and the
    accent lifts so the eye knows which stage is currently running. */
@@ -6194,11 +6663,11 @@ select:-moz-focusring { color: transparent; text-shadow: 0 0 0 var(--non-fg); }
     filter: blur(5px);
     background:
       radial-gradient(circle at 42% 36%,
-        #ffffff 0%,
-        rgba(242, 240, 234, .95) 20%,
-        rgba(242, 240, 234, .55) 38%,
-        rgba(242, 240, 234, .20) 52%,
-        rgba(242, 240, 234, .05) 62%,
+        var(--non-orb-core) 0%,
+        rgba(var(--non-orb-rgb), .95) 20%,
+        rgba(var(--non-orb-rgb), .55) 38%,
+        rgba(var(--non-orb-rgb), .20) 52%,
+        rgba(var(--non-orb-rgb), .05) 62%,
         transparent 68%);
   }
 }
@@ -6250,8 +6719,8 @@ select:-moz-focusring { color: transparent; text-shadow: 0 0 0 var(--non-fg); }
    it arrives the same way the picks do rather than appearing as a jump. */
 .non-ask {
   margin-top: 18px;
-  border: 1px solid var(--non-line-strong, rgba(242,240,234,.28));
-  background: var(--non-panel, rgba(242,240,234,.04));
+  border: 1px solid var(--non-line-strong, rgba(var(--non-fg-rgb), .28));
+  background: var(--non-panel, rgba(var(--non-fg-rgb), .04));
   padding: 16px 16px 14px;
   animation: non-somm-line-in var(--duration-reveal, 700ms) var(--ease-standard) both;
 }
@@ -6269,7 +6738,7 @@ select:-moz-focusring { color: transparent; text-shadow: 0 0 0 var(--non-fg); }
   font-size: var(--t-copy);
   color: var(--non-fg);
   background: transparent;
-  border: 1px solid var(--non-line, rgba(242,240,234,.18));
+  border: 1px solid var(--non-line, rgba(var(--non-fg-rgb), .18));
   padding: 10px 12px;
   line-height: 1.5;
 }
@@ -6350,7 +6819,7 @@ select:-moz-focusring { color: transparent; text-shadow: 0 0 0 var(--non-fg); }
 .non-btn--ghost {
   background: transparent;
   color: var(--non-fg);
-  border: 1px solid var(--non-line-strong, rgba(242, 240, 234, .28));
+  border: 1px solid var(--non-line-strong, rgba(var(--non-fg-rgb), .28));
 }
 .non-btn--ghost:hover,
 .non-btn--ghost:focus-visible { border-color: var(--non-fg); }
@@ -6627,7 +7096,7 @@ select:-moz-focusring { color: transparent; text-shadow: 0 0 0 var(--non-fg); }
        These are the values the real .non-somm__input resolves to, so the
        button that stands in for the field looks like the field it stands in
        for, on every page and under every section colour override. */
-    background: rgba(242, 240, 234, .05);
+    background: rgba(var(--non-fg-rgb), .05);
     border: 1px solid var(--non-line-strong);
     color: var(--non-fg);
     font-family: var(--non-sans);
@@ -7097,7 +7566,7 @@ select:-moz-focusring { color: transparent; text-shadow: 0 0 0 var(--non-fg); }
     content: "";
     width: 38px;
     height: 3px;
-    background: var(--non-line-strong, rgba(242, 240, 234, .28));
+    background: var(--non-line-strong, rgba(var(--non-fg-rgb), .28));
   }
 
   .non-sheet__head {
@@ -7252,7 +7721,7 @@ select:-moz-focusring { color: transparent; text-shadow: 0 0 0 var(--non-fg); }
     gap: 12px;
     padding: 12px;
     border: 1px solid var(--non-line);
-    background: var(--non-panel, rgba(242, 240, 234, .04));
+    background: var(--non-panel, rgba(var(--non-fg-rgb), .04));
   }
   .non-rec:has(.non-rec__body:only-child) { grid-template-columns: 1fr; }
   /* align-self: start, or the grid stretches this cell to the card's full
@@ -7783,7 +8252,7 @@ select:-moz-focusring { color: transparent; text-shadow: 0 0 0 var(--non-fg); }
     gap: 14px;
     padding: 14px;
     border: 1px solid var(--non-line);
-    background: var(--non-panel, rgba(242, 240, 234, .04));
+    background: var(--non-panel, rgba(var(--non-fg-rgb), .04));
   }
   .non-sheet .non-rec__media { display: block; align-self: start; background: var(--non-photo-bed); }
   .non-sheet .non-rec__media img { width: 100%; height: auto; aspect-ratio: 1/1; object-fit: cover; display: block; }
@@ -7868,9 +8337,9 @@ select:-moz-focusring { color: transparent; text-shadow: 0 0 0 var(--non-fg); }
      even when the label is collapsed and the control is a circle. */
   min-height: 52px;
   padding: 0 18px 0 14px;
-  border: 1px solid var(--non-line-strong, rgba(242, 240, 234, .28));
+  border: 1px solid var(--non-line-strong, rgba(var(--non-fg-rgb), .28));
   border-radius: 999px;
-  background: rgba(23, 21, 19, .82);
+  background: rgba(var(--non-bg-rgb), .82);
   -webkit-backdrop-filter: blur(10px);
   backdrop-filter: blur(10px);
   color: var(--non-fg);
@@ -7900,10 +8369,10 @@ select:-moz-focusring { color: transparent; text-shadow: 0 0 0 var(--non-fg); }
      it and carries the same treatment. */
   background:
     radial-gradient(circle at 40% 34%,
-      #ffffff 0%,
-      rgba(242, 240, 234, .92) 26%,
-      rgba(242, 240, 234, .45) 52%,
-      rgba(242, 240, 234, .12) 70%,
+      var(--non-orb-core) 0%,
+      rgba(var(--non-orb-rgb), .92) 26%,
+      rgba(var(--non-orb-rgb), .45) 52%,
+      rgba(var(--non-orb-rgb), .12) 70%,
       transparent 82%);
 }
 
@@ -7917,8 +8386,8 @@ select:-moz-focusring { color: transparent; text-shadow: 0 0 0 var(--non-fg); }
    from CSS alone, so "three" is a number rather than an animation-count that
    restarts on every repaint. */
 @keyframes nonOrbPulse {
-  0%, 100% { box-shadow: 0 0 0 0 rgba(242, 240, 234, 0); }
-  50%      { box-shadow: 0 0 0 6px rgba(242, 240, 234, .10); }
+  0%, 100% { box-shadow: 0 0 0 0 rgba(var(--non-orb-rgb), 0); }
+  50%      { box-shadow: 0 0 0 6px rgba(var(--non-orb-rgb), .10); }
 }
 .non-orb.is-pulsing { animation: nonOrbPulse 1.8s var(--ease-standard, ease) 3; }
 
@@ -8015,7 +8484,7 @@ select:-moz-focusring { color: transparent; text-shadow: 0 0 0 var(--non-fg); }
     /* The home indicator sits inside this bar's bottom edge on a modern
        iPhone; without the inset the Add button is under it and the OS wins. */
     padding-bottom: calc(10px + env(safe-area-inset-bottom, 0px));
-    background: rgba(23, 21, 19, .94);
+    background: rgba(var(--non-bg-rgb), .94);
     -webkit-backdrop-filter: blur(12px);
     backdrop-filter: blur(12px);
     border-top: 1px solid var(--non-line);
@@ -8290,11 +8759,11 @@ select:-moz-focusring { color: transparent; text-shadow: 0 0 0 var(--non-fg); }
   opacity: .42;
   background:
     radial-gradient(circle at 40% 34%,
-      #ffffff 0%,
-      rgba(242, 240, 234, .95) 30%,
-      rgba(242, 240, 234, .58) 52%,
-      rgba(242, 240, 234, .22) 70%,
-      rgba(242, 240, 234, .06) 82%,
+      var(--non-orb-core) 0%,
+      rgba(var(--non-orb-rgb), .95) 30%,
+      rgba(var(--non-orb-rgb), .58) 52%,
+      rgba(var(--non-orb-rgb), .22) 70%,
+      rgba(var(--non-orb-rgb), .06) 82%,
       transparent 90%);
   filter: blur(5px);
   /* Slow, shallow, and never finished — a light that is alive rather than a
@@ -8405,7 +8874,7 @@ select:-moz-focusring { color: transparent; text-shadow: 0 0 0 var(--non-fg); }
   width: 100%;
   min-height: 52px;
   padding: 0 18px;
-  background: rgba(242, 240, 234, .05);
+  background: rgba(var(--non-fg-rgb), .05);
   border: 1px solid var(--non-line-strong);
   color: var(--non-fg);
   font-family: var(--non-sans);
@@ -8438,7 +8907,7 @@ select:-moz-focusring { color: transparent; text-shadow: 0 0 0 var(--non-fg); }
  * behind it. Source order is the only thing making this win.
  * ========================================================================== */
 .non-somm__ghost--static {
-  background: linear-gradient(100deg, #3d3d3a 25%, #EDEDE8 50%, #3d3d3a 75%);
+  background: linear-gradient(100deg, var(--non-somm-shimmer) 25%, var(--non-somm-ink) 50%, var(--non-somm-shimmer) 75%);
   background-size: 200% 100%;
   -webkit-background-clip: text;
   background-clip: text;

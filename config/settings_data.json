@@ -11,7 +11,7 @@
   "current": {
     "logo_height": "19px",
     "meta_description": "Cooked, not de-alcoholised. Fruit, tannin, salt and acid, built from zero at 0.0%.",
-    "somm_endpoint": "https://non-somm.polished-snow-7889.workers.dev/somm",
+    "somm_endpoint": "https://non-somm-staging.polished-snow-7889.workers.dev/somm",
     "somm_stream": true,
     "somm_type_speed": 12,
     "lotto_endpoint": "https://non-lotto.polished-snow-7889.workers.dev",

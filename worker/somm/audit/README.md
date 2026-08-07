@@ -21,6 +21,22 @@ node worker/somm/audit/megatest.mjs    # 204 questions, ~17 minutes
 node worker/somm/audit/audit38.mjs     # 38 questions, ~3 minutes
 ```
 
+## Turning the log into tests
+
+The others are one-off audits. This one is the loop:
+
+```bash
+node worker/somm/audit/fixtures.mjs build --labels labels.csv --log log.csv
+node worker/somm/audit/fixtures.mjs run          # defaults to non-somm-staging
+```
+
+`build` joins a labelled export of the query sheet to the log and emits
+`fixtures.json`; `run` replays them and exits non-zero on failure, so it can
+gate a deploy. Commit `fixtures.json` — it is the regression suite.
+
+The rubric, the sheet setup and why there are two verdict columns rather than
+one: `docs/somm-labelling.md`.
+
 ```bash
 node worker/somm/audit/ttft.mjs        # streaming: time to first token
 ```

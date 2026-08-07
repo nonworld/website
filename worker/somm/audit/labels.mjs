@@ -133,11 +133,17 @@ function toObjects(rows, required) {
    would block labelling on a formatting fix — but the date form is reported by
    `readLabels` so it gets fixed rather than lived with.
 
-   Day zero is 1899-12-31: Sheets' epoch is 1899-12-30, and id 0 renders as
-   1899-12-31 because the export adds a day the way Sheets' own date maths
-   does. Derived from the data (id 0 -> 1899-12-31, id 523 -> 1901-06-07,
-   which is 523 days later) rather than from the documentation. */
-const SHEET_EPOCH = Date.UTC(1899, 11, 31);
+   Sheets' serial epoch is 1899-12-30, so serial 1 renders as 1899-12-31 and
+   the log's ids are 1-based. This was briefly wrong here — the epoch was set
+   to 1899-12-31, which mapped every date one id LOW, and a silently off-by-one
+   join key is worse than a broken one because it still matches a row. Caught
+   by formatting the column as a number and reading it: the first data row is
+   id 1, not 0.
+
+   Confirmed against the whole range, not just the first row: 1901-06-07 is
+   524 days after 1899-12-30, and the log has 524 rows. JS agrees with Sheets
+   here because neither has the Lotus 1900-leap-year bug. */
+const SHEET_EPOCH = Date.UTC(1899, 11, 30);
 
 export function coerceId(raw) {
   const s = String(raw).trim();

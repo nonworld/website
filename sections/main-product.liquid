@@ -274,8 +274,40 @@
       {%- endcomment -%}
       {%- capture drinks_like %}{% render 'drinks-like', product: product %}{% endcapture -%}
       {%- assign drinks_like = drinks_like | strip -%}
+
+      {%- comment -%}
+        SPARKLING OR STILL, in front of the sentence.
+
+        It is the first thing a customer wants to know that the photograph
+        cannot tell them, and until now the page never said it: the only place
+        carbonation appeared anywhere on the site was a passing mention of a
+        sparkling stopper inside the STORAGE copy.
+
+        It reads from `custom.carbonation` and NOTHING ELSE. That storage line
+        is a tempting source — five of six bottles carry it and NON3 does not —
+        and deriving from it would be wrong twice over. It is prose someone may
+        reword at any time, so a copy edit would silently relabel a product's
+        physical format on a page that sells it; and it is already inaccurate,
+        because NON9 carries the stopper sentence and is still. A fact stated
+        on a shopping page gets a field of its own.
+
+        Absent by design rather than by accident: an unset metafield renders
+        the sentence exactly as it reads today. Sets, accessories and the gift
+        card have no carbonation and will never have this field, so they are
+        untouched without needing to be excluded.
+
+        Only the PDP. `drinks-like` is also rendered on the product card and as
+        the spec strip's bare phrase, and neither wants the prefix — the strip
+        already has its own DRINKS LIKE cell, and the card note is one line
+        under a thumbnail.
+      {%- endcomment -%}
+      {%- assign carbonation = product.metafields.custom.carbonation | metafield_text | strip -%}
+
       {%- if drinks_like != blank -%}
-        <p class="non-buy__drinks">{{ drinks_like }}</p>
+        <p class="non-buy__drinks">
+          {%- if carbonation != blank -%}{{ carbonation }}. {% endif -%}
+          {{- drinks_like -}}
+        </p>
       {%- endif -%}
 
       {%- if m.blurb != blank -%}

@@ -50,6 +50,53 @@ for f in liquid_files():
         if o != c:
             errors.append(f"{f.relative_to(root)}: {tag}/end{tag} unbalanced ({o} vs {c})")
 
+# 3b. SCHEMA NAME LENGTH — the failure mode that removes a whole section group.
+#
+#     Shopify caps a merchant-facing `name` at 25 characters, on the section,
+#     on every block and on every preset. Over the limit, the theme installs
+#     and the section file is REJECTED — not flagged, rejected — and anything
+#     referencing it then fails on top:
+#
+#       announcement-bar.liquid: Invalid block 'free_shipping':
+#         name is too long (max 25 characters)
+#       header-group.json: Section type 'announcement-bar'
+#         does not refer to an existing section file
+#
+#     That is how a one-character overrun took the announcement bar AND the
+#     entire header — logo, nav, cart, mobile menu — off every page of a fresh
+#     install, while the existing theme kept working because it had been
+#     installed before the name grew. Nothing in the repo disagreed with
+#     itself, so nothing here caught it: this is the check that would have.
+#
+#     Names are read from the parsed schema, so a file whose JSON is already
+#     broken is reported by 3 and skipped here rather than reported twice.
+SCHEMA_NAME_MAX = 25
+for f in liquid_files():
+    s = f.read_text(encoding='utf-8')
+    m = re.search(r'\{%-?\s*schema\s*-?%\}(.*?)\{%-?\s*endschema\s*-?%\}', s, re.S)
+    if not m:
+        continue
+    try:
+        sc = json.loads(m.group(1))
+    except Exception:
+        continue
+    if not isinstance(sc, dict):
+        continue
+    named = [('section name', sc.get('name'))]
+    for b in (sc.get('blocks') or []):
+        if isinstance(b, dict):
+            named.append((f"block {b.get('type')!r} name", b.get('name')))
+    for pr in (sc.get('presets') or []):
+        if isinstance(pr, dict):
+            named.append(('preset name', pr.get('name')))
+    for where, value in named:
+        if isinstance(value, str) and len(value) > SCHEMA_NAME_MAX:
+            errors.append(
+                f"{f.relative_to(root)}: {where} is {len(value)} characters "
+                f"(max {SCHEMA_NAME_MAX}) -> {value!r} — Shopify rejects the whole "
+                "section file on install and every group referencing it fails. "
+                "See preflight.py check 3b")
+
 # 3b. a setting default must never be an empty string.
 #     Shopify rejects the WHOLE file with "default can't be blank", which is
 #     what silently blocked process-animation.liquid for a full day. Omit the

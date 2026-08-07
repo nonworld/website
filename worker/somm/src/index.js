@@ -1180,14 +1180,18 @@ async function rateLimited(env, request) {
    the knowledge base rather than from the product sheet — handing it the full
    sheet would turn every brand question into a spec answer, which is the
    separation the routing exists to create. */
+/* The roster lives in BRAND_KB now, under THE RANGE, because BRAND_SYSTEM's
+   first hard rule is "use ONLY the brand notes" — a roster appended after the
+   notes was correctly ignored as unapproved detail, and the somm kept asking
+   which bottle instead of naming it. This function is back to its one job:
+   telling the route which bottle the customer is standing on. */
 function brandContext(code, facts) {
-  const roster = `\n\nThe range is six bottles: ${ROSTER}. That list is complete and it is the ONLY range fact you may state. If someone describes a bottle by a flavour — the coffee one, the seaweed one, the citrus one — find it in that list and name it, even when they are standing on a different bottle's page. NEVER say NON has no bottle of some description without checking this list first. For anything beyond the name, say which bottle it is and point them at its page.`;
-  if (!facts || typeof facts !== 'object') return roster;
+  if (!facts || typeof facts !== 'object') return '';
   const bits = [];
   if (facts.title) bits.push(`The customer is on the page for ${facts.title}.`);
   if (facts.sits) bits.push(`That bottle's own sheet says it sits where ${facts.sits.replace(/^An |^A /i, '').replace(/ sat$/i, '')} sat.`);
-  if (!bits.length) return roster;
-  return `${roster}\n\n${bits.join(' ')} If the question is what this bottle replaces, what it is closest to, or what to drink instead of a usual glass, answer with THAT line and explain it is the moment rather than the flavour. Do not ask which bottle they mean — you have been told.`;
+  if (!bits.length) return '';
+  return `\n\n${bits.join(' ')} If the question is what this bottle replaces, what it is closest to, or what to drink instead of a usual glass, answer with THAT line and explain it is the moment rather than the flavour. Do not ask which bottle they mean — you have been told.`;
 }
 
 /* --------------------------------------------------------------- escalate */

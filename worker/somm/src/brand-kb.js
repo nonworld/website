@@ -24,6 +24,22 @@
  * since the rest of this file carries explicit sign-off and these two blocks
  * carry only the site's authority.
  */
+import { PRODUCTS } from './scoring-engine.js';
+
+/* The range roster, interpolated from PRODUCTS rather than retyped.
+   ==========================================================================
+   Added 2026-08-07. The somm answered "NON does not have a coffee-based
+   bottle" on NON2's page; NON7 is Stewed Cherry & Coffee. The brand route had
+   no way to know the other five bottles existed, and BRAND_SYSTEM's first hard
+   rule is "use ONLY the brand notes" — so handing it a roster alongside the
+   notes did not work either. The model was right to ignore it. To be usable it
+   has to BE one of the notes, which is what this is.
+
+   Derived from PRODUCTS, not written out again: the whole point of this file
+   being approved prose is that it does not drift, and a hand-typed second copy
+   of six product names is exactly the thing that drifts. */
+const RANGE_LINES = PRODUCTS.map((p) => `- ${p.id} is ${p.name}.`).join('\n');
+
 export const BRAND_KB = `
 ORIGIN
 - The idea began in London in November 2017, eating through Michelin-starred
@@ -52,6 +68,16 @@ NONHQ
 - Visitors taste the ingredients on their own first, then the bottles they go
   into.
 - Tastings are booked through the Visit Us page on non.world.
+
+THE RANGE
+- NON makes six bottles and only six. This list is complete:
+${RANGE_LINES}
+- When someone describes a bottle by a flavour rather than a code — the coffee
+  one, the seaweed one, the citrus one, the oaky one — identify it from that
+  list and name it, including when they are standing on a different bottle's
+  page. Point them to that bottle's page for anything beyond its name.
+- NEVER say NON has no bottle of a given description without checking that list
+  first. Denying a bottle that exists is worse than any other answer here.
 
 NAME AND POSITIONING
 - "NON" was chosen to be bold and unapologetic, rather than apologetic or

@@ -16,12 +16,14 @@
 {%- capture code %}{% render 'non-code', product: product %}{% endcapture -%}
 {%- capture calories %}{% render 'non-nutrition', product: product, label: 'Calories per serve' %}{% endcapture -%}
 {%- capture sugars %}{% render 'non-nutrition', product: product, label: 'Sugars - Total' %}{% endcapture -%}
+{%- capture added_sugar %}{% render 'non-nutrition', product: product, label: 'Sugars - Added' %}{% endcapture -%}
 
 {%- liquid
   assign m = product.metafields.custom
   assign code = code | strip
   assign calories = calories | strip
   assign sugars = sugars | strip
+  assign added_sugar = added_sugar | strip
 
   # Resolved once here rather than only in the buy box, because EVERY bottle
   # assumption below has to answer to it. The Cap shipped reading
@@ -75,6 +77,32 @@
   assign nutrition = ''
   if calories != blank and sugars != blank
     assign nutrition = calories | append: ' calories, ' | append: sugars | append: ' sugar'
+
+    # THE ADDED-SUGAR SPLIT, AND WHY ZERO GETS WORDS RATHER THAN A NUMBER.
+    #
+    # "Sugars - Added" is a real row on all six bottles, verified against the
+    # metafield on 2026-08-07 rather than assumed: NON1 2.0 g, NON2 0.0, NON3
+    # 1.2, NON5 1.5, NON7 0.0, NON9 0.0. Half the range adds none, and the PDP
+    # said nothing about it — the strongest line in the box was the one it did
+    # not print.
+    #
+    # "(0.0 g added)" is technically the same fact and reads like a trace
+    # amount, so zero is spelled out instead. Everything else quotes the
+    # sheet's own figure, units and all, exactly as the total already does.
+    #
+    # Appended, never required: a bottle whose panel has no such row keeps the
+    # cell it has today. `non-nutrition` matches labels EXACTLY and returns
+    # blank on a miss, which is how NON2's misspelt "Calroes per serve" once
+    # deleted this whole cell (HANDOFF-2026-08-02). A missing row must cost the
+    # split, not the nutrition line.
+    if added_sugar != blank
+      assign added_value = added_sugar | remove: 'g' | remove: 'G' | strip | times: 1.0
+      if added_value == 0
+        assign nutrition = nutrition | append: ' (no added sugar)'
+      else
+        assign nutrition = nutrition | append: ' (' | append: added_sugar | append: ' added)'
+      endif
+    endif
   endif
 
   assign spec_count = 2

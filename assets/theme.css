@@ -1520,6 +1520,34 @@ button { font-family: inherit; }
   padding: 8px 22px;
 }
 .non-drawer__item { display: flex; gap: 14px; padding: 16px 0; border-bottom: 1px solid var(--non-line); }
+
+/* WRAP BEFORE OVERLAPPING. Zoom-only in practice, and not a redesign.
+ *
+ * The name column is `flex: 1 1 0%` with `min-width: 0`, so it is whatever is
+ * left after a 62px thumbnail and a price that both refuse to shrink. At 375
+ * that leaves it 200px and it is fine. At 188 — a 375 phone at 200% browser
+ * zoom — it leaves it THIRTEEN pixels, against content needing 102, and
+ * `overflow: visible` then paints "NON5 Lemon Marmalade" straight through
+ * "$30.00". Measured, and visible in a screenshot: the customer reads
+ * "NON$30.00" and cannot tell what is in their cart.
+ *
+ * Same failure one row down, differently caused: the subtotal row is
+ * space-between and `nowrap`, 143px wide, holding a 75px label and a 76px
+ * amount. They meet in the middle.
+ *
+ * The floor is in `ch` so it tracks the font rather than a guess, and it is
+ * deliberately small — it does not bind at 375, where the column already has
+ * 200px, so that layout is byte-for-byte what was accepted. It only engages
+ * when the row genuinely cannot hold its contents, and then the price drops to
+ * its own line instead of landing on the name. No breakpoint, because the
+ * condition is "there is not enough room", not "the viewport is small".
+ *
+ * This is the third appearance of `flex: 1 1 0%` collapsing a text column in
+ * this theme — `.non-pair__buymeta` was the first. A zero basis means the
+ * column gets the remainder, and the remainder can be nothing. */
+.non-drawer__item { flex-wrap: wrap; }
+.non-drawer__item > div { min-width: 9ch; }
+.non-drawer__foot > div { flex-wrap: wrap; }
 .non-drawer__item img { width: 62px; height: 78px; object-fit: cover; background: var(--non-photo-bed); }
 .non-drawer__foot { padding: 20px 22px; border-top: 1px solid var(--non-line); }
 .non-drawer__qty { display: flex; align-items: center; gap: 10px; margin-top: 8px; }

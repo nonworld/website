@@ -18,6 +18,20 @@
 (function () {
   'use strict';
 
+  // The appearance's ink, read from the stylesheet rather than burned in, so
+  // one token drives both the CSS and the things CSS cannot reach.
+  function themeColor(name, fallback) {
+    try {
+      var v = getComputedStyle(document.documentElement).getPropertyValue(name).trim();
+      return v || fallback;
+    } catch (e) { return fallback; }
+  }
+
+  // Map pins are drawn by Leaflet into its own layer, so they never see a
+  // stylesheet and have to be handed the colour. Resolved once at load: the
+  // appearance is a theme setting, so it cannot change without a reload.
+  var MARKER_INK = themeColor('--non-fg', '#f2f0ea');
+
   var root = document.querySelector('[data-non-stockists]');
   if (!root) return;
 
@@ -242,9 +256,9 @@
     shown.forEach(function (v) {
       window.L.circleMarker([v.lat, v.lng], {
         radius: 5,
-        color: '#f2f0ea',
+        color: MARKER_INK,
         weight: 1,
-        fillColor: '#f2f0ea',
+        fillColor: MARKER_INK,
         fillOpacity: 0.8,
       })
         .bindPopup(

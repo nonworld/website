@@ -30,6 +30,15 @@
 (function () {
   'use strict';
 
+  // The appearance's ink, read from the stylesheet rather than burned in.
+  function themeRgb(name, fallback) {
+    try {
+      var v = getComputedStyle(document.documentElement).getPropertyValue(name).trim();
+      return v || fallback;
+    } catch (e) { return fallback; }
+  }
+
+
   // Every instance on the page, not just the first. The field started life
   // bound to the one on Contact; putting it behind the Shop grid as well means
   // more than one can exist, and a single querySelector would silently animate
@@ -44,7 +53,10 @@
 
   var ctx = cv.getContext('2d');
   var step = Math.max(8, Math.min(60, parseInt(wrap.getAttribute('data-density'), 10) || 20));
-  var ink = wrap.getAttribute('data-ink') || '242,240,234';
+  // Falls back to the page's own ink rather than to the dark theme's literal.
+  // A section that has never had field_ink set gets the appearance's value; in
+  // Dark that resolves to 242,240,234, i.e. exactly what it used to hardcode.
+  var ink = wrap.getAttribute('data-ink') || themeRgb('--non-fg-rgb', '242,240,234');
   // Offset rather than centred: at 0.5 the envelope sits under the form column.
   var envX = parseFloat(wrap.getAttribute('data-envelope-x'));
   if (!(envX > 0 && envX < 1)) envX = 0.7;

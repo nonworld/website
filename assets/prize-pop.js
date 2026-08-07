@@ -11,6 +11,17 @@
 (function () {
   'use strict';
 
+  // The appearance's ink, read from the stylesheet rather than burned in.
+  // One source of truth: the same --non-* token the CSS paints with, so a
+  // canvas cannot drift out of step with the page it sits on.
+  function themeRgb(name, fallback) {
+    try {
+      var v = getComputedStyle(document.documentElement).getPropertyValue(name).trim();
+      return v || fallback;
+    } catch (e) { return fallback; }
+  }
+
+
   var FIRED_KEY = 'non-lotto-popped';
 
   function reduced() {
@@ -53,7 +64,9 @@
     var ox = Math.min(70, w * 0.18);
     var oy = h * 0.5;
 
-    var INK = '35,31,32';
+    // The prize panel is the inverted island, so its ink is the island's ink:
+    // #231f20 on the white panel in Dark, warm white on the ink panel in Light.
+    var INK = themeRgb('--non-island-rgb', '35,31,32');
     var bits = [];
 
     // The cork itself — one heavier, slower body that arcs and tumbles.

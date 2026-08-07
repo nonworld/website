@@ -23,6 +23,19 @@
 (function () {
   'use strict';
 
+  // The appearance's ink, read from the stylesheet rather than burned in.
+  // One source of truth: the same --non-* token the CSS paints with, so a
+  // canvas cannot drift out of step with the page it sits on.
+  function themeRgb(name, fallback) {
+    try {
+      var v = getComputedStyle(document.documentElement).getPropertyValue(name).trim();
+      return v || fallback;
+    } catch (e) { return fallback; }
+  }
+
+  var GLOBE_INK = themeRgb('--non-globe-glow-rgb', '255,255,255');
+
+
   var CITIES = [
     { n: 'SAN FRANCISCO', lat: 41.77, lon: -126.42 },
     { n: 'LOS ANGELES', lat: 31.05, lon: -113.24 },
@@ -120,17 +133,17 @@
     MERIDIANS.forEach(function (deg, i) {
       spinner.appendChild(
         ring(
-          'position:absolute;inset:0;border:0.4px solid rgba(255,255,255,' +
+          'position:absolute;inset:0;border:0.4px solid rgba(' + GLOBE_INK + ',' +
             (i === 0 ? 0.7 : 0.4) +
             ');border-radius:50%;transform:rotateY(' + deg + 'deg);'
         )
       );
     });
-    spinner.appendChild(ring('position:absolute;left:0;top:0;width:100px;height:100px;border:0.4px solid rgba(255,255,255,0.4);border-radius:50%;transform:rotateX(90deg);'));
-    spinner.appendChild(ring('position:absolute;left:6.7px;top:6.7px;width:86.6px;height:86.6px;border:0.4px solid rgba(255,255,255,0.38);border-radius:50%;transform:rotateX(90deg) translateZ(25px);'));
-    spinner.appendChild(ring('position:absolute;left:6.7px;top:6.7px;width:86.6px;height:86.6px;border:0.4px solid rgba(255,255,255,0.38);border-radius:50%;transform:rotateX(90deg) translateZ(-25px);'));
-    spinner.appendChild(ring('position:absolute;left:25px;top:25px;width:50px;height:50px;border:0.4px solid rgba(255,255,255,0.3);border-radius:50%;transform:rotateX(90deg) translateZ(43.3px);'));
-    spinner.appendChild(ring('position:absolute;left:25px;top:25px;width:50px;height:50px;border:0.4px solid rgba(255,255,255,0.3);border-radius:50%;transform:rotateX(90deg) translateZ(-43.3px);'));
+    spinner.appendChild(ring('position:absolute;left:0;top:0;width:100px;height:100px;border:0.4px solid rgba(' + GLOBE_INK + ',0.4);border-radius:50%;transform:rotateX(90deg);'));
+    spinner.appendChild(ring('position:absolute;left:6.7px;top:6.7px;width:86.6px;height:86.6px;border:0.4px solid rgba(' + GLOBE_INK + ',0.38);border-radius:50%;transform:rotateX(90deg) translateZ(25px);'));
+    spinner.appendChild(ring('position:absolute;left:6.7px;top:6.7px;width:86.6px;height:86.6px;border:0.4px solid rgba(' + GLOBE_INK + ',0.38);border-radius:50%;transform:rotateX(90deg) translateZ(-25px);'));
+    spinner.appendChild(ring('position:absolute;left:25px;top:25px;width:50px;height:50px;border:0.4px solid rgba(' + GLOBE_INK + ',0.3);border-radius:50%;transform:rotateX(90deg) translateZ(43.3px);'));
+    spinner.appendChild(ring('position:absolute;left:25px;top:25px;width:50px;height:50px;border:0.4px solid rgba(' + GLOBE_INK + ',0.3);border-radius:50%;transform:rotateX(90deg) translateZ(-43.3px);'));
 
     tilt.appendChild(spinner);
     stage.appendChild(tilt);
@@ -207,7 +220,7 @@
             var p1 = project(c.lat * (s / 16), c.lon, 50, spin);
             var zz = (p0.z + p1.z) / 2;
             var a = (zz > 0 ? 0.35 + (zz / 50) * 0.45 : 0.07) * v * (visited[k] ? 0.55 : 1);
-            ctx.strokeStyle = 'rgba(255,255,255,' + a.toFixed(3) + ')';
+            ctx.strokeStyle = 'rgba(' + GLOBE_INK + ',' + a.toFixed(3) + ')';
             ctx.lineWidth = 0.28;
             ctx.beginPath();
             ctx.moveTo(50 + p0.x, 50 + p0.y);
@@ -216,19 +229,19 @@
           }
 
           if (front) {
-            ctx.fillStyle = 'rgba(255,255,255,' + (dep * v).toFixed(3) + ')';
+            ctx.fillStyle = 'rgba(' + GLOBE_INK + ',' + (dep * v).toFixed(3) + ')';
             ctx.beginPath();
             ctx.arc(50 + top.x, 50 + top.y, 0.55 * dep, 0, Math.PI * 2);
             ctx.fill();
 
-            ctx.fillStyle = 'rgba(255,255,255,' + (dep * v * 0.6).toFixed(3) + ')';
+            ctx.fillStyle = 'rgba(' + GLOBE_INK + ',' + (dep * v * 0.6).toFixed(3) + ')';
             ctx.beginPath();
             ctx.arc(50 + base.x, 50 + base.y, 0.3 * dep, 0, Math.PI * 2);
             ctx.fill();
 
             if (near > 0.7) {
               ctx.strokeStyle =
-                'rgba(255,255,255,' + (((near - 0.7) / 0.3) * 0.6 * dep).toFixed(3) + ')';
+                'rgba(' + GLOBE_INK + ',' + (((near - 0.7) / 0.3) * 0.6 * dep).toFixed(3) + ')';
               ctx.lineWidth = 0.26;
               ctx.beginPath();
               ctx.arc(50 + top.x, 50 + top.y, 1.2 + (1 - near) * 9, 0, Math.PI * 2);
@@ -310,7 +323,7 @@
         var q0 = at(u0);
         var q1 = at(u1);
         if (q0.z < 0 && q1.z < 0) continue;
-        ctx.strokeStyle = 'rgba(255,255,255,' + (0.55 * (1 - s / 22)).toFixed(3) + ')';
+        ctx.strokeStyle = 'rgba(' + GLOBE_INK + ',' + (0.55 * (1 - s / 22)).toFixed(3) + ')';
         ctx.lineWidth = 0.3;
         ctx.beginPath();
         ctx.moveTo(50 + q0.x, 50 + q0.y);
@@ -319,11 +332,11 @@
       }
 
       var head = at(p);
-      ctx.fillStyle = 'rgba(255,255,255,0.95)';
+      ctx.fillStyle = 'rgba(' + GLOBE_INK + ',0.95)';
       ctx.beginPath();
       ctx.arc(50 + head.x, 50 + head.y, 0.8, 0, Math.PI * 2);
       ctx.fill();
-      ctx.strokeStyle = 'rgba(255,255,255,0.3)';
+      ctx.strokeStyle = 'rgba(' + GLOBE_INK + ',0.3)';
       ctx.lineWidth = 0.24;
       ctx.beginPath();
       ctx.arc(50 + head.x, 50 + head.y, 1.9, 0, Math.PI * 2);

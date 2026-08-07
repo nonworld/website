@@ -398,6 +398,24 @@
     'select:not([disabled]), [tabindex]:not([tabindex="-1"])';
 
   function trap(e) {
+    /* STAND ASIDE FOR ANYTHING ABOVE US.
+     *
+     * This listener is bound in the CAPTURE phase, so it saw Escape before the
+     * cart drawer's bubble-phase handler and closed the sheet — then let the
+     * same event through to close the drawer as well. One keypress, both
+     * layers gone, and the conversation lost along with them.
+     *
+     * The whole handler bails, not just the Escape branch. The Tab half is a
+     * focus trap, and a trap belonging to the layer UNDERNEATH would drag
+     * focus out of the drawer that is actually in front of the customer,
+     * breaking the containment added in e42e2bf.
+     *
+     * `top()` rather than a flag of our own: the scroll lock already records
+     * every open layer in order, so there is one answer to "what is in front"
+     * instead of two that can disagree. */
+    var lock = window.NON && window.NON.scrollLock;
+    if (lock && lock.top() && lock.top() !== 'somm-sheet') return;
+
     if (e.key === 'Escape') {
       e.preventDefault();
       closeSheet('escape');
@@ -577,7 +595,28 @@
     close: closeSheet,
     ask: ask,
     isOpen: function () { return open; },
-    context: function () { return context; }
+    context: function () { return context; },
+
+    /* TAKE FOCUS BACK, for a layer that was covering us and has now gone.
+     *
+     * The cart drawer restores focus to whatever opened it, which is normally
+     * right and is wrong in exactly one case: the drawer was opened from the
+     * header while this sheet was already up. Restoring the opener then puts
+     * the caret on a header button BEHIND an open sheet — visible to the
+     * keyboard, unreachable to the eye, and outside the trap that is supposed
+     * to contain it.
+     *
+     * The same target `openSheet` uses, so focus lands where it would have if
+     * the drawer had never opened. Guarded on `open` so a caller cannot focus
+     * a closed sheet, and preventScroll because the page underneath is pinned
+     * and must not jump. */
+    focus: function () {
+      if (!open) return false;
+      var target = input || panel.querySelector(FOCUSABLE);
+      if (!target) return false;
+      target.focus({ preventScroll: true });
+      return true;
+    }
   };
 
   /* ------------------------------------------------------------- events */

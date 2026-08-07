@@ -222,7 +222,26 @@
     if (!drawer) return;
     drawer.hidden = true;
     holdPage(false);
-    if (lastFocus) lastFocus.focus();
+
+    /* WHERE FOCUS GOES DEPENDS ON WHAT IS LEFT.
+     *
+     * Restoring the opener is right when the drawer was the only thing up. It
+     * is wrong when the Somm sheet is still open behind it: the opener is the
+     * header cart button, which now sits BEHIND a modal sheet — reachable by
+     * keyboard, invisible to the customer, and outside the sheet's own trap.
+     *
+     * holdPage(false) has already released this layer's lock, so if anything
+     * still holds it, another layer is genuinely still up. Asking the sheet to
+     * take focus back keeps the handover in the layer that owns it rather than
+     * having the drawer reach into the sheet's DOM. If it declines — closed,
+     * or nothing focusable — the normal restore runs, so this can only ever
+     * improve on the old behaviour, never lose focus entirely. */
+    var reclaimed = false;
+    if (window.NON && window.NON.scrollLock && window.NON.scrollLock.isLocked()
+        && window.NON.somm && typeof window.NON.somm.focus === 'function') {
+      reclaimed = window.NON.somm.focus();
+    }
+    if (!reclaimed && lastFocus) lastFocus.focus();
     // The lotto waits on this before auto-opening — it is a full-viewport
     // overlay that outranks the drawer, so it holds off while someone is
     // actually checking out.
@@ -312,6 +331,13 @@
 
   document.addEventListener('keydown', function (e) {
     if (!drawer || drawer.hidden) return;
+
+    /* Only if we are the layer in front. The Somm sheet can be open behind
+       this drawer, and both listen on document — see NON.scrollLock.top().
+       Without this the drawer would also act on a keypress meant for a layer
+       above it, which is the same bug in the other direction. */
+    var lock = window.NON && window.NON.scrollLock;
+    if (lock && lock.top() && lock.top() !== 'cart-drawer') return;
 
     if (e.key === 'Escape') { close(); return; }
     if (e.key !== 'Tab') return;

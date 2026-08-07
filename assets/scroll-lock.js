@@ -76,6 +76,32 @@
     unlock: unlock,
     /* Exposed for the same reason the sheet exposes isOpen: something else may
        need to know, and reading a private Set from outside is worse. */
-    isLocked: function () { return owners.size > 0; }
+    isLocked: function () { return owners.size > 0; },
+
+    /* WHICH LAYER IS ON TOP.
+     *
+     * This Set was already a stack and nobody had noticed. Insertion order is
+     * guaranteed for a JS Set, every overlay already registers here by name on
+     * the way up and deregisters on the way down, and `lock` is idempotent per
+     * owner — so the last entry IS the layer nearest the customer, maintained
+     * correctly without anyone having to maintain it.
+     *
+     * It exists because Escape closed EVERYTHING. The sheet, the drawer and
+     * the menu each own a document-level keydown listener that tests only its
+     * own visibility, so one keypress closed every open layer at once: opening
+     * the cart over the Somm and pressing Escape dismissed both, and the
+     * customer lost a conversation they had not finished.
+     *
+     * A handler asks whether it is on top and does nothing if it is not. That
+     * needs no new global, no z-index reading and no registry of layers — the
+     * ownership already lives here, one line from being useful.
+     *
+     * Returns null when nothing is open, so a caller that has lost track can
+     * only compare false rather than accidentally match. */
+    top: function () {
+      var last = null;
+      owners.forEach(function (o) { last = o; });
+      return last;
+    }
   };
 })();

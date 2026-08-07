@@ -311,6 +311,16 @@
         var noBtn = root.querySelector('.non-lotto__no');
         if (noBtn) noBtn.textContent = noBtn.getAttribute('data-done-label') || 'Done';
 
+        /* And the footer line, for the same reason one line up. "While stocks
+         * last" is a stock caveat that belongs on the three faces BEFORE the
+         * reveal; printed under a code the customer has just been given, it
+         * answers a question nobody asked and reads as a condition on the
+         * prize. Swapped only here, at the point a code actually exists, so
+         * the unscratched and claim faces keep the caveat that is true of
+         * them. */
+        var footEl = root.querySelector('[data-non-lotto-foot]');
+        if (footEl) footEl.textContent = footEl.getAttribute('data-won-label') || 'You won';
+
         if (sentEl) {
           sentEl.hidden = false;
           sentEl.textContent = data.emailed

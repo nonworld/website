@@ -145,7 +145,27 @@
     <p class="non-lotto__sent" data-non-lotto-sent hidden></p>
 
     <div class="non-lotto__foot">
-      <span class="non-mono non-eyebrow" style="font-size:9.5px">
+      {%- comment -%}
+        This line is the FOOTER of the card, and the card has four faces: the
+        unscratched foil, the teaser, the claim form and the revealed prize.
+        One span serves all of them, which is why it read "While stocks last"
+        on the very screen that had just told the customer they had won.
+
+        It is swapped rather than translated differently, because the string is
+        only wrong in ONE of those four states. Changing the locale value would
+        have put "You won" on an unscratched foil — a spoiler, and untrue until
+        the API has issued a code.
+
+        Same pattern as `data-done-label` on the button below: the wording is
+        translated here, where the locale files are reachable, and lotto.js
+        swaps it at the moment the prize is revealed. lotto.js has no access
+        to `| t`.
+      {%- endcomment -%}
+      <span
+        class="non-mono non-eyebrow"
+        style="font-size:9.5px"
+        data-non-lotto-foot
+        data-won-label="{{ 'sections.lotto.foot_won' | t }}">
         {{ 'sections.lotto.while_stocks_last' | t }}
       </span>
       {%- comment -%}

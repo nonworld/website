@@ -72,6 +72,21 @@ as a bug and "fixed" by a later pass.
 
 ---
 
+## 2b. PDP video — resolved
+
+Video media never played: the gallery's main slot is an `<img>` from
+`image_url` and the thumbs swapped its `src`, so a video could only render as
+its poster frame. Fixed in `21bfa60` / `9b32051` — a `video_tag` pane per video,
+stacked over the image so the `<img>` keeps its eager load and LCP priority,
+paused and reset when you switch away.
+
+**The image leads, and that is deliberate.** Aaron: "I dont want it first." The
+film stays one tap away on its thumb rather than opening the gallery. Do not
+promote it to position 1, and do not add autoplay — the default view is the
+bottle.
+
+---
+
 ## 3. Content, not code — these are Shopify Admin edits
 
 Flagged rather than papered over with CSS.

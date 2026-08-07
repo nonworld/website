@@ -50,7 +50,62 @@ import { BRAND_SYSTEM } from './brand-kb.js';
    that brand answers come from the knowledge base rather than the product
    sheet, and a list of six names cannot turn a brand question into a spec
    answer — it can only stop the somm denying its own range. */
-const ROSTER = PRODUCTS.map((p) => `${p.id} ${p.name}`).join(', ');
+function rosterOf(catalogue) {
+  return catalogue.map((p) => `${p.id} ${p.name}`).join(', ');
+}
+const ROSTER = rosterOf(PRODUCTS);
+
+/* ------------------------------------------------------- store catalogue
+
+   WHICH BOTTLES THE STORE ASKING CAN ACTUALLY SELL.
+
+   PRODUCTS is the range as a whole. It has never been the same thing as what
+   any one storefront can show. A pick comes back as a code and the theme
+   resolves it against the catalogue block on the page, so a code the store
+   does not publish renders as NOTHING — somm.js already says exactly that in
+   a console warning: "Most often the product is not published to the current
+   market."
+
+   On one store that warning is a curiosity, because one store sells the whole
+   range. On a second store with a different catalogue it is a customer being
+   told what to drink and then shown nothing, which is worse than not being
+   answered at all.
+
+   So the theme now sends `available`: the codes it can render a card for.
+   Ranking, the data sheet, the roster the model is allowed to name and the
+   pick extraction all run over that subset instead of over the range.
+
+   THREE DELIBERATE SOFTNESSES, because this must not be able to make the
+   Somm worse than it is today:
+
+   1. No `available` at all -> the whole range, exactly as before. The theme
+      and the Worker can therefore ship in either order, which matters a great
+      deal here: Shopify rejects theme files silently, so "the theme half
+      landed" is never something you get to assume.
+   2. Unrecognised codes are dropped rather than refused. The catalogue blocks
+      are built from Liquid collections and carry whatever `non-code` returns,
+      including an empty string for a product that has no `custom.non_code`.
+   3. FEWER THAN TWO recognised codes -> the whole range. A page whose
+      catalogue JSON failed to parse sends nothing useful, and a Somm narrowed
+      to a single bottle by a broken block is worse than one that ignores the
+      hint. Two is the floor at which a subset is still a choice.
+
+   What this does NOT touch: brand answers. brand-kb.js names the range from
+   its own approved copy, and a brand question is about NON rather than about
+   what is in stock this week. If a market's range stays materially different
+   for long, that KB needs the same treatment — but it is a separate decision
+   about approved copy, not a bug in this path. */
+export function catalogueFor(available) {
+  if (!Array.isArray(available) || !available.length) return PRODUCTS;
+  const wanted = new Set(
+    available
+      .filter((c) => typeof c === 'string')
+      .map((c) => c.trim().toUpperCase())
+      .filter(Boolean),
+  );
+  const subset = PRODUCTS.filter((p) => wanted.has(p.id));
+  return subset.length >= 2 ? subset : PRODUCTS;
+}
 
 const MAX_QUERY = 500;
 
@@ -820,10 +875,14 @@ async function routeQuery(env, query) {
  *
  * Both call sites now pass it: answerFacts() forwards the surface it already
  * accepts, and the streaming branch passes the one the handler already built. */
-function factsPrompt(query, code, facts, lang = '', surface = '') {
+function factsPrompt(query, code, facts, lang = '', surface = '', catalogue = PRODUCTS) {
+  // Scoped to ONE bottle: looked up in PRODUCTS rather than in the catalogue,
+  // because the customer is standing on that bottle's product page. Being on
+  // the page is proof the store sells it, and a store whose catalogue block is
+  // misconfigured must not lose the sheet for the bottle being read.
   const scope = code
     ? PRODUCTS.filter((p) => p.id === String(code).toUpperCase())
-    : PRODUCTS;
+    : catalogue;
 
   // The theme's own sheet for the bottle being viewed. PRODUCTS is this
   // Worker's static copy of the range and carries what the engine needs to
@@ -895,14 +954,22 @@ function factsPrompt(query, code, facts, lang = '', surface = '') {
           // costs one line and lets the somm name a bottle it cannot describe,
           // which is the difference between redirecting a customer and denying
           // the product to them.
-          (scope.length && scope.length < PRODUCTS.length
+          //
+          // COUNTED AND NAMED FROM THE CATALOGUE, not from PRODUCTS. This line
+          // used to read "The full range is six bottles" beside a roster of all
+          // six, which is true of the range and false of any store that does
+          // not sell all of it. On a store carrying three, that sentence sent
+          // the customer to a page that does not exist there — the same failure
+          // as a dead pick card, except stated in words, which is worse.
+          (scope.length && scope.length < catalogue.length
             ? 'Data sheet for the bottle the customer is looking at.\n'
-              + 'The full range is six bottles: ' + ROSTER + '. You have the '
+              + 'The range available here is ' + catalogue.length + ' bottles: '
+              + rosterOf(catalogue) + '. You have the '
               + 'sheet for one of them. If the question is about a different '
               + 'bottle, name it from that list and send them to its page — '
               + 'never say a bottle does not exist.\n\n'
-            : 'Data sheet — this is the complete range, ' + PRODUCTS.length + ' bottles:\n\n') +
-          factsSheet(scope.length ? scope : PRODUCTS) +
+            : 'Data sheet — this is the complete range available here, ' + catalogue.length + ' bottles:\n\n') +
+          factsSheet(scope.length ? scope : catalogue) +
           sheet +
           '\n\nQuestion: ' + query,
       },
@@ -912,12 +979,16 @@ function factsPrompt(query, code, facts, lang = '', surface = '') {
 
 // Name-drop any bottle the answer actually cites, so the pick cards match
 // the words rather than being a second, unrelated recommendation.
-function picksFrom(answer) {
-  return PRODUCTS.filter((p) => answer.indexOf(p.id) !== -1).map((p) => p.id).slice(0, 2);
+//
+// Filtered by catalogue: a card can only be rendered for a code the page holds,
+// so extracting a pick the store does not sell produces a card that silently
+// does not appear. Better to return one pick, or none, than a phantom.
+function picksFrom(answer, catalogue = PRODUCTS) {
+  return catalogue.filter((p) => answer.indexOf(p.id) !== -1).map((p) => p.id).slice(0, 2);
 }
 
-async function answerFacts(env, query, code, facts, lang = '', surface = '') {
-  const prompt = factsPrompt(query, code, facts, lang, surface);
+async function answerFacts(env, query, code, facts, lang = '', surface = '', catalogue = PRODUCTS) {
+  const prompt = factsPrompt(query, code, facts, lang, surface, catalogue);
   const answer = await claude(env, {
     model: env.EXPLAIN_MODEL || 'claude-sonnet-5',
     ...prompt,
@@ -927,7 +998,7 @@ async function answerFacts(env, query, code, facts, lang = '', surface = '') {
   // and stayed blank. Treat it as the failure it is and let the caller's
   // fallback handle it.
   if (!answer || !answer.trim()) throw new Error('empty answer');
-  return { answer, picks: picksFrom(answer) };
+  return { answer, picks: picksFrom(answer, catalogue) };
 }
 
 /* --------------------------------------------------- step 1: extraction */
@@ -1391,6 +1462,11 @@ const handler = {
     // surface, which is every older caller — nothing here is required.
     const surface = surfaceDirective(body.surface);
 
+    // What this store can actually sell, from the codes the page can render a
+    // card for. Absent on every older caller, which resolves to the full range
+    // and the behaviour this Worker has always had. See catalogueFor().
+    const catalogue = catalogueFor(body.available);
+
     // ---- route: factual questions never reach the pairing engine ---------
     const intent = await routeQuery(env, query);
 
@@ -1453,13 +1529,13 @@ const handler = {
           return await claudeStreamResponse(env, {
             model: env.EXPLAIN_MODEL || 'claude-sonnet-5',
             escalationMeta: { query, code: context, page: body.page, title: body.facts && body.facts.title },
-            ...factsPrompt(query, context, body.facts, lang, surface),
+            ...factsPrompt(query, context, body.facts, lang, surface, catalogue),
             tail: (answer) => ({
               intent,
               answer,
               explanation: answer,
-              picks: picksFrom(answer),
-              productId: picksFrom(answer)[0] || (context ? String(context).toUpperCase() : null),
+              picks: picksFrom(answer, catalogue),
+              productId: picksFrom(answer, catalogue)[0] || (context ? String(context).toUpperCase() : null),
             }),
             onFail: () => fallbackResponse('facts', null, env, intent, body.locale),
           });
@@ -1468,7 +1544,7 @@ const handler = {
         }
       }
       try {
-        const result = await answerFacts(env, query, context, body.facts, lang, surface);
+        const result = await answerFacts(env, query, context, body.facts, lang, surface, catalogue);
         return json({
           intent: intent,
           answer: result.answer,
@@ -1540,7 +1616,7 @@ const handler = {
        the bottle actually sells. */
     if (context && dish && !(dish.proteins || []).length && !(dish.flavourNotes || []).length) {
       try {
-        const result = await answerFacts(env, query, context, body.facts, lang, surface);
+        const result = await answerFacts(env, query, context, body.facts, lang, surface, catalogue);
         return json({
           intent: 'facts',
           answer: result.answer,
@@ -1573,7 +1649,7 @@ const handler = {
         // "workable" verdict can now name where to go instead.
         let instead = null;
         if (fit !== 'strong') {
-          const best = rankProducts(dish).find((r) => r.productId !== product.id);
+          const best = rankProducts(dish, catalogue).find((r) => r.productId !== product.id);
           if (best && best.score > scored.score + 15) instead = best.product;
         }
 
@@ -1608,7 +1684,7 @@ const handler = {
     }
 
     // ---- homepage: rank everything, pick a winner -------------------------
-    const ranked = rankProducts(dish);
+    const ranked = rankProducts(dish, catalogue);
     const top = ranked[0];
     const runnerUp = ranked[1];
 

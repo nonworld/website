@@ -8,7 +8,7 @@
  *   node test/pipeline.test.js
  */
 import { rankProducts, PRODUCTS, scoreProduct } from '../src/scoring-engine.js';
-import { languageDirective, fallbackCopy } from '../src/index.js';
+import { languageDirective, fallbackCopy, catalogueFor } from '../src/index.js';
 
 // Ground truth is NON's core range deck, which names one headline pairing per
 // bottle. These five are not opinions — if one fails, the profiles are wrong.
@@ -242,6 +242,77 @@ const esNeutral = fallbackCopy('es', 'neutral') || '';
 const noProduct = !/Mixed 6|NON[1235790]/.test(esNeutral);
 if (!noProduct) failed++;
 console.log(`${noProduct ? 'PASS' : 'FAIL'}  es neutral fallback recommends no product`);
+
+/* ------------------------------------------------ store catalogue ------- */
+
+/* The Somm answers in codes and the theme renders a card per code from the
+   catalogue block on the page. A code the store does not publish renders as
+   nothing, so recommending outside the store's catalogue is a customer being
+   told what to drink and shown an empty panel.
+
+   These cases pin the SOFTNESS as much as the narrowing. Every fallback below
+   exists so that a broken page, an older theme or a product missing its
+   `custom.non_code` degrades to the full range rather than to a Somm that
+   recommends one bottle or none. */
+const CATALOGUE_CASES = [
+  ['no list at all (older theme, or the Worker deployed first)',
+    undefined, PRODUCTS.length],
+  ['null',
+    null, PRODUCTS.length],
+  ['empty list (catalogue block failed to parse)',
+    [], PRODUCTS.length],
+  ['a genuine three-bottle store',
+    ['NON1', 'NON3', 'NON7'], 3],
+  ['lower case and padded, as Liquid emits it',
+    [' non1 ', 'non3', 'NON7'], 3],
+  ['empty-string keys from products with no non_code are dropped',
+    ['', 'NON1', 'NON3', '  '], 2],
+  ['codes this Worker does not know are ignored',
+    ['NON1', 'NON3', 'NONSTOPPER', 'GIFTCARD'], 2],
+  ['ONE recognised bottle falls back to the range, never to a one-note somm',
+    ['NON1'], PRODUCTS.length],
+  ['no recognised bottles at all falls back to the range',
+    ['STOPPER', 'GLASSES'], PRODUCTS.length],
+  ['the whole range is the whole range',
+    PRODUCTS.map((p) => p.id), PRODUCTS.length],
+  ['non-strings do not throw',
+    ['NON1', 3, null, undefined, {}, 'NON3'], 2],
+];
+for (const [label, input, wantLength] of CATALOGUE_CASES) {
+  const got = catalogueFor(input);
+  const ok = Array.isArray(got) && got.length === wantLength;
+  if (!ok) failed++;
+  console.log(`${ok ? 'PASS' : 'FAIL'}  catalogue: ${label}`
+    + (ok ? '' : ` — wanted ${wantLength}, got ${got && got.length}`));
+}
+
+/* A subset must be a real subset of the range, in range order, and must never
+   invent an entry — the objects are handed straight to the scoring engine. */
+const three = catalogueFor(['NON7', 'NON1', 'NON3']);
+const isSubset = three.every((p) => PRODUCTS.includes(p));
+if (!isSubset) failed++;
+console.log(`${isSubset ? 'PASS' : 'FAIL'}  catalogue: entries are the real product objects`);
+
+const ordered = three.map((p) => p.id).join(',')
+  === PRODUCTS.filter((p) => three.includes(p)).map((p) => p.id).join(',');
+if (!ordered) failed++;
+console.log(`${ordered ? 'PASS' : 'FAIL'}  catalogue: keeps range order, not request order`);
+
+/* The point of the whole change: ranking cannot return a bottle the store
+   does not sell. Ranked against a dish NON9 wins outright, on a store that
+   does not carry NON9. */
+const steak = { proteins: ['beef'], fatLevel: 4, cookingStyle: ['grilled'], dishAcid: 1, weight: 5, heat: 0, flavourNotes: ['char'] };
+const withoutNon9 = catalogueFor(['NON1', 'NON3', 'NON5']);
+const rankedNames = rankProducts(steak, withoutNon9).map((r) => r.productId);
+const noPhantom = !rankedNames.includes('NON9') && rankedNames.length === 3;
+if (!noPhantom) failed++;
+console.log(`${noPhantom ? 'PASS' : 'FAIL'}  catalogue: ranking never returns an unstocked bottle`);
+
+/* And the range as a whole still wins that dish, so the restriction above is
+   demonstrably doing the work rather than the dish being ambiguous. */
+const non9WinsUnrestricted = rankProducts(steak)[0].productId === 'NON9';
+if (!non9WinsUnrestricted) failed++;
+console.log(`${non9WinsUnrestricted ? 'PASS' : 'FAIL'}  catalogue: NON9 would have won unrestricted (control)`);
 
 console.log(failed ? `\n${failed} failing overall` : '\nall passing');
 process.exit(failed ? 1 : 0);

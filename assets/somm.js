@@ -53,6 +53,29 @@
     console.warn('[NON somm] no product catalogue found on this page. The somm will answer, but it cannot show which bottle it means. Every surface that renders [data-non-somm] must also render [data-non-catalogue].');
   }
 
+  /* The codes this page can actually render a card for, sent with every
+     question so the Worker recommends within them rather than within the range.
+
+     The range and the catalogue have never been the same thing, and on one
+     store nobody notices: non.world sells all six, so every pick resolves. A
+     second store with a different catalogue turns that gap into a customer
+     being told to drink NON7 and shown nothing — the warning in pickCard()
+     below already names this exact cause, and until now it was the only place
+     it was noticed.
+
+     Derived from the catalogue rather than from a separate setting on purpose:
+     the thing the Worker needs to know is precisely "what can be shown here",
+     which is what this object already is. A second list would be a second
+     thing to keep in step.
+
+     Empty-string keys are dropped — `non-code` returns nothing for a product
+     with no `custom.non_code`, and an empty key is not a bottle. */
+  function availableCodes() {
+    return Object.keys(catalogue)
+      .map(function (c) { return String(c).trim().toUpperCase(); })
+      .filter(Boolean);
+  }
+
   function pickCard(code) {
     var p = catalogue[String(code).toUpperCase()];
     if (!p) {
@@ -644,6 +667,8 @@
           // rather than prose so the Worker can quote them rather than
           // paraphrase.
           facts: readFacts(),
+          // What this store sells, as codes. See availableCodes().
+          available: availableCodes(),
           // WHERE THE QUESTION CAME FROM.
           //
           // The Worker already knew WHAT was asked and, on a product page,

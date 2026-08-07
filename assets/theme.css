@@ -1219,7 +1219,14 @@ button { font-family: inherit; }
    process, not the page's argument; the h1 and the spec strip carry that. */
 .non-steps { display: flex; flex-direction: column; gap: 18px; }
 .non-step { display: grid; grid-template-columns: 44px 1fr; gap: 18px; align-items: start; }
-.non-step__n { font-family: var(--non-mono); font-size: var(--t-mono); color: var(--non-fg-ghost); padding-top: 4px; }
+/* --non-fg-mute, not --non-fg-ghost. Ghost is #5f5f5c, which is 2.84:1 on the
+   page — the lowest contrast measured anywhere on the site in the 2026-08-07
+   audit, and below the 3:1 floor that even large text gets. These are the
+   process step numbers 01-05: not decoration, they are the only thing telling
+   a reader the rail has an order. Mute is #8a8a87 and clears 4.5 at 5.26:1.
+   Colour only — size, family, tracking and the 4px optical nudge are untouched,
+   so the rail's geometry and hierarchy are exactly as accepted. */
+.non-step__n { font-family: var(--non-mono); font-size: var(--t-mono); color: var(--non-fg-mute); padding-top: 4px; }
 .non-step__t { font-size: clamp(16px, 1.15vw, 19px); font-weight: 500; }
 .non-step__b { margin: 5px 0 0; font-size: var(--t-small); line-height: 1.55; color: var(--non-fg-mute); max-width: 46ch; }
 
@@ -8458,13 +8465,22 @@ select:-moz-focusring { color: transparent; text-shadow: 0 0 0 var(--non-fg); }
 /* The sensitive-information notice, under the Somm's field. Quiet but never
    hidden: it warns about exactly what the field invites, so it is present
    every time the field is. */
+/* 12px and --non-fg-mute. It was 10.5px at 4.41:1 — the smallest and among the
+   faintest text on the site, on the one line that is a privacy disclosure. A
+   notice nobody can read is not a notice.
+   It stays clearly secondary: 12px mono against 16-17px sans body, still the
+   quietest thing in the sheet, just legible. --non-fg-faint resolves to
+   #7d7d7a here (the sheet carries neither .non-somm nor .non-sommbox, so it
+   takes the global token, not the island's) and misses 4.5 by 0.09; mute is
+   #8a8a87 at 5.26:1. Type only — margin, tracking and line-height unchanged,
+   so the sheet's dimensions and flow are untouched. */
 .non-sheet__notice {
   margin: 8px 0 0;
   font-family: var(--non-mono);
-  font-size: 10.5px;
+  font-size: 12px;
   letter-spacing: .04em;
   line-height: 1.4;
-  color: var(--non-fg-faint);
+  color: var(--non-fg-mute);
 }
 
 /* ==========================================================================

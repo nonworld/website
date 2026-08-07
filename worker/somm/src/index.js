@@ -27,6 +27,26 @@
 import { PRODUCTS, rankProducts, scoreProduct, factsSheet } from './scoring-engine.js';
 
 import { BRAND_SYSTEM } from './brand-kb.js';
+
+/* The roster: every bottle's code and name, nothing else.
+   ==========================================================================
+   Asked "this is the coffee one yes" on NON2's page, the brand route answered
+   "NON does not have a coffee-based bottle". NON7 is Stewed Cherry & Coffee,
+   and the same log had described its coffee and its caffeine four times within
+   the hour. The route knew NON2 was not coffee and had no way to know which
+   bottle was, so it denied the range instead of redirecting to it. Denying a
+   product that exists is worse than any spec answer.
+
+   The same question on NON1's page was answered correctly, because it routed
+   to facts and facts carries the whole sheet. So this was never a knowledge
+   gap — it was one route being blind to the other five bottles.
+
+   Names only, deliberately. The separation the routing exists to create is
+   that brand answers come from the knowledge base rather than the product
+   sheet, and a list of six names cannot turn a brand question into a spec
+   answer — it can only stop the somm denying its own range. */
+const ROSTER = PRODUCTS.map((p) => `${p.id} ${p.name}`).join(', ');
+
 const MAX_QUERY = 500;
 
 const DISH_SCHEMA = {
@@ -765,8 +785,25 @@ function factsPrompt(query, code, facts, lang = '', surface = '') {
       {
         role: 'user',
         content:
-          'Data sheet — this is the complete range, ' +
-          (scope.length ? scope : PRODUCTS).length + ' bottles:\n\n' +
+          // "this is the complete range, 1 bottles" is what this said on every
+          // product page, because scope narrows to the bottle being viewed. The
+          // model was not merely missing the other five, it was told they did
+          // not exist — so "this is the coffee one yes", asked on NON2, could
+          // only come back as a denial that NON sells a coffee bottle. NON7 is
+          // Stewed Cherry & Coffee.
+          //
+          // The narrowing itself is right: a PDP question wants that bottle's
+          // sheet, not six. Only the claim around it was wrong. The roster
+          // costs one line and lets the somm name a bottle it cannot describe,
+          // which is the difference between redirecting a customer and denying
+          // the product to them.
+          (scope.length && scope.length < PRODUCTS.length
+            ? 'Data sheet for the bottle the customer is looking at.\n'
+              + 'The full range is six bottles: ' + ROSTER + '. You have the '
+              + 'sheet for one of them. If the question is about a different '
+              + 'bottle, name it from that list and send them to its page — '
+              + 'never say a bottle does not exist.\n\n'
+            : 'Data sheet — this is the complete range, ' + PRODUCTS.length + ' bottles:\n\n') +
           factsSheet(scope.length ? scope : PRODUCTS) +
           sheet +
           '\n\nQuestion: ' + query,
@@ -1144,12 +1181,13 @@ async function rateLimited(env, request) {
    sheet would turn every brand question into a spec answer, which is the
    separation the routing exists to create. */
 function brandContext(code, facts) {
-  if (!facts || typeof facts !== 'object') return '';
+  const roster = `\n\nThe range is six bottles: ${ROSTER}. That list is complete and it is the ONLY range fact you may state. If someone describes a bottle by a flavour — the coffee one, the seaweed one, the citrus one — find it in that list and name it, even when they are standing on a different bottle's page. NEVER say NON has no bottle of some description without checking this list first. For anything beyond the name, say which bottle it is and point them at its page.`;
+  if (!facts || typeof facts !== 'object') return roster;
   const bits = [];
   if (facts.title) bits.push(`The customer is on the page for ${facts.title}.`);
   if (facts.sits) bits.push(`That bottle's own sheet says it sits where ${facts.sits.replace(/^An |^A /i, '').replace(/ sat$/i, '')} sat.`);
-  if (!bits.length) return '';
-  return `\n\n${bits.join(' ')} If the question is what this bottle replaces, what it is closest to, or what to drink instead of a usual glass, answer with THAT line and explain it is the moment rather than the flavour. Do not ask which bottle they mean — you have been told.`;
+  if (!bits.length) return roster;
+  return `${roster}\n\n${bits.join(' ')} If the question is what this bottle replaces, what it is closest to, or what to drink instead of a usual glass, answer with THAT line and explain it is the moment rather than the flavour. Do not ask which bottle they mean — you have been told.`;
 }
 
 /* --------------------------------------------------------------- escalate */

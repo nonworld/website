@@ -183,6 +183,39 @@ Hard rules:
 
 Voice: a sommelier who knows the kitchen. Specific and unfussy.`;
 
+/* WHEN THE BEST BOTTLE IS NOT A GOOD ONE.
+ *
+ * EXPLAIN_SYSTEM only knows how to argue FOR a bottle. On the whole range that
+ * was safe, because the top-ranked bottle was always a reasonable match — the
+ * engine had six to choose from and one of them fitted. A store carrying part
+ * of the range does not have that luxury: ask for charred ribeye where the
+ * store sells NON1, NON3 and NON5 and the honest answer is "none of these is
+ * built for that".
+ *
+ * Asked to justify it anyway, the model returned NOTHING roughly two times in
+ * three, claudeNonEmpty threw, and the customer got the generic Mixed 6
+ * fallback. Measured on staging 2026-08-07: 4/6 empty on a three-bottle
+ * catalogue, 0/6 on the full range, same dish and same wording.
+ *
+ * That refusal was the model being right. The fix is not to press harder, it
+ * is to give it the answer it was reaching for — which is the same answer the
+ * PRODUCT PAGE has always been allowed to give, through fitBucket() and
+ * VERDICT_SYSTEM. This is that permission, for the homepage path.
+ *
+ * Still ONE sentence, still no hedging, still no apology: "not a natural match"
+ * is a statement, and stating it is what a sommelier does. */
+const EXPLAIN_COMPROMISE = `
+
+THIS IS NOT A NATURAL MATCH, and you are being told so by the scoring engine
+rather than guessing. Do not sell it as one. Say plainly that the range here
+does not hold an obvious partner for that dish, then say what this bottle does
+bring to it and what to expect. Recommend it as the closest of what is
+available, not as the right answer.
+
+Still one sentence. Still no hedging words, no apology, no confession about
+data or limitations. The customer wants to know what to pour, and "this is the
+closest, and here is what it does" is a complete answer.`;
+
 // Not every question is a pairing. "Are they low calorie?", "what's in it?",
 // "is it vegan?" are factual, and forcing them through the dish extractor
 // produced answers like "I don't have calorie data" while the numbers sat in
@@ -340,7 +373,16 @@ Voice: a sommelier who knows the spec sheet. Precise and unfussy.`;
      2026-08-07. The rule above already says the answer must not depend on
      phrasing; it did not say what to do when the page names no bottle, which
      is the case that actually varied. */
-const HOUSE_RULES = `
+/* A FUNCTION, not a constant, for one reason: the range line below used to
+   name all six bottles to every store. On a storefront carrying three that is
+   the model being told it sells bottles the customer cannot buy, in the one
+   block of the prompt that overrides everything above it — so it outranked the
+   data sheet that had already been narrowed correctly.
+
+   Everything else here is genuinely universal and is unchanged. */
+export function houseRules(catalogue = PRODUCTS) {
+  const bottles = rosterOf(catalogue);
+  return `
 
 House rules. These override anything above them:
 
@@ -472,17 +514,19 @@ House rules. These override anything above them:
   needed. Do not use it merely because a detail is missing from the sheet; use
   it when a PERSON is genuinely required.
 
-- The range is NON1, NON2, NON3, NON5, NON7 and NON9, plus the stopper and the
-  sets. Never name any other product. Do not invent a bottle, a flavour or a
-  variant that is not in the data in front of you, and never describe a bottle
-  by a name you were not given. If you want to compare, compare with one of the
-  six by its real name.
+- The bottles this customer can actually buy are ${bottles}, plus the stopper
+  and the sets. Never name any other product, and never name a bottle that is
+  not on that list even if you know it exists — it cannot be bought here, so
+  naming it sends someone to a page that is not there. Do not invent a bottle,
+  a flavour or a variant that is not in the data in front of you, and never
+  describe a bottle by a name you were not given. If you want to compare,
+  compare with one of those by its real name.
 
 - The sheet carries how each bottle SELLS. Use it to reassure a customer that
   they have chosen well, and never against the bottle they are looking at. If
   someone is on a bottle's own page, do not tell them it is the least ordered,
   do not rank it below the others, and do not volunteer its position unless
-  they asked which is most popular. "One of the six" is always available and
+  they asked which is most popular. "One of the range" is always available and
   always true.
 
 - Health, medical, pregnancy, medication, addiction and driving questions: give
@@ -490,6 +534,7 @@ House rules. These override anything above them:
   question for a doctor or the relevant authority. Do not reassure, do not tell
   anyone what is safe for them, and do not say a drink will or will not affect
   their ability to do anything.`;
+}
 
 /* --------------------------------------------------------------- language
 
@@ -937,7 +982,7 @@ function factsPrompt(query, code, facts, lang = '', surface = '', catalogue = PR
     // 400 truncated the trade answer mid-number ("NON9 the richest at 51 cal
     // and 12.5"). Two short paragraphs of six-bottle comparison do not fit.
     maxTokens: 700,
-    system: FACTS_SYSTEM + HOUSE_RULES + surface + lang,
+    system: FACTS_SYSTEM + houseRules(catalogue) + surface + lang,
     messages: [
       {
         role: 'user',
@@ -1157,7 +1202,7 @@ async function claudeNonEmpty(env, opts) {
   return text;
 }
 
-async function explain(env, { query, product, reasons, score, lang = '', surface = '' }) {
+async function explain(env, { query, product, reasons, score, lang = '', surface = '', fit = 'strong', catalogue = PRODUCTS }) {
   // Same guard as answerFacts. This is the path that actually produced the
   // blank panel: "Pint of guiness" routed to pairing, scored a bottle, and the
   // sentence came back empty — so the customer got a pick card with no words
@@ -1165,7 +1210,9 @@ async function explain(env, { query, product, reasons, score, lang = '', surface
   return claudeNonEmpty(env, {
     model: env.EXPLAIN_MODEL || 'claude-sonnet-5',
     maxTokens: 150,
-    system: EXPLAIN_SYSTEM + HOUSE_RULES + surface + lang,
+    system: EXPLAIN_SYSTEM
+      + (fit === 'strong' ? '' : EXPLAIN_COMPROMISE)
+      + houseRules(catalogue) + surface + lang,
     messages: [
       {
         role: 'user',
@@ -1200,7 +1247,7 @@ function fitBucket(score) {
   return 'weak';
 }
 
-async function verdict(env, { query, product, reasons, score, fit, instead, lang = '', surface = '' }) {
+async function verdict(env, { query, product, reasons, score, fit, instead, lang = '', surface = '', catalogue = PRODUCTS }) {
   const lines = [
     `The customer said: "${query}"`,
     '',
@@ -1228,7 +1275,7 @@ async function verdict(env, { query, product, reasons, score, fit, instead, lang
   return claudeNonEmpty(env, {
     model: env.EXPLAIN_MODEL || 'claude-sonnet-5',
     maxTokens: 150,
-    system: VERDICT_SYSTEM + HOUSE_RULES + surface + lang,
+    system: VERDICT_SYSTEM + houseRules(catalogue) + surface + lang,
     messages: [{ role: 'user', content: lines.join('\n') }],
   });
 }
@@ -1479,7 +1526,7 @@ const handler = {
           return await claudeStreamResponse(env, {
             model: env.EXPLAIN_MODEL || 'claude-sonnet-5',
             maxTokens: 700,
-            system: BRAND_SYSTEM + HOUSE_RULES + brandContext(context, body.facts) + surface + lang,
+            system: BRAND_SYSTEM + houseRules(catalogue) + brandContext(context, body.facts) + surface + lang,
             messages: [{ role: 'user', content: query }],
             escalationMeta: { query, code: context, page: body.page, title: body.facts && body.facts.title },
             tail: (answer) => ({
@@ -1503,7 +1550,7 @@ const handler = {
           // there is no reason the brand path should be one bad question away
           // from the same failure.
           maxTokens: 700,
-          system: BRAND_SYSTEM + HOUSE_RULES + brandContext(context, body.facts) + surface + lang,
+          system: BRAND_SYSTEM + houseRules(catalogue) + brandContext(context, body.facts) + surface + lang,
           messages: [{ role: 'user', content: query }],
         });
         // The bottle the customer is standing on, not null. "What wine does
@@ -1657,7 +1704,7 @@ const handler = {
         try {
           sentence = await verdict(env, {
             query, product, reasons: scored.reasons, score: scored.score, fit, instead, lang,
-            surface,
+            surface, catalogue,
           });
         } catch (e) {
           return json(fallbackResponse('verdict', e, env, 'pairing', body.locale), 200);
@@ -1688,6 +1735,12 @@ const handler = {
     const top = ranked[0];
     const runnerUp = ranked[1];
 
+    // Graded with the SAME thresholds the product page has always used. The
+    // homepage used to assume its winner was a good match, which held only
+    // because it was choosing from the whole range. Choosing from part of it,
+    // the winner can be the best of a bad set, and saying so is the answer.
+    const topFit = fitBucket(top.score);
+
     let explanation;
     try {
       explanation = await explain(env, {
@@ -1696,7 +1749,9 @@ const handler = {
         reasons: top.reasons,
         score: top.score,
         lang,
-            surface,
+        surface,
+        fit: topFit,
+        catalogue,
       });
     } catch (e) {
       return json(fallbackResponse('explanation', e, env, 'pairing', body.locale), 200);
@@ -1713,6 +1768,11 @@ const handler = {
       productId: top.productId,
       productName: top.product.name,
       score: top.score,
+      // Reported for the same reason the product page reports it: a "closest of
+      // what is here" answer and a confident one read identically in the log
+      // otherwise, and the difference is exactly what a partial catalogue
+      // produces. Additive; somm.js ignores fields it does not know.
+      fit: topFit,
       explanation,
       ...(includeAlternative
         ? {

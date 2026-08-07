@@ -8,7 +8,7 @@
  *   node test/pipeline.test.js
  */
 import { rankProducts, PRODUCTS, scoreProduct } from '../src/scoring-engine.js';
-import { languageDirective, fallbackCopy, catalogueFor } from '../src/index.js';
+import { languageDirective, fallbackCopy, catalogueFor, houseRules } from '../src/index.js';
 
 // Ground truth is NON's core range deck, which names one headline pairing per
 // bottle. These five are not opinions — if one fails, the profiles are wrong.
@@ -313,6 +313,38 @@ console.log(`${noPhantom ? 'PASS' : 'FAIL'}  catalogue: ranking never returns an
 const non9WinsUnrestricted = rankProducts(steak)[0].productId === 'NON9';
 if (!non9WinsUnrestricted) failed++;
 console.log(`${non9WinsUnrestricted ? 'PASS' : 'FAIL'}  catalogue: NON9 would have won unrestricted (control)`);
+
+/* ------------------------------------------------ house rules ----------- */
+
+/* The house rules OVERRIDE everything above them in the prompt, so a range
+   named here outranks a data sheet that was correctly narrowed. This block
+   was missed on the first pass of the catalogue work: the sheet was scoped,
+   and then the rules told the model it sold all six anyway.
+
+   These assertions are deliberately about the RULES text specifically, not
+   about the whole prompt, because that is the layer with the last word. */
+const rulesThree = houseRules(catalogueFor(['NON1', 'NON3', 'NON5']));
+const rulesAll = houseRules();
+
+const RULES_CASES = [
+  ['names every stocked bottle', ['NON1', 'NON3', 'NON5'].every((c) => rulesThree.includes(c))],
+  ['names no unstocked bottle', !['NON2', 'NON7', 'NON9'].some((c) => rulesThree.includes(c))],
+  ['full range still names all six', PRODUCTS.every((p) => rulesAll.includes(p.id))],
+  ['keeps the stopper and the sets, which are not bottles', rulesThree.includes('stopper') && rulesThree.includes('sets')],
+  ['drops the hardcoded "one of the six"', !/one of the six/i.test(rulesThree) && !/one of the six/i.test(rulesAll)],
+  ['still carries the 0.0% health line', /0\.0% ABV/.test(rulesThree)],
+  ['still carries the no-invention rule', /Do not invent a bottle/.test(rulesThree)],
+];
+for (const [label, ok] of RULES_CASES) {
+  if (!ok) failed++;
+  console.log(`${ok ? 'PASS' : 'FAIL'}  house rules: ${label}`);
+}
+
+/* The whole point of a template literal here is that it interpolates. If the
+   function is ever flattened back to a constant this catches it. */
+const interpolated = !rulesThree.includes('${');
+if (!interpolated) failed++;
+console.log(`${interpolated ? 'PASS' : 'FAIL'}  house rules: no un-interpolated placeholder left in the prompt`);
 
 console.log(failed ? `\n${failed} failing overall` : '\nall passing');
 process.exit(failed ? 1 : 0);
